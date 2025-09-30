@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.3.1";
+export const TOOL_VERSION = "1.3.2";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-09-30",
-  changelog: "SEO & Documentation: Added comprehensive meta tags, Open Graph/Twitter cards, Schema.org structured data, robots.txt, sitemap.xml. Improved README with cross-platform installation instructions for Windows, macOS, and Linux."
+  changelog: "Web Search Import: Added jinaRerankerUrl field support, fixed merge import UI sync issue with useEffect, added structure validation to prevent misplaced nested fields."
 } as const;
 
 // Helper function to get the tool's version string

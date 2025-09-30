@@ -23,6 +23,7 @@ interface WebSearchConfig {
   firecrawlApiKey?: string;
   firecrawlApiUrl?: string;
   jinaApiKey?: string;
+  jinaRerankerUrl?: string;
   cohereApiKey?: string;
   scraperTimeout?: number;
   safeSearch?: boolean;
@@ -288,20 +289,32 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
     switch (config.rerankerType) {
       case "jina":
         return (
-          <div>
-            <Label htmlFor="jina-api-key">
-              <Zap className="h-3 w-3 inline mr-1" />
-              Jina Reranker API Key *
-            </Label>
-            <Input
-              id="jina-api-key"
-              type="password"
-              value={config.jinaApiKey || ""}
-              onChange={(e) => updateConfig({ jinaApiKey: e.target.value })}
-              placeholder="Enter your Jina API key"
-              className="font-mono"
-              data-testid="input-jina-api-key"
-            />
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="jina-api-key">
+                <Zap className="h-3 w-3 inline mr-1" />
+                Jina Reranker API Key *
+              </Label>
+              <Input
+                id="jina-api-key"
+                type="password"
+                value={config.jinaApiKey || ""}
+                onChange={(e) => updateConfig({ jinaApiKey: e.target.value })}
+                placeholder="Enter your Jina API key"
+                className="font-mono"
+                data-testid="input-jina-api-key"
+              />
+            </div>
+            <div>
+              <Label htmlFor="jina-reranker-url">Jina Reranker URL</Label>
+              <Input
+                id="jina-reranker-url"
+                value={config.jinaRerankerUrl || ""}
+                onChange={(e) => updateConfig({ jinaRerankerUrl: e.target.value })}
+                placeholder="http://localhost:8787"
+                data-testid="input-jina-reranker-url"
+              />
+            </div>
           </div>
         );
 

@@ -262,6 +262,26 @@ export default function Home() {
             console.log("   - MCP servers count:", profileData.configuration?.mcpServers?.length || 0);
             console.log("   - MCP servers:", profileData.configuration?.mcpServers);
             
+            // Validate structure - check for misplaced nested fields
+            const webSearchFields = ['searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 
+              'searxngInstanceUrl', 'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey',
+              'googleSearchApiKey', 'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl',
+              'jinaApiKey', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
+            
+            const incomingConfig = profileData.configuration;
+            const topLevelWebSearchFields = webSearchFields.filter(field => field in incomingConfig);
+            
+            if (topLevelWebSearchFields.length > 0) {
+              console.error("❌ [IMPORT VALIDATION] Structure error - webSearch fields at top level:", topLevelWebSearchFields);
+              toast({
+                title: "❌ Invalid Configuration Structure",
+                description: `Web search fields (${topLevelWebSearchFields.slice(0, 3).join(', ')}...) should be nested under "webSearch" key. Check console for correct format.`,
+                variant: "destructive",
+              });
+              console.log(`Correct structure:\n{\n  "configuration": {\n    "webSearch": {\n      "searchProvider": "searxng",\n      ...\n    }\n  }\n}`);
+              return; // Don't proceed with import
+            }
+            
             // Apply the configuration and name
             updateConfiguration(profileData.configuration);
             // Always try to restore the configuration name, with fallback
@@ -309,6 +329,45 @@ export default function Home() {
             
             // Collect imported field names for display
             const importedFields = Object.keys(profileData.configuration);
+            
+            // Validate structure - check for misplaced nested fields
+            const webSearchFields = ['searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 
+              'searxngInstanceUrl', 'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey',
+              'googleSearchApiKey', 'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl',
+              'jinaApiKey', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
+            
+            const structureWarnings: string[] = [];
+            const incomingConfig = profileData.configuration;
+            
+            // Check if webSearch fields are at top level (wrong location)
+            const topLevelWebSearchFields = webSearchFields.filter(field => field in incomingConfig);
+            if (topLevelWebSearchFields.length > 0) {
+              structureWarnings.push(
+                `⚠️ Web Search fields at wrong level: ${topLevelWebSearchFields.join(', ')}.\n\n` +
+                `These fields should be nested under "webSearch" key.\n\n` +
+                `Correct structure:\n` +
+                `{\n` +
+                `  "configuration": {\n` +
+                `    "webSearch": {\n` +
+                `      "searchProvider": "searxng",\n` +
+                `      "scraperType": "firecrawl",\n` +
+                `      ...\n` +
+                `    }\n` +
+                `  }\n` +
+                `}`
+              );
+            }
+            
+            // If there are structure warnings, show error instead of merging
+            if (structureWarnings.length > 0) {
+              toast({
+                title: "❌ Invalid Configuration Structure",
+                description: structureWarnings[0].split('\n').slice(0, 2).join(' '),
+                variant: "destructive",
+              });
+              console.error("❌ [MERGE VALIDATION] Structure errors:", structureWarnings);
+              return; // Don't proceed with merge
+            }
             
             // Deep merge the incoming configuration with existing configuration
             const mergedConfig = deepMerge(configuration, profileData.configuration);

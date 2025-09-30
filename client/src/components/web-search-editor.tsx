@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Search, Globe, Zap, Shield, Clock } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
   searchProvider?: "serper" | "searxng" | "brave" | "tavily" | "perplexity" | "google" | "bing";
@@ -36,6 +36,8 @@ interface WebSearchEditorProps {
 }
 
 export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebSearchEditorProps) {
+  const isSyncingFromProp = useRef(false);
+  
   const [config, setConfig] = useState<WebSearchConfig>({
     searchProvider: "serper",
     scraperType: "firecrawl", 
@@ -47,9 +49,8 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
 
   // Sync internal state when value prop changes (e.g., from merge import)
   useEffect(() => {
-    console.log("🔄 [WebSearchEditor] Value prop changed:", value);
     if (value) {
-      console.log("✅ [WebSearchEditor] Updating internal state with:", value);
+      isSyncingFromProp.current = true;
       setConfig({
         searchProvider: "serper",
         scraperType: "firecrawl", 
@@ -58,11 +59,18 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
         safeSearch: true,
         ...value
       });
+      // Reset flag after React completes the state update
+      setTimeout(() => {
+        isSyncingFromProp.current = false;
+      }, 0);
     }
   }, [JSON.stringify(value)]);
 
+  // Only call onChange when user is interacting, not when syncing from parent
   useEffect(() => {
-    onChange(config);
+    if (!isSyncingFromProp.current) {
+      onChange(config);
+    }
   }, [config, onChange]);
 
   const updateConfig = (updates: Partial<WebSearchConfig>) => {

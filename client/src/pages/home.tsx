@@ -1110,7 +1110,7 @@ export default function Home() {
                 Settings from <span className="font-semibold">{mergeDetails?.name}</span> have been merged into your configuration.
               </p>
               <p className="text-sm text-green-700 dark:text-green-300 mt-2" data-testid="text-merge-preserved">
-                Your existing settings have been preserved.
+                All other existing settings have been preserved.
               </p>
             </div>
 

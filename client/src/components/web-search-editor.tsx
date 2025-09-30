@@ -47,17 +47,19 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
 
   // Sync internal state when value prop changes (e.g., from merge import)
   useEffect(() => {
+    console.log("🔄 [WebSearchEditor] Value prop changed:", value);
     if (value) {
-      setConfig(prev => ({
+      console.log("✅ [WebSearchEditor] Updating internal state with:", value);
+      setConfig({
         searchProvider: "serper",
         scraperType: "firecrawl", 
         rerankerType: "jina",
         scraperTimeout: 30000,
         safeSearch: true,
         ...value
-      }));
+      });
     }
-  }, [value]);
+  }, [JSON.stringify(value)]);
 
   useEffect(() => {
     onChange(config);

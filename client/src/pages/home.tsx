@@ -713,7 +713,11 @@ export default function Home() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleImportProfile} data-testid="menu-import-profile">
                     <Upload className="h-4 w-4 mr-2" />
-                    Import LibreChat Configuration Settings (.json)
+                    Import Full JSON (Replace All)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleImportMerge} data-testid="menu-import-merge">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Import Merge JSON (Preserve Existing)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleImportYaml} data-testid="menu-import-yaml">
                     <FileText className="h-4 w-4 mr-2" />

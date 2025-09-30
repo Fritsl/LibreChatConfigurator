@@ -1093,6 +1093,49 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Merge Results Dialog */}
+      <Dialog open={showMergeResults} onOpenChange={setShowMergeResults}>
+        <DialogContent className="max-w-2xl" data-testid="dialog-merge-results">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              Configuration Merged Successfully
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4" data-testid="merge-success-message">
+              <p className="text-sm text-green-800 dark:text-green-200" data-testid="text-merge-source">
+                Settings from <span className="font-semibold">{mergeDetails?.name}</span> have been merged into your configuration.
+              </p>
+              <p className="text-sm text-green-700 dark:text-green-300 mt-2" data-testid="text-merge-preserved">
+                Your existing settings have been preserved.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-sm mb-2" data-testid="text-imported-fields-count">Imported Fields ({mergeDetails?.fields.length || 0}):</h3>
+              <div className="bg-muted rounded-lg p-4 max-h-64 overflow-y-auto" data-testid="list-imported-fields">
+                <ul className="space-y-1">
+                  {mergeDetails?.fields.map((field) => (
+                    <li key={field} className="text-sm font-mono text-muted-foreground flex items-center gap-2" data-testid={`field-${field}`}>
+                      <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                      {field}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button onClick={() => setShowMergeResults(false)} data-testid="button-close-merge-results">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       
     </div>
   );

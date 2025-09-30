@@ -680,17 +680,6 @@ ${config.consoleJSON !== undefined ? `CONSOLE_JSON=${config.consoleJSON}` : '# C
 # =============================================================================
 ${config.cdnProvider ? `CDN_PROVIDER=${config.cdnProvider}` : '# CDN_PROVIDER='}
 
-# Search Service API Keys
-${config.serperApiKey ? `SERPER_API_KEY=${config.serperApiKey}` : '# SERPER_API_KEY=your_serper_api_key_here'}
-${config.searxngApiKey ? `SEARXNG_API_KEY=${config.searxngApiKey}` : '# SEARXNG_API_KEY=your_searxng_api_key_here'}
-${config.searxngInstanceUrl ? `SEARXNG_INSTANCE_URL=${config.searxngInstanceUrl}` : '# SEARXNG_INSTANCE_URL=https://your-searxng-instance.com'}
-${config.firecrawlApiKey ? `FIRECRAWL_API_KEY=${config.firecrawlApiKey}` : '# FIRECRAWL_API_KEY=your_firecrawl_api_key_here'}
-${config.firecrawlApiUrl ? `FIRECRAWL_API_URL=${config.firecrawlApiUrl}` : '# FIRECRAWL_API_URL=https://api.firecrawl.dev'}
-${config.jinaApiKey ? `JINA_API_KEY=${config.jinaApiKey}` : '# JINA_API_KEY=your_jina_api_key_here'}
-${config.cohereApiKey ? `COHERE_API_KEY=${config.cohereApiKey}` : '# COHERE_API_KEY=your_cohere_api_key_here'}
-${config.braveApiKey ? `BRAVE_API_KEY=${config.braveApiKey}` : '# BRAVE_API_KEY=your_brave_api_key_here'}
-${config.tavilyApiKey ? `TAVILY_API_KEY=${config.tavilyApiKey}` : '# TAVILY_API_KEY=your_tavily_api_key_here'}
-
 # OCR Service API Keys
 ${config.ocrApiKey ? `OCR_API_KEY=${config.ocrApiKey}` : '# OCR_API_KEY=your_ocr_api_key_here'}
 ${config.ocrApiBase ? `OCR_BASEURL=${config.ocrApiBase}` : '# OCR_BASEURL=https://api.mistral.ai/v1'}
@@ -699,11 +688,6 @@ ${config.ocrApiBase ? `OCR_BASEURL=${config.ocrApiBase}` : '# OCR_BASEURL=https:
 # Advanced Database Configuration
 # =============================================================================
 # Note: Primary database URIs are configured in the main Database Configuration section above
-
-# Advanced Configuration
-# =============================================================================
-${config.redisPingInterval ? `REDIS_PING_INTERVAL=${config.redisPingInterval}` : '# REDIS_PING_INTERVAL=30000'}
-${config.minPasswordLength ? `MIN_PASSWORD_LENGTH=${config.minPasswordLength}` : '# MIN_PASSWORD_LENGTH=8'}
 
 # RC4 Subdirectory Hosting
 # =============================================================================

@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.4.0";
+export const TOOL_VERSION = "1.4.1";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-09-30",
-  changelog: "Web Search Export Fix: Properly exports webSearch block to YAML and adds SEARCH=true + all web search env vars to .env. Fixed infinite loop in WebSearchEditor. Added jinaRerankerUrl support. Security fix for CREDS_KEY/IV hex format."
+  changelog: "Code cleanup: Removed duplicate REDIS_PING_INTERVAL, MIN_PASSWORD_LENGTH, and legacy search API key entries from .env generation."
 } as const;
 
 // Helper function to get the tool's version string

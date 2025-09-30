@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { defaultConfiguration } from "@/lib/configuration-defaults";
 import { createResetConfiguration } from "@/lib/librechat-defaults";
+import { deepMerge } from "@/lib/merge-utils";
 import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -273,6 +274,53 @@ export default function Home() {
             toast({
               title: "Import Failed",
               description: "Failed to import configuration. Please check the file format.",
+              variant: "destructive",
+            });
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleImportMerge = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const profileData = JSON.parse(event.target?.result as string);
+            
+            // Validate configuration structure
+            if (!profileData.configuration) {
+              throw new Error("Invalid configuration format: missing configuration data");
+            }
+
+            console.log("🔀 [MERGE DEBUG] Merging configuration:");
+            console.log("   - Current config keys:", Object.keys(configuration));
+            console.log("   - Incoming config keys:", Object.keys(profileData.configuration));
+            
+            // Deep merge the incoming configuration with existing configuration
+            const mergedConfig = deepMerge(configuration, profileData.configuration);
+            
+            console.log("   - Merged config keys:", Object.keys(mergedConfig));
+            
+            // Apply the merged configuration
+            updateConfiguration(mergedConfig);
+            
+            toast({
+              title: "Configuration Merged", 
+              description: `Settings from "${profileData.name || file.name}" merged successfully. Existing settings preserved.`,
+            });
+          } catch (error) {
+            toast({
+              title: "Merge Failed",
+              description: "Failed to merge configuration. Please check the file format.",
               variant: "destructive",
             });
           }

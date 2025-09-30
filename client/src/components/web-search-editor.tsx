@@ -44,6 +44,20 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
     ...value
   });
 
+  // Sync internal state when value prop changes (e.g., from merge import)
+  useEffect(() => {
+    if (value) {
+      setConfig(prev => ({
+        searchProvider: "serper",
+        scraperType: "firecrawl", 
+        rerankerType: "jina",
+        scraperTimeout: 30000,
+        safeSearch: true,
+        ...value
+      }));
+    }
+  }, [value]);
+
   useEffect(() => {
     onChange(config);
   }, [config, onChange]);

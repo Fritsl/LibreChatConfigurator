@@ -25,6 +25,8 @@ export default function Home() {
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showSelfTestConfirmation, setShowSelfTestConfirmation] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
+  const [showMergeResults, setShowMergeResults] = useState(false);
+  const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
@@ -305,6 +307,9 @@ export default function Home() {
             console.log("   - Current config keys:", Object.keys(configuration));
             console.log("   - Incoming config keys:", Object.keys(profileData.configuration));
             
+            // Collect imported field names for display
+            const importedFields = Object.keys(profileData.configuration);
+            
             // Deep merge the incoming configuration with existing configuration
             const mergedConfig = deepMerge(configuration, profileData.configuration);
             
@@ -313,10 +318,13 @@ export default function Home() {
             // Apply the merged configuration
             updateConfiguration(mergedConfig);
             
-            toast({
-              title: "Configuration Merged", 
-              description: `Settings from "${profileData.name || file.name}" merged successfully. Existing settings preserved.`,
+            // Show detailed merge results
+            setMergeDetails({
+              name: profileData.name || file.name,
+              fields: importedFields
             });
+            setShowMergeResults(true);
+            
           } catch (error) {
             toast({
               title: "Merge Failed",

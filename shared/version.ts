@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.3.2";
+export const TOOL_VERSION = "1.3.3";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-09-30",
-  changelog: "Web Search Import: Added jinaRerankerUrl field support, fixed merge import UI sync issue with useEffect, added structure validation to prevent misplaced nested fields."
+  changelog: "Security Fix: CREDS_KEY and CREDS_IV now generate proper hex strings (32 bytes = 64 hex chars, 16 bytes = 32 hex chars) instead of alphanumeric strings. Fixes Node crypto 'Invalid key length' error."
 } as const;
 
 // Helper function to get the tool's version string

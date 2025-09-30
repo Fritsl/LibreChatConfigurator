@@ -385,8 +385,8 @@ export const configurationSchema = z.object({
   // Security
   jwtSecret: z.string().min(32).optional(),
   jwtRefreshSecret: z.string().min(32).optional(),
-  credsKey: z.string().length(32).optional(),
-  credsIV: z.string().length(16).optional(),
+  credsKey: z.string().length(64).optional(), // 32 bytes as hex = 64 characters
+  credsIV: z.string().length(32).optional(), // 16 bytes as hex = 32 characters
   
   // Redis Configuration
   redisPingInterval: z.number().min(1000).max(300000).default(30000),

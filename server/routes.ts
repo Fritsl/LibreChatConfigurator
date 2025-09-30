@@ -427,8 +427,8 @@ ${config.noIndex !== undefined ? `NO_INDEX=${config.noIndex}` : '# NO_INDEX=true
 # =============================================================================
 ${config.jwtSecret ? `JWT_SECRET=${config.jwtSecret}` : `JWT_SECRET=${generateSecureSecret(32)}`}
 ${config.jwtRefreshSecret ? `JWT_REFRESH_SECRET=${config.jwtRefreshSecret}` : `JWT_REFRESH_SECRET=${generateSecureSecret(32)}`}
-${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${generateSecureSecret(32)}`}
-${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${generateSecureSecret(16)}`}
+${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${generateHexSecret(32)}`}
+${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${generateHexSecret(16)}`}
 ${config.minPasswordLength ? `MIN_PASSWORD_LENGTH=${config.minPasswordLength}` : '# MIN_PASSWORD_LENGTH=8'}
 ${config.sessionExpiry ? `SESSION_EXPIRY=${config.sessionExpiry}` : 'SESSION_EXPIRY=1000 * 60 * 15'}
 ${config.refreshTokenExpiry ? `REFRESH_TOKEN_EXPIRY=${config.refreshTokenExpiry}` : 'REFRESH_TOKEN_EXPIRY=1000 * 60 * 60 * 24 * 7'}
@@ -1452,8 +1452,8 @@ function generateRailwayConfig(deployment: any): any {
       // Security (would be generated securely in real implementation)
       JWT_SECRET: deployment.configuration.jwtSecret || generateSecureSecret(32),
       JWT_REFRESH_SECRET: deployment.configuration.jwtRefreshSecret || generateSecureSecret(32),
-      CREDS_KEY: deployment.configuration.credsKey || generateSecureSecret(32),
-      CREDS_IV: deployment.configuration.credsIV || generateSecureSecret(16),
+      CREDS_KEY: deployment.configuration.credsKey || generateHexSecret(32),
+      CREDS_IV: deployment.configuration.credsIV || generateHexSecret(16),
       
       // API Keys
       OPENAI_API_KEY: deployment.configuration.openaiApiKey || "",
@@ -1480,12 +1480,24 @@ function generateRailwayConfig(deployment: any): any {
   };
 }
 
-// Generate secure random secrets
+// Generate secure random secrets (alphanumeric)
 function generateSecureSecret(length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Generate secure random hex strings for encryption keys
+// LibreChat requires: CREDS_KEY = 32 bytes (64 hex chars), CREDS_IV = 16 bytes (32 hex chars)
+function generateHexSecret(byteLength: number): string {
+  const hexChars = '0123456789abcdef';
+  let result = '';
+  // Each byte = 2 hex characters
+  for (let i = 0; i < byteLength * 2; i++) {
+    result += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
   }
   return result;
 }

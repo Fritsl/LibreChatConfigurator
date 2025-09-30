@@ -1,5 +1,150 @@
 [
   {
+    "id": "332a884b-fef2-42d7-8d95-c05ce221b059",
+    "configuration": {
+      "version": "1.2.8",
+      "cache": true,
+      "fileStrategy": "local",
+      "secureImageLinks": false,
+      "imageOutputType": "png",
+      "temporaryChatRetention": 720,
+      "titleConvo": false,
+      "redisPingInterval": 30000,
+      "minPasswordLength": 8,
+      "allowRegistration": true,
+      "allowEmailLogin": true,
+      "allowSocialLogin": false,
+      "allowSocialRegistration": false,
+      "allowPasswordReset": true,
+      "host": "0.0.0.0",
+      "port": 3080,
+      "debugLogging": true,
+      "jwtSecret": "",
+      "jwtRefreshSecret": "",
+      "credsKey": "",
+      "credsIV": "",
+      "sessionExpiry": 900000,
+      "refreshTokenExpiry": 604800000,
+      "mongoUri": "mongodb://127.0.0.1:27017/LibreChat",
+      "redisUri": "",
+      "mongoDbName": "LibreChat",
+      "openaiApiKey": "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",
+      "appTitle": "App Title",
+      "customFooter": "Footer Text",
+      "customWelcome": "Welcome Message",
+      "azureStoragePublicAccess": false,
+      "redisUseAlternativeDNSLookup": false,
+      "search": false,
+      "meiliNoAnalytics": true,
+      "limitConcurrentMessages": false,
+      "banViolations": false,
+      "allowSharedLinks": true,
+      "allowSharedLinksPublic": true,
+      "summaryConvo": false,
+      "nodeEnv": "production",
+      "noIndex": true,
+      "debugConsole": false,
+      "consoleJSON": false,
+      "registration": {
+        "socialLogins": [],
+        "allowedDomains": []
+      },
+      "fileConfig": {
+        "serverFileSizeLimit": 20,
+        "avatarSizeLimit": 5,
+        "clientImageResize": {
+          "enabled": true,
+          "maxWidth": 1920,
+          "maxHeight": 1080,
+          "quality": 0.8,
+          "compressFormat": "jpeg"
+        }
+      },
+      "webSearch": {
+        "searchProvider": "searxng",
+        "scraperType": "firecrawl",
+        "rerankerType": "jina",
+        "scraperTimeout": 7500,
+        "safeSearch": true,
+        "serperApiKey": "",
+        "searxngInstanceUrl": "http://localhost:8080",
+        "searxngApiKey": "",
+        "firecrawlApiKey": "",
+        "firecrawlApiUrl": "http://localhost:3000",
+        "jinaApiKey": "",
+        "cohereApiKey": "",
+        "braveApiKey": "",
+        "tavilyApiKey": "",
+        "jinaRerankerUrl": "http://localhost:8787"
+      },
+      "rateLimits": {
+        "fileUploads": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 60,
+          "userMax": 50,
+          "userWindowInMinutes": 60
+        },
+        "conversationsImport": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 60,
+          "userMax": 50,
+          "userWindowInMinutes": 60
+        },
+        "stt": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 1,
+          "userMax": 50,
+          "userWindowInMinutes": 1
+        },
+        "tts": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 1,
+          "userMax": 50,
+          "userWindowInMinutes": 1
+        }
+      },
+      "interface": {
+        "fileSearch": true,
+        "uploadAsText": false,
+        "privacyPolicy": {
+          "externalUrl": "",
+          "openNewTab": true
+        },
+        "termsOfService": {
+          "externalUrl": "",
+          "openNewTab": true,
+          "modalAcceptance": false,
+          "modalTitle": "",
+          "modalContent": ""
+        },
+        "endpointsMenu": true,
+        "modelSelect": true,
+        "parameters": true,
+        "sidePanel": true,
+        "presets": true,
+        "prompts": true,
+        "bookmarks": true,
+        "multiConvo": false,
+        "agents": true,
+        "peoplePicker": {
+          "users": true,
+          "groups": true,
+          "roles": true
+        },
+        "marketplace": {
+          "use": false
+        },
+        "fileCitations": true
+      },
+      "mcpServers": [],
+      "mongoRootUsername": "admin",
+      "mongoRootPassword": "password123",
+      "helpAndFAQURL": "Help & FAQ URL"
+    },
+    "timestamp": "2025-09-30T15:54:06.826Z",
+    "packageName": "My-LibreChat-Configuration"
+  },
+  {
     "id": "95fb6303-52b3-446e-9642-64c9743e2a1e",
     "configuration": {
       "version": "0.8.0-rc4",
@@ -1732,319 +1877,5 @@
     },
     "timestamp": "2025-09-26T09:57:38.414Z",
     "packageName": "SELF_TEST_PACKAGE_YAML"
-  },
-  {
-    "id": "fdfaac83-936d-4be9-b883-c14fd219436f",
-    "configuration": {
-      "version": "1.2.8",
-      "cache": true,
-      "fileStrategy": "local",
-      "secureImageLinks": false,
-      "imageOutputType": "png",
-      "temporaryChatRetention": 720,
-      "filteredTools": [
-        "dall-e"
-      ],
-      "includedTools": [
-        "calculator",
-        "web-search",
-        "stable-diffusion"
-      ],
-      "appTitle": "LibreChat",
-      "customWelcome": "",
-      "customFooter": "",
-      "helpAndFAQURL": "https://demo.librechat.ai/help",
-      "host": "localhost",
-      "port": 3080,
-      "nodeEnv": "production",
-      "domainClient": "https://demo.librechat.ai",
-      "domainServer": "https://api.demo.librechat.ai",
-      "noIndex": true,
-      "jwtSecret": "demo_jwt_secret_32_characters_long_abc123",
-      "jwtRefreshSecret": "demo_refresh_secret_32_chars_long_xyz789",
-      "credsKey": "demo_credentials_key_32_chars_ab",
-      "credsIV": "demo_creds_iv16_",
-      "minPasswordLength": 8,
-      "sessionExpiry": 900000,
-      "refreshTokenExpiry": 604800000,
-      "mongoUri": "mongodb://127.0.0.1:27017/LibreChat",
-      "mongoRootUsername": "demo_admin",
-      "mongoRootPassword": "demo_secure_password_123",
-      "mongoDbName": "LibreChat",
-      "redisUri": "",
-      "redisUsername": "demo_redis_user",
-      "redisPassword": "demo_redis_pass_123",
-      "redisKeyPrefix": "librechat_demo:",
-      "redisKeyPrefixVar": "LIBRECHAT_DEMO_PREFIX",
-      "redisMaxListeners": 15,
-      "redisPingInterval": 30000,
-      "redisUseAlternativeDNSLookup": false,
-      "allowRegistration": true,
-      "allowEmailLogin": true,
-      "allowSocialLogin": false,
-      "allowSocialRegistration": false,
-      "allowPasswordReset": true,
-      "emailService": "mailgun",
-      "emailUsername": "demo@librechat.ai",
-      "emailPassword": "demo_email_password_123",
-      "emailFrom": "noreply@demo.librechat.ai",
-      "emailFromName": "LibreChat Demo",
-      "mailgunApiKey": "demo_mailgun_key_123456789abcdef",
-      "mailgunDomain": "demo.librechat.ai",
-      "mailgunHost": "https://api.mailgun.net",
-      "googleClientId": "demo_google_client_id_123456789",
-      "googleClientSecret": "demo_google_client_secret_abcdef123456",
-      "googleCallbackURL": "https://demo.librechat.ai/oauth/google/callback",
-      "githubClientId": "demo_github_client_id_123456",
-      "githubClientSecret": "demo_github_client_secret_abcdef789",
-      "githubCallbackURL": "https://demo.librechat.ai/oauth/github/callback",
-      "discordClientId": "demo_discord_client_id_123456789",
-      "discordClientSecret": "demo_discord_client_secret_abcdef123",
-      "discordCallbackURL": "https://demo.librechat.ai/oauth/discord/callback",
-      "facebookClientId": "demo_facebook_client_id_123456789",
-      "facebookClientSecret": "demo_facebook_client_secret_abcdef",
-      "facebookCallbackURL": "https://demo.librechat.ai/oauth/facebook/callback",
-      "appleClientId": "demo.librechat.ai",
-      "applePrivateKey": "-----BEGIN PRIVATE KEY-----\nDEMO_APPLE_PRIVATE_KEY_CONTENT\n-----END PRIVATE KEY-----",
-      "appleKeyId": "DEMO123456",
-      "appleTeamId": "DEMOTEAM123",
-      "appleCallbackURL": "https://demo.librechat.ai/oauth/apple/callback",
-      "openidURL": "https://demo-oidc.librechat.ai",
-      "openidClientId": "demo_openid_client_123",
-      "openidClientSecret": "demo_openid_secret_abcdef123456",
-      "openidCallbackURL": "https://demo.librechat.ai/oauth/openid/callback",
-      "openidScope": "openid profile email",
-      "openidSessionSecret": "demo_openid_session_secret_123456789",
-      "openidIssuer": "https://demo-oidc.librechat.ai",
-      "openidButtonLabel": "Demo OIDC Login",
-      "openidImageURL": "https://demo.librechat.ai/oidc-logo.png",
-      "openaiApiKey": "sk-demo123456789abcdef123456789abcdef123456789abcdef",
-      "anthropicApiKey": "sk-ant-demo123456789abcdef123456789abcdef123456789",
-      "googleApiKey": "AIzaSyDemo123456789abcdef123456789abcdef123456",
-      "groqApiKey": "gsk_demo123456789abcdef123456789abcdef123456789abc",
-      "mistralApiKey": "demo_mistral_key_123456789abcdef123456789abcdef",
-      "deepseekApiKey": "sk-demo_deepseek_123456789abcdef123456789abcdef",
-      "perplexityApiKey": "pplx-demo123456789abcdef123456789abcdef123456789",
-      "fireworksApiKey": "fw-demo123456789abcdef123456789abcdef123456789ab",
-      "togetheraiApiKey": "demo_together_123456789abcdef123456789abcdef123",
-      "huggingfaceToken": "hf_demo123456789abcdef123456789abcdef123456789",
-      "xaiApiKey": "xai-demo123456789abcdef123456789abcdef123456789",
-      "nvidiaApiKey": "nvapi-demo123456789abcdef123456789abcdef123456",
-      "sambaNovaApiKey": "demo_samba_123456789abcdef123456789abcdef1234",
-      "hyperbolicApiKey": "demo_hyperbolic_123456789abcdef123456789abc",
-      "klusterApiKey": "demo_kluster_123456789abcdef123456789abcdef12",
-      "nanogptApiKey": "demo_nanogpt_123456789abcdef123456789abcdef1",
-      "glhfApiKey": "demo_glhf_123456789abcdef123456789abcdef12345",
-      "apipieApiKey": "demo_apipie_123456789abcdef123456789abcdef123",
-      "unifyApiKey": "demo_unify_123456789abcdef123456789abcdef1234",
-      "openrouterKey": "sk-or-demo123456789abcdef123456789abcdef123456",
-      "azureApiKey": "demo_azure_key_123456789abcdef123456789abcdef12",
-      "azureOpenaiApiInstanceName": "demo-openai-instance",
-      "azureOpenaiApiDeploymentName": "demo-gpt-4-deployment",
-      "azureOpenaiApiVersion": "2023-12-01-preview",
-      "azureOpenaiModels": "gpt-4,gpt-4-turbo,gpt-35-turbo",
-      "awsAccessKeyId": "AKIADEMO123456789ABCDEF",
-      "awsSecretAccessKey": "demo+aws+secret+key+123456789abcdefghijklmnop",
-      "awsRegion": "us-east-1",
-      "awsBedrockRegion": "us-west-2",
-      "awsEndpointURL": "https://bedrock-runtime.us-west-2.amazonaws.com",
-      "awsBucketName": "demo-librechat-storage",
-      "fileUploadPath": "/app/uploads",
-      "firebaseApiKey": "AIzaSyDemo_Firebase_Key_123456789abcdef123456",
-      "firebaseAuthDomain": "demo-librechat.firebaseapp.com",
-      "firebaseProjectId": "demo-librechat",
-      "firebaseStorageBucket": "demo-librechat.appspot.com",
-      "firebaseMessagingSenderId": "123456789012",
-      "firebaseAppId": "1:123456789012:web:demo123456789abcdef",
-      "azureStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=demolibrechat;AccountKey=demo+key+123==;EndpointSuffix=core.windows.net",
-      "azureStoragePublicAccess": false,
-      "azureContainerName": "demo-librechat-files",
-      "googleSearchApiKey": "AIzaSyDemo_Search_Key_123456789abcdef123456789",
-      "googleCSEId": "demo123456789abcdef:demo123456789",
-      "bingSearchApiKey": "demo_bing_search_key_123456789abcdef123456789",
-      "openweatherApiKey": "demo_weather_key_123456789abcdef123456789abc",
-      "librechatCodeApiKey": "demo_code_api_key_123456789abcdef123456789",
-      "braveApiKey": "BSA_demo_brave_search_key_123456789abcdef123456789",
-      "tavilyApiKey": "tvly-demo_tavily_search_key_123456789abcdef123456",
-      "serperApiKey": "demo_serper_api_key_123456789abcdef123456789abc",
-      "searxngInstanceUrl": "https://demo-searxng.librechat.ai",
-      "firecrawlApiKey": "fc-demo_firecrawl_key_123456789abcdef123456789",
-      "jinaApiKey": "jina_demo_reranker_key_123456789abcdef123456789",
-      "cohereApiKey": "demo_cohere_reranker_key_123456789abcdef123456",
-      "ragApiURL": "https://demo-rag.librechat.ai/api",
-      "ragOpenaiApiKey": "sk-demo_rag_openai_123456789abcdef123456789abc",
-      "ragPort": 8080,
-      "ragHost": "demo-rag.librechat.ai",
-      "collectionName": "demo_documents",
-      "chunkSize": 1000,
-      "chunkOverlap": 200,
-      "embeddingsProvider": "openai",
-      "search": false,
-      "meilisearchURL": "https://demo-search.librechat.ai",
-      "meilisearchMasterKey": "demo_meili_master_key_123456789abcdef123456",
-      "meiliNoAnalytics": true,
-      "limitConcurrentMessages": false,
-      "concurrentMessageMax": 3,
-      "banViolations": false,
-      "banDuration": 7200000,
-      "banInterval": 20,
-      "loginViolationScore": 1,
-      "registrationViolationScore": 1,
-      "concurrentViolationScore": 1,
-      "messageViolationScore": 1,
-      "nonBrowserViolationScore": 20,
-      "loginMax": 7,
-      "loginWindow": 5,
-      "ldapURL": "ldaps://demo-ldap.librechat.ai:636",
-      "ldapBindDN": "cn=admin,dc=demo,dc=librechat,dc=ai",
-      "ldapBindCredentials": "demo_ldap_password_123456789",
-      "ldapSearchBase": "ou=users,dc=demo,dc=librechat,dc=ai",
-      "ldapSearchFilter": "(uid={{username}})",
-      "turnstileSiteKey": "0x4AAAAAAADemo123456789abcdef",
-      "turnstileSecretKey": "0x4AAAAAAADemo_Secret_123456789abcdef123456",
-      "allowSharedLinks": true,
-      "allowSharedLinksPublic": true,
-      "titleConvo": false,
-      "summaryConvo": false,
-      "staticCacheMaxAge": 31536000,
-      "staticCacheSMaxAge": 31536000,
-      "indexCacheControl": "no-cache",
-      "indexPragma": "no-cache",
-      "indexExpires": "0",
-      "mcpOauthOnAuthError": "redirect",
-      "mcpOauthDetectionTimeout": 30000,
-      "uid": 1000,
-      "gid": 1000,
-      "debugLogging": true,
-      "debugConsole": false,
-      "consoleJSON": false,
-      "cdnProvider": "cloudflare",
-      "interface": {
-        "fileSearch": true,
-        "uploadAsText": false,
-        "privacyPolicy": {
-          "externalUrl": "",
-          "openNewTab": true
-        },
-        "termsOfService": {
-          "externalUrl": "",
-          "openNewTab": true,
-          "modalAcceptance": false,
-          "modalTitle": "",
-          "modalContent": ""
-        },
-        "endpointsMenu": true,
-        "modelSelect": true,
-        "parameters": true,
-        "sidePanel": true,
-        "presets": true,
-        "prompts": true,
-        "bookmarks": true,
-        "multiConvo": false,
-        "agents": true,
-        "peoplePicker": {
-          "users": true,
-          "groups": true,
-          "roles": true
-        },
-        "marketplace": {
-          "use": false
-        },
-        "fileCitations": true
-      },
-      "rateLimits": {
-        "fileUploads": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 60,
-          "userMax": 50,
-          "userWindowInMinutes": 60
-        },
-        "conversationsImport": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 60,
-          "userMax": 50,
-          "userWindowInMinutes": 60
-        },
-        "stt": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 1,
-          "userMax": 50,
-          "userWindowInMinutes": 1
-        },
-        "tts": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 1,
-          "userMax": 50,
-          "userWindowInMinutes": 1
-        }
-      },
-      "fileConfig": {
-        "serverFileSizeLimit": 20,
-        "avatarSizeLimit": 5,
-        "clientImageResize": {
-          "enabled": true,
-          "maxWidth": 1920,
-          "maxHeight": 1080,
-          "quality": 0.8,
-          "compressFormat": "jpeg"
-        }
-      },
-      "oauthProviders": {
-        "google": {
-          "enabled": false
-        },
-        "github": {
-          "enabled": false
-        },
-        "discord": {
-          "enabled": false
-        },
-        "facebook": {
-          "enabled": false
-        },
-        "apple": {
-          "enabled": false
-        },
-        "openid": {
-          "enabled": false
-        }
-      },
-      "meilisearchIntegration": {
-        "meilisearchURL": "",
-        "meilisearchMasterKey": "",
-        "meiliNoAnalytics": true
-      },
-      "cachingIntegration": {
-        "preset": "development",
-        "cache": true,
-        "staticCacheMaxAge": 3600,
-        "staticCacheSMaxAge": 3600,
-        "indexCacheControl": "no-cache, must-revalidate",
-        "indexPragma": "no-cache",
-        "indexExpires": "0"
-      },
-      "registration": {
-        "socialLogins": [],
-        "allowedDomains": []
-      },
-      "webSearch": {
-        "serperApiKey": "",
-        "searxngInstanceUrl": "",
-        "searxngApiKey": "",
-        "firecrawlApiKey": "",
-        "firecrawlApiUrl": "",
-        "jinaApiKey": "",
-        "cohereApiKey": "",
-        "braveApiKey": "",
-        "tavilyApiKey": "",
-        "searchProvider": "serper",
-        "scraperType": "serper",
-        "rerankerType": "jina",
-        "scraperTimeout": 10000,
-        "safeSearch": true
-      }
-    },
-    "timestamp": "2025-09-26T09:57:38.158Z",
-    "packageName": "SELF_TEST_PACKAGE"
   }
 ]

@@ -583,9 +583,27 @@ ${config.chunkOverlap ? `CHUNK_OVERLAP=${config.chunkOverlap}` : '# CHUNK_OVERLA
 ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}` : '# EMBEDDINGS_PROVIDER='}
 
 # =============================================================================
+# Web Search Configuration
+# =============================================================================
+${config.webSearch?.searchProvider ? `SEARCH=true` : '# SEARCH=true'}
+${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
+${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl || ''}` : '# SEARXNG_INSTANCE_URL='}
+${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
+${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
+${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
+${config.webSearch?.perplexityApiKey || config.webSearch?.searchProvider === 'perplexity' ? `PERPLEXITY_API_KEY=${config.webSearch.perplexityApiKey || ''}` : '# PERPLEXITY_API_KEY='}
+${config.webSearch?.googleSearchApiKey || config.webSearch?.searchProvider === 'google' ? `GOOGLE_SEARCH_API_KEY=${config.webSearch.googleSearchApiKey || ''}` : '# GOOGLE_SEARCH_API_KEY='}
+${config.webSearch?.googleCSEId && config.webSearch?.searchProvider === 'google' ? `GOOGLE_CSE_ID=${config.webSearch.googleCSEId}` : '# GOOGLE_CSE_ID='}
+${config.webSearch?.bingSearchApiKey || config.webSearch?.searchProvider === 'bing' ? `BING_SEARCH_API_KEY=${config.webSearch.bingSearchApiKey || ''}` : '# BING_SEARCH_API_KEY='}
+${config.webSearch?.firecrawlApiKey || config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_KEY=${config.webSearch.firecrawlApiKey || ''}` : '# FIRECRAWL_API_KEY='}
+${config.webSearch?.firecrawlApiUrl && config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_URL=${config.webSearch.firecrawlApiUrl}` : '# FIRECRAWL_API_URL='}
+${config.webSearch?.jinaApiKey || config.webSearch?.rerankerType === 'jina' ? `JINA_API_KEY=${config.webSearch.jinaApiKey || ''}` : '# JINA_API_KEY='}
+${config.webSearch?.jinaRerankerUrl && config.webSearch?.rerankerType === 'jina' ? `JINA_RERANKER_URL=${config.webSearch.jinaRerankerUrl}` : '# JINA_RERANKER_URL='}
+${config.webSearch?.cohereApiKey || config.webSearch?.rerankerType === 'cohere' ? `COHERE_API_KEY=${config.webSearch.cohereApiKey || ''}` : '# COHERE_API_KEY='}
+
+# =============================================================================
 # MeiliSearch Configuration
 # =============================================================================
-${config.search !== undefined ? `SEARCH=${config.search}` : '# SEARCH=true'}
 ${config.meilisearchURL ? `MEILISEARCH_URL=${config.meilisearchURL}` : '# MEILISEARCH_URL='}
 ${config.meilisearchMasterKey ? `MEILISEARCH_MASTER_KEY=${config.meilisearchMasterKey}` : '# MEILISEARCH_MASTER_KEY='}
 ${config.meiliNoAnalytics !== undefined ? `MEILI_NO_ANALYTICS=${config.meiliNoAnalytics}` : '# MEILI_NO_ANALYTICS=true'}
@@ -921,21 +939,26 @@ ${config.memory?.enabled ? `memory:
       max_tokens: 2000` : '# Memory system is disabled'}
 
 # Web Search Configuration
-${config.searchProvider ? `webSearch:
-  searchProvider: "${config.searchProvider.toLowerCase()}"
-  scraperType: "${config.searchScraper.toLowerCase()}"
-  rerankerType: "${config.searchReranker.toLowerCase()}"
-  safeSearch: ${config.searchSafeSearch ? 1 : 0}
-  scraperTimeout: ${config.searchTimeout}
-  serperApiKey: "\${SERPER_API_KEY}"
-  searxngApiKey: "\${SEARXNG_API_KEY}"
-  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"
-  braveApiKey: "\${BRAVE_API_KEY}"
-  tavilyApiKey: "\${TAVILY_API_KEY}"
-  perplexityApiKey: "\${PERPLEXITY_API_KEY}"
-  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"
-  jinaApiKey: "\${JINA_API_KEY}"
-  cohereApiKey: "\${COHERE_API_KEY}"` : '# Web search is not configured'}
+${config.webSearch?.searchProvider ? `webSearch:
+  searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper' ? `
+  serperApiKey: "\${SERPER_API_KEY}"` : ''}${config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng' ? `
+  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"` : ''}${config.webSearch.searxngApiKey && config.webSearch.searchProvider === 'searxng' ? `
+  searxngApiKey: "\${SEARXNG_API_KEY}"` : ''}${config.webSearch.braveApiKey || config.webSearch.searchProvider === 'brave' ? `
+  braveApiKey: "\${BRAVE_API_KEY}"` : ''}${config.webSearch.tavilyApiKey || config.webSearch.searchProvider === 'tavily' ? `
+  tavilyApiKey: "\${TAVILY_API_KEY}"` : ''}${config.webSearch.perplexityApiKey || config.webSearch.searchProvider === 'perplexity' ? `
+  perplexityApiKey: "\${PERPLEXITY_API_KEY}"` : ''}${config.webSearch.googleSearchApiKey || config.webSearch.searchProvider === 'google' ? `
+  googleSearchApiKey: "\${GOOGLE_SEARCH_API_KEY}"` : ''}${config.webSearch.googleCSEId && config.webSearch.searchProvider === 'google' ? `
+  googleCSEId: "\${GOOGLE_CSE_ID}"` : ''}${config.webSearch.bingSearchApiKey || config.webSearch.searchProvider === 'bing' ? `
+  bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType ? `
+  scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey || config.webSearch.scraperType === 'firecrawl' ? `
+  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.firecrawlApiUrl && config.webSearch.scraperType === 'firecrawl' ? `
+  firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType ? `
+  rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
+  jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.jinaRerankerUrl && config.webSearch.rerankerType === 'jina' ? `
+  jinaRerankerUrl: "\${JINA_RERANKER_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
+  cohereApiKey: "\${COHERE_API_KEY}"` : ''}${config.webSearch.scraperTimeout ? `
+  scraperTimeout: ${config.webSearch.scraperTimeout}` : ''}${config.webSearch.safeSearch !== undefined ? `
+  safeSearch: ${config.webSearch.safeSearch ? 1 : 0}` : ''}` : '# Web search is not configured'}
 
 # OCR Configuration
 ${config.ocrProvider ? `ocr:

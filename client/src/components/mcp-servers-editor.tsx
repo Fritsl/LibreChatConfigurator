@@ -74,7 +74,8 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
       type: "streamable-http",
       timeout: 30000,
       headers: {},
-      chatMenu: true
+      chatMenu: true,
+      serverInstructions: true
     };
     updateServers([...servers, newServer]);
   };

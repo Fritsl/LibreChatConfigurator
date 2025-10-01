@@ -427,9 +427,9 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <li>Visit the LibreChat Search Stack Generator</li>
                 <li>Configure your search setup (SearXNG + Jina AI + BGE Reranker)</li>
                 <li>Download the generated zip file with Docker scripts</li>
-                <li>Run the stack, then import the included <code className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 rounded text-xs font-mono">search-stack-config.json</code> here</li>
+                <li>Run the stack, then import the included <code className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 rounded text-xs font-mono">search-stack-config.json</code> via this app's Configuration menu (top bar → Merge)</li>
               </ol>
-              <div className="flex items-center gap-2 pt-2">
+              <div className="pt-2">
                 <Button
                   variant="default"
                   size="sm"
@@ -440,9 +440,6 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                   <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
                   Open LibreChat Search Stack Generator
                 </Button>
-                <span className="text-xs text-blue-700 dark:text-blue-300">
-                  Then use Configuration → Merge to import the JSON
-                </span>
               </div>
             </div>
           </div>

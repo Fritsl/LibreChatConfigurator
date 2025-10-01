@@ -4,7 +4,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Search, Globe, Zap, Shield, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
@@ -46,6 +47,11 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
     safeSearch: true,
     ...value
   });
+
+  // Password visibility state
+  const [showSearxngApiKey, setShowSearxngApiKey] = useState(false);
+  const [showFirecrawlApiKey, setShowFirecrawlApiKey] = useState(false);
+  const [showJinaApiKey, setShowJinaApiKey] = useState(false);
 
   // Sync internal state when value prop changes (e.g., from merge import)
   useEffect(() => {
@@ -116,15 +122,31 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
             </div>
             <div>
               <Label htmlFor="searxng-api-key">SearXNG API Key</Label>
-              <Input
-                id="searxng-api-key"
-                type="password"
-                value={config.searxngApiKey || ""}
-                onChange={(e) => updateConfig({ searxngApiKey: e.target.value })}
-                placeholder="Optional API key"
-                className="font-mono"
-                data-testid="input-searxng-api-key"
-              />
+              <div className="relative">
+                <Input
+                  id="searxng-api-key"
+                  type={showSearxngApiKey ? "text" : "password"}
+                  value={config.searxngApiKey || ""}
+                  onChange={(e) => updateConfig({ searxngApiKey: e.target.value })}
+                  placeholder="Optional API key"
+                  className="font-mono pr-10"
+                  data-testid="input-searxng-api-key"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowSearxngApiKey(!showSearxngApiKey)}
+                  data-testid="toggle-searxng-api-key-visibility"
+                >
+                  {showSearxngApiKey ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         );
@@ -253,15 +275,31 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <Zap className="h-3 w-3 inline mr-1" />
                 Firecrawl API Key *
               </Label>
-              <Input
-                id="firecrawl-api-key"
-                type="password"
-                value={config.firecrawlApiKey || ""}
-                onChange={(e) => updateConfig({ firecrawlApiKey: e.target.value })}
-                placeholder="Enter your Firecrawl API key"
-                className="font-mono"
-                data-testid="input-firecrawl-api-key"
-              />
+              <div className="relative">
+                <Input
+                  id="firecrawl-api-key"
+                  type={showFirecrawlApiKey ? "text" : "password"}
+                  value={config.firecrawlApiKey || ""}
+                  onChange={(e) => updateConfig({ firecrawlApiKey: e.target.value })}
+                  placeholder="Enter your Firecrawl API key"
+                  className="font-mono pr-10"
+                  data-testid="input-firecrawl-api-key"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowFirecrawlApiKey(!showFirecrawlApiKey)}
+                  data-testid="toggle-firecrawl-api-key-visibility"
+                >
+                  {showFirecrawlApiKey ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
             </div>
             <div>
               <Label htmlFor="firecrawl-api-url">Firecrawl API URL</Label>
@@ -305,15 +343,31 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <Zap className="h-3 w-3 inline mr-1" />
                 Jina Reranker API Key *
               </Label>
-              <Input
-                id="jina-api-key"
-                type="password"
-                value={config.jinaApiKey || ""}
-                onChange={(e) => updateConfig({ jinaApiKey: e.target.value })}
-                placeholder="Enter your Jina API key"
-                className="font-mono"
-                data-testid="input-jina-api-key"
-              />
+              <div className="relative">
+                <Input
+                  id="jina-api-key"
+                  type={showJinaApiKey ? "text" : "password"}
+                  value={config.jinaApiKey || ""}
+                  onChange={(e) => updateConfig({ jinaApiKey: e.target.value })}
+                  placeholder="Enter your Jina API key"
+                  className="font-mono pr-10"
+                  data-testid="input-jina-api-key"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowJinaApiKey(!showJinaApiKey)}
+                  data-testid="toggle-jina-api-key-visibility"
+                >
+                  {showJinaApiKey ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
             </div>
             <div>
               <Label htmlFor="jina-reranker-url">Jina Reranker URL</Label>

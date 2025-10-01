@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.5.1";
+export const TOOL_VERSION = "1.5.2";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-01",
-  changelog: "Updated LibreChat YAML config version from 1.2.8 to 1.2.9 (latest). Includes support for enhanced transaction system, MCP servers, and improved rate limiting."
+  changelog: "UX Enhancement: Added show/hide toggle (eye icon) for API key fields (SearXNG, Firecrawl, Jina) so users can verify their keys."
 } as const;
 
 // Helper function to get the tool's version string

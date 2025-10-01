@@ -708,7 +708,7 @@ function generateYamlFile(config: any): string {
 # LibreChat Configuration for v0.8.0-RC4
 # =============================================================================
 
-version: 1.2.8
+version: 1.2.9
 cache: ${config.cache}
 
 # MCP Servers Configuration

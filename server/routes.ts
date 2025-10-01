@@ -714,16 +714,26 @@ cache: ${config.cache}
 
 # MCP Servers Configuration
 mcpServers: ${
-  config.mcpServers && config.mcpServers.length > 0 
-    ? `\n${config.mcpServers.map((server: any) => {
-        let serverConfig = `  ${server.name}:
-    type: ${server.type}`;
+  config.mcpServers && typeof config.mcpServers === 'object' && Object.keys(config.mcpServers).length > 0
+    ? `\n${Object.entries(config.mcpServers).map(([serverName, server]: [string, any]) => {
+        let serverConfig = `  ${serverName}:\n    type: ${server.type || 'streamable-http'}`;
         
         if (server.url) {
           serverConfig += `\n    url: "${server.url}"`;
         }
         
-        serverConfig += `\n    timeout: ${server.timeout}`;
+        if (server.command) {
+          serverConfig += `\n    command: "${server.command}"`;
+        }
+        
+        if (server.args && server.args.length > 0) {
+          serverConfig += `\n    args:`;
+          server.args.forEach((arg: string) => {
+            serverConfig += `\n      - "${arg}"`;
+          });
+        }
+        
+        serverConfig += `\n    timeout: ${server.timeout || 30000}`;
         
         if (server.initTimeout) {
           serverConfig += `\n    initTimeout: ${server.initTimeout}`;
@@ -736,15 +746,20 @@ mcpServers: ${
           });
         }
         
-        if (server.env && Object.keys(server.env).length > 0) {
-          serverConfig += `\n    env:`;
-          Object.entries(server.env).forEach(([k, v]) => {
-            serverConfig += `\n      ${k}: "${v}"`;
-          });
+        if (server.serverInstructions !== undefined) {
+          if (typeof server.serverInstructions === 'boolean') {
+            serverConfig += `\n    serverInstructions: ${server.serverInstructions}`;
+          } else if (typeof server.serverInstructions === 'string') {
+            serverConfig += `\n    serverInstructions: |\n      ${server.serverInstructions.split('\n').join('\n      ')}`;
+          }
         }
         
-        if (server.instructions) {
-          serverConfig += `\n    serverInstructions: |\n      ${server.instructions.split('\n').join('\n      ')}`;
+        if (server.iconPath) {
+          serverConfig += `\n    iconPath: "${server.iconPath}"`;
+        }
+        
+        if (server.chatMenu !== undefined) {
+          serverConfig += `\n    chatMenu: ${server.chatMenu}`;
         }
         
         return serverConfig;
@@ -1289,7 +1304,7 @@ ${config.memoryEnabled !== false ? '- ✅ Memory System' : '- ❌ Memory System'
 - **STT**: ${config.rateLimitsSTT} per window
 
 ### MCP Servers
-${config.mcpServers && config.mcpServers.length > 0 ? config.mcpServers.map((server: any) => `- **${server.name}**: ${server.type} (${server.url || 'stdio'})`).join('\n') : 'No MCP servers configured'}
+${config.mcpServers && typeof config.mcpServers === 'object' && Object.keys(config.mcpServers).length > 0 ? Object.entries(config.mcpServers).map(([name, server]: [string, any]) => `- **${name}**: ${server.type || 'streamable-http'} (${server.url || server.command || 'stdio'})`).join('\n') : 'No MCP servers configured'}
 
 ## 🔧 Manual Configuration
 

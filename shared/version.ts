@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.5.2";
+export const TOOL_VERSION = "1.5.3";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-01",
-  changelog: "UX Enhancement: Added show/hide toggle (eye icon) for API key fields (SearXNG, Firecrawl, Jina) so users can verify their keys."
+  changelog: "Integration: Added prominent helper card on Web Search page linking to companion Docker Stack Generator tool (librechatlocalwebsearchstack.netlify.app) for easy local search setup."
 } as const;
 
 // Helper function to get the tool's version string

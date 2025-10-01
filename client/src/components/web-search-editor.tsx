@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff } from "lucide-react";
+import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff, ExternalLink, Info, Rocket } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
@@ -408,6 +408,47 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
 
   return (
     <div className="space-y-6">
+      {/* Docker Stack Helper Card */}
+      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Rocket className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-blue-900 dark:text-blue-100">Quick Setup for Docker Users</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-start gap-3">
+            <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="space-y-2 text-sm">
+              <p className="text-blue-900 dark:text-blue-100">
+                Setting up a local search stack in Docker can be complex. Use our companion tool to generate a ready-to-use configuration:
+              </p>
+              <ol className="list-decimal list-inside space-y-1 text-blue-800 dark:text-blue-200 ml-2">
+                <li>Visit the Docker Search Stack Generator</li>
+                <li>Configure your search setup (SearXNG + Jina AI + BGE Reranker)</li>
+                <li>Download the generated zip file with Docker scripts</li>
+                <li>Run the stack, then import the included <code className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 rounded text-xs font-mono">search-stack-config.json</code> here</li>
+              </ol>
+              <div className="flex items-center gap-2 pt-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => window.open('https://librechatlocalwebsearchstack.netlify.app', '_blank')}
+                  data-testid="button-open-docker-stack-tool"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                  Open Docker Stack Generator
+                </Button>
+                <span className="text-xs text-blue-700 dark:text-blue-300">
+                  Then use Configuration → Merge to import the JSON
+                </span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Search Provider Section */}
       <Card className="border-l-4 border-l-blue-500">
         <CardHeader className="pb-3">

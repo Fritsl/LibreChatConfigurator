@@ -413,7 +413,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Rocket className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <span className="text-blue-900 dark:text-blue-100">Quick Setup for Docker Users</span>
+            <span className="text-blue-900 dark:text-blue-100">Self-Hosted Search Stack Generator</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -421,12 +421,12 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
             <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div className="space-y-2 text-sm">
               <p className="text-blue-900 dark:text-blue-100">
-                Setting up a local search stack in Docker can be complex. Therefore I have made a companion tool to generate a ready-to-use configuration:
+                Setting up a self-hosted search stack can be complex. Therefore I have made a companion tool to generate a ready-to-use Docker Compose configuration:
               </p>
               <ol className="list-decimal list-inside space-y-1 text-blue-800 dark:text-blue-200 ml-2">
                 <li>Visit the LibreChat Search Stack Generator</li>
-                <li>Configure your search setup (SearXNG + Jina AI + BGE Reranker)</li>
-                <li>Download the generated zip file with Docker scripts</li>
+                <li>Configure your services (SearXNG + Jina AI Reader + BGE Reranker v2-m3)</li>
+                <li>Download the generated zip with Docker Compose files</li>
                 <li>Run the stack, then import the included <code className="px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 rounded text-xs font-mono">search-stack-config.json</code> via this app's Configuration menu (top bar → Merge)</li>
               </ol>
               <div className="pt-2">

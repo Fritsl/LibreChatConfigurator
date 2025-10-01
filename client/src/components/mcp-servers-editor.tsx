@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Plus, X, Server, Settings, Globe } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, X, Server, Settings, Globe, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface MCPServer {
@@ -289,17 +290,64 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
             <Separator />
 
             {/* Server Instructions */}
-            <div>
-              <Label htmlFor={`server-instructions-${serverIndex}`}>Server Instructions</Label>
-              <Textarea
-                id={`server-instructions-${serverIndex}`}
-                value={typeof server.serverInstructions === "string" ? server.serverInstructions : ""}
-                onChange={(e) => updateServer(serverIndex, { serverInstructions: e.target.value })}
-                placeholder="Detailed instructions for how the AI should use this MCP server..."
-                rows={4}
-                className="resize-y"
-                data-testid={`input-mcp-server-instructions-${serverIndex}`}
-              />
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>
+                    <strong className="text-foreground">Server Instructions</strong> tell the AI how to use this MCP server effectively.
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-xs ml-2">
+                    <li><strong>Auto-inject:</strong> LibreChat automatically generates instructions based on the server's capabilities (recommended for most cases)</li>
+                    <li><strong>Custom:</strong> Write specific instructions when you need fine-grained control over how the AI uses this server</li>
+                    <li><strong>None:</strong> Leave both unchecked if no instructions are needed</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={`auto-inject-instructions-${serverIndex}`}
+                  checked={server.serverInstructions === true}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      updateServer(serverIndex, { serverInstructions: true });
+                    } else {
+                      updateServer(serverIndex, { serverInstructions: undefined });
+                    }
+                  }}
+                  data-testid={`checkbox-auto-inject-instructions-${serverIndex}`}
+                />
+                <Label 
+                  htmlFor={`auto-inject-instructions-${serverIndex}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Auto-inject server instructions (recommended)
+                </Label>
+              </div>
+
+              {server.serverInstructions !== true && (
+                <div>
+                  <Label htmlFor={`server-instructions-${serverIndex}`}>Custom Instructions (optional)</Label>
+                  <Textarea
+                    id={`server-instructions-${serverIndex}`}
+                    value={typeof server.serverInstructions === "string" ? server.serverInstructions : ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      updateServer(serverIndex, { 
+                        serverInstructions: value.trim() === "" ? undefined : value 
+                      });
+                    }}
+                    placeholder="Enter detailed instructions for how the AI should use this MCP server..."
+                    rows={4}
+                    className="resize-y"
+                    data-testid={`input-mcp-server-instructions-${serverIndex}`}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Only use custom instructions if auto-inject doesn't meet your needs
+                  </p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

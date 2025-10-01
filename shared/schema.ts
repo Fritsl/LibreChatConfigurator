@@ -121,15 +121,19 @@ const webSearchSchema = z.object({
   firecrawlApiKey: z.string().optional(),
   firecrawlApiUrl: z.string().optional(),
   jinaApiKey: z.string().optional(),
+  jinaRerankerUrl: z.string().optional(),
   cohereApiKey: z.string().optional(),
   braveApiKey: z.string().optional(), // RC4 addition
   tavilyApiKey: z.string().optional(), // RC4 addition
   perplexityApiKey: z.string().optional(), // RC4 addition
+  googleSearchApiKey: z.string().optional(), // RC4 addition
+  googleCSEId: z.string().optional(), // RC4 addition
+  bingSearchApiKey: z.string().optional(), // RC4 addition
   
   // Provider Configuration
-  searchProvider: z.enum(["serper", "searxng", "brave", "tavily", "perplexity"]).default("serper"),
-  scraperType: z.enum(["firecrawl", "serper", "brave"]).default("serper"),
-  rerankerType: z.enum(["jina", "cohere"]).default("jina"),
+  searchProvider: z.enum(["none", "serper", "searxng", "brave", "tavily", "perplexity", "google", "bing"]).default("none"),
+  scraperType: z.enum(["none", "firecrawl", "serper", "brave"]).default("none"),
+  rerankerType: z.enum(["none", "jina", "cohere"]).default("none"),
   scraperTimeout: z.number().min(1000).max(60000).default(10000),
   safeSearch: z.boolean().default(true),
 }).optional();

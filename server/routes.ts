@@ -585,7 +585,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 # =============================================================================
 # Web Search Configuration
 # =============================================================================
-${config.webSearch?.searchProvider ? `SEARCH=true` : '# SEARCH=true'}
+${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
 ${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl || ''}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
@@ -923,7 +923,7 @@ ${config.memory?.enabled ? `memory:
       max_tokens: 2000` : '# Memory system is disabled'}
 
 # Web Search Configuration
-${config.webSearch?.searchProvider ? `webSearch:
+${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `webSearch:
   searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper' ? `
   serperApiKey: "\${SERPER_API_KEY}"` : ''}${config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng' ? `
   searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"` : ''}${config.webSearch.searxngApiKey && config.webSearch.searchProvider === 'searxng' ? `
@@ -933,10 +933,10 @@ ${config.webSearch?.searchProvider ? `webSearch:
   perplexityApiKey: "\${PERPLEXITY_API_KEY}"` : ''}${config.webSearch.googleSearchApiKey || config.webSearch.searchProvider === 'google' ? `
   googleSearchApiKey: "\${GOOGLE_SEARCH_API_KEY}"` : ''}${config.webSearch.googleCSEId && config.webSearch.searchProvider === 'google' ? `
   googleCSEId: "\${GOOGLE_CSE_ID}"` : ''}${config.webSearch.bingSearchApiKey || config.webSearch.searchProvider === 'bing' ? `
-  bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType ? `
+  bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
   scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey || config.webSearch.scraperType === 'firecrawl' ? `
   firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.firecrawlApiUrl && config.webSearch.scraperType === 'firecrawl' ? `
-  firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType ? `
+  firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
   rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
   jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.jinaRerankerUrl && config.webSearch.rerankerType === 'jina' ? `
   jinaRerankerUrl: "\${JINA_RERANKER_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `

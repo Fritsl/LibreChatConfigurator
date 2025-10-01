@@ -8,9 +8,9 @@ import { Search, Globe, Zap, Shield, Clock } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
-  searchProvider?: "serper" | "searxng" | "brave" | "tavily" | "perplexity" | "google" | "bing";
-  scraperType?: "firecrawl" | "serper" | "brave";
-  rerankerType?: "jina" | "cohere";
+  searchProvider?: "none" | "serper" | "searxng" | "brave" | "tavily" | "perplexity" | "google" | "bing";
+  scraperType?: "none" | "firecrawl" | "serper" | "brave";
+  rerankerType?: "none" | "jina" | "cohere";
   serperApiKey?: string;
   searxngInstanceUrl?: string;
   searxngApiKey?: string;
@@ -39,9 +39,9 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
   const isSyncingFromProp = useRef(false);
   
   const [config, setConfig] = useState<WebSearchConfig>({
-    searchProvider: "serper",
-    scraperType: "firecrawl", 
-    rerankerType: "jina",
+    searchProvider: "none",
+    scraperType: "none", 
+    rerankerType: "none",
     scraperTimeout: 30000,
     safeSearch: true,
     ...value
@@ -52,9 +52,9 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
     if (value) {
       isSyncingFromProp.current = true;
       setConfig({
-        searchProvider: "serper",
-        scraperType: "firecrawl", 
-        rerankerType: "jina",
+        searchProvider: "none",
+        scraperType: "none", 
+        rerankerType: "none",
         scraperTimeout: 30000,
         safeSearch: true,
         ...value
@@ -375,6 +375,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None (Disable Search)</SelectItem>
                 <SelectItem value="serper">Serper (Google Search API)</SelectItem>
                 <SelectItem value="google">Google Custom Search</SelectItem>
                 <SelectItem value="bing">Bing Search API</SelectItem>
@@ -411,6 +412,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None (No Scraping)</SelectItem>
                 <SelectItem value="firecrawl">Firecrawl (Advanced)</SelectItem>
                 <SelectItem value="serper">Serper (if using Serper search)</SelectItem>
                 <SelectItem value="brave">Brave (if using Brave search)</SelectItem>
@@ -443,6 +445,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None (No Reranking)</SelectItem>
                 <SelectItem value="jina">Jina AI Reranker</SelectItem>
                 <SelectItem value="cohere">Cohere Reranker</SelectItem>
               </SelectContent>

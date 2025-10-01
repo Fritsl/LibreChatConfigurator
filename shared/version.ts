@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.4.1";
+export const TOOL_VERSION = "1.5.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -30,8 +30,8 @@ export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
-  lastUpdated: "2025-09-30",
-  changelog: "Code cleanup: Removed duplicate REDIS_PING_INTERVAL, MIN_PASSWORD_LENGTH, and legacy search API key entries from .env generation."
+  lastUpdated: "2025-10-01",
+  changelog: "Optional Search Components: Added 'None' option for search provider, scraper, and reranker. Users can now selectively configure only what they need (e.g., search only without scraping/reranking)."
 } as const;
 
 // Helper function to get the tool's version string

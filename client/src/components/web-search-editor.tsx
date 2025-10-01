@@ -421,7 +421,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
             <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div className="space-y-2 text-sm">
               <p className="text-blue-900 dark:text-blue-100">
-                Setting up a local search stack in Docker can be complex. Use our companion tool to generate a ready-to-use configuration:
+                Setting up a local search stack in Docker can be complex. Therefore I have made a companion tool to generate a ready-to-use configuration:
               </p>
               <ol className="list-decimal list-inside space-y-1 text-blue-800 dark:text-blue-200 ml-2">
                 <li>Visit the Docker Search Stack Generator</li>

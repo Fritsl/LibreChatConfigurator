@@ -61,10 +61,11 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
     const serverObject: Record<string, MCPServer> = {};
     updatedServers.forEach((server, index) => {
       const serverName = server.name || `server-${index}`;
-      const { name, ...serverConfig } = server;
+      const { name, ...serverConfig} = server;
       serverObject[serverName] = serverConfig;
     });
     
+    console.log("[MCP Editor] Calling onChange with servers:", serverObject);
     onChange(serverObject);
   };
 

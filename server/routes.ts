@@ -159,9 +159,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["docker-compose.yml"] = generateDockerComposeFile(configuration);
       }
 
-      // Generate installation scripts
+      // Generate installation scripts (both Linux/macOS and Windows)
       if (includeFiles.includes("install-script")) {
         packageFiles["install_dockerimage.sh"] = generateDockerInstallScript(configuration);
+        packageFiles["install_dockerimage.bat"] = generateDockerInstallScriptWindows(configuration);
       }
 
       // Generate README.md
@@ -1132,6 +1133,86 @@ echo "🎉 Docker installation complete! Enjoy using LibreChat!"
 `;
 }
 
+function generateDockerInstallScriptWindows(config: any): string {
+  return `@echo off
+REM =============================================================================
+REM LibreChat Docker Installation Script
+REM Generated Configuration for v0.8.0-RC4
+REM =============================================================================
+
+echo 🚀 Starting LibreChat Docker installation...
+echo.
+
+REM Check if Docker is installed
+docker --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Docker is not installed. Please install Docker first.
+    echo Visit: https://docs.docker.com/get-docker/
+    pause
+    exit /b 1
+)
+
+REM Check if Docker Compose is installed
+docker-compose --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Docker Compose is not installed. Please install Docker Compose first.
+    echo Visit: https://docs.docker.com/compose/install/
+    pause
+    exit /b 1
+)
+
+echo ✅ Docker and Docker Compose are installed
+echo.
+
+REM Create necessary directories
+echo 📁 Creating directories...
+if not exist "logs" mkdir logs
+if not exist "uploads" mkdir uploads
+echo.
+
+REM Pull Docker images
+echo 📦 Pulling Docker images...
+docker-compose pull
+echo.
+
+REM Start services
+echo 🔄 Starting LibreChat services...
+docker-compose up -d
+echo.
+
+REM Wait for services to be ready
+echo ⏳ Waiting for services to start...
+timeout /t 30 /nobreak >nul
+echo.
+
+REM Check if services are running
+echo 🔍 Checking service health...
+docker-compose ps | findstr "Up" >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Some services failed to start. Check logs:
+    docker-compose logs
+    pause
+    exit /b 1
+)
+
+echo ✅ LibreChat is running successfully!
+echo.
+echo 🌐 Access your LibreChat instance at:
+echo    http://localhost:${config.port}
+echo.
+echo 📊 Service status:
+docker-compose ps
+echo.
+echo 📝 To view logs: docker-compose logs -f
+echo 🛑 To stop: docker-compose down
+echo 🔄 To restart: docker-compose restart
+echo.
+echo 🎉 Docker installation complete! Enjoy using LibreChat!
+echo.
+pause
+`;
+}
+
 
 function generateReadmeFile(config: any): string {
   return `# LibreChat Configuration
@@ -1143,8 +1224,9 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - \`.env\` - Environment variables configuration
 - \`librechat.yaml\` - Main LibreChat configuration file
 - \`docker-compose.yml\` - Docker services orchestration
-- \`install_dockerimage.sh\` - Docker-based installation script
-- \`profile.json\` - Configuration profile for easy re-import
+- \`install_dockerimage.sh\` - Installation script for Linux/macOS
+- \`install_dockerimage.bat\` - Installation script for Windows
+- \`LibreChatConfigSettings.json\` - Configuration profile for easy re-import
 - \`README.md\` - This documentation file
 
 ## 🚀 Quick Start
@@ -1155,9 +1237,16 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
    - Open ports: ${config.port}, 27017 (MongoDB)
 
 2. **Installation**
+
+   **Linux/macOS:**
    \`\`\`bash
    chmod +x install_dockerimage.sh
    ./install_dockerimage.sh
+   \`\`\`
+   
+   **Windows:**
+   \`\`\`cmd
+   install_dockerimage.bat
    \`\`\`
 
 3. **Access**

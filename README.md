@@ -115,6 +115,29 @@ npm start
 
 The app will build and serve on port 5000 in production mode.
 
+## Installing LibreChat with Generated Package
+
+After generating your LibreChat configuration package, extract the downloaded ZIP file and run the installation script:
+
+**Linux/macOS:**
+```bash
+chmod +x install_dockerimage.sh
+./install_dockerimage.sh
+```
+
+**Windows:**
+```cmd
+install_dockerimage.bat
+```
+
+Both scripts will:
+- Verify Docker and Docker Compose are installed
+- Create necessary directories
+- Pull and start LibreChat services
+- Display access information and management commands
+
+Access LibreChat at `http://localhost:3080` after installation completes.
+
 ## Features
 
 - **Progressive Disclosure**: Choose providers first, then see only relevant configuration fields

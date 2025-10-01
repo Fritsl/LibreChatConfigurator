@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.5.3";
+export const TOOL_VERSION = "1.5.4";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-01",
-  changelog: "Integration: Added prominent helper card on Web Search page linking to companion Docker Stack Generator tool (librechatlocalwebsearchstack.netlify.app) for easy local search setup."
+  changelog: "Cross-Platform Support: Added Windows batch script (install_dockerimage.bat) alongside Linux/macOS shell script for complete OS coverage. Updated documentation and package generation."
 } as const;
 
 // Helper function to get the tool's version string

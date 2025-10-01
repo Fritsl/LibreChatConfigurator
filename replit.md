@@ -8,6 +8,10 @@ The system implements a full-stack architecture with React frontend, Express bac
 
 Preferred communication style: Simple, everyday language.
 
+## Development Notes
+
+**Cross-Platform Installation Scripts**: Always maintain both `install_dockerimage.sh` (Linux/macOS) and `install_dockerimage.bat` (Windows) in parallel. Any changes to installation logic must be applied to both files to ensure consistent experience across all operating systems.
+
 # System Architecture
 
 ## CRITICAL DESIGN PRINCIPLE

@@ -109,28 +109,28 @@ export function useConfiguration() {
     openidImageURL: "https://demo.librechat.ai/oidc-logo.png",
     
     // Core AI APIs
-    openaiApiKey: "sk-demo123456789abcdef123456789abcdef123456789abcdef",
-    anthropicApiKey: "sk-ant-demo123456789abcdef123456789abcdef123456789",
-    googleApiKey: "AIzaSyDemo123456789abcdef123456789abcdef123456",
-    groqApiKey: "gsk_demo123456789abcdef123456789abcdef123456789abc",
-    mistralApiKey: "demo_mistral_key_123456789abcdef123456789abcdef",
+    openaiApiKey: "demo-openai-key-123456789abcdef123456789abcdef123456789abcdef",
+    anthropicApiKey: "demo-anthropic-key-123456789abcdef123456789abcdef123456789",
+    googleApiKey: "demo-google-key-123456789abcdef123456789abcdef123456",
+    groqApiKey: "demo-groq-key-123456789abcdef123456789abcdef123456789abc",
+    mistralApiKey: "demo-mistral-key-123456789abcdef123456789abcdef",
     
     // Extended AI APIs
-    deepseekApiKey: "sk-demo_deepseek_123456789abcdef123456789abcdef",
-    perplexityApiKey: "pplx-demo123456789abcdef123456789abcdef123456789",
-    fireworksApiKey: "fw-demo123456789abcdef123456789abcdef123456789ab",
-    togetheraiApiKey: "demo_together_123456789abcdef123456789abcdef123",
-    huggingfaceToken: "hf_demo123456789abcdef123456789abcdef123456789",
-    xaiApiKey: "xai-demo123456789abcdef123456789abcdef123456789",
-    nvidiaApiKey: "nvapi-demo123456789abcdef123456789abcdef123456",
-    sambaNovaApiKey: "demo_samba_123456789abcdef123456789abcdef1234",
-    hyperbolicApiKey: "demo_hyperbolic_123456789abcdef123456789abc",
-    klusterApiKey: "demo_kluster_123456789abcdef123456789abcdef12",
-    nanogptApiKey: "demo_nanogpt_123456789abcdef123456789abcdef1",
-    glhfApiKey: "demo_glhf_123456789abcdef123456789abcdef12345",
-    apipieApiKey: "demo_apipie_123456789abcdef123456789abcdef123",
-    unifyApiKey: "demo_unify_123456789abcdef123456789abcdef1234",
-    openrouterKey: "sk-or-demo123456789abcdef123456789abcdef123456",
+    deepseekApiKey: "demo-deepseek-key-123456789abcdef123456789abcdef",
+    perplexityApiKey: "demo-perplexity-key-123456789abcdef123456789abcdef123456789",
+    fireworksApiKey: "demo-fireworks-key-123456789abcdef123456789abcdef123456789ab",
+    togetheraiApiKey: "demo-togetherai-key-123456789abcdef123456789abcdef123",
+    huggingfaceToken: "demo-huggingface-token-123456789abcdef123456789abcdef123456789",
+    xaiApiKey: "demo-xai-key-123456789abcdef123456789abcdef123456789",
+    nvidiaApiKey: "demo-nvidia-key-123456789abcdef123456789abcdef123456",
+    sambaNovaApiKey: "demo-samba-key-123456789abcdef123456789abcdef1234",
+    hyperbolicApiKey: "demo-hyperbolic-key-123456789abcdef123456789abc",
+    klusterApiKey: "demo-kluster-key-123456789abcdef123456789abcdef12",
+    nanogptApiKey: "demo-nanogpt-key-123456789abcdef123456789abcdef1",
+    glhfApiKey: "demo-glhf-key-123456789abcdef123456789abcdef12345",
+    apipieApiKey: "demo-apipie-key-123456789abcdef123456789abcdef123",
+    unifyApiKey: "demo-unify-key-123456789abcdef123456789abcdef1234",
+    openrouterKey: "demo-openrouter-key-123456789abcdef123456789abcdef123456",
     
     // Azure OpenAI
     azureApiKey: "demo_azure_key_123456789abcdef123456789abcdef12",
@@ -149,7 +149,7 @@ export function useConfiguration() {
     
     // File Storage
     fileUploadPath: "/app/uploads",
-    firebaseApiKey: "AIzaSyDemo_Firebase_Key_123456789abcdef123456",
+    firebaseApiKey: "demo-firebase-key-123456789abcdef123456",
     firebaseAuthDomain: "demo-librechat.firebaseapp.com",
     firebaseProjectId: "demo-librechat",
     firebaseStorageBucket: "demo-librechat.appspot.com",
@@ -160,7 +160,7 @@ export function useConfiguration() {
     azureContainerName: "demo-librechat-files",
     
     // Search & APIs  
-    googleSearchApiKey: "AIzaSyDemo_Search_Key_123456789abcdef123456789",
+    googleSearchApiKey: "demo-google-search-key-123456789abcdef123456789",
     googleCSEId: "demo123456789abcdef:demo123456789",
     bingSearchApiKey: "demo_bing_search_key_123456789abcdef123456789",
     openweatherApiKey: "demo_weather_key_123456789abcdef123456789abc",

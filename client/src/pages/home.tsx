@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { defaultConfiguration } from "@/lib/configuration-defaults";
 import { createResetConfiguration } from "@/lib/librechat-defaults";
 import { deepMerge } from "@/lib/merge-utils";
-import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info } from "lucide-react";
+import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"; 
@@ -27,7 +27,7 @@ export default function Home() {
   const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [showMergeResults, setShowMergeResults] = useState(false);
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
-  const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
+  const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration, clearDraft, lastSaved } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
 
@@ -507,6 +507,17 @@ export default function Home() {
     });
   };
 
+  const handleClearDraft = () => {
+    if (confirm("Are you sure you want to clear the auto-saved draft? This will reset all configuration fields to defaults.")) {
+      clearDraft();
+      setConfigurationName("My LibreChat Configuration");
+      toast({
+        title: "Draft Cleared",
+        description: "Auto-saved draft has been cleared. All fields reset to defaults.",
+      });
+    }
+  };
+
   const handleRunSelfTest = () => {
     setShowSelfTestConfirmation(true);
   };
@@ -793,6 +804,14 @@ export default function Home() {
                   placeholder="Enter configuration name..."
                   data-testid="input-config-name"
                 />
+                {lastSaved && (
+                  <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400" data-testid="autosave-indicator">
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    <span className="whitespace-nowrap">
+                      Draft saved {new Date().getTime() - lastSaved.getTime() < 5000 ? 'just now' : `${Math.floor((new Date().getTime() - lastSaved.getTime()) / 1000 / 60)}m ago`}
+                    </span>
+                  </div>
+                )}
               </div>
               
               {/* Configuration Management Dropdown */}
@@ -821,6 +840,10 @@ export default function Home() {
                   <DropdownMenuItem onClick={handleRunSelfTest} data-testid="menu-self-test">
                     <TestTube className="h-4 w-4 mr-2" />
                     Run Comprehensive Self-Test
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleClearDraft} data-testid="menu-clear-draft" className="text-orange-600 dark:text-orange-400">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Clear Auto-Saved Draft
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleImportProfile} data-testid="menu-import-profile">

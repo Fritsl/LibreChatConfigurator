@@ -386,6 +386,7 @@ export function useConfiguration() {
   });
 
   const updateConfiguration = (updates: Partial<Configuration>) => {
+    console.log("[Config Hook] updateConfiguration called with:", Object.keys(updates), updates);
     setConfiguration(prev => ({ ...prev, ...updates }));
   };
 
@@ -397,6 +398,10 @@ export function useConfiguration() {
   };
 
   const generatePackage = async (request: Omit<PackageGenerationRequest, "configuration">) => {
+    console.log("[Config Hook] generatePackage called with configuration:", { 
+      mcpServers: configuration.mcpServers,
+      totalKeys: Object.keys(configuration).length 
+    });
     return generatePackageMutation.mutateAsync({
       ...request,
       configuration,

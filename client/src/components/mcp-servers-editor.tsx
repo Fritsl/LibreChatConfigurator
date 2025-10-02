@@ -65,7 +65,6 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
       serverObject[serverName] = serverConfig;
     });
     
-    console.log("[MCP Editor] Calling onChange with servers:", serverObject);
     onChange(serverObject);
   };
 

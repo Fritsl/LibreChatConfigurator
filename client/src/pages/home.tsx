@@ -323,10 +323,6 @@ export default function Home() {
               throw new Error("Invalid configuration format: missing configuration data");
             }
 
-            console.log("🔀 [MERGE DEBUG] Merging configuration:");
-            console.log("   - Current config keys:", Object.keys(configuration));
-            console.log("   - Incoming config keys:", Object.keys(profileData.configuration));
-            
             // Collect imported field names for display
             const importedFields = Object.keys(profileData.configuration);
             
@@ -369,13 +365,14 @@ export default function Home() {
               return; // Don't proceed with merge
             }
             
-            // Deep merge the incoming configuration with existing configuration
-            const mergedConfig = deepMerge(configuration, profileData.configuration);
+            // Full import - replace entire configuration with incoming data
+            // Update configuration name from imported file
+            if (profileData.name) {
+              setConfigurationName(profileData.name);
+            }
             
-            console.log("   - Merged config keys:", Object.keys(mergedConfig));
-            
-            // Apply the merged configuration
-            updateConfiguration(mergedConfig);
+            // Apply the incoming configuration as complete replacement
+            updateConfiguration(profileData.configuration, true);
             
             // Show detailed merge results
             setMergeDetails({
@@ -848,7 +845,13 @@ export default function Home() {
               <div className="h-6 border-l border-border mx-2"></div>
               
               {/* Configuration History */}
-              <ConfigurationHistory onConfigurationLoad={updateConfiguration} />
+              <ConfigurationHistory onConfigurationLoad={(loadedData) => {
+                // Full replacement of configuration and name
+                if (loadedData.packageName) {
+                  setConfigurationName(loadedData.packageName);
+                }
+                updateConfiguration(loadedData.configuration || loadedData, true);
+              }} />
               
               {/* Package Generation Dropdown */}
               <DropdownMenu>

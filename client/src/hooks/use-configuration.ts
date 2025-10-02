@@ -385,9 +385,14 @@ export function useConfiguration() {
     },
   });
 
-  const updateConfiguration = (updates: Partial<Configuration>) => {
-    console.log("[Config Hook] updateConfiguration called with:", Object.keys(updates), updates);
-    setConfiguration(prev => ({ ...prev, ...updates }));
+  const updateConfiguration = (updates: Partial<Configuration>, replace: boolean = false) => {
+    if (replace) {
+      // Full replacement - use updates as the complete configuration
+      setConfiguration(updates as Configuration);
+    } else {
+      // Merge mode - update only specified fields
+      setConfiguration(prev => ({ ...prev, ...updates }));
+    }
   };
 
   const saveProfile = async (profileData: Omit<InsertConfigurationProfile, "configuration">) => {
@@ -398,10 +403,6 @@ export function useConfiguration() {
   };
 
   const generatePackage = async (request: Omit<PackageGenerationRequest, "configuration">) => {
-    console.log("[Config Hook] generatePackage called with configuration:", { 
-      mcpServers: configuration.mcpServers,
-      totalKeys: Object.keys(configuration).length 
-    });
     return generatePackageMutation.mutateAsync({
       ...request,
       configuration,

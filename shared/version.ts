@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.5.5";
+export const TOOL_VERSION = "1.6.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -30,8 +30,8 @@ export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
-  lastUpdated: "2025-10-01",
-  changelog: "Wording Update: Changed helper card text to reflect individual creator (Frits) rather than corporate 'we/our' language."
+  lastUpdated: "2025-10-02",
+  changelog: "Auto-save: Configuration now automatically saves to browser storage, preventing data loss on tab close, page refresh, or screen lock."
 } as const;
 
 // Helper function to get the tool's version string

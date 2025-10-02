@@ -507,7 +507,6 @@ export default function Home() {
     });
   };
 
-
   const handleRunSelfTest = () => {
     setShowSelfTestConfirmation(true);
   };

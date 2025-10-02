@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Configuration, type InsertConfigurationProfile, type PackageGenerationRequest } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -347,10 +347,10 @@ export function useConfiguration() {
   });
 
   const [configuration, setConfiguration] = useState<Configuration>(fallbackConfiguration);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     if (defaultConfiguration) {
+      // Merge backend configuration with fallback to preserve all fields
       setConfiguration(prev => ({
         ...prev,
         ...defaultConfiguration as Configuration
@@ -358,6 +358,7 @@ export function useConfiguration() {
     }
   }, [defaultConfiguration]);
 
+  // Save configuration profile
   const saveProfileMutation = useMutation({
     mutationFn: async (profile: InsertConfigurationProfile) => {
       const response = await apiRequest("POST", "/api/profiles", profile);
@@ -365,7 +366,6 @@ export function useConfiguration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
-      setHasUnsavedChanges(false);
     },
   });
 
@@ -393,7 +393,6 @@ export function useConfiguration() {
       // Merge mode - update only specified fields
       setConfiguration(prev => ({ ...prev, ...updates }));
     }
-    setHasUnsavedChanges(true);
   };
 
   const saveProfile = async (profileData: Omit<InsertConfigurationProfile, "configuration">) => {
@@ -434,7 +433,6 @@ export function useConfiguration() {
     
     console.log("🎯 [DEMO CONFIG] Loading demo configuration with", Object.keys(demoConfig).length, "top-level fields");
     setConfiguration(demoConfig);
-    setHasUnsavedChanges(true);
     return demoConfig;
   };
 
@@ -496,20 +494,6 @@ export function useConfiguration() {
     console.log("🔍 [ENHANCED VERIFICATION]", verification);
     return verification;
   };
-
-  // Warn user before closing if they have unsaved changes
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = '';
-        return '';
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges]);
 
   return {
     configuration,

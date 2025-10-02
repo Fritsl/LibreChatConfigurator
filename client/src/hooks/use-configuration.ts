@@ -346,103 +346,18 @@ export function useConfiguration() {
     queryKey: ["/api/configuration/default"],
   });
 
-  const LOCAL_STORAGE_KEY = "librechatConfiguratorConfig";
-  const LOCAL_STORAGE_DEFAULTS_APPLIED_KEY = "librechatConfiguratorDefaultsApplied";
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [configuration, setConfiguration] = useState<Configuration>(fallbackConfiguration);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Check if we've already applied backend defaults in a previous session
-  const [hasBackendDefaults] = useState(() => {
-    try {
-      return localStorage.getItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
-
-  // Initialize configuration from localStorage or fallback
-  const [configuration, setConfiguration] = useState<Configuration>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed;
-      }
-      return fallbackConfiguration;
-    } catch {
-      return fallbackConfiguration;
-    }
-  });
-
-  // Set lastSaved timestamp on mount if data was loaded from localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        setLastSaved(new Date());
-      }
-    } catch {
-      // Ignore errors
+    if (defaultConfiguration) {
+      setConfiguration(prev => ({
+        ...prev,
+        ...defaultConfiguration as Configuration
+      }));
     }
-  }, []);
+  }, [defaultConfiguration]);
 
-  // Fallback timeout: Enable autosave after 5 seconds if defaults haven't loaded
-  // This prevents permanent autosave disable when backend is down
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const defaultsProcessed = localStorage.getItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY) === "true";
-      if (!defaultsProcessed) {
-        console.warn("Backend defaults did not load within 5 seconds, enabling autosave anyway");
-        try {
-          localStorage.setItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY, "true");
-        } catch {
-          // Ignore errors
-        }
-      }
-    }, 5000);
-    
-    return () => clearTimeout(timeoutId);
-  }, []);
-
-  // Apply backend defaults if we haven't already AND localStorage is empty
-  useEffect(() => {
-    if (defaultConfiguration && !hasBackendDefaults) {
-      try {
-        // Double-check localStorage is truly empty at merge time
-        // This prevents overwriting user edits if defaults arrive late
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (!saved) {
-          // Merge backend defaults - defaults first, then prev to preserve any user changes
-          setConfiguration(prev => ({
-            ...defaultConfiguration as Configuration,
-            ...prev
-          }));
-        }
-        // Mark that we've checked defaults (whether we applied them or not)
-        localStorage.setItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY, "true");
-      } catch {
-        // Ignore errors
-      }
-    }
-  }, [defaultConfiguration, hasBackendDefaults]);
-
-  // Autosave to localStorage on configuration change
-  // Only run after we've attempted to apply backend defaults
-  useEffect(() => {
-    // Check if we've processed defaults yet
-    const defaultsProcessed = localStorage.getItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY) === "true";
-    if (!defaultsProcessed) {
-      return; // Wait for defaults to be processed first
-    }
-    
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(configuration));
-      setLastSaved(new Date());
-    } catch (error) {
-      console.warn("Failed to save configuration to localStorage:", error);
-    }
-  }, [configuration]);
-
-  // Save configuration profile
   const saveProfileMutation = useMutation({
     mutationFn: async (profile: InsertConfigurationProfile) => {
       const response = await apiRequest("POST", "/api/profiles", profile);
@@ -450,6 +365,7 @@ export function useConfiguration() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profiles"] });
+      setHasUnsavedChanges(false);
     },
   });
 
@@ -477,6 +393,7 @@ export function useConfiguration() {
       // Merge mode - update only specified fields
       setConfiguration(prev => ({ ...prev, ...updates }));
     }
+    setHasUnsavedChanges(true);
   };
 
   const saveProfile = async (profileData: Omit<InsertConfigurationProfile, "configuration">) => {
@@ -517,6 +434,7 @@ export function useConfiguration() {
     
     console.log("🎯 [DEMO CONFIG] Loading demo configuration with", Object.keys(demoConfig).length, "top-level fields");
     setConfiguration(demoConfig);
+    setHasUnsavedChanges(true);
     return demoConfig;
   };
 
@@ -579,23 +497,19 @@ export function useConfiguration() {
     return verification;
   };
 
-  const clearDraft = () => {
-    try {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-      localStorage.removeItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY);
-      setLastSaved(null);
-      
-      // Apply backend defaults if available, otherwise use fallback
-      if (defaultConfiguration) {
-        setConfiguration(defaultConfiguration as Configuration);
-        localStorage.setItem(LOCAL_STORAGE_DEFAULTS_APPLIED_KEY, "true");
-      } else {
-        setConfiguration(fallbackConfiguration);
+  // Warn user before closing if they have unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
       }
-    } catch (error) {
-      console.warn("Failed to clear draft from localStorage:", error);
-    }
-  };
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
   return {
     configuration,
@@ -606,8 +520,6 @@ export function useConfiguration() {
     loadDemoConfiguration,
     verifyConfiguration,
     createDemoConfiguration,
-    clearDraft,
-    lastSaved,
     isLoading,
     isSaving: saveProfileMutation.isPending,
     isGenerating: generatePackageMutation.isPending,

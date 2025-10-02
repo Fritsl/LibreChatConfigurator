@@ -127,6 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const packageName = req.body?.packageName;
       
       console.log("🎯 [SINGLE SOURCE] Using raw frontend data - customFooter:", JSON.stringify(rawConfiguration?.customFooter));
+      console.log("[Backend] Received mcpServers:", JSON.stringify(rawConfiguration?.mcpServers));
       
       if (!rawConfiguration) {
         return res.status(400).json({ 
@@ -715,6 +716,7 @@ cache: ${config.cache}
 # MCP Servers Configuration
 mcpServers: ${
   (() => {
+    console.log('[YAML Gen] mcpServers data:', JSON.stringify(config.mcpServers));
     if (!config.mcpServers) return '{}';
     
     // Handle both array and object formats

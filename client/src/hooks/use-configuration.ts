@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Configuration, type InsertConfigurationProfile, type PackageGenerationRequest } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -341,22 +341,48 @@ export function useConfiguration() {
     },
   });
   
+  const LOCAL_STORAGE_KEY = "librechat_configurator_config";
+
+  // Track whether localStorage had data at initialization (using ref to avoid hook order issues)
+  const hasCheckedInitialStorage = useRef(!!localStorage.getItem(LOCAL_STORAGE_KEY));
+
+  // Initialize configuration from localStorage or fallback (MUST be before other hooks)
+  const [configuration, setConfiguration] = useState<Configuration>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed;
+      }
+      return fallbackConfiguration;
+    } catch {
+      return fallbackConfiguration;
+    }
+  });
+
   // Get default configuration
   const { data: defaultConfiguration, isLoading } = useQuery({
     queryKey: ["/api/configuration/default"],
   });
 
-  const [configuration, setConfiguration] = useState<Configuration>(fallbackConfiguration);
-
+  // Apply backend defaults for first-time users BEFORE auto-save
   useEffect(() => {
-    if (defaultConfiguration) {
-      // Merge backend configuration with fallback to preserve all fields
-      setConfiguration(prev => ({
-        ...prev,
-        ...defaultConfiguration as Configuration
-      }));
+    if (defaultConfiguration && !hasCheckedInitialStorage.current) {
+      // First-time user: apply backend defaults (overwrite fallback)
+      setConfiguration(defaultConfiguration as Configuration);
+      // Mark as initialized so this only runs once
+      hasCheckedInitialStorage.current = true;
     }
   }, [defaultConfiguration]);
+
+  // Auto-save configuration to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(configuration));
+    } catch {
+      // Fail silently on localStorage errors
+    }
+  }, [configuration]);
 
   // Save configuration profile
   const saveProfileMutation = useMutation({

@@ -42,6 +42,7 @@ Preferred communication style: Simple, everyday language.
 - **Category Organization**: Settings organized into 17 logical categories (Server, Security, Database, UI/Visibility, etc.)
 - **Profile System**: Save and load configuration profiles with versioning support
 - **Real-time Validation**: Client and server-side validation with detailed error reporting
+- **Auto-Persistence**: Configuration automatically saved to browser localStorage to prevent data loss on page refresh, tab close, or screen lock
 
 ## Data Storage Solutions
 - **Current**: Memory-based storage using Map data structures

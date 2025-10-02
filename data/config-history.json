@@ -1,5 +1,148 @@
 [
   {
+    "id": "d516990c-0c53-451a-b325-3f732567bfd2",
+    "configuration": {
+      "version": "1.2.8",
+      "cache": true,
+      "fileStrategy": "local",
+      "secureImageLinks": false,
+      "imageOutputType": "png",
+      "temporaryChatRetention": 720,
+      "titleConvo": false,
+      "redisPingInterval": 30000,
+      "minPasswordLength": 8,
+      "allowRegistration": true,
+      "allowEmailLogin": true,
+      "allowSocialLogin": false,
+      "allowSocialRegistration": false,
+      "allowPasswordReset": true,
+      "host": "0.0.0.0",
+      "port": 3080,
+      "debugLogging": true,
+      "jwtSecret": "",
+      "jwtRefreshSecret": "",
+      "credsKey": "",
+      "credsIV": "",
+      "sessionExpiry": 900000,
+      "refreshTokenExpiry": 604800000,
+      "mongoUri": "mongodb://127.0.0.1:27017/LibreChat",
+      "redisUri": "",
+      "mongoDbName": "LibreChat",
+      "openaiApiKey": "",
+      "appTitle": "LibreChat",
+      "customFooter": "",
+      "customWelcome": "",
+      "azureStoragePublicAccess": false,
+      "redisUseAlternativeDNSLookup": false,
+      "search": false,
+      "meiliNoAnalytics": true,
+      "limitConcurrentMessages": false,
+      "banViolations": false,
+      "allowSharedLinks": true,
+      "allowSharedLinksPublic": true,
+      "summaryConvo": false,
+      "nodeEnv": "production",
+      "noIndex": true,
+      "debugConsole": false,
+      "consoleJSON": false,
+      "registration": {
+        "socialLogins": [],
+        "allowedDomains": []
+      },
+      "fileConfig": {
+        "serverFileSizeLimit": 20,
+        "avatarSizeLimit": 5,
+        "clientImageResize": {
+          "enabled": true,
+          "maxWidth": 1920,
+          "maxHeight": 1080,
+          "quality": 0.8,
+          "compressFormat": "jpeg"
+        }
+      },
+      "webSearch": {
+        "serperApiKey": "",
+        "searxngInstanceUrl": "",
+        "searxngApiKey": "",
+        "firecrawlApiKey": "",
+        "firecrawlApiUrl": "",
+        "jinaApiKey": "",
+        "cohereApiKey": "",
+        "braveApiKey": "",
+        "tavilyApiKey": "",
+        "searchProvider": "serper",
+        "scraperType": "serper",
+        "rerankerType": "jina",
+        "scraperTimeout": 10000,
+        "safeSearch": true
+      },
+      "rateLimits": {
+        "fileUploads": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 60,
+          "userMax": 50,
+          "userWindowInMinutes": 60
+        },
+        "conversationsImport": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 60,
+          "userMax": 50,
+          "userWindowInMinutes": 60
+        },
+        "stt": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 1,
+          "userMax": 50,
+          "userWindowInMinutes": 1
+        },
+        "tts": {
+          "ipMax": 100,
+          "ipWindowInMinutes": 1,
+          "userMax": 50,
+          "userWindowInMinutes": 1
+        }
+      },
+      "interface": {
+        "fileSearch": true,
+        "uploadAsText": false,
+        "privacyPolicy": {
+          "externalUrl": "",
+          "openNewTab": true
+        },
+        "termsOfService": {
+          "externalUrl": "",
+          "openNewTab": true,
+          "modalAcceptance": false,
+          "modalTitle": "",
+          "modalContent": ""
+        },
+        "endpointsMenu": true,
+        "modelSelect": true,
+        "parameters": true,
+        "sidePanel": true,
+        "presets": true,
+        "prompts": true,
+        "bookmarks": true,
+        "multiConvo": false,
+        "agents": true,
+        "peoplePicker": {
+          "users": true,
+          "groups": true,
+          "roles": true
+        },
+        "marketplace": {
+          "use": false
+        },
+        "fileCitations": true
+      },
+      "mcpServers": [],
+      "mongoRootUsername": "admin",
+      "mongoRootPassword": "password123"
+    },
+    "timestamp": "2025-10-02T18:56:47.147Z",
+    "packageName": "My-LibreChat-Configuration"
+  },
+  {
     "id": "b134b92d-e921-4f17-8218-8186c38ef5c8",
     "configuration": {
       "version": "0.8.0-rc4",
@@ -1388,150 +1531,6 @@
       "mongoRootPassword": "password123"
     },
     "timestamp": "2025-10-01T21:11:03.521Z",
-    "packageName": "My-LibreChat-Configuration"
-  },
-  {
-    "id": "e094df97-c45c-4838-956f-a0ba32648a52",
-    "configuration": {
-      "version": "0.8.0-rc4",
-      "cache": true,
-      "fileStrategy": "local",
-      "secureImageLinks": false,
-      "imageOutputType": "png",
-      "temporaryChatRetention": 720,
-      "titleConvo": true,
-      "redisPingInterval": 30000,
-      "minPasswordLength": 8,
-      "allowRegistration": true,
-      "allowEmailLogin": true,
-      "allowSocialLogin": false,
-      "allowSocialRegistration": false,
-      "allowPasswordReset": true,
-      "host": "0.0.0.0",
-      "port": 3080,
-      "debugLogging": false,
-      "jwtSecret": "",
-      "jwtRefreshSecret": "",
-      "credsKey": "",
-      "credsIV": "",
-      "sessionExpiry": 900000,
-      "refreshTokenExpiry": 604800000,
-      "mongoUri": "",
-      "redisUri": "",
-      "mongoDbName": "LibreChat",
-      "openaiApiKey": "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",
-      "appTitle": "LibreChat Test",
-      "customFooter": "Test Configuration",
-      "customWelcome": "Welcome to LibreChat Test",
-      "azureStoragePublicAccess": false,
-      "redisUseAlternativeDNSLookup": false,
-      "search": false,
-      "meiliNoAnalytics": true,
-      "limitConcurrentMessages": false,
-      "banViolations": false,
-      "allowSharedLinks": false,
-      "allowSharedLinksPublic": false,
-      "summaryConvo": false,
-      "nodeEnv": "production",
-      "noIndex": true,
-      "debugConsole": false,
-      "consoleJSON": false,
-      "registration": {
-        "socialLogins": [],
-        "allowedDomains": []
-      },
-      "fileConfig": {
-        "serverFileSizeLimit": 20,
-        "avatarSizeLimit": 5,
-        "clientImageResize": {
-          "enabled": true,
-          "maxWidth": 1920,
-          "maxHeight": 1080,
-          "quality": 0.8,
-          "compressFormat": "jpeg"
-        }
-      },
-      "webSearch": {
-        "searchProvider": "serper",
-        "scraperType": "none",
-        "rerankerType": "none",
-        "scraperTimeout": 7500,
-        "safeSearch": true,
-        "serperApiKey": "95644ccb5cc0f197444f4c1fd0cd4fa87a023363",
-        "searxngInstanceUrl": "http://searxng:8080",
-        "searxngApiKey": "searxng-default-key-12345",
-        "firecrawlApiKey": "fc-fdddfc1ba2114eea9f8a14ccc1f27a8f",
-        "firecrawlApiUrl": "https://api.firecrawl.dev",
-        "jinaApiKey": "jina_b91ed7a7be9042c290242f421f65c3bfFo0uPMB6WHVRiyfek9iZPlTmNr1w",
-        "cohereApiKey": "",
-        "braveApiKey": "",
-        "tavilyApiKey": "",
-        "jinaRerankerUrl": "https://api.jina.ai/v1/rerank"
-      },
-      "rateLimits": {
-        "fileUploads": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 60,
-          "userMax": 50,
-          "userWindowInMinutes": 60
-        },
-        "conversationsImport": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 60,
-          "userMax": 50,
-          "userWindowInMinutes": 60
-        },
-        "stt": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 1,
-          "userMax": 50,
-          "userWindowInMinutes": 1
-        },
-        "tts": {
-          "ipMax": 100,
-          "ipWindowInMinutes": 1,
-          "userMax": 50,
-          "userWindowInMinutes": 1
-        }
-      },
-      "interface": {
-        "fileSearch": true,
-        "uploadAsText": false,
-        "privacyPolicy": {
-          "externalUrl": "",
-          "openNewTab": true
-        },
-        "termsOfService": {
-          "externalUrl": "",
-          "openNewTab": true,
-          "modalAcceptance": false,
-          "modalTitle": "",
-          "modalContent": ""
-        },
-        "endpointsMenu": true,
-        "modelSelect": true,
-        "parameters": true,
-        "sidePanel": true,
-        "presets": true,
-        "prompts": true,
-        "bookmarks": true,
-        "multiConvo": false,
-        "agents": true,
-        "peoplePicker": {
-          "users": true,
-          "groups": true,
-          "roles": true
-        },
-        "marketplace": {
-          "use": false
-        },
-        "fileCitations": true
-      },
-      "mcpServers": [],
-      "mongoRootUsername": "admin",
-      "mongoRootPassword": "password123"
-    },
-    "timestamp": "2025-10-01T21:08:44.753Z",
     "packageName": "My-LibreChat-Configuration"
   }
 ]

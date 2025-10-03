@@ -403,7 +403,7 @@ export function ConfigurationTabs({
       icon: Code,
       description: "ChatGPT-Style Code Execution (Optional Addon)",
       color: "from-violet-400 to-violet-500",
-      settings: ["enableCodeInterpreter", "e2bApiKey", "codeInterpreterTimeout", "codeInterpreterMaxFileSize"],
+      settings: ["enableCodeInterpreter", "e2bApiKey", "e2bOpenAPISchema", "codeInterpreterTimeout", "codeInterpreterMaxFileSize"],
       docUrl: "https://e2b.dev/docs",
     },
   ];
@@ -468,7 +468,7 @@ export function ConfigurationTabs({
   // Helper function to get field type and description
   const getFieldInfo = (fieldName: string) => {
     const fieldMap: Record<string, { 
-      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite"; 
+      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "copyable-code"; 
       description: string; 
       label: string;
       docUrl?: string;
@@ -477,6 +477,8 @@ export function ConfigurationTabs({
       options?: Array<{ value: string; label: string }> | string[];
       min?: number;
       max?: number;
+      code?: string;
+      language?: string;
       step?: number;
     }> = {
       // App Settings
@@ -808,10 +810,150 @@ export function ConfigurationTabs({
       },
       e2bApiKey: { 
         type: "password", 
-        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu at the top\n2️⃣ Open the Agent Builder panel on the right side\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click the '+ Add Action' button\n6️⃣ Paste this URL in the schema field:\n   http://e2b-proxy:3001/code-executor.openapi.json\n7️⃣ Save the action and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data!", 
+        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu at the top\n2️⃣ Open the Agent Builder panel on the right side\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click the '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (see below) and paste it in the schema field\n7️⃣ Save the action and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data!\n\n⚠️ IMPORTANT: You must copy the ENTIRE OpenAPI schema shown in the collapsible section below - LibreChat needs the full JSON specification, not just a URL.", 
         label: "E2B API Key",
         docUrl: "https://e2b.dev/docs",
         placeholder: "e2b_***"
+      },
+      e2bOpenAPISchema: {
+        type: "copyable-code",
+        description: "Copy this complete OpenAPI schema and paste it into LibreChat's Agent Builder → Actions → Add Action. Click the copy icon to copy the entire schema to your clipboard.",
+        label: "OpenAPI Schema (Copy This)",
+        code: `{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LibreChat Code Executor",
+    "description": "Execute Python code securely in isolated E2B sandboxes. Upload CSV files, analyze data, create graphs, and run Python scripts.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://e2b-proxy:3001",
+      "description": "E2B Code Interpreter Proxy (Docker internal)"
+    }
+  ],
+  "paths": {
+    "/execute": {
+      "post": {
+        "summary": "Execute code in secure sandbox",
+        "description": "Runs Python code in an isolated Firecracker VM. Supports data analysis, file uploads, matplotlib plots, pandas DataFrames, and more.",
+        "operationId": "executeCode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Python code to execute",
+                    "example": "import matplotlib.pyplot as plt\\nimport numpy as np\\nx = np.linspace(0, 10, 100)\\ny = np.sin(x)\\nplt.plot(x, y)\\nplt.title('Sine Wave')\\nplt.show()"
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Programming language (currently supports 'python')",
+                    "default": "python",
+                    "enum": ["python"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Code executed successfully - returns markdown-formatted result with embedded images and code blocks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "description": "Markdown-formatted result containing images (as data URIs), code blocks, console output, and the executed code. Images are embedded using markdown syntax: ![alt](data:image/png;base64,...). Code is shown in triple-backtick blocks."
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "Indicates if code execution was successful"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Code is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Execution error - returns markdown-formatted error message",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "description": "Markdown-formatted error message with the failed code"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Check if the E2B proxy service is running",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "e2b-code-interpreter"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`,
+        language: "json"
       },
       codeInterpreterTimeout: { 
         type: "number", 
@@ -1615,6 +1757,8 @@ export function ConfigurationTabs({
                           value={getNestedValue(configuration, setting) || ""}
                           onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                           options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                          code={fieldInfo.type === 'copyable-code' ? (fieldInfo as any).code : undefined}
+                          language={fieldInfo.type === 'copyable-code' ? (fieldInfo as any).language : undefined}
                           data-testid={`input-${setting}`}
                         />
                       );

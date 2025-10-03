@@ -1332,6 +1332,59 @@ export function ConfigurationTabs({
       "interface.marketplace.use": { type: "boolean", description: "Enable marketplace usage", label: "Marketplace" },
       "interface.fileCitations": { type: "boolean", description: "Show file citations", label: "File Citations" },
       
+      // E2B Code Execution Configuration
+      e2bApiKey: { 
+        type: "password", 
+        description: "Your E2B API key from https://e2b.dev - required for code execution sandbox access. Enables Python/JavaScript execution with file/image rendering.", 
+        label: "E2B API Key",
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bProxyEnabled: { 
+        type: "boolean", 
+        description: "Enable the E2B proxy service for code execution. When enabled, LibreChat can execute Python/JavaScript code and render generated images, charts, and data files.", 
+        label: "E2B Proxy Enabled",
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bProxyPort: { 
+        type: "number", 
+        description: "Port number where the E2B proxy service listens. Default is 3001. Must be available and not conflict with other services.", 
+        label: "E2B Proxy Port",
+        placeholder: "3001",
+        min: 1024,
+        max: 65535,
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bFileTTLDays: { 
+        type: "number", 
+        description: "How many days to keep generated files (images, charts, CSV) before automatic cleanup. Default 30 days. Higher values use more storage.", 
+        label: "File TTL (days)",
+        placeholder: "30",
+        min: 1,
+        max: 365,
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bMaxFileSize: { 
+        type: "number", 
+        description: "Maximum file size in MB for generated files. Default 50MB. Prevents excessive storage use from large data outputs.", 
+        label: "Max File Size (MB)",
+        placeholder: "50",
+        min: 1,
+        max: 500,
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bPerUserSandbox: { 
+        type: "boolean", 
+        description: "Use persistent per-user sandboxes instead of per-request sandboxes. Preserves session state between executions but uses more resources.", 
+        label: "Per-User Sandboxes",
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      
       // MCP Servers - now handled by specialized editor, so no individual nested fields needed
     };
     

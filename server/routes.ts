@@ -5,6 +5,7 @@ import { configurationSchema, insertConfigurationProfileSchema, packageGeneratio
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import JSZip from "jszip";
+import * as e2bGenerators from "./e2b-generators";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -168,6 +169,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate README.md
       if (includeFiles.includes("readme")) {
         packageFiles["README.md"] = generateReadmeFile(configuration);
+      }
+
+      // Generate E2B proxy files if enabled
+      if (configuration.e2bProxyEnabled) {
+        packageFiles["e2b-code-execution-openapi.yaml"] = e2bGenerators.generateE2BOpenAPISchema(configuration);
+        
+        // Add proxy-service source files
+        packageFiles["proxy-service/package.json"] = await e2bGenerators.generateE2BProxyPackageJson();
+        packageFiles["proxy-service/tsconfig.json"] = await e2bGenerators.generateE2BProxyTsConfig();
+        packageFiles["proxy-service/Dockerfile"] = await e2bGenerators.generateE2BProxyDockerfile();
+        packageFiles["proxy-service/.dockerignore"] = e2bGenerators.generateE2BProxyDockerIgnore();
+        packageFiles["proxy-service/README.md"] = await e2bGenerators.generateE2BProxyReadme(configuration);
+        packageFiles["proxy-service/src/index.ts"] = await e2bGenerators.generateE2BProxyIndex();
+        packageFiles["proxy-service/src/file-storage.ts"] = await e2bGenerators.generateE2BProxyFileStorage();
+        packageFiles["proxy-service/src/sandbox-manager.ts"] = await e2bGenerators.generateE2BProxySandboxManager();
+        packageFiles["proxy-service/src/metrics.ts"] = await e2bGenerators.generateE2BProxyMetrics();
       }
 
       // Always include a configuration settings file for easy re-import
@@ -664,6 +681,16 @@ ${config.mcpOauthOnAuthError ? `MCP_OAUTH_ON_AUTH_ERROR=${config.mcpOauthOnAuthE
 ${config.mcpOauthDetectionTimeout ? `MCP_OAUTH_DETECTION_TIMEOUT=${config.mcpOauthDetectionTimeout}` : '# MCP_OAUTH_DETECTION_TIMEOUT='}
 
 # =============================================================================
+# E2B Code Execution Proxy Configuration
+# =============================================================================
+${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
+${config.e2bProxyEnabled !== undefined ? `E2B_PROXY_ENABLED=${config.e2bProxyEnabled}` : '# E2B_PROXY_ENABLED=true'}
+${config.e2bProxyPort ? `E2B_PROXY_PORT=${config.e2bProxyPort}` : '# E2B_PROXY_PORT=3001'}
+${config.e2bFileTTLDays ? `E2B_FILE_TTL_DAYS=${config.e2bFileTTLDays}` : '# E2B_FILE_TTL_DAYS=30'}
+${config.e2bMaxFileSize ? `E2B_MAX_FILE_SIZE=${config.e2bMaxFileSize}` : '# E2B_MAX_FILE_SIZE=50'}
+${config.e2bPerUserSandbox !== undefined ? `E2B_PER_USER_SANDBOX=${config.e2bPerUserSandbox}` : '# E2B_PER_USER_SANDBOX=false'}
+
+# =============================================================================
 # User Management Configuration
 # =============================================================================
 ${config.uid ? `UID=${config.uid}` : '# UID='}
@@ -988,9 +1015,15 @@ ${config.ocrProvider ? `ocr:
   baseURL: "\${OCR_BASEURL}"` : '# OCR is not configured'}
 
 # Actions Configuration
-${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `actions:
+${config.e2bProxyEnabled || (config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0) ? `actions:${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `
   allowedDomains:
-${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : '# Actions are not configured'}
+${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : ''}${config.e2bProxyEnabled ? `
+  e2b_code_execution:
+    openAPISpec: ./e2b-code-execution-openapi.yaml
+    authentication:
+      type: none
+    availableTools:
+      - e2b_execute_code` : ''}` : '# Actions are not configured'}
 
 `;
 }
@@ -1025,7 +1058,34 @@ services:
     networks:
       - librechat-network
     command: redis-server --appendonly yes
-
+${config.e2bProxyEnabled ? `
+  # E2B Code Execution Proxy
+  e2b-proxy:
+    container_name: e2b-proxy
+    build:
+      context: ./proxy-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "\${E2B_PROXY_PORT:-3001}:3001"
+    environment:
+      E2B_API_KEY: \${E2B_API_KEY}
+      E2B_PROXY_PORT: 3001
+      E2B_FILE_TTL_DAYS: \${E2B_FILE_TTL_DAYS:-30}
+      E2B_MAX_FILE_SIZE: \${E2B_MAX_FILE_SIZE:-50}
+      E2B_PER_USER_SANDBOX: \${E2B_PER_USER_SANDBOX:-false}
+      DOMAIN_CLIENT: \${DOMAIN_CLIENT:-http://localhost:3080}
+    volumes:
+      - e2b_files:/tmp/e2b-files
+    networks:
+      - librechat-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); })"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+` : ''}
   # LibreChat Application
   librechat:
     container_name: librechat-app
@@ -1033,7 +1093,7 @@ services:
     restart: unless-stopped
     depends_on:
       - mongodb
-      - redis
+      - redis${config.e2bProxyEnabled ? '\n      - e2b-proxy' : ''}
     ports:
       - "\${LIBRECHAT_PORT:-${config.port}}:3080"
     environment:
@@ -1088,7 +1148,7 @@ volumes:
   librechat_uploads:
     driver: local
   librechat_logs:
-    driver: local
+    driver: local${config.e2bProxyEnabled ? '\n  e2b_files:\n    driver: local' : ''}
 
 networks:
   librechat-network:

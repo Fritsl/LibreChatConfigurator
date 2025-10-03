@@ -810,7 +810,7 @@ export function ConfigurationTabs({
       },
       e2bApiKey: { 
         type: "password", 
-        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n\n🔧 PART 1: Deploy E2B Proxy Service\n\n📦 Download the reference implementation:\n• Server code: /e2b-proxy-reference/server.js\n• Package config: /e2b-proxy-reference/package.json\n• Dockerfile: /e2b-proxy-reference/Dockerfile\n• Full README: /e2b-proxy-reference/README.md\n\nThen add this to your docker-compose.yml:\n\n```yaml\ne2b-proxy:\n  build: ./e2b-proxy\n  environment:\n    - E2B_API_KEY=${E2B_API_KEY}\n  networks:\n    - librechat-network\n```\n\nCopy the downloaded files to ./e2b-proxy/ directory and deploy:\n```bash\ndocker-compose up -d e2b-proxy\n```\n\n🎯 PART 2: Configure LibreChat Agent\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu\n2️⃣ Open the Agent Builder panel on the right\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (below) and paste it\n7️⃣ Save and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data with properly displayed images!\n\n⚠️ CRITICAL: The proxy MUST return responses in LibreChat's content array format:\n```json\n{\n  \"content\": [\n    {\"type\": \"text\", \"text\": \"Console output...\"},\n    {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,...\"}}\n  ]\n}\n```\nThis is the ONLY format that renders images correctly in LibreChat.", 
+        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n\n🔧 PART 1: Deploy E2B Proxy Service\n\n📦 Download the reference implementation:\n• Server code: /e2b-proxy-reference/server.js\n• Package config: /e2b-proxy-reference/package.json\n• Dockerfile: /e2b-proxy-reference/Dockerfile\n• Full README: /e2b-proxy-reference/README.md\n\nThen add this to your docker-compose.yml:\n\n```yaml\ne2b-proxy:\n  build: ./e2b-proxy\n  environment:\n    - E2B_API_KEY=${E2B_API_KEY}\n  networks:\n    - librechat-network\n```\n\nCopy the downloaded files to ./e2b-proxy/ directory and deploy:\n```bash\ndocker-compose up -d e2b-proxy\n```\n\n🎯 PART 2: Configure LibreChat Agent\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu\n2️⃣ Open the Agent Builder panel on the right\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (below) and paste it\n7️⃣ Save and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data with properly displayed images!\n\n⚠️ CRITICAL FORMAT REQUIREMENT:\nThe proxy MUST return responses in LibreChat's tool format (same as DALL-E):\n```json\n[\n  [{\"type\": \"text\", \"text\": \"Results...\"}],\n  {\"content\": [{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,...\"}}]}\n]\n```\nThis TWO-ELEMENT ARRAY is how ALL LibreChat tools return data:\n• First element: array of text responses\n• Second element: object with 'content' property containing images\nThis is the ONLY format that renders images inline in LibreChat!", 
         label: "E2B API Key",
         docUrl: "https://e2b.dev/docs",
         placeholder: "e2b_***"
@@ -864,62 +864,61 @@ export function ConfigurationTabs({
         },
         "responses": {
           "200": {
-            "description": "Code executed successfully - returns structured content with text and images",
+            "description": "Code executed successfully - returns LibreChat tool format: [response_array, {content: images}]",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "content": {
+                  "type": "array",
+                  "description": "Two-element array: [text_response, image_content]",
+                  "items": [
+                    {
                       "type": "array",
-                      "description": "Array of content items (text and images)",
+                      "description": "Text response array",
                       "items": {
-                        "oneOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "enum": ["text"],
-                                "description": "Text content type"
-                              },
-                              "text": {
-                                "type": "string",
-                                "description": "Markdown-formatted text with code blocks and console output"
-                              }
-                            },
-                            "required": ["type", "text"]
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["text"]
                           },
-                          {
+                          "text": {
+                            "type": "string",
+                            "description": "Markdown-formatted execution results"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Image content wrapper",
+                      "properties": {
+                        "content": {
+                          "type": "array",
+                          "description": "Array of image objects",
+                          "items": {
                             "type": "object",
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "enum": ["image_url"],
-                                "description": "Image content type"
+                                "enum": ["image_url"]
                               },
                               "image_url": {
                                 "type": "object",
                                 "properties": {
                                   "url": {
                                     "type": "string",
-                                    "description": "Base64-encoded image data URI (data:image/png;base64,...)"
+                                    "description": "data:image/png;base64,..."
                                   }
-                                },
-                                "required": ["url"]
+                                }
                               }
-                            },
-                            "required": ["type", "image_url"]
+                            }
                           }
-                        ]
+                        }
                       }
-                    },
-                    "success": {
-                      "type": "boolean",
-                      "description": "Indicates if code execution was successful"
                     }
-                  },
-                  "required": ["content", "success"]
+                  ],
+                  "minItems": 2,
+                  "maxItems": 2
                 }
               }
             }
@@ -941,15 +940,16 @@ export function ConfigurationTabs({
             }
           },
           "500": {
-            "description": "Execution error - returns error message in content array",
+            "description": "Execution error - returns LibreChat tool format with error message",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "content": {
+                  "type": "array",
+                  "description": "Two-element array with error message",
+                  "items": [
+                    {
                       "type": "array",
-                      "description": "Array with error message",
+                      "description": "Error text array",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -964,11 +964,17 @@ export function ConfigurationTabs({
                         }
                       }
                     },
-                    "success": {
-                      "type": "boolean",
-                      "example": false
+                    {
+                      "type": "object",
+                      "description": "Empty content object for errors",
+                      "properties": {
+                        "content": {
+                          "type": "array",
+                          "items": {}
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }

@@ -71,31 +71,39 @@ curl -X POST http://localhost:3001/execute \
 
 ## 📊 Response Format
 
-The proxy returns responses in LibreChat's expected format:
+The proxy returns responses in LibreChat's tool format (same as DALL-E):
 
 ```json
-{
-  "content": [
+[
+  [
     {
       "type": "text",
       "text": "**Console Output:**\n```\nHello, World!\n```\n\n**Executed Code:**\n```python\nprint('Hello, World!')\n```"
-    },
-    {
-      "type": "image_url",
-      "image_url": {
-        "url": "data:image/png;base64,iVBORw0KGgo..."
-      }
     }
   ],
-  "success": true
-}
+  {
+    "content": [
+      {
+        "type": "image_url",
+        "image_url": {
+          "url": "data:image/png;base64,iVBORw0KGgo..."
+        }
+      }
+    ]
+  }
+]
 ```
 
-This format ensures:
-- ✅ Images render inline in LibreChat
+**This is a TWO-ELEMENT ARRAY:**
+1. **First element**: Array of text response objects
+2. **Second element**: Object with `content` property containing image objects
+
+This exact format ensures:
+- ✅ Images render inline in LibreChat (not as base64 text!)
 - ✅ Code blocks are syntax-highlighted
 - ✅ Console output is clearly formatted
 - ✅ Multiple images are supported
+- ✅ Works exactly like DALL-E and other built-in LibreChat tools
 
 ## 🔧 Environment Variables
 

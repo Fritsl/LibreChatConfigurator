@@ -6,6 +6,9 @@ app.use(express.json());
 
 const E2B_API_KEY = process.env.E2B_API_KEY;
 
+const displayMessage = "Code executed successfully. Results are shown below.";
+const  errorDisplayMessage = "Code execution failed. Error details are shown below.";
+
 if (!E2B_API_KEY) {
   console.error('❌ E2B_API_KEY environment variable is required');
   process.exit(1);
@@ -94,20 +97,32 @@ app.post('/execute', async (req, res) => {
     }
     
     console.log('✅ Code executed successfully');
-    res.json({ content, success: true });
+    
+    // LibreChat expects: [response_array, {content: content_array}]
+    // This is how DALL-E and other built-in tools return data
+    const response = content.filter(item => item.type === 'text');
+    const imageContent = content.filter(item => item.type === 'image_url');
+    
+    // Return in LibreChat's expected format
+    const result = [
+      response.length > 0 ? response : [{ type: 'text', text: displayMessage }],
+      { content: imageContent.length > 0 ? imageContent : [] }
+    ];
+    
+    res.json(result);
     
   } catch (error) {
     console.error('❌ Execution error:', error.message);
     
-    // Return error in content array format
-    const errorContent = [
+    // Return error in LibreChat's expected format
+    const errorResponse = [
       {
         type: 'text',
         text: `**Execution Error:**\n\`\`\`\n${error.message}\n\`\`\`\n\n**Failed Code:**\n\`\`\`python\n${code}\n\`\`\``
       }
     ];
     
-    res.status(500).json({ content: errorContent, success: false });
+    res.status(500).json([errorResponse, { content: [] }]);
     
   } finally {
     if (sandbox) {

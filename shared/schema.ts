@@ -521,8 +521,13 @@ export const configurationSchema = z.object({
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   
-  // E2B Code Interpreter (MCP)
+  // E2B Code Interpreter (HTTP Proxy for file/image rendering)
   e2bApiKey: z.string().optional(), // E2B_API_KEY
+  e2bProxyEnabled: z.boolean().optional(), // Enable E2B proxy service
+  e2bProxyPort: z.number().optional(), // E2B proxy port (default: 3001)
+  e2bFileTTLDays: z.number().optional(), // File TTL in days (default: 30)
+  e2bMaxFileSize: z.number().optional(), // Max file size in MB (default: 50)
+  e2bPerUserSandbox: z.boolean().optional(), // Per-user persistent sandboxes (default: false)
   
   // RAG API Configuration
   ragApiURL: z.string().optional(), // RAG_API_URL

@@ -199,7 +199,7 @@ export function ConfigurationTabs({
           icon: Search,
           description: "Web Search & External APIs",
           color: "from-violet-500 to-violet-600",
-          settings: ["webSearch", "openweatherApiKey", "librechatCodeApiKey", "e2bApiKey"],
+          settings: ["webSearch", "openweatherApiKey", "librechatCodeApiKey"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
         {
@@ -789,7 +789,6 @@ export function ConfigurationTabs({
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key" },
       librechatCodeApiKey: { type: "password", description: "LibreChat Code API key for code execution", label: "LibreChat Code API Key" },
-      e2bApiKey: { type: "password", description: "E2B API key for code interpreter MCP server (get at e2b.dev)", label: "E2B API Key" },
       
       // RAG API
       ragApiURL: { type: "text", description: "RAG API URL", label: "RAG API URL" },
@@ -1494,25 +1493,6 @@ export function ConfigurationTabs({
                             return [];
                         }
                       };
-                      
-                      // Special handling for mcpServers to pass e2bApiKey
-                      if (setting === "mcpServers") {
-                        return (
-                          <SettingInput
-                            key={setting}
-                            label={fieldInfo.label}
-                            description={fieldInfo.description}
-                            docUrl={fieldInfo.docUrl}
-                            docSection={fieldInfo.docSection}
-                            type={fieldInfo.type}
-                            value={getNestedValue(configuration, setting) || {}}
-                            onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                            e2bApiKey={configuration.e2bApiKey}
-                            onE2bApiKeyChange={(value) => onConfigurationChange({ ...configuration, e2bApiKey: value })}
-                            data-testid={`input-${setting}`}
-                          />
-                        );
-                      }
                       
                       // Special handling for emailComposite field
                       if (setting === "emailComposite") {

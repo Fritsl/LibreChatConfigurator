@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, X, Server, Settings, Globe, Info, Lightbulb, Code2, Eye, EyeOff } from "lucide-react";
+import { Plus, X, Server, Settings, Globe, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface MCPServer {
@@ -30,14 +30,11 @@ interface MCPServer {
 interface MCPServersEditorProps {
   value: MCPServer[] | Record<string, MCPServer> | null;
   onChange: (value: MCPServer[] | Record<string, MCPServer>) => void;
-  e2bApiKey?: string;
-  onE2bApiKeyChange?: (value: string) => void;
   "data-testid"?: string;
 }
 
-export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange, "data-testid": testId }: MCPServersEditorProps) {
+export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCPServersEditorProps) {
   const [servers, setServers] = useState<MCPServer[]>([]);
-  const [showE2bApiKey, setShowE2bApiKey] = useState(false);
 
   // Convert value to array format for editing
   useEffect(() => {
@@ -87,27 +84,13 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
   };
 
   const applyPreset = (serverIndex: number, presetName: string) => {
-    const server = servers[serverIndex];
-    
-    if (presetName === "e2b-code-interpreter") {
-      updateServer(serverIndex, {
-        preset: presetName,
-        type: "stdio",
-        command: "npx",
-        args: ["-y", "@e2b/mcp-server"],
-        name: server.name || "e2b-code-interpreter",
-        serverInstructions: true,
-        chatMenu: true
-      });
-    } else {
-      // Reset to manual configuration
-      updateServer(serverIndex, {
-        preset: "none",
-        type: "streamable-http",
-        command: undefined,
-        args: undefined
-      });
-    }
+    // Reset to manual configuration (no presets currently available)
+    updateServer(serverIndex, {
+      preset: "none",
+      type: "streamable-http",
+      command: undefined,
+      args: undefined
+    });
   };
 
   const removeServer = (index: number) => {
@@ -205,83 +188,6 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
           </CardHeader>
           
           <CardContent className="space-y-4">
-            {/* Preset Selection */}
-            <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30">
-              <Lightbulb className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-sm">
-                <strong className="text-blue-700 dark:text-blue-400">Quick Setup Presets:</strong> Choose a preset to auto-configure common MCP servers, or select "Manual Configuration" for custom setup.
-              </AlertDescription>
-            </Alert>
-            
-            <div>
-              <Label htmlFor={`server-preset-${serverIndex}`}>
-                <Code2 className="h-3 w-3 inline mr-1" />
-                Configuration Preset
-              </Label>
-              <Select
-                value={server.preset || "none"}
-                onValueChange={(value: string) => applyPreset(serverIndex, value)}
-              >
-                <SelectTrigger data-testid={`select-mcp-preset-${serverIndex}`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Manual Configuration</SelectItem>
-                  <SelectItem value="e2b-code-interpreter">E2B Code Interpreter (Python/JS sandbox)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {server.preset === "e2b-code-interpreter" && (
-              <>
-                <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30">
-                  <Info className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-sm space-y-2">
-                    <p className="text-green-700 dark:text-green-400">
-                      <strong>E2B Code Interpreter</strong> adds ChatGPT-like code execution to LibreChat! AI can run Python/JavaScript code, generate charts, analyze data, and more.
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 text-xs text-green-600 dark:text-green-500">
-                      <li>Get your free API key at <a href="https://e2b.dev" target="_blank" rel="noopener noreferrer" className="underline font-medium">e2b.dev</a></li>
-                      <li>Enter it below to enable code execution features</li>
-                      <li>Supports images, file uploads, and streaming output</li>
-                      <li>Fully isolated sandbox per user - completely secure</li>
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-                
-                <div>
-                  <Label htmlFor="e2b-api-key">E2B API Key *</Label>
-                  <div className="relative">
-                    <Input
-                      id="e2b-api-key"
-                      type={showE2bApiKey ? "text" : "password"}
-                      value={e2bApiKey || ""}
-                      onChange={(e) => onE2bApiKeyChange?.(e.target.value)}
-                      placeholder="sk-..."
-                      className="pr-10"
-                      data-testid="input-e2b-api-key"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowE2bApiKey(!showE2bApiKey)}
-                      data-testid="button-toggle-e2b-api-key"
-                    >
-                      {showE2bApiKey ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Required for E2B Code Interpreter to work. Sign up for free at e2b.dev
-                  </p>
-                </div>
-              </>
-            )}
             
             {/* Server Name */}
             <div className="grid grid-cols-2 gap-4">
@@ -292,7 +198,6 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
                   value={server.name || ""}
                   onChange={(e) => updateServer(serverIndex, { name: e.target.value })}
                   placeholder="unique-server-name"
-                  disabled={server.preset === "e2b-code-interpreter"}
                   data-testid={`input-mcp-server-name-${serverIndex}`}
                 />
               </div>
@@ -303,7 +208,6 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
                 <Select
                   value={server.type || "streamable-http"}
                   onValueChange={(value: string) => updateServer(serverIndex, { type: value as MCPServer["type"] })}
-                  disabled={server.preset === "e2b-code-interpreter"}
                 >
                   <SelectTrigger data-testid={`input-mcp-server-type-${serverIndex}`}>
                     <SelectValue />
@@ -328,7 +232,6 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
                     value={server.command || ""}
                     onChange={(e) => updateServer(serverIndex, { command: e.target.value })}
                     placeholder="npx, node, python, etc."
-                    disabled={server.preset === "e2b-code-interpreter"}
                     data-testid={`input-mcp-server-command-${serverIndex}`}
                   />
                 </div>
@@ -343,7 +246,6 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
                       updateServer(serverIndex, { args: argsArray });
                     }}
                     placeholder="-y, @e2b/mcp-server"
-                    disabled={server.preset === "e2b-code-interpreter"}
                     data-testid={`input-mcp-server-args-${serverIndex}`}
                   />
                 </div>

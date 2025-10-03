@@ -165,7 +165,6 @@ export function useConfiguration() {
     bingSearchApiKey: "demo_bing_search_key_123456789abcdef123456789",
     openweatherApiKey: "demo_weather_key_123456789abcdef123456789abc",
     librechatCodeApiKey: "demo_code_api_key_123456789abcdef123456789",
-    e2bApiKey: "",
     
     // RC4 Web Search Providers
     braveApiKey: "BSA_demo_brave_search_key_123456789abcdef123456789",

@@ -166,6 +166,14 @@ export function useConfiguration() {
     openweatherApiKey: "demo_weather_key_123456789abcdef123456789abc",
     librechatCodeApiKey: "demo_code_api_key_123456789abcdef123456789",
     
+    // E2B Code Execution Proxy
+    e2bApiKey: "demo_e2b_api_key_123456789abcdef123456789",
+    e2bProxyEnabled: true,
+    e2bProxyPort: 3001,
+    e2bFileTTLDays: 30,
+    e2bMaxFileSize: 50,
+    e2bPerUserSandbox: false,
+    
     // RC4 Web Search Providers
     braveApiKey: "BSA_demo_brave_search_key_123456789abcdef123456789",
     tavilyApiKey: "tvly-demo_tavily_search_key_123456789abcdef123456",

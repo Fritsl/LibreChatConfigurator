@@ -33,7 +33,8 @@ import {
   Volume2,
   Users,
   Zap,
-  HardDrive
+  HardDrive,
+  Terminal
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -296,6 +297,15 @@ export function ConfigurationTabs({
           color: "from-rose-500 to-rose-600",
           settings: ["mcpServers", "mcpOauthOnAuthError", "mcpOauthDetectionTimeout"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/mcp_servers",
+        },
+        {
+          id: "code-execution",
+          label: "Code Execution",
+          icon: Terminal,
+          description: "E2B Proxy for Python/JavaScript with File/Image Rendering",
+          color: "from-cyan-500 to-cyan-600",
+          settings: ["e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"],
+          docUrl: "https://e2b.dev/docs",
         },
         {
           id: "users",

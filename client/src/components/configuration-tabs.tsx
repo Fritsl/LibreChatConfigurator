@@ -33,7 +33,8 @@ import {
   Volume2,
   Users,
   Zap,
-  HardDrive
+  HardDrive,
+  Code
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -395,6 +396,15 @@ export function ConfigurationTabs({
       color: "from-yellow-400 to-yellow-500",
       settings: ["actions.allowedDomains"],
       docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+    },
+    {
+      id: "code-interpreter",
+      label: "Code Interpreter",
+      icon: Code,
+      description: "ChatGPT-Style Code Execution (Optional Addon)",
+      color: "from-violet-400 to-violet-500",
+      settings: ["enableCodeInterpreter", "e2bApiKey", "codeInterpreterTimeout", "codeInterpreterMaxFileSize"],
+      docUrl: "https://e2b.dev/docs",
     },
   ];
 
@@ -789,6 +799,36 @@ export function ConfigurationTabs({
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key" },
       librechatCodeApiKey: { type: "password", description: "LibreChat Code API key for code execution", label: "LibreChat Code API Key" },
+      
+      // E2B Code Interpreter (Optional Addon)
+      enableCodeInterpreter: { 
+        type: "boolean", 
+        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. Requires E2B API key from e2b.dev", 
+        label: "Enable Code Interpreter" 
+      },
+      e2bApiKey: { 
+        type: "password", 
+        description: "Your E2B API key for code execution sandboxes. Get one free at e2b.dev/docs - each user gets isolated Firecracker VM for security", 
+        label: "E2B API Key",
+        docUrl: "https://e2b.dev/docs",
+        placeholder: "e2b_***"
+      },
+      codeInterpreterTimeout: { 
+        type: "number", 
+        description: "Maximum execution time in seconds (5-300). Code will be terminated if it runs longer than this.", 
+        label: "Execution Timeout (seconds)",
+        min: 5,
+        max: 300,
+        step: 5
+      },
+      codeInterpreterMaxFileSize: { 
+        type: "number", 
+        description: "Maximum file size for uploads in MB (1-100). Users can upload CSV, data files up to this size.", 
+        label: "Max File Size (MB)",
+        min: 1,
+        max: 100,
+        step: 1
+      },
       
       // RAG API
       ragApiURL: { type: "text", description: "RAG API URL", label: "RAG API URL" },

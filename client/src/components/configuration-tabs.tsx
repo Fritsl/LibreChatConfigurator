@@ -803,12 +803,12 @@ export function ConfigurationTabs({
       // E2B Code Interpreter (Optional Addon)
       enableCodeInterpreter: { 
         type: "boolean", 
-        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. Requires E2B API key from e2b.dev", 
+        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. Requires E2B API key from e2b.dev. SETUP: After deploying, create an Agent in LibreChat → click Actions → paste this URL in Schema field: http://e2b-proxy:3001/code-executor.openapi.json", 
         label: "Enable Code Interpreter" 
       },
       e2bApiKey: { 
         type: "password", 
-        description: "Your E2B API key for code execution sandboxes. Get one free at e2b.dev/docs - each user gets isolated Firecracker VM for security", 
+        description: "Your E2B API key for code execution sandboxes. Get one free at e2b.dev/docs - each user gets isolated Firecracker VM for security. After entering this key and deploying, add the code execution action to your Agent by entering the OpenAPI schema URL: http://e2b-proxy:3001/code-executor.openapi.json", 
         label: "E2B API Key",
         docUrl: "https://e2b.dev/docs",
         placeholder: "e2b_***"

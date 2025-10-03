@@ -803,12 +803,12 @@ export function ConfigurationTabs({
       // E2B Code Interpreter (Optional Addon)
       enableCodeInterpreter: { 
         type: "boolean", 
-        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. Requires E2B API key from e2b.dev. SETUP: After deploying, create an Agent in LibreChat → click Actions → paste this URL in Schema field: http://e2b-proxy:3001/code-executor.openapi.json", 
+        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. SETUP REQUIRED AFTER DEPLOYMENT - See instructions in the E2B API Key field below.", 
         label: "Enable Code Interpreter" 
       },
       e2bApiKey: { 
         type: "password", 
-        description: "Your E2B API key for code execution sandboxes. Get one free at e2b.dev/docs - each user gets isolated Firecracker VM for security. After entering this key and deploying, add the code execution action to your Agent by entering the OpenAPI schema URL: http://e2b-proxy:3001/code-executor.openapi.json", 
+        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu at the top\n2️⃣ Open the Agent Builder panel on the right side\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click the '+ Add Action' button\n6️⃣ Paste this URL in the schema field:\n   http://e2b-proxy:3001/code-executor.openapi.json\n7️⃣ Save the action and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data!", 
         label: "E2B API Key",
         docUrl: "https://e2b.dev/docs",
         placeholder: "e2b_***"

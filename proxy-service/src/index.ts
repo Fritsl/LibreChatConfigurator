@@ -1,0 +1,253 @@
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import { FileStorage } from './file-storage';
+import { SandboxManager, SandboxMode } from './sandbox-manager';
+import { MetricsCollector } from './metrics';
+
+const app = express();
+
+// Configuration from environment
+const PORT = parseInt(process.env.E2B_PROXY_PORT || '3001', 10);
+const E2B_API_KEY = process.env.E2B_API_KEY;
+const FILE_TTL_DAYS = parseInt(process.env.E2B_FILE_TTL_DAYS || '30', 10);
+const MAX_FILE_SIZE_MB = parseInt(process.env.E2B_MAX_FILE_SIZE || '50', 10);
+const SANDBOX_MODE: SandboxMode = process.env.E2B_PER_USER_SANDBOX === 'true' ? 'per-user' : 'per-request';
+const LIBRECHAT_ORIGIN = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
+
+// Validate required config
+if (!E2B_API_KEY) {
+  console.error('ERROR: E2B_API_KEY environment variable is required');
+  process.exit(1);
+}
+
+// Initialize services
+const fileStorage = new FileStorage('/tmp/e2b-files', FILE_TTL_DAYS, MAX_FILE_SIZE_MB);
+const sandboxManager = new SandboxManager(E2B_API_KEY, SANDBOX_MODE);
+const metrics = new MetricsCollector();
+
+// Middleware
+app.use(cors({
+  origin: LIBRECHAT_ORIGIN,
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+
+// Request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+  });
+  next();
+});
+
+// POST /execute - Execute code and return file URLs
+app.post('/execute', async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  
+  try {
+    const { code, language = 'python', userId } = req.body;
+
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json({
+        error: 'CLIENT_ERROR',
+        message: 'Missing or invalid "code" field'
+      });
+    }
+
+    if (!userId || typeof userId !== 'string') {
+      return res.status(400).json({
+        error: 'CLIENT_ERROR',
+        message: 'Missing or invalid "userId" field'
+      });
+    }
+
+    if (language !== 'python' && language !== 'javascript') {
+      return res.status(400).json({
+        error: 'CLIENT_ERROR',
+        message: 'Language must be "python" or "javascript"'
+      });
+    }
+
+    // Execute code in E2B sandbox
+    const result = await sandboxManager.executeCode(userId, language, code);
+
+    if (!result.success) {
+      metrics.recordExecution(language, 'error', (Date.now() - startTime) / 1000);
+      metrics.recordError(result.error?.includes('E2B') ? 'E2B_ERROR' : 'EXECUTION_ERROR');
+      
+      return res.status(200).json({
+        success: false,
+        error: result.error,
+        logs: result.logs || []
+      });
+    }
+
+    // Store generated files and create URLs
+    const fileUrls: Array<{ name: string; url: string; mimeType: string }> = [];
+    
+    if (result.files && result.files.length > 0) {
+      for (const file of result.files) {
+        try {
+          const storedFile = await fileStorage.storeFile(
+            userId,
+            file.name,
+            file.content,
+            file.mimeType
+          );
+          
+          fileUrls.push({
+            name: file.name,
+            url: `${req.protocol}://${req.get('host')}/files/${storedFile.id}`,
+            mimeType: file.mimeType
+          });
+          
+          metrics.recordFileSize(file.content.length);
+        } catch (err) {
+          console.error(`Failed to store file ${file.name}:`, err);
+          metrics.recordError('FILE_STORAGE_ERROR');
+        }
+      }
+    }
+
+    // Update metrics
+    metrics.recordExecution(language, 'success', (Date.now() - startTime) / 1000);
+    metrics.updateFileCount(fileStorage.getStats().totalFiles);
+
+    return res.json({
+      success: true,
+      output: result.output || '',
+      logs: result.logs || [],
+      files: fileUrls
+    });
+
+  } catch (error) {
+    console.error('Execution error:', error);
+    metrics.recordError('PROXY_ERROR');
+    
+    return res.status(500).json({
+      error: 'PROXY_ERROR',
+      message: error instanceof Error ? error.message : 'Internal server error'
+    });
+  }
+});
+
+// GET /files/:fileId - Serve file with security checks
+app.get('/files/:fileId', async (req: Request, res: Response) => {
+  try {
+    const { fileId } = req.params;
+    const userId = req.query.userId as string;
+
+    if (!userId) {
+      return res.status(400).json({
+        error: 'CLIENT_ERROR',
+        message: 'Missing userId query parameter'
+      });
+    }
+
+    const file = await fileStorage.getFile(fileId, userId);
+    
+    if (!file) {
+      return res.status(404).json({
+        error: 'NOT_FOUND',
+        message: 'File not found or expired'
+      });
+    }
+
+    const content = await fileStorage.readFileContent(fileId, userId);
+    
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+    res.send(content);
+
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return res.status(403).json({
+        error: 'UNAUTHORIZED',
+        message: 'You do not have access to this file'
+      });
+    }
+    
+    console.error('File serving error:', error);
+    return res.status(500).json({
+      error: 'PROXY_ERROR',
+      message: 'Failed to serve file'
+    });
+  }
+});
+
+// GET /health - Docker healthcheck
+app.get('/health', (req: Request, res: Response) => {
+  const stats = fileStorage.getStats();
+  
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    fileStorage: {
+      totalFiles: stats.totalFiles,
+      storageDir: stats.storageDir
+    },
+    sandboxMode: SANDBOX_MODE
+  });
+});
+
+// GET /metrics - Prometheus metrics
+app.get('/metrics', async (req: Request, res: Response) => {
+  try {
+    const metricsData = await metrics.getMetrics();
+    res.set('Content-Type', metrics.register.contentType);
+    res.send(metricsData);
+  } catch (error) {
+    console.error('Metrics error:', error);
+    res.status(500).send('Failed to collect metrics');
+  }
+});
+
+// Initialize and start server
+async function start() {
+  try {
+    await fileStorage.initialize();
+    
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log('='.repeat(60));
+      console.log('E2B Code Execution Proxy Service');
+      console.log('='.repeat(60));
+      console.log(`Port: ${PORT}`);
+      console.log(`Sandbox Mode: ${SANDBOX_MODE}`);
+      console.log(`File TTL: ${FILE_TTL_DAYS} days`);
+      console.log(`Max File Size: ${MAX_FILE_SIZE_MB}MB`);
+      console.log(`CORS Origin: ${LIBRECHAT_ORIGIN}`);
+      console.log('='.repeat(60));
+      console.log('Endpoints:');
+      console.log(`  POST   http://0.0.0.0:${PORT}/execute`);
+      console.log(`  GET    http://0.0.0.0:${PORT}/files/:fileId`);
+      console.log(`  GET    http://0.0.0.0:${PORT}/health`);
+      console.log(`  GET    http://0.0.0.0:${PORT}/metrics`);
+      console.log('='.repeat(60));
+    });
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('Received SIGTERM, shutting down gracefully...');
+  await fileStorage.shutdown();
+  await sandboxManager.shutdown();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT, shutting down gracefully...');
+  await fileStorage.shutdown();
+  await sandboxManager.shutdown();
+  process.exit(0);
+});
+
+start();

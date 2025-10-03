@@ -1597,26 +1597,57 @@ app.post('/execute', async (req, res) => {
       onStderr: (msg) => console.error('STDERR:', msg),
     });
     
-    // Return results
-    res.json({
-      success: true,
-      output: execution.results.map(r => ({
-        type: r.type,
-        value: r.text || r.html || r.png || r.svg || r.json || r.error,
-        format: r.format || 'text'
-      })),
-      error: execution.error,
-      logs: {
-        stdout: execution.logs.stdout,
-        stderr: execution.logs.stderr
+    // Build markdown-formatted response for LibreChat
+    let markdownResult = '';
+    const results = execution.results || [];
+    
+    // Process each result and format as markdown
+    for (const result of results) {
+      if (result.png) {
+        // Embed image as markdown with data URI
+        markdownResult += \`![Generated visualization](data:image/png;base64,\${result.png})\\n\\n\`;
+      } else if (result.svg) {
+        // Embed SVG as markdown
+        markdownResult += \`![Generated SVG](data:image/svg+xml;base64,\${Buffer.from(result.svg).toString('base64')})\\n\\n\`;
+      } else if (result.html) {
+        // Display HTML in a code block
+        markdownResult += \`**HTML Output:**\\n\\\`\\\`\\\`html\\n\${result.html}\\n\\\`\\\`\\\`\\n\\n\`;
+      } else if (result.text) {
+        // Display text output
+        markdownResult += \`\${result.text}\\n\\n\`;
+      } else if (result.json) {
+        // Display JSON in a code block
+        markdownResult += \`**JSON Output:**\\n\\\`\\\`\\\`json\\n\${JSON.stringify(result.json, null, 2)}\\n\\\`\\\`\\\`\\n\\n\`;
+      } else if (result.error) {
+        // Display errors
+        markdownResult += \`**Error:**\\n\\\`\\\`\\\`\\n\${result.error}\\n\\\`\\\`\\\`\\n\\n\`;
       }
+    }
+    
+    // Add stdout/stderr if present
+    if (execution.logs.stdout.length > 0) {
+      markdownResult += \`**Console Output:**\\n\\\`\\\`\\\`\\n\${execution.logs.stdout.join('\\n')}\\n\\\`\\\`\\\`\\n\\n\`;
+    }
+    
+    if (execution.logs.stderr.length > 0) {
+      markdownResult += \`**Warnings/Errors:**\\n\\\`\\\`\\\`\\n\${execution.logs.stderr.join('\\n')}\\n\\\`\\\`\\\`\\n\\n\`;
+    }
+    
+    // Add the code that was executed
+    markdownResult += \`**Code executed:**\\n\\\`\\\`\\\`python\\n\${code}\\n\\\`\\\`\\\`\`;
+    
+    // Return markdown result
+    res.json({
+      result: markdownResult.trim() || 'Code executed successfully with no output.',
+      success: true
     });
     
   } catch (error) {
     console.error('E2B execution error:', error);
+    const errorMessage = error.message || 'Code execution failed';
     res.status(500).json({ 
-      success: false, 
-      error: error.message || 'Code execution failed' 
+      result: \`**Execution Error:**\\n\\\`\\\`\\\`\\n\${errorMessage}\\n\\\`\\\`\\\`\\n\\n**Code that failed:**\\n\\\`\\\`\\\`python\\n\${code}\\n\\\`\\\`\\\`\`,
+      success: false
     });
   } finally {
     // Always cleanup sandbox
@@ -1741,58 +1772,21 @@ function generateE2BOpenAPISpec(config: any): string {
           },
           responses: {
             "200": {
-              description: "Code executed successfully",
+              description: "Code executed successfully - returns markdown-formatted result with embedded images and code blocks",
               content: {
                 "application/json": {
                   schema: {
                     type: "object",
                     properties: {
+                      result: {
+                        type: "string",
+                        description: "Markdown-formatted result containing images (as data URIs), code blocks, console output, and the executed code. Images are embedded using markdown syntax: ![alt](data:image/png;base64,...). Code is shown in triple-backtick blocks.",
+                        example: "![Generated visualization](data:image/png;base64,iVBORw0KGgoAAAANS...)\\n\\n**Code executed:**\\n```python\\nimport matplotlib.pyplot as plt\\nplt.plot([1,2,3], [4,5,6])\\nplt.show()\\n```"
+                      },
                       success: {
                         type: "boolean",
-                        example: true
-                      },
-                      output: {
-                        type: "array",
-                        items: {
-                          type: "object",
-                          properties: {
-                            type: {
-                              type: "string",
-                              description: "Output type (text, image, html, json, error)",
-                              example: "image"
-                            },
-                            value: {
-                              type: "string",
-                              description: "Output value (base64 for images, text for others)",
-                              example: "iVBORw0KGgoAAAANSUhEUg..."
-                            },
-                            format: {
-                              type: "string",
-                              description: "Output format (text, png, html, json)",
-                              example: "png"
-                            }
-                          }
-                        }
-                      },
-                      error: {
-                        type: "string",
-                        nullable: true,
-                        description: "Error message if execution failed"
-                      },
-                      logs: {
-                        type: "object",
-                        properties: {
-                          stdout: {
-                            type: "array",
-                            items: { type: "string" },
-                            description: "Standard output logs"
-                          },
-                          stderr: {
-                            type: "array",
-                            items: { type: "string" },
-                            description: "Standard error logs"
-                          }
-                        }
+                        example: true,
+                        description: "Indicates if code execution was successful"
                       }
                     }
                   }
@@ -1816,19 +1810,21 @@ function generateE2BOpenAPISpec(config: any): string {
               }
             },
             "500": {
-              description: "Execution error",
+              description: "Execution error - returns markdown-formatted error message",
               content: {
                 "application/json": {
                   schema: {
                     type: "object",
                     properties: {
+                      result: {
+                        type: "string",
+                        description: "Markdown-formatted error message with the failed code",
+                        example: "**Execution Error:**\\n```\\nNameError: name 'undefined_var' is not defined\\n```\\n\\n**Code that failed:**\\n```python\\nprint(undefined_var)\\n```"
+                      },
                       success: {
                         type: "boolean",
-                        example: false
-                      },
-                      error: {
-                        type: "string",
-                        example: "Code execution failed"
+                        example: false,
+                        description: "Always false for error responses"
                       }
                     }
                   }

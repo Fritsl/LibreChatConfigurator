@@ -810,7 +810,7 @@ export function ConfigurationTabs({
       },
       e2bApiKey: { 
         type: "password", 
-        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu at the top\n2️⃣ Open the Agent Builder panel on the right side\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click the '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (see below) and paste it in the schema field\n7️⃣ Save the action and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data!\n\n⚠️ IMPORTANT: You must copy the ENTIRE OpenAPI schema shown in the collapsible section below - LibreChat needs the full JSON specification, not just a URL.", 
+        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n\n🔧 PART 1: Deploy E2B Proxy Service\n\n📦 Download the reference implementation:\n• Server code: /e2b-proxy-reference/server.js\n• Package config: /e2b-proxy-reference/package.json\n• Dockerfile: /e2b-proxy-reference/Dockerfile\n• Full README: /e2b-proxy-reference/README.md\n\nThen add this to your docker-compose.yml:\n\n```yaml\ne2b-proxy:\n  build: ./e2b-proxy\n  environment:\n    - E2B_API_KEY=${E2B_API_KEY}\n  networks:\n    - librechat-network\n```\n\nCopy the downloaded files to ./e2b-proxy/ directory and deploy:\n```bash\ndocker-compose up -d e2b-proxy\n```\n\n🎯 PART 2: Configure LibreChat Agent\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu\n2️⃣ Open the Agent Builder panel on the right\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (below) and paste it\n7️⃣ Save and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data with properly displayed images!\n\n⚠️ CRITICAL: The proxy MUST return responses in LibreChat's content array format:\n```json\n{\n  \"content\": [\n    {\"type\": \"text\", \"text\": \"Console output...\"},\n    {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,...\"}}\n  ]\n}\n```\nThis is the ONLY format that renders images correctly in LibreChat.", 
         label: "E2B API Key",
         docUrl: "https://e2b.dev/docs",
         placeholder: "e2b_***"
@@ -864,21 +864,62 @@ export function ConfigurationTabs({
         },
         "responses": {
           "200": {
-            "description": "Code executed successfully - returns markdown-formatted result with embedded images and code blocks",
+            "description": "Code executed successfully - returns structured content with text and images",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "result": {
-                      "type": "string",
-                      "description": "Markdown-formatted result containing images (as data URIs), code blocks, console output, and the executed code. Images are embedded using markdown syntax: ![alt](data:image/png;base64,...). Code is shown in triple-backtick blocks."
+                    "content": {
+                      "type": "array",
+                      "description": "Array of content items (text and images)",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["text"],
+                                "description": "Text content type"
+                              },
+                              "text": {
+                                "type": "string",
+                                "description": "Markdown-formatted text with code blocks and console output"
+                              }
+                            },
+                            "required": ["type", "text"]
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": ["image_url"],
+                                "description": "Image content type"
+                              },
+                              "image_url": {
+                                "type": "object",
+                                "properties": {
+                                  "url": {
+                                    "type": "string",
+                                    "description": "Base64-encoded image data URI (data:image/png;base64,...)"
+                                  }
+                                },
+                                "required": ["url"]
+                              }
+                            },
+                            "required": ["type", "image_url"]
+                          }
+                        ]
+                      }
                     },
                     "success": {
                       "type": "boolean",
                       "description": "Indicates if code execution was successful"
                     }
-                  }
+                  },
+                  "required": ["content", "success"]
                 }
               }
             }
@@ -900,15 +941,28 @@ export function ConfigurationTabs({
             }
           },
           "500": {
-            "description": "Execution error - returns markdown-formatted error message",
+            "description": "Execution error - returns error message in content array",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "result": {
-                      "type": "string",
-                      "description": "Markdown-formatted error message with the failed code"
+                    "content": {
+                      "type": "array",
+                      "description": "Array with error message",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": ["text"]
+                          },
+                          "text": {
+                            "type": "string",
+                            "description": "Markdown-formatted error message"
+                          }
+                        }
+                      }
                     },
                     "success": {
                       "type": "boolean",
@@ -1708,34 +1762,34 @@ export function ConfigurationTabs({
                               
                               if (emailData.serviceType === "smtp") {
                                 // Clear Mailgun fields, keep SMTP fields
-                                clearedConfig.emailService = emailData.emailService ?? null;
-                                clearedConfig.emailUsername = emailData.emailUsername ?? null;
-                                clearedConfig.emailPassword = emailData.emailPassword ?? null;
-                                clearedConfig.emailFrom = emailData.emailFrom ?? null;
-                                clearedConfig.emailFromName = emailData.emailFromName ?? null;
-                                clearedConfig.mailgunApiKey = null;
-                                clearedConfig.mailgunDomain = null;
-                                clearedConfig.mailgunHost = null;
+                                clearedConfig.emailService = emailData.emailService ?? undefined;
+                                clearedConfig.emailUsername = emailData.emailUsername ?? undefined;
+                                clearedConfig.emailPassword = emailData.emailPassword ?? undefined;
+                                clearedConfig.emailFrom = emailData.emailFrom ?? undefined;
+                                clearedConfig.emailFromName = emailData.emailFromName ?? undefined;
+                                clearedConfig.mailgunApiKey = undefined;
+                                clearedConfig.mailgunDomain = undefined;
+                                clearedConfig.mailgunHost = undefined;
                               } else if (emailData.serviceType === "mailgun") {
                                 // Clear SMTP fields, keep Mailgun fields
-                                clearedConfig.emailService = null;
-                                clearedConfig.emailUsername = null;
-                                clearedConfig.emailPassword = null;
-                                clearedConfig.emailFrom = null;
-                                clearedConfig.emailFromName = null;
-                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? null;
-                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? null;
-                                clearedConfig.mailgunHost = emailData.mailgunHost ?? null;
+                                clearedConfig.emailService = undefined;
+                                clearedConfig.emailUsername = undefined;
+                                clearedConfig.emailPassword = undefined;
+                                clearedConfig.emailFrom = undefined;
+                                clearedConfig.emailFromName = undefined;
+                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? undefined;
+                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? undefined;
+                                clearedConfig.mailgunHost = emailData.mailgunHost ?? undefined;
                               } else {
                                 // Clear all fields when no provider selected
-                                clearedConfig.emailService = null;
-                                clearedConfig.emailUsername = null;
-                                clearedConfig.emailPassword = null;
-                                clearedConfig.emailFrom = null;
-                                clearedConfig.emailFromName = null;
-                                clearedConfig.mailgunApiKey = null;
-                                clearedConfig.mailgunDomain = null;
-                                clearedConfig.mailgunHost = null;
+                                clearedConfig.emailService = undefined;
+                                clearedConfig.emailUsername = undefined;
+                                clearedConfig.emailPassword = undefined;
+                                clearedConfig.emailFrom = undefined;
+                                clearedConfig.emailFromName = undefined;
+                                clearedConfig.mailgunApiKey = undefined;
+                                clearedConfig.mailgunDomain = undefined;
+                                clearedConfig.mailgunHost = undefined;
                               }
                               
                               onConfigurationChange(clearedConfig);

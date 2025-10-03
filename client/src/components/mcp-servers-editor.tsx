@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, X, Server, Settings, Globe, Info, Lightbulb, Code2 } from "lucide-react";
+import { Plus, X, Server, Settings, Globe, Info, Lightbulb, Code2, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface MCPServer {
@@ -37,6 +37,7 @@ interface MCPServersEditorProps {
 
 export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange, "data-testid": testId }: MCPServersEditorProps) {
   const [servers, setServers] = useState<MCPServer[]>([]);
+  const [showE2bApiKey, setShowE2bApiKey] = useState(false);
 
   // Convert value to array format for editing
   useEffect(() => {
@@ -250,14 +251,31 @@ export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange
                 
                 <div>
                   <Label htmlFor="e2b-api-key">E2B API Key *</Label>
-                  <Input
-                    id="e2b-api-key"
-                    type="password"
-                    value={e2bApiKey || ""}
-                    onChange={(e) => onE2bApiKeyChange?.(e.target.value)}
-                    placeholder="sk-..."
-                    data-testid="input-e2b-api-key"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="e2b-api-key"
+                      type={showE2bApiKey ? "text" : "password"}
+                      value={e2bApiKey || ""}
+                      onChange={(e) => onE2bApiKeyChange?.(e.target.value)}
+                      placeholder="sk-..."
+                      className="pr-10"
+                      data-testid="input-e2b-api-key"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowE2bApiKey(!showE2bApiKey)}
+                      data-testid="button-toggle-e2b-api-key"
+                    >
+                      {showE2bApiKey ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Required for E2B Code Interpreter to work. Sign up for free at e2b.dev
                   </p>

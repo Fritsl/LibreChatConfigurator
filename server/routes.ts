@@ -1016,9 +1016,7 @@ ${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join
 }
 
 function generateDockerComposeFile(config: any): string {
-  return `version: '3.8'
-
-services:
+  return `services:
   # MongoDB Database
   mongodb:
     container_name: librechat-mongodb
@@ -1512,20 +1510,20 @@ If you encounter issues:
 
 **Generated on**: ${new Date().toISOString().split('T')[0]}
 **LibreChat Version**: v0.8.0-RC4
-**Configuration Schema**: v${config.configVer}
+**Configuration Schema**: v${config.version || '0.8.0-rc4'}
 **Support**: https://docs.librechat.ai
 `;
 }
 
 function generateProfileFile(config: any): string {
   const currentDate = new Date().toISOString();
-  const profileName = `LibreChat-v${config.configVer}-${currentDate.split('T')[0]}`;
+  const profileName = `LibreChat-v${config.version || '0.8.0-rc4'}-${currentDate.split('T')[0]}`;
   
   const profile = {
     name: profileName,
     version: "1.0.0",
     createdAt: currentDate,
-    description: `Generated LibreChat configuration profile for v${config.configVer}`,
+    description: `Generated LibreChat configuration profile for v${config.version || '0.8.0-rc4'}`,
     configuration: config
   };
   
@@ -1632,8 +1630,6 @@ function generateE2BDockerCompose(config: any): string {
 # This file extends docker-compose.yml with the E2B proxy service
 # Generated on ${new Date().toISOString().split('T')[0]}
 
-version: '3.8'
-
 services:
   # E2B Code Execution Proxy
   e2b-proxy:
@@ -1660,14 +1656,10 @@ services:
       start_period: 40s
 
   # Ensure LibreChat can reach e2b-proxy
-  api:
+  librechat:
     depends_on:
       e2b-proxy:
         condition: service_healthy
-
-networks:
-  librechat-network:
-    external: false
 `;
 }
 

@@ -1621,7 +1621,7 @@ app.post('/execute', async (req, res) => {
   } finally {
     // Always cleanup sandbox
     if (sandbox) {
-      await sandbox.close();
+      await sandbox.kill();
     }
   }
 });

@@ -170,6 +170,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["README.md"] = generateReadmeFile(configuration);
       }
 
+      // Generate E2B Code Interpreter files if enabled
+      if (configuration.enableCodeInterpreter && configuration.e2bApiKey) {
+        packageFiles["e2b-proxy.js"] = generateE2BProxyServer(configuration);
+        packageFiles["docker-compose.override.yml"] = generateE2BDockerCompose(configuration);
+        packageFiles["code-executor.openapi.json"] = generateE2BOpenAPISpec(configuration);
+      }
+
       // Always include a configuration settings file for easy re-import
       packageFiles["LibreChatConfigSettings.json"] = generateProfileFile(configuration);
 
@@ -570,6 +577,11 @@ ${config.googleCSEId ? `GOOGLE_CSE_ID=${config.googleCSEId}` : '# GOOGLE_CSE_ID=
 ${config.bingSearchApiKey ? `BING_SEARCH_API_KEY=${config.bingSearchApiKey}` : '# BING_SEARCH_API_KEY='}
 ${config.openweatherApiKey ? `OPENWEATHER_API_KEY=${config.openweatherApiKey}` : '# OPENWEATHER_API_KEY='}
 ${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApiKey}` : '# LIBRECHAT_CODE_API_KEY='}
+
+# =============================================================================
+# E2B Code Interpreter (Optional Addon)
+# =============================================================================
+${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 
 # =============================================================================
 # RAG API Configuration
@@ -988,9 +1000,17 @@ ${config.ocrProvider ? `ocr:
   baseURL: "\${OCR_BASEURL}"` : '# OCR is not configured'}
 
 # Actions Configuration
-${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `actions:
+${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 || (config.enableCodeInterpreter && config.e2bApiKey) ? `actions:${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `
   allowedDomains:
-${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : '# Actions are not configured'}
+${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : ''}${config.enableCodeInterpreter && config.e2bApiKey ? `
+  # E2B Code Interpreter - ChatGPT-style code execution
+  - name: "Code Interpreter"
+    description: "Execute Python code in secure sandboxes. Analyze data, create graphs, run calculations."
+    url: "http://e2b-proxy:3001/code-executor.openapi.json"
+    enabled: true
+    metadata:
+      domain: "e2b-proxy:3001"
+      icon_url: "https://e2b.dev/favicon.ico"` : ''}` : '# Actions are not configured'}
 
 `;
 }
@@ -1417,7 +1437,41 @@ For production use, consider:
 4. **Backups**: Regular database and configuration backups
 5. **Updates**: Keep LibreChat and dependencies updated
 
-## 📚 Additional Resources
+${config.enableCodeInterpreter && config.e2bApiKey ? `## 🔬 E2B Code Interpreter
+
+Your installation includes the **E2B Code Interpreter** addon for ChatGPT-style code execution:
+
+### What It Does
+- Execute Python code in isolated Firecracker VMs
+- Analyze CSV files, create graphs with matplotlib/pandas
+- Run data analysis scripts securely
+- Each user gets isolated sandbox for security
+
+### How to Use
+1. **Access the Feature**: In LibreChat, use the "Code Interpreter" action
+2. **Upload Data**: Upload CSV or data files to analyze
+3. **Write Code**: Ask the AI to write Python code or write it yourself
+4. **View Results**: Get text output, graphs (PNG), or structured data
+
+### Configuration
+- **Timeout**: ${config.codeInterpreterTimeout || 60} seconds max execution time
+- **Max File Size**: ${config.codeInterpreterMaxFileSize || 10} MB for uploads
+- **E2B Proxy**: Running on port 3001
+- **API Key**: Configured via E2B_API_KEY environment variable
+
+### Architecture
+\`\`\`
+LibreChat → E2B Proxy (port 3001) → E2B API → Isolated Sandboxes
+\`\`\`
+
+The proxy server (\`e2b-proxy.js\`) bridges LibreChat's Actions API with E2B sandboxes. The \`docker-compose.override.yml\` file sets up the e2b-proxy service.
+
+### E2B Resources
+- **E2B Documentation**: https://e2b.dev/docs
+- **API Key**: Get free key at https://e2b.dev/docs
+- **Pricing**: Free tier includes generous sandbox usage
+
+` : ''}## 📚 Additional Resources
 
 - **LibreChat Documentation**: https://docs.librechat.ai
 - **GitHub Repository**: https://github.com/danny-avila/LibreChat
@@ -1476,6 +1530,323 @@ function generateProfileFile(config: any): string {
   };
   
   return JSON.stringify(profile, null, 2);
+}
+
+// =============================================================================
+// E2B CODE INTERPRETER GENERATION FUNCTIONS
+// =============================================================================
+
+function generateE2BProxyServer(config: any): string {
+  const timeout = config.codeInterpreterTimeout || 60;
+  const maxFileSize = config.codeInterpreterMaxFileSize || 10;
+  
+  return `// E2B Code Execution Proxy Server
+// This server bridges LibreChat Actions API with E2B sandboxes for secure code execution
+// Generated on ${new Date().toISOString().split('T')[0]}
+
+const express = require('express');
+const { Sandbox } = require('@e2b/code-interpreter');
+
+const app = express();
+app.use(express.json({ limit: '${maxFileSize}mb' }));
+
+// CORS for LibreChat
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', service: 'e2b-code-interpreter' });
+});
+
+// Code execution endpoint
+app.post('/execute', async (req, res) => {
+  const { code, language = 'python' } = req.body;
+  
+  if (!code) {
+    return res.status(400).json({ error: 'Code is required' });
+  }
+  
+  let sandbox;
+  
+  try {
+    // Create isolated E2B sandbox (Firecracker VM per user)
+    sandbox = await Sandbox.create({
+      apiKey: process.env.E2B_API_KEY,
+      timeout: ${timeout} * 1000, // Convert to milliseconds
+    });
+    
+    // Execute code in sandbox
+    const execution = await sandbox.runCode(code, {
+      language,
+      onStdout: (msg) => console.log('STDOUT:', msg),
+      onStderr: (msg) => console.error('STDERR:', msg),
+    });
+    
+    // Return results
+    res.json({
+      success: true,
+      output: execution.results.map(r => ({
+        type: r.type,
+        value: r.text || r.html || r.png || r.svg || r.json || r.error,
+        format: r.format || 'text'
+      })),
+      error: execution.error,
+      logs: {
+        stdout: execution.logs.stdout,
+        stderr: execution.logs.stderr
+      }
+    });
+    
+  } catch (error) {
+    console.error('E2B execution error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message || 'Code execution failed' 
+    });
+  } finally {
+    // Always cleanup sandbox
+    if (sandbox) {
+      await sandbox.close();
+    }
+  }
+});
+
+const PORT = 3001;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(\`🚀 E2B Code Interpreter proxy running on port \${PORT}\`);
+  console.log('Ready to execute code in isolated sandboxes');
+});
+`;
+}
+
+function generateE2BDockerCompose(config: any): string {
+  return `# Docker Compose Override for E2B Code Interpreter
+# This file extends docker-compose.yml with the E2B proxy service
+# Generated on ${new Date().toISOString().split('T')[0]}
+
+version: '3.8'
+
+services:
+  # E2B Code Execution Proxy
+  e2b-proxy:
+    image: node:20-alpine
+    container_name: librechat-e2b-proxy
+    working_dir: /app
+    volumes:
+      - ./e2b-proxy.js:/app/server.js:ro
+    environment:
+      - E2B_API_KEY=\${E2B_API_KEY}
+      - NODE_ENV=production
+    ports:
+      - "3001:3001"
+    networks:
+      - librechat-network
+    restart: unless-stopped
+    command: >
+      sh -c "npm install -g @e2b/code-interpreter express && node server.js"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Ensure LibreChat can reach e2b-proxy
+  api:
+    depends_on:
+      e2b-proxy:
+        condition: service_healthy
+
+networks:
+  librechat-network:
+    external: false
+`;
+}
+
+function generateE2BOpenAPISpec(config: any): string {
+  const spec = {
+    openapi: "3.0.0",
+    info: {
+      title: "LibreChat Code Executor",
+      description: "Execute Python code securely in isolated E2B sandboxes. Upload CSV files, analyze data, create graphs, and run Python scripts.",
+      version: "1.0.0"
+    },
+    servers: [
+      {
+        url: "http://e2b-proxy:3001",
+        description: "E2B Code Interpreter Proxy (Docker internal)"
+      }
+    ],
+    paths: {
+      "/execute": {
+        post: {
+          summary: "Execute code in secure sandbox",
+          description: "Runs Python code in an isolated Firecracker VM. Supports data analysis, file uploads, matplotlib plots, pandas DataFrames, and more.",
+          operationId: "executeCode",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["code"],
+                  properties: {
+                    code: {
+                      type: "string",
+                      description: "Python code to execute",
+                      example: "import pandas as pd\\nimport matplotlib.pyplot as plt\\n\\n# Create sample data\\ndf = pd.DataFrame({'x': [1,2,3,4,5], 'y': [2,4,6,8,10]})\\nplt.plot(df['x'], df['y'])\\nplt.title('Sample Plot')\\nplt.show()"
+                    },
+                    language: {
+                      type: "string",
+                      description: "Programming language (currently supports 'python')",
+                      default: "python",
+                      enum: ["python"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            "200": {
+              description: "Code executed successfully",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: true
+                      },
+                      output: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            type: {
+                              type: "string",
+                              description: "Output type (text, image, html, json, error)",
+                              example: "image"
+                            },
+                            value: {
+                              type: "string",
+                              description: "Output value (base64 for images, text for others)",
+                              example: "iVBORw0KGgoAAAANSUhEUg..."
+                            },
+                            format: {
+                              type: "string",
+                              description: "Output format (text, png, html, json)",
+                              example: "png"
+                            }
+                          }
+                        }
+                      },
+                      error: {
+                        type: "string",
+                        nullable: true,
+                        description: "Error message if execution failed"
+                      },
+                      logs: {
+                        type: "object",
+                        properties: {
+                          stdout: {
+                            type: "array",
+                            items: { type: "string" },
+                            description: "Standard output logs"
+                          },
+                          stderr: {
+                            type: "array",
+                            items: { type: "string" },
+                            description: "Standard error logs"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              description: "Invalid request",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      error: {
+                        type: "string",
+                        example: "Code is required"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              description: "Execution error",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      success: {
+                        type: "boolean",
+                        example: false
+                      },
+                      error: {
+                        type: "string",
+                        example: "Code execution failed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health": {
+        get: {
+          summary: "Health check",
+          description: "Check if the E2B proxy service is running",
+          operationId: "healthCheck",
+          responses: {
+            "200": {
+              description: "Service is healthy",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: {
+                        type: "string",
+                        example: "healthy"
+                      },
+                      service: {
+                        type: "string",
+                        example: "e2b-code-interpreter"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+  
+  return JSON.stringify(spec, null, 2);
 }
 
 // =============================================================================

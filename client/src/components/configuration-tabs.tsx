@@ -1627,6 +1627,44 @@ export function ConfigurationTabs({
                         );
                       }
                       
+                      // Special handling for e2bProxyEnabled - auto-fill defaults when enabled
+                      if (setting === "e2bProxyEnabled") {
+                        return (
+                          <SettingInput
+                            key={setting}
+                            label={fieldInfo.label}
+                            description={fieldInfo.description}
+                            docUrl={fieldInfo.docUrl}
+                            docSection={fieldInfo.docSection}
+                            type={fieldInfo.type}
+                            value={getNestedValue(configuration, setting) || false}
+                            onChange={(value) => {
+                              const updates: any = { e2bProxyEnabled: value };
+                              
+                              // When enabling E2B, auto-fill defaults if fields are empty
+                              if (value === true) {
+                                if (!configuration.e2bProxyPort) {
+                                  updates.e2bProxyPort = 3001;
+                                }
+                                if (!configuration.e2bFileTTLDays) {
+                                  updates.e2bFileTTLDays = 30;
+                                }
+                                if (!configuration.e2bMaxFileSize) {
+                                  updates.e2bMaxFileSize = 50;
+                                }
+                                if (configuration.e2bPerUserSandbox === undefined || configuration.e2bPerUserSandbox === null) {
+                                  updates.e2bPerUserSandbox = false;
+                                }
+                              }
+                              
+                              onConfigurationChange({ ...configuration, ...updates });
+                            }}
+                            options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                            data-testid={`input-${setting}`}
+                          />
+                        );
+                      }
+                      
                       return (
                         <SettingInput
                           key={setting}

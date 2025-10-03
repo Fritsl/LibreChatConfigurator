@@ -1,4 +1,4 @@
-import { CodeInterpreter } from '@e2b/code-interpreter';
+import CodeInterpreter from '@e2b/code-interpreter';
 
 export type SandboxMode = 'per-request' | 'per-user';
 
@@ -90,7 +90,7 @@ export class SandboxManager {
       };
     } finally {
       if (shouldClose && sandbox) {
-        await sandbox.close().catch(err => 
+        await sandbox.close().catch((err: unknown) => 
           console.error('Failed to close sandbox:', err)
         );
       }

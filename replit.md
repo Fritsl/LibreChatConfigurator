@@ -61,18 +61,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Component Architecture
 - **Configuration Tabs**: Main interface component with category-based organization
-- **Setting Input**: Reusable input component with type-specific rendering (including copyable-code type for OpenAPI schemas)
+- **Setting Input**: Reusable input component with type-specific rendering
 - **Validation Panel**: Real-time validation status and error reporting
 - **Preview Modal**: File preview with syntax highlighting
 - **Status Indicators**: Visual feedback for configuration validity
-
-## E2B Code Interpreter Integration
-- **Optional Addon**: ChatGPT-style code execution using E2B sandboxes for Python code, data analysis, and chart generation
-- **Reference Implementation**: Complete e2b-proxy service provided in `/public/e2b-proxy-reference/` with proper LibreChat image rendering support
-- **Image Format**: Proxy returns responses in LibreChat's required format - content array with `image_url` objects containing base64 data URIs
-- **Response Structure**: `{"content": [{"type": "text", "text": "..."}, {"type": "image_url", "image_url": {"url": "data:image/png;base64,..."}}]}`
-- **OpenAPI Schema**: Copyable schema with complete specifications for LibreChat Actions integration
-- **Docker Ready**: Includes Dockerfile, package.json, server.js, and comprehensive README
 
 # External Dependencies
 

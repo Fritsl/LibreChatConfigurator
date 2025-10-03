@@ -170,14 +170,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["README.md"] = generateReadmeFile(configuration);
       }
 
-      // Generate E2B Code Interpreter files if enabled
-      if (configuration.enableCodeInterpreter && configuration.e2bApiKey) {
-        packageFiles["e2b-proxy/server.js"] = generateE2BProxyServer(configuration);
-        packageFiles["e2b-proxy/package.json"] = generateE2BPackageJson(configuration);
-        packageFiles["docker-compose.override.yml"] = generateE2BDockerCompose(configuration);
-        packageFiles["code-executor.openapi.json"] = generateE2BOpenAPISpec(configuration);
-      }
-
       // Always include a configuration settings file for easy re-import
       packageFiles["LibreChatConfigSettings.json"] = generateProfileFile(configuration);
 
@@ -578,11 +570,6 @@ ${config.googleCSEId ? `GOOGLE_CSE_ID=${config.googleCSEId}` : '# GOOGLE_CSE_ID=
 ${config.bingSearchApiKey ? `BING_SEARCH_API_KEY=${config.bingSearchApiKey}` : '# BING_SEARCH_API_KEY='}
 ${config.openweatherApiKey ? `OPENWEATHER_API_KEY=${config.openweatherApiKey}` : '# OPENWEATHER_API_KEY='}
 ${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApiKey}` : '# LIBRECHAT_CODE_API_KEY='}
-
-# =============================================================================
-# E2B Code Interpreter (Optional Addon)
-# =============================================================================
-${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 
 # =============================================================================
 # RAG API Configuration
@@ -1001,23 +988,17 @@ ${config.ocrProvider ? `ocr:
   baseURL: "\${OCR_BASEURL}"` : '# OCR is not configured'}
 
 # Actions Configuration
-${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 || (config.enableCodeInterpreter && config.e2bApiKey) ? `actions:${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `
+${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `actions:
   allowedDomains:
-${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : ''}${config.enableCodeInterpreter && config.e2bApiKey ? `
-  # E2B Code Interpreter - ChatGPT-style code execution
-  - name: "Code Interpreter"
-    description: "Execute Python code in secure sandboxes. Analyze data, create graphs, run calculations."
-    url: "http://e2b-proxy:3001/code-executor.openapi.json"
-    enabled: true
-    metadata:
-      domain: "e2b-proxy:3001"
-      icon_url: "https://e2b.dev/favicon.ico"` : ''}` : '# Actions are not configured'}
+${config.actionsAllowedDomains.map((domain: string) => `    - "${domain}"`).join('\n')}` : '# Actions are not configured'}
 
 `;
 }
 
 function generateDockerComposeFile(config: any): string {
-  return `services:
+  return `version: '3.8'
+
+services:
   # MongoDB Database
   mongodb:
     container_name: librechat-mongodb
@@ -1281,12 +1262,7 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - \`install_dockerimage.sh\` - Installation script for Linux/macOS
 - \`install_dockerimage.bat\` - Installation script for Windows
 - \`LibreChatConfigSettings.json\` - Configuration profile for easy re-import
-- \`README.md\` - This documentation file${config.enableCodeInterpreter && config.e2bApiKey ? `
-- \`e2b-proxy/\` - E2B Code Interpreter proxy server
-  - \`server.js\` - Express proxy for code execution
-  - \`package.json\` - Node.js dependencies
-- \`docker-compose.override.yml\` - E2B proxy service configuration
-- \`code-executor.openapi.json\` - OpenAPI specification for code execution` : ''}
+- \`README.md\` - This documentation file
 
 ## 🚀 Quick Start
 
@@ -1441,44 +1417,7 @@ For production use, consider:
 4. **Backups**: Regular database and configuration backups
 5. **Updates**: Keep LibreChat and dependencies updated
 
-${config.enableCodeInterpreter && config.e2bApiKey ? `## 🔬 E2B Code Interpreter
-
-Your installation includes the **E2B Code Interpreter** addon for ChatGPT-style code execution:
-
-### What It Does
-- Execute Python code in isolated Firecracker VMs
-- Analyze CSV files, create graphs with matplotlib/pandas
-- Run data analysis scripts securely
-- Each user gets isolated sandbox for security
-
-### How to Use
-1. **Access the Feature**: In LibreChat, use the "Code Interpreter" action
-2. **Upload Data**: Upload CSV or data files to analyze
-3. **Write Code**: Ask the AI to write Python code or write it yourself
-4. **View Results**: Get text output, graphs (PNG), or structured data
-
-### Configuration
-- **Timeout**: ${config.codeInterpreterTimeout || 60} seconds max execution time
-- **Max File Size**: ${config.codeInterpreterMaxFileSize || 10} MB for uploads
-- **E2B Proxy**: Running on port 3001
-- **API Key**: Configured via E2B_API_KEY environment variable
-
-### Architecture
-\`\`\`
-LibreChat → E2B Proxy (port 3001) → E2B API → Isolated Sandboxes
-\`\`\`
-
-The proxy server (in \`e2b-proxy/\` folder) bridges LibreChat's Actions API with E2B sandboxes:
-- \`e2b-proxy/server.js\` - Express server handling code execution requests
-- \`e2b-proxy/package.json\` - Node.js dependencies (express, @e2b/code-interpreter)
-- \`docker-compose.override.yml\` - Docker service configuration for the proxy
-
-### E2B Resources
-- **E2B Documentation**: https://e2b.dev/docs
-- **API Key**: Get free key at https://e2b.dev/docs
-- **Pricing**: Free tier includes generous sandbox usage
-
-` : ''}## 📚 Additional Resources
+## 📚 Additional Resources
 
 - **LibreChat Documentation**: https://docs.librechat.ai
 - **GitHub Repository**: https://github.com/danny-avila/LibreChat
@@ -1519,354 +1458,24 @@ If you encounter issues:
 
 **Generated on**: ${new Date().toISOString().split('T')[0]}
 **LibreChat Version**: v0.8.0-RC4
-**Configuration Schema**: v${config.version || '0.8.0-rc4'}
+**Configuration Schema**: v${config.configVer}
 **Support**: https://docs.librechat.ai
 `;
 }
 
 function generateProfileFile(config: any): string {
   const currentDate = new Date().toISOString();
-  const profileName = `LibreChat-v${config.version || '0.8.0-rc4'}-${currentDate.split('T')[0]}`;
+  const profileName = `LibreChat-v${config.configVer}-${currentDate.split('T')[0]}`;
   
   const profile = {
     name: profileName,
     version: "1.0.0",
     createdAt: currentDate,
-    description: `Generated LibreChat configuration profile for v${config.version || '0.8.0-rc4'}`,
+    description: `Generated LibreChat configuration profile for v${config.configVer}`,
     configuration: config
   };
   
   return JSON.stringify(profile, null, 2);
-}
-
-// =============================================================================
-// E2B CODE INTERPRETER GENERATION FUNCTIONS
-// =============================================================================
-
-function generateE2BProxyServer(config: any): string {
-  const timeout = config.codeInterpreterTimeout || 60;
-  const maxFileSize = config.codeInterpreterMaxFileSize || 10;
-  
-  return `// E2B Code Execution Proxy Server
-// This server bridges LibreChat Actions API with E2B sandboxes for secure code execution
-// Generated on ${new Date().toISOString().split('T')[0]}
-
-const express = require('express');
-const { Sandbox } = require('@e2b/code-interpreter');
-
-const app = express();
-app.use(express.json({ limit: '${maxFileSize}mb' }));
-
-// CORS for LibreChat
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', service: 'e2b-code-interpreter' });
-});
-
-// Code execution endpoint
-app.post('/execute', async (req, res) => {
-  const { code, language = 'python' } = req.body;
-  
-  if (!code) {
-    return res.status(400).json({ error: 'Code is required' });
-  }
-  
-  let sandbox;
-  
-  try {
-    // Create isolated E2B sandbox (Firecracker VM per user)
-    sandbox = await Sandbox.create({
-      apiKey: process.env.E2B_API_KEY,
-      timeout: ${timeout} * 1000, // Convert to milliseconds
-    });
-    
-    // Execute code in sandbox
-    const execution = await sandbox.runCode(code, {
-      language,
-      onStdout: (msg) => console.log('STDOUT:', msg),
-      onStderr: (msg) => console.error('STDERR:', msg),
-    });
-    
-    // Build markdown-formatted response for LibreChat
-    let markdownResult = '';
-    const results = execution.results || [];
-    
-    // Process each result and format as markdown
-    for (const result of results) {
-      if (result.png) {
-        // Embed image as markdown with data URI
-        markdownResult += \`![Generated visualization](data:image/png;base64,\${result.png})\\n\\n\`;
-      } else if (result.svg) {
-        // Embed SVG as markdown
-        markdownResult += \`![Generated SVG](data:image/svg+xml;base64,\${Buffer.from(result.svg).toString('base64')})\\n\\n\`;
-      } else if (result.html) {
-        // Display HTML in a code block
-        markdownResult += \`**HTML Output:**\\n\\\`\\\`\\\`html\\n\${result.html}\\n\\\`\\\`\\\`\\n\\n\`;
-      } else if (result.text) {
-        // Display text output
-        markdownResult += \`\${result.text}\\n\\n\`;
-      } else if (result.json) {
-        // Display JSON in a code block
-        markdownResult += \`**JSON Output:**\\n\\\`\\\`\\\`json\\n\${JSON.stringify(result.json, null, 2)}\\n\\\`\\\`\\\`\\n\\n\`;
-      } else if (result.error) {
-        // Display errors
-        markdownResult += \`**Error:**\\n\\\`\\\`\\\`\\n\${result.error}\\n\\\`\\\`\\\`\\n\\n\`;
-      }
-    }
-    
-    // Add stdout/stderr if present
-    if (execution.logs.stdout.length > 0) {
-      markdownResult += \`**Console Output:**\\n\\\`\\\`\\\`\\n\${execution.logs.stdout.join('\\n')}\\n\\\`\\\`\\\`\\n\\n\`;
-    }
-    
-    if (execution.logs.stderr.length > 0) {
-      markdownResult += \`**Warnings/Errors:**\\n\\\`\\\`\\\`\\n\${execution.logs.stderr.join('\\n')}\\n\\\`\\\`\\\`\\n\\n\`;
-    }
-    
-    // Add the code that was executed
-    markdownResult += \`**Code executed:**\\n\\\`\\\`\\\`python\\n\${code}\\n\\\`\\\`\\\`\`;
-    
-    // Return markdown result
-    res.json({
-      result: markdownResult.trim() || 'Code executed successfully with no output.',
-      success: true
-    });
-    
-  } catch (error) {
-    console.error('E2B execution error:', error);
-    const errorMessage = error.message || 'Code execution failed';
-    res.status(500).json({ 
-      result: \`**Execution Error:**\\n\\\`\\\`\\\`\\n\${errorMessage}\\n\\\`\\\`\\\`\\n\\n**Code that failed:**\\n\\\`\\\`\\\`python\\n\${code}\\n\\\`\\\`\\\`\`,
-      success: false
-    });
-  } finally {
-    // Always cleanup sandbox
-    if (sandbox) {
-      await sandbox.kill();
-    }
-  }
-});
-
-const PORT = 3001;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(\`🚀 E2B Code Interpreter proxy running on port \${PORT}\`);
-  console.log('Ready to execute code in isolated sandboxes');
-});
-`;
-}
-
-function generateE2BPackageJson(config: any): string {
-  return `{
-  "name": "librechat-e2b-proxy",
-  "version": "1.0.0",
-  "description": "E2B Code Interpreter proxy for LibreChat - enables ChatGPT-style code execution",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "@e2b/code-interpreter": "^1.0.5",
-    "express": "^4.21.2",
-    "cors": "^2.8.5"
-  },
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "author": "LibreChat Configurator",
-  "license": "MIT"
-}
-`;
-}
-
-function generateE2BDockerCompose(config: any): string {
-  return `# Docker Compose Override for E2B Code Interpreter
-# This file extends docker-compose.yml with the E2B proxy service
-# Generated on ${new Date().toISOString().split('T')[0]}
-
-services:
-  # E2B Code Execution Proxy
-  e2b-proxy:
-    image: node:20-alpine
-    container_name: librechat-e2b-proxy
-    working_dir: /app
-    volumes:
-      - ./e2b-proxy:/app
-    environment:
-      - E2B_API_KEY=\${E2B_API_KEY}
-      - NODE_ENV=production
-    ports:
-      - "3001:3001"
-    networks:
-      - librechat-network
-    restart: unless-stopped
-    command: >
-      sh -c "npm install --production && node server.js"
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # Ensure LibreChat can reach e2b-proxy
-  librechat:
-    depends_on:
-      e2b-proxy:
-        condition: service_healthy
-`;
-}
-
-function generateE2BOpenAPISpec(config: any): string {
-  const spec = {
-    openapi: "3.0.0",
-    info: {
-      title: "LibreChat Code Executor",
-      description: "Execute Python code securely in isolated E2B sandboxes. Upload CSV files, analyze data, create graphs, and run Python scripts.",
-      version: "1.0.0"
-    },
-    servers: [
-      {
-        url: "http://e2b-proxy:3001",
-        description: "E2B Code Interpreter Proxy (Docker internal)"
-      }
-    ],
-    paths: {
-      "/execute": {
-        post: {
-          summary: "Execute code in secure sandbox",
-          description: "Runs Python code in an isolated Firecracker VM. Supports data analysis, file uploads, matplotlib plots, pandas DataFrames, and more.",
-          operationId: "executeCode",
-          requestBody: {
-            required: true,
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  required: ["code"],
-                  properties: {
-                    code: {
-                      type: "string",
-                      description: "Python code to execute",
-                      example: "import pandas as pd\\nimport matplotlib.pyplot as plt\\n\\n# Create sample data\\ndf = pd.DataFrame({'x': [1,2,3,4,5], 'y': [2,4,6,8,10]})\\nplt.plot(df['x'], df['y'])\\nplt.title('Sample Plot')\\nplt.show()"
-                    },
-                    language: {
-                      type: "string",
-                      description: "Programming language (currently supports 'python')",
-                      default: "python",
-                      enum: ["python"]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          responses: {
-            "200": {
-              description: "Code executed successfully - returns markdown-formatted result with embedded images and code blocks",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      result: {
-                        type: "string",
-                        description: "Markdown-formatted result containing images (as data URIs), code blocks, console output, and the executed code. Images are embedded using markdown syntax: ![alt](data:image/png;base64,...). Code is shown in triple-backtick blocks.",
-                        example: "![Generated visualization](data:image/png;base64,iVBORw0KGgoAAAANS...)\\n\\n**Code executed:**\\n```python\\nimport matplotlib.pyplot as plt\\nplt.plot([1,2,3], [4,5,6])\\nplt.show()\\n```"
-                      },
-                      success: {
-                        type: "boolean",
-                        example: true,
-                        description: "Indicates if code execution was successful"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              description: "Invalid request",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      error: {
-                        type: "string",
-                        example: "Code is required"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "500": {
-              description: "Execution error - returns markdown-formatted error message",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      result: {
-                        type: "string",
-                        description: "Markdown-formatted error message with the failed code",
-                        example: "**Execution Error:**\\n```\\nNameError: name 'undefined_var' is not defined\\n```\\n\\n**Code that failed:**\\n```python\\nprint(undefined_var)\\n```"
-                      },
-                      success: {
-                        type: "boolean",
-                        example: false,
-                        description: "Always false for error responses"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/health": {
-        get: {
-          summary: "Health check",
-          description: "Check if the E2B proxy service is running",
-          operationId: "healthCheck",
-          responses: {
-            "200": {
-              description: "Service is healthy",
-              content: {
-                "application/json": {
-                  schema: {
-                    type: "object",
-                    properties: {
-                      status: {
-                        type: "string",
-                        example: "healthy"
-                      },
-                      service: {
-                        type: "string",
-                        example: "e2b-code-interpreter"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-  
-  return JSON.stringify(spec, null, 2);
 }
 
 // =============================================================================

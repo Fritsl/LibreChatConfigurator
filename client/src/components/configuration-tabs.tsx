@@ -33,8 +33,7 @@ import {
   Volume2,
   Users,
   Zap,
-  HardDrive,
-  Code
+  HardDrive
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -397,15 +396,6 @@ export function ConfigurationTabs({
       settings: ["actions.allowedDomains"],
       docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
     },
-    {
-      id: "code-interpreter",
-      label: "Code Interpreter",
-      icon: Code,
-      description: "ChatGPT-Style Code Execution (Optional Addon)",
-      color: "from-violet-400 to-violet-500",
-      settings: ["enableCodeInterpreter", "e2bApiKey", "e2bOpenAPISchema", "codeInterpreterTimeout", "codeInterpreterMaxFileSize"],
-      docUrl: "https://e2b.dev/docs",
-    },
   ];
 
   // Combine original tabs with new tabs
@@ -468,7 +458,7 @@ export function ConfigurationTabs({
   // Helper function to get field type and description
   const getFieldInfo = (fieldName: string) => {
     const fieldMap: Record<string, { 
-      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "copyable-code"; 
+      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite"; 
       description: string; 
       label: string;
       docUrl?: string;
@@ -477,8 +467,6 @@ export function ConfigurationTabs({
       options?: Array<{ value: string; label: string }> | string[];
       min?: number;
       max?: number;
-      code?: string;
-      language?: string;
       step?: number;
     }> = {
       // App Settings
@@ -801,236 +789,6 @@ export function ConfigurationTabs({
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key" },
       librechatCodeApiKey: { type: "password", description: "LibreChat Code API key for code execution", label: "LibreChat Code API Key" },
-      
-      // E2B Code Interpreter (Optional Addon)
-      enableCodeInterpreter: { 
-        type: "boolean", 
-        description: "Enable ChatGPT-style code execution using E2B sandboxes. This optional addon lets AI analyze data, create graphs, and run Python code securely. SETUP REQUIRED AFTER DEPLOYMENT - See instructions in the E2B API Key field below.", 
-        label: "Enable Code Interpreter" 
-      },
-      e2bApiKey: { 
-        type: "password", 
-        description: "Get your free E2B API key at e2b.dev → After entering this key and deploying, follow these steps to activate code execution:\n\n📋 STEP-BY-STEP SETUP:\n\n🔧 PART 1: Deploy E2B Proxy Service\n\n📦 Download the reference implementation:\n• Server code: /e2b-proxy-reference/server.js\n• Package config: /e2b-proxy-reference/package.json\n• Dockerfile: /e2b-proxy-reference/Dockerfile\n• Full README: /e2b-proxy-reference/README.md\n\nThen add this to your docker-compose.yml:\n\n```yaml\ne2b-proxy:\n  build: ./e2b-proxy\n  environment:\n    - E2B_API_KEY=${E2B_API_KEY}\n  networks:\n    - librechat-network\n```\n\nCopy the downloaded files to ./e2b-proxy/ directory and deploy:\n```bash\ndocker-compose up -d e2b-proxy\n```\n\n🎯 PART 2: Configure LibreChat Agent\n1️⃣ In LibreChat, select 'Agents' from the endpoint menu\n2️⃣ Open the Agent Builder panel on the right\n3️⃣ Click 'Create New Agent' or select an existing agent\n4️⃣ In the agent settings, find the 'Actions' section\n5️⃣ Click '+ Add Action' button\n6️⃣ COPY THE COMPLETE OPENAPI SCHEMA (below) and paste it\n7️⃣ Save and start chatting!\n\n✨ Your agent can now execute Python code, create charts, and analyze data with properly displayed images!\n\n⚠️ CRITICAL FORMAT REQUIREMENT:\nThe proxy MUST return responses in LibreChat's tool format (same as DALL-E):\n```json\n[\n  [{\"type\": \"text\", \"text\": \"Results...\"}],\n  {\"content\": [{\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,...\"}}]}\n]\n```\nThis TWO-ELEMENT ARRAY is how ALL LibreChat tools return data:\n• First element: array of text responses\n• Second element: object with 'content' property containing images\nThis is the ONLY format that renders images inline in LibreChat!", 
-        label: "E2B API Key",
-        docUrl: "https://e2b.dev/docs",
-        placeholder: "e2b_***"
-      },
-      e2bOpenAPISchema: {
-        type: "copyable-code",
-        description: "Copy this complete OpenAPI schema and paste it into LibreChat's Agent Builder → Actions → Add Action. Click the copy icon to copy the entire schema to your clipboard.",
-        label: "OpenAPI Schema (Copy This)",
-        code: `{
-  "openapi": "3.0.0",
-  "info": {
-    "title": "LibreChat Code Executor",
-    "description": "Execute Python code securely in isolated E2B sandboxes. Upload CSV files, analyze data, create graphs, and run Python scripts.",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://e2b-proxy:3001",
-      "description": "E2B Code Interpreter Proxy (Docker internal)"
-    }
-  ],
-  "paths": {
-    "/execute": {
-      "post": {
-        "summary": "Execute code in secure sandbox",
-        "description": "Runs Python code in an isolated Firecracker VM. Supports data analysis, file uploads, matplotlib plots, pandas DataFrames, and more.",
-        "operationId": "executeCode",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["code"],
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "Python code to execute",
-                    "example": "import matplotlib.pyplot as plt\\nimport numpy as np\\nx = np.linspace(0, 10, 100)\\ny = np.sin(x)\\nplt.plot(x, y)\\nplt.title('Sine Wave')\\nplt.show()"
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "Programming language (currently supports 'python')",
-                    "default": "python",
-                    "enum": ["python"]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Code executed successfully - returns LibreChat tool format: [response_array, {content: images}]",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "description": "Two-element array: [text_response, image_content]",
-                  "items": [
-                    {
-                      "type": "array",
-                      "description": "Text response array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": ["text"]
-                          },
-                          "text": {
-                            "type": "string",
-                            "description": "Markdown-formatted execution results"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "description": "Image content wrapper",
-                      "properties": {
-                        "content": {
-                          "type": "array",
-                          "description": "Array of image objects",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "enum": ["image_url"]
-                              },
-                              "image_url": {
-                                "type": "object",
-                                "properties": {
-                                  "url": {
-                                    "type": "string",
-                                    "description": "data:image/png;base64,..."
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ],
-                  "minItems": 2,
-                  "maxItems": 2
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Code is required"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Execution error - returns LibreChat tool format with error message",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "description": "Two-element array with error message",
-                  "items": [
-                    {
-                      "type": "array",
-                      "description": "Error text array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "enum": ["text"]
-                          },
-                          "text": {
-                            "type": "string",
-                            "description": "Markdown-formatted error message"
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "description": "Empty content object for errors",
-                      "properties": {
-                        "content": {
-                          "type": "array",
-                          "items": {}
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "summary": "Health check",
-        "description": "Check if the E2B proxy service is running",
-        "operationId": "healthCheck",
-        "responses": {
-          "200": {
-            "description": "Service is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "healthy"
-                    },
-                    "service": {
-                      "type": "string",
-                      "example": "e2b-code-interpreter"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}`,
-        language: "json"
-      },
-      codeInterpreterTimeout: { 
-        type: "number", 
-        description: "Maximum execution time in seconds (5-300). Code will be terminated if it runs longer than this.", 
-        label: "Execution Timeout (seconds)",
-        min: 5,
-        max: 300,
-        step: 5
-      },
-      codeInterpreterMaxFileSize: { 
-        type: "number", 
-        description: "Maximum file size for uploads in MB (1-100). Users can upload CSV, data files up to this size.", 
-        label: "Max File Size (MB)",
-        min: 1,
-        max: 100,
-        step: 1
-      },
       
       // RAG API
       ragApiURL: { type: "text", description: "RAG API URL", label: "RAG API URL" },
@@ -1768,34 +1526,34 @@ export function ConfigurationTabs({
                               
                               if (emailData.serviceType === "smtp") {
                                 // Clear Mailgun fields, keep SMTP fields
-                                clearedConfig.emailService = emailData.emailService ?? undefined;
-                                clearedConfig.emailUsername = emailData.emailUsername ?? undefined;
-                                clearedConfig.emailPassword = emailData.emailPassword ?? undefined;
-                                clearedConfig.emailFrom = emailData.emailFrom ?? undefined;
-                                clearedConfig.emailFromName = emailData.emailFromName ?? undefined;
-                                clearedConfig.mailgunApiKey = undefined;
-                                clearedConfig.mailgunDomain = undefined;
-                                clearedConfig.mailgunHost = undefined;
+                                clearedConfig.emailService = emailData.emailService ?? null;
+                                clearedConfig.emailUsername = emailData.emailUsername ?? null;
+                                clearedConfig.emailPassword = emailData.emailPassword ?? null;
+                                clearedConfig.emailFrom = emailData.emailFrom ?? null;
+                                clearedConfig.emailFromName = emailData.emailFromName ?? null;
+                                clearedConfig.mailgunApiKey = null;
+                                clearedConfig.mailgunDomain = null;
+                                clearedConfig.mailgunHost = null;
                               } else if (emailData.serviceType === "mailgun") {
                                 // Clear SMTP fields, keep Mailgun fields
-                                clearedConfig.emailService = undefined;
-                                clearedConfig.emailUsername = undefined;
-                                clearedConfig.emailPassword = undefined;
-                                clearedConfig.emailFrom = undefined;
-                                clearedConfig.emailFromName = undefined;
-                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? undefined;
-                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? undefined;
-                                clearedConfig.mailgunHost = emailData.mailgunHost ?? undefined;
+                                clearedConfig.emailService = null;
+                                clearedConfig.emailUsername = null;
+                                clearedConfig.emailPassword = null;
+                                clearedConfig.emailFrom = null;
+                                clearedConfig.emailFromName = null;
+                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? null;
+                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? null;
+                                clearedConfig.mailgunHost = emailData.mailgunHost ?? null;
                               } else {
                                 // Clear all fields when no provider selected
-                                clearedConfig.emailService = undefined;
-                                clearedConfig.emailUsername = undefined;
-                                clearedConfig.emailPassword = undefined;
-                                clearedConfig.emailFrom = undefined;
-                                clearedConfig.emailFromName = undefined;
-                                clearedConfig.mailgunApiKey = undefined;
-                                clearedConfig.mailgunDomain = undefined;
-                                clearedConfig.mailgunHost = undefined;
+                                clearedConfig.emailService = null;
+                                clearedConfig.emailUsername = null;
+                                clearedConfig.emailPassword = null;
+                                clearedConfig.emailFrom = null;
+                                clearedConfig.emailFromName = null;
+                                clearedConfig.mailgunApiKey = null;
+                                clearedConfig.mailgunDomain = null;
+                                clearedConfig.mailgunHost = null;
                               }
                               
                               onConfigurationChange(clearedConfig);
@@ -1817,8 +1575,6 @@ export function ConfigurationTabs({
                           value={getNestedValue(configuration, setting) || ""}
                           onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                           options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
-                          code={fieldInfo.type === 'copyable-code' ? (fieldInfo as any).code : undefined}
-                          language={fieldInfo.type === 'copyable-code' ? (fieldInfo as any).language : undefined}
                           data-testid={`input-${setting}`}
                         />
                       );

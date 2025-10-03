@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Info, Eye, EyeOff, Plus, X, ExternalLink, Copy, Check } from "lucide-react";
+import { Info, Eye, EyeOff, Plus, X, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MCPServersEditor } from "@/components/mcp-servers-editor";
@@ -22,7 +22,7 @@ interface SettingInputProps {
   description?: string;
   docUrl?: string;
   docSection?: string;
-  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "copyable-code";
+  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite";
   value: any;
   onChange: (value: any) => void;
   options?: string[];
@@ -31,8 +31,6 @@ interface SettingInputProps {
   max?: number;
   step?: number;
   fieldName?: string;
-  code?: string;
-  language?: string;
   "data-testid"?: string;
 }
 
@@ -50,12 +48,9 @@ export function SettingInput({
   max,
   step,
   fieldName,
-  code,
-  language = "json",
   "data-testid": testId,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
     Array.isArray(value) ? value : []
   );
@@ -336,40 +331,6 @@ export function SettingInput({
             step={step}
             data-testid={testId}
           />
-        );
-
-      case "copyable-code":
-        return (
-          <div className="space-y-2">
-            <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-xs font-mono max-h-96 overflow-y-auto">
-                <code>{code || value}</code>
-              </pre>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="absolute top-2 right-2 h-8 w-8 p-0"
-                onClick={() => {
-                  const textToCopy = code || value;
-                  navigator.clipboard.writeText(textToCopy).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                  });
-                }}
-                data-testid={`${testId}-copy`}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Click the copy button to copy the entire schema to your clipboard
-            </p>
-          </div>
         );
 
       default:

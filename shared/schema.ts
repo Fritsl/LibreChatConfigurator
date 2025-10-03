@@ -521,12 +521,6 @@ export const configurationSchema = z.object({
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   
-  // E2B Code Interpreter (Optional Addon)
-  e2bApiKey: z.string().optional(), // E2B_API_KEY
-  enableCodeInterpreter: z.boolean().default(false), // Enable E2B code execution
-  codeInterpreterTimeout: z.number().min(5).max(300).default(30), // Timeout in seconds
-  codeInterpreterMaxFileSize: z.number().min(1).max(100).default(50), // Max file size in MB
-  
   // RAG API Configuration
   ragApiURL: z.string().optional(), // RAG_API_URL
   ragOpenaiApiKey: z.string().optional(), // RAG_OPENAI_API_KEY

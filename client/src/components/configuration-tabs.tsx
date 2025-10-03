@@ -199,7 +199,7 @@ export function ConfigurationTabs({
           icon: Search,
           description: "Web Search & External APIs",
           color: "from-violet-500 to-violet-600",
-          settings: ["webSearch", "openweatherApiKey", "librechatCodeApiKey"],
+          settings: ["webSearch", "openweatherApiKey", "librechatCodeApiKey", "e2bApiKey"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
         {
@@ -789,6 +789,7 @@ export function ConfigurationTabs({
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key" },
       librechatCodeApiKey: { type: "password", description: "LibreChat Code API key for code execution", label: "LibreChat Code API Key" },
+      e2bApiKey: { type: "password", description: "E2B API key for code interpreter MCP server (get at e2b.dev)", label: "E2B API Key" },
       
       // RAG API
       ragApiURL: { type: "text", description: "RAG API URL", label: "RAG API URL" },

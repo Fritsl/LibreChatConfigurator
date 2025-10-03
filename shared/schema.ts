@@ -521,6 +521,9 @@ export const configurationSchema = z.object({
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   
+  // E2B Code Interpreter (MCP)
+  e2bApiKey: z.string().optional(), // E2B_API_KEY
+  
   // RAG API Configuration
   ragApiURL: z.string().optional(), // RAG_API_URL
   ragOpenaiApiKey: z.string().optional(), // RAG_OPENAI_API_KEY

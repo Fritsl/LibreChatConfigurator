@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, X, Server, Settings, Globe, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, X, Server, Settings, Globe, Info, Lightbulb, Code2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface MCPServer {
@@ -23,6 +24,7 @@ interface MCPServer {
   iconPath?: string;
   chatMenu?: boolean;
   customUserVars?: Record<string, any>;
+  preset?: string;
 }
 
 interface MCPServersEditorProps {
@@ -75,9 +77,34 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
       timeout: 30000,
       headers: {},
       chatMenu: true,
-      serverInstructions: true
+      serverInstructions: true,
+      preset: "none"
     };
     updateServers([...servers, newServer]);
+  };
+
+  const applyPreset = (serverIndex: number, presetName: string) => {
+    const server = servers[serverIndex];
+    
+    if (presetName === "e2b-code-interpreter") {
+      updateServer(serverIndex, {
+        preset: presetName,
+        type: "stdio",
+        command: "npx",
+        args: ["-y", "@e2b/mcp-server"],
+        name: server.name || "e2b-code-interpreter",
+        serverInstructions: true,
+        chatMenu: true
+      });
+    } else {
+      // Reset to manual configuration
+      updateServer(serverIndex, {
+        preset: "none",
+        type: "streamable-http",
+        command: undefined,
+        args: undefined
+      });
+    }
   };
 
   const removeServer = (index: number) => {
@@ -175,6 +202,50 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
           </CardHeader>
           
           <CardContent className="space-y-4">
+            {/* Preset Selection */}
+            <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30">
+              <Lightbulb className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-sm">
+                <strong className="text-blue-700 dark:text-blue-400">Quick Setup Presets:</strong> Choose a preset to auto-configure common MCP servers, or select "Manual Configuration" for custom setup.
+              </AlertDescription>
+            </Alert>
+            
+            <div>
+              <Label htmlFor={`server-preset-${serverIndex}`}>
+                <Code2 className="h-3 w-3 inline mr-1" />
+                Configuration Preset
+              </Label>
+              <Select
+                value={server.preset || "none"}
+                onValueChange={(value: string) => applyPreset(serverIndex, value)}
+              >
+                <SelectTrigger data-testid={`select-mcp-preset-${serverIndex}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Manual Configuration</SelectItem>
+                  <SelectItem value="e2b-code-interpreter">E2B Code Interpreter (Python/JS sandbox)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {server.preset === "e2b-code-interpreter" && (
+              <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30">
+                <Info className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-sm space-y-2">
+                  <p className="text-green-700 dark:text-green-400">
+                    <strong>E2B Code Interpreter</strong> adds ChatGPT-like code execution to LibreChat! AI can run Python/JavaScript code, generate charts, analyze data, and more.
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-xs text-green-600 dark:text-green-500">
+                    <li>Get your free API key at <a href="https://e2b.dev" target="_blank" rel="noopener noreferrer" className="underline font-medium">e2b.dev</a></li>
+                    <li>Enter it in the "E2B API Key" field in the APIs & Keys tab</li>
+                    <li>Supports images, file uploads, and streaming output</li>
+                    <li>Fully isolated sandbox per user - completely secure</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+            
             {/* Server Name */}
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -184,6 +255,7 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
                   value={server.name || ""}
                   onChange={(e) => updateServer(serverIndex, { name: e.target.value })}
                   placeholder="unique-server-name"
+                  disabled={server.preset === "e2b-code-interpreter"}
                   data-testid={`input-mcp-server-name-${serverIndex}`}
                 />
               </div>
@@ -194,6 +266,7 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
                 <Select
                   value={server.type || "streamable-http"}
                   onValueChange={(value: string) => updateServer(serverIndex, { type: value as MCPServer["type"] })}
+                  disabled={server.preset === "e2b-code-interpreter"}
                 >
                   <SelectTrigger data-testid={`input-mcp-server-type-${serverIndex}`}>
                     <SelectValue />
@@ -208,20 +281,54 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
               </div>
             </div>
 
-            {/* Server URL */}
-            <div>
-              <Label htmlFor={`server-url-${serverIndex}`}>
-                <Globe className="h-3 w-3 inline mr-1" />
-                Server URL
-              </Label>
-              <Input
-                id={`server-url-${serverIndex}`}
-                value={server.url || ""}
-                onChange={(e) => updateServer(serverIndex, { url: e.target.value })}
-                placeholder="https://api.example.com/mcp"
-                data-testid={`input-mcp-server-url-${serverIndex}`}
-              />
-            </div>
+            {/* Command and Args for stdio servers */}
+            {server.type === "stdio" && (
+              <>
+                <div>
+                  <Label htmlFor={`server-command-${serverIndex}`}>Command</Label>
+                  <Input
+                    id={`server-command-${serverIndex}`}
+                    value={server.command || ""}
+                    onChange={(e) => updateServer(serverIndex, { command: e.target.value })}
+                    placeholder="npx, node, python, etc."
+                    disabled={server.preset === "e2b-code-interpreter"}
+                    data-testid={`input-mcp-server-command-${serverIndex}`}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`server-args-${serverIndex}`}>Arguments (comma-separated)</Label>
+                  <Input
+                    id={`server-args-${serverIndex}`}
+                    value={server.args?.join(", ") || ""}
+                    onChange={(e) => {
+                      const argsStr = e.target.value;
+                      const argsArray = argsStr ? argsStr.split(",").map(arg => arg.trim()) : [];
+                      updateServer(serverIndex, { args: argsArray });
+                    }}
+                    placeholder="-y, @e2b/mcp-server"
+                    disabled={server.preset === "e2b-code-interpreter"}
+                    data-testid={`input-mcp-server-args-${serverIndex}`}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Server URL for non-stdio servers */}
+            {server.type !== "stdio" && (
+              <div>
+                <Label htmlFor={`server-url-${serverIndex}`}>
+                  <Globe className="h-3 w-3 inline mr-1" />
+                  Server URL
+                </Label>
+                <Input
+                  id={`server-url-${serverIndex}`}
+                  value={server.url || ""}
+                  onChange={(e) => updateServer(serverIndex, { url: e.target.value })}
+                  placeholder="https://api.example.com/mcp"
+                  data-testid={`input-mcp-server-url-${serverIndex}`}
+                />
+              </div>
+            )}
 
             {/* Timeout */}
             <div>

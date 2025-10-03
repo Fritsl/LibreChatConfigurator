@@ -570,6 +570,7 @@ ${config.googleCSEId ? `GOOGLE_CSE_ID=${config.googleCSEId}` : '# GOOGLE_CSE_ID=
 ${config.bingSearchApiKey ? `BING_SEARCH_API_KEY=${config.bingSearchApiKey}` : '# BING_SEARCH_API_KEY='}
 ${config.openweatherApiKey ? `OPENWEATHER_API_KEY=${config.openweatherApiKey}` : '# OPENWEATHER_API_KEY='}
 ${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApiKey}` : '# LIBRECHAT_CODE_API_KEY='}
+${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 
 # =============================================================================
 # RAG API Configuration
@@ -780,6 +781,11 @@ mcpServers: ${
       
       if (server.chatMenu !== undefined) {
         serverConfig += `\n    chatMenu: ${server.chatMenu}`;
+      }
+      
+      // Add environment variables for E2B preset
+      if (server.preset === 'e2b-code-interpreter' && config.e2bApiKey) {
+        serverConfig += `\n    env:\n      E2B_API_KEY: ${config.e2bApiKey}`;
       }
       
       return serverConfig;

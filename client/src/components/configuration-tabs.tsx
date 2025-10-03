@@ -1495,6 +1495,25 @@ export function ConfigurationTabs({
                         }
                       };
                       
+                      // Special handling for mcpServers to pass e2bApiKey
+                      if (setting === "mcpServers") {
+                        return (
+                          <SettingInput
+                            key={setting}
+                            label={fieldInfo.label}
+                            description={fieldInfo.description}
+                            docUrl={fieldInfo.docUrl}
+                            docSection={fieldInfo.docSection}
+                            type={fieldInfo.type}
+                            value={getNestedValue(configuration, setting) || {}}
+                            onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
+                            e2bApiKey={configuration.e2bApiKey}
+                            onE2bApiKeyChange={(value) => onConfigurationChange({ ...configuration, e2bApiKey: value })}
+                            data-testid={`input-${setting}`}
+                          />
+                        );
+                      }
+                      
                       // Special handling for emailComposite field
                       if (setting === "emailComposite") {
                         // Build composite value from individual email fields

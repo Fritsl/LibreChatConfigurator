@@ -31,6 +31,8 @@ interface SettingInputProps {
   max?: number;
   step?: number;
   fieldName?: string;
+  e2bApiKey?: string;
+  onE2bApiKeyChange?: (value: string) => void;
   "data-testid"?: string;
 }
 
@@ -48,6 +50,8 @@ export function SettingInput({
   max,
   step,
   fieldName,
+  e2bApiKey,
+  onE2bApiKeyChange,
   "data-testid": testId,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -199,6 +203,8 @@ export function SettingInput({
           <MCPServersEditor
             value={value}
             onChange={onChange}
+            e2bApiKey={e2bApiKey}
+            onE2bApiKeyChange={onE2bApiKeyChange}
             data-testid={testId}
           />
         );

@@ -30,10 +30,12 @@ interface MCPServer {
 interface MCPServersEditorProps {
   value: MCPServer[] | Record<string, MCPServer> | null;
   onChange: (value: MCPServer[] | Record<string, MCPServer>) => void;
+  e2bApiKey?: string;
+  onE2bApiKeyChange?: (value: string) => void;
   "data-testid"?: string;
 }
 
-export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCPServersEditorProps) {
+export function MCPServersEditor({ value, onChange, e2bApiKey, onE2bApiKeyChange, "data-testid": testId }: MCPServersEditorProps) {
   const [servers, setServers] = useState<MCPServer[]>([]);
 
   // Convert value to array format for editing
@@ -230,20 +232,37 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
             </div>
 
             {server.preset === "e2b-code-interpreter" && (
-              <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30">
-                <Info className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-sm space-y-2">
-                  <p className="text-green-700 dark:text-green-400">
-                    <strong>E2B Code Interpreter</strong> adds ChatGPT-like code execution to LibreChat! AI can run Python/JavaScript code, generate charts, analyze data, and more.
+              <>
+                <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30">
+                  <Info className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-sm space-y-2">
+                    <p className="text-green-700 dark:text-green-400">
+                      <strong>E2B Code Interpreter</strong> adds ChatGPT-like code execution to LibreChat! AI can run Python/JavaScript code, generate charts, analyze data, and more.
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 text-xs text-green-600 dark:text-green-500">
+                      <li>Get your free API key at <a href="https://e2b.dev" target="_blank" rel="noopener noreferrer" className="underline font-medium">e2b.dev</a></li>
+                      <li>Enter it below to enable code execution features</li>
+                      <li>Supports images, file uploads, and streaming output</li>
+                      <li>Fully isolated sandbox per user - completely secure</li>
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+                
+                <div>
+                  <Label htmlFor="e2b-api-key">E2B API Key *</Label>
+                  <Input
+                    id="e2b-api-key"
+                    type="password"
+                    value={e2bApiKey || ""}
+                    onChange={(e) => onE2bApiKeyChange?.(e.target.value)}
+                    placeholder="sk-..."
+                    data-testid="input-e2b-api-key"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Required for E2B Code Interpreter to work. Sign up for free at e2b.dev
                   </p>
-                  <ul className="list-disc list-inside space-y-1 text-xs text-green-600 dark:text-green-500">
-                    <li>Get your free API key at <a href="https://e2b.dev" target="_blank" rel="noopener noreferrer" className="underline font-medium">e2b.dev</a></li>
-                    <li>Enter it in the "E2B API Key" field in the <strong>Search & APIs</strong> tab</li>
-                    <li>Supports images, file uploads, and streaming output</li>
-                    <li>Fully isolated sandbox per user - completely secure</li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
+                </div>
+              </>
             )}
             
             {/* Server Name */}

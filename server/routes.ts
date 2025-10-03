@@ -172,7 +172,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate E2B Code Interpreter files if enabled
       if (configuration.enableCodeInterpreter && configuration.e2bApiKey) {
-        packageFiles["e2b-proxy.js"] = generateE2BProxyServer(configuration);
+        packageFiles["e2b-proxy/server.js"] = generateE2BProxyServer(configuration);
+        packageFiles["e2b-proxy/package.json"] = generateE2BPackageJson(configuration);
         packageFiles["docker-compose.override.yml"] = generateE2BDockerCompose(configuration);
         packageFiles["code-executor.openapi.json"] = generateE2BOpenAPISpec(configuration);
       }
@@ -1280,7 +1281,12 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - \`install_dockerimage.sh\` - Installation script for Linux/macOS
 - \`install_dockerimage.bat\` - Installation script for Windows
 - \`LibreChatConfigSettings.json\` - Configuration profile for easy re-import
-- \`README.md\` - This documentation file
+- \`README.md\` - This documentation file${config.enableCodeInterpreter && config.e2bApiKey ? `
+- \`e2b-proxy/\` - E2B Code Interpreter proxy server
+  - \`server.js\` - Express proxy for code execution
+  - \`package.json\` - Node.js dependencies
+- \`docker-compose.override.yml\` - E2B proxy service configuration
+- \`code-executor.openapi.json\` - OpenAPI specification for code execution` : ''}
 
 ## 🚀 Quick Start
 
@@ -1462,7 +1468,10 @@ Your installation includes the **E2B Code Interpreter** addon for ChatGPT-style 
 LibreChat → E2B Proxy (port 3001) → E2B API → Isolated Sandboxes
 \`\`\`
 
-The proxy server (\`e2b-proxy.js\`) bridges LibreChat's Actions API with E2B sandboxes. The \`docker-compose.override.yml\` file sets up the e2b-proxy service.
+The proxy server (in \`e2b-proxy/\` folder) bridges LibreChat's Actions API with E2B sandboxes:
+- \`e2b-proxy/server.js\` - Express server handling code execution requests
+- \`e2b-proxy/package.json\` - Node.js dependencies (express, @e2b/code-interpreter)
+- \`docker-compose.override.yml\` - Docker service configuration for the proxy
 
 ### E2B Resources
 - **E2B Documentation**: https://e2b.dev/docs
@@ -1625,6 +1634,29 @@ app.listen(PORT, '0.0.0.0', () => {
 `;
 }
 
+function generateE2BPackageJson(config: any): string {
+  return `{
+  "name": "librechat-e2b-proxy",
+  "version": "1.0.0",
+  "description": "E2B Code Interpreter proxy for LibreChat - enables ChatGPT-style code execution",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@e2b/code-interpreter": "^1.0.5",
+    "express": "^4.21.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "LibreChat Configurator",
+  "license": "MIT"
+}
+`;
+}
+
 function generateE2BDockerCompose(config: any): string {
   return `# Docker Compose Override for E2B Code Interpreter
 # This file extends docker-compose.yml with the E2B proxy service
@@ -1637,7 +1669,7 @@ services:
     container_name: librechat-e2b-proxy
     working_dir: /app
     volumes:
-      - ./e2b-proxy.js:/app/server.js:ro
+      - ./e2b-proxy:/app
     environment:
       - E2B_API_KEY=\${E2B_API_KEY}
       - NODE_ENV=production
@@ -1647,7 +1679,7 @@ services:
       - librechat-network
     restart: unless-stopped
     command: >
-      sh -c "npm install -g @e2b/code-interpreter express && node server.js"
+      sh -c "npm install --production && node server.js"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
       interval: 30s

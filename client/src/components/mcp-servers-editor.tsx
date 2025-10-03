@@ -238,7 +238,7 @@ export function MCPServersEditor({ value, onChange, "data-testid": testId }: MCP
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-xs text-green-600 dark:text-green-500">
                     <li>Get your free API key at <a href="https://e2b.dev" target="_blank" rel="noopener noreferrer" className="underline font-medium">e2b.dev</a></li>
-                    <li>Enter it in the "E2B API Key" field in the APIs & Keys tab</li>
+                    <li>Enter it in the "E2B API Key" field in the <strong>Search & APIs</strong> tab</li>
                     <li>Supports images, file uploads, and streaming output</li>
                     <li>Fully isolated sandbox per user - completely secure</li>
                   </ul>

@@ -1,4 +1,5 @@
-FROM node:20-alpine
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -6,14 +7,28 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm install --production
+# Install all dependencies (including dev dependencies for building)
+RUN npm install
 
 # Copy source code
 COPY src ./src
 
 # Build TypeScript
 RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --production
+
+# Copy built files from builder stage
+COPY --from=builder /app/dist ./dist
 
 # Create storage directory
 RUN mkdir -p /tmp/e2b-files

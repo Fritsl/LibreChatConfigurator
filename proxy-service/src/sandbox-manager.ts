@@ -26,18 +26,30 @@ export class SandboxManager {
   }
 
   async executeCode(userId: string, language: 'python' | 'javascript', code: string): Promise<ExecutionResult> {
+    const startTime = Date.now();
+    const codePreview = code.length > 100 ? code.substring(0, 100) + '...' : code;
+    console.log(`[${new Date().toISOString()}] Executing ${language} code for user ${userId}`);
+    console.log(`Code preview: ${codePreview}`);
+    
     let sandbox: Sandbox | null = null;
     let shouldClose = true;
 
     try {
       if (this.mode === 'per-user') {
+        console.log(`Using persistent sandbox for user ${userId}`);
         sandbox = await this.getUserSandbox(userId);
         shouldClose = false; // Keep user sandboxes alive
       } else {
+        console.log('Creating new per-request sandbox...');
+        const createStart = Date.now();
         sandbox = await Sandbox.create({ apiKey: this.apiKey });
+        console.log(`Sandbox created in ${Date.now() - createStart}ms`);
       }
 
+      console.log('Running code in sandbox...');
+      const execStart = Date.now();
       const execution = await sandbox.runCode(code);
+      console.log(`Code execution completed in ${Date.now() - execStart}ms`);
       
       // Combine stdout and stderr logs
       const logs = [
@@ -51,6 +63,9 @@ export class SandboxManager {
           ? `${execution.error.name}: ${execution.error.value}\n${execution.error.traceback}`
           : `${execution.error.name}: ${execution.error.value}`;
         
+        console.error(`[${new Date().toISOString()}] Code execution failed for user ${userId}:`, errorMsg);
+        console.log(`Total execution time: ${Date.now() - startTime}ms`);
+        
         return {
           success: false,
           error: errorMsg,
@@ -61,8 +76,10 @@ export class SandboxManager {
       // Retrieve files from /outputs directory
       const files: Array<{ name: string; content: Buffer; mimeType: string }> = [];
       
+      console.log('Checking for output files in /outputs directory...');
       try {
         const outputFiles = await sandbox.files.list('/outputs');
+        console.log(`Found ${outputFiles.length} files in /outputs`);
         
         for (const fileInfo of outputFiles) {
           try {
@@ -74,14 +91,20 @@ export class SandboxManager {
               content: buffer,
               mimeType: this.getMimeType(fileInfo.name)
             });
+            console.log(`Retrieved file: ${fileInfo.name} (${buffer.length} bytes, ${this.getMimeType(fileInfo.name)})`);
           } catch (err) {
             console.error(`Failed to read file ${fileInfo.path}:`, err);
           }
         }
       } catch (err) {
         // /outputs directory might not exist, that's fine
-        console.log('No output files found');
+        console.log('No /outputs directory found (this is normal if no files were created)');
       }
+
+      const totalTime = Date.now() - startTime;
+      console.log(`[${new Date().toISOString()}] Code execution successful for user ${userId}`);
+      console.log(`Output length: ${execution.text?.length || 0} chars, Logs: ${logs.length} lines, Files: ${files.length}`);
+      console.log(`Total execution time: ${totalTime}ms`);
 
       return {
         success: true,
@@ -91,6 +114,10 @@ export class SandboxManager {
       };
 
     } catch (error) {
+      const totalTime = Date.now() - startTime;
+      console.error(`[${new Date().toISOString()}] Sandbox execution error for user ${userId}:`, error);
+      console.log(`Failed after ${totalTime}ms`);
+      
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -98,9 +125,11 @@ export class SandboxManager {
       };
     } finally {
       if (shouldClose && sandbox) {
+        console.log('Cleaning up sandbox...');
         await sandbox.kill().catch((err: unknown) => 
-          console.error('Failed to kill sandbox:', err)
+          console.error(`[${new Date().toISOString()}] Failed to kill sandbox:`, err)
         );
+        console.log('Sandbox cleanup complete');
       }
     }
   }

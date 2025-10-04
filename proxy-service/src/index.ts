@@ -45,11 +45,18 @@ app.use((req, res, next) => {
 // POST /execute - Execute code and return file URLs
 app.post('/execute', async (req: Request, res: Response) => {
   const startTime = Date.now();
+  const requestId = Math.random().toString(36).substring(7);
+  
+  console.log(`\n${'='.repeat(80)}`);
+  console.log(`[${new Date().toISOString()}] [REQUEST ${requestId}] POST /execute`);
   
   try {
     const { code, language = 'python', userId } = req.body;
+    console.log(`[REQUEST ${requestId}] User: ${userId}, Language: ${language}`);
+    console.log(`[REQUEST ${requestId}] Code length: ${code?.length || 0} bytes`);
 
     if (!code || typeof code !== 'string') {
+      console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid code`);
       return res.status(400).json({
         error: 'CLIENT_ERROR',
         message: 'Missing or invalid "code" field'
@@ -57,6 +64,7 @@ app.post('/execute', async (req: Request, res: Response) => {
     }
 
     if (!userId || typeof userId !== 'string') {
+      console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid userId`);
       return res.status(400).json({
         error: 'CLIENT_ERROR',
         message: 'Missing or invalid "userId" field'
@@ -64,19 +72,26 @@ app.post('/execute', async (req: Request, res: Response) => {
     }
 
     if (language !== 'python' && language !== 'javascript') {
+      console.warn(`[REQUEST ${requestId}] Validation failed: Invalid language "${language}"`);
       return res.status(400).json({
         error: 'CLIENT_ERROR',
         message: 'Language must be "python" or "javascript"'
       });
     }
 
+    console.log(`[REQUEST ${requestId}] Executing code in E2B sandbox...`);
     // Execute code in E2B sandbox
     const result = await sandboxManager.executeCode(userId, language, code);
 
     if (!result.success) {
-      metrics.recordExecution(language, 'error', (Date.now() - startTime) / 1000);
+      const duration = Date.now() - startTime;
+      console.error(`[REQUEST ${requestId}] Execution failed after ${duration}ms`);
+      console.error(`[REQUEST ${requestId}] Error: ${result.error}`);
+      
+      metrics.recordExecution(language, 'error', duration / 1000);
       metrics.recordError(result.error?.includes('E2B') ? 'E2B_ERROR' : 'EXECUTION_ERROR');
       
+      console.log(`${'='.repeat(80)}\n`);
       return res.status(200).json({
         success: false,
         error: result.error,
@@ -84,10 +99,14 @@ app.post('/execute', async (req: Request, res: Response) => {
       });
     }
 
+    console.log(`[REQUEST ${requestId}] Code execution successful`);
+    
     // Store generated files and create URLs
     const fileUrls: Array<{ name: string; url: string; mimeType: string }> = [];
     
     if (result.files && result.files.length > 0) {
+      console.log(`[REQUEST ${requestId}] Storing ${result.files.length} output files...`);
+      
       for (const file of result.files) {
         try {
           const storedFile = await fileStorage.storeFile(
@@ -97,23 +116,32 @@ app.post('/execute', async (req: Request, res: Response) => {
             file.mimeType
           );
           
+          const fileUrl = `${req.protocol}://${req.get('host')}/files/${storedFile.id}`;
           fileUrls.push({
             name: file.name,
-            url: `${req.protocol}://${req.get('host')}/files/${storedFile.id}`,
+            url: fileUrl,
             mimeType: file.mimeType
           });
           
+          console.log(`[REQUEST ${requestId}] Stored file: ${file.name} -> ${fileUrl}`);
           metrics.recordFileSize(file.content.length);
         } catch (err) {
-          console.error(`Failed to store file ${file.name}:`, err);
+          console.error(`[REQUEST ${requestId}] Failed to store file ${file.name}:`, err);
           metrics.recordError('FILE_STORAGE_ERROR');
         }
       }
+    } else {
+      console.log(`[REQUEST ${requestId}] No output files generated`);
     }
 
     // Update metrics
-    metrics.recordExecution(language, 'success', (Date.now() - startTime) / 1000);
+    const duration = Date.now() - startTime;
+    metrics.recordExecution(language, 'success', duration / 1000);
     metrics.updateFileCount(fileStorage.getStats().totalFiles);
+
+    console.log(`[REQUEST ${requestId}] Response: ${result.output?.length || 0} chars output, ${result.logs?.length || 0} log lines, ${fileUrls.length} files`);
+    console.log(`[REQUEST ${requestId}] Total duration: ${duration}ms`);
+    console.log(`${'='.repeat(80)}\n`);
 
     return res.json({
       success: true,
@@ -123,7 +151,11 @@ app.post('/execute', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    console.error('Execution error:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[REQUEST ${requestId}] Proxy error after ${duration}ms:`, error);
+    console.error(`[REQUEST ${requestId}] Stack trace:`, error instanceof Error ? error.stack : 'N/A');
+    console.log(`${'='.repeat(80)}\n`);
+    
     metrics.recordError('PROXY_ERROR');
     
     return res.status(500).json({
@@ -135,11 +167,14 @@ app.post('/execute', async (req: Request, res: Response) => {
 
 // GET /files/:fileId - Serve file with security checks
 app.get('/files/:fileId', async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+  const userId = req.query.userId as string;
+  
+  console.log(`[${new Date().toISOString()}] GET /files/${fileId} (user: ${userId || 'missing'})`);
+  
   try {
-    const { fileId } = req.params;
-    const userId = req.query.userId as string;
-
     if (!userId) {
+      console.warn(`File request rejected: Missing userId for file ${fileId}`);
       return res.status(400).json({
         error: 'CLIENT_ERROR',
         message: 'Missing userId query parameter'
@@ -149,6 +184,7 @@ app.get('/files/:fileId', async (req: Request, res: Response) => {
     const file = await fileStorage.getFile(fileId, userId);
     
     if (!file) {
+      console.warn(`File not found or expired: ${fileId} for user ${userId}`);
       return res.status(404).json({
         error: 'NOT_FOUND',
         message: 'File not found or expired'
@@ -156,6 +192,8 @@ app.get('/files/:fileId', async (req: Request, res: Response) => {
     }
 
     const content = await fileStorage.readFileContent(fileId, userId);
+    
+    console.log(`Serving file: ${file.filename} (${file.mimeType}, ${content.length} bytes) to user ${userId}`);
     
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);

@@ -11,7 +11,7 @@ export function generateE2BOpenAPISchema(config: any): string {
   return `openapi: 3.0.0
 info:
   title: E2B Code Execution
-  description: Execute Python/JavaScript code in isolated sandboxes and retrieve generated files (graphs, charts, CSV, etc.)
+  description: Execute Python/JavaScript code in isolated sandboxes. Images and files are returned as MCP-style content items with base64 data.
   version: 1.0.0
 servers:
   - url: ${proxyUrl}
@@ -22,8 +22,12 @@ paths:
       operationId: e2b_execute_code
       summary: Execute Python or JavaScript code
       description: |
-        Executes code in an isolated E2B sandbox and returns any generated files as HTTP URLs.
-        Files saved to /outputs directory in the sandbox will be automatically retrieved and made available.
+        Executes code in an isolated E2B sandbox and returns results as MCP-style content.
+        Save files to /outputs directory in the sandbox - they will be returned as base64-encoded content items.
+        
+        IMPORTANT: To generate images/files, save them to /outputs directory:
+        - Python: plt.savefig('/outputs/chart.png')
+        - JavaScript: fs.writeFileSync('/outputs/data.json', content)
       requestBody:
         required: true
         content:
@@ -36,7 +40,7 @@ paths:
               properties:
                 code:
                   type: string
-                  description: Python or JavaScript code to execute
+                  description: Python or JavaScript code to execute. Save files to /outputs to include them in the response.
                   example: |
                     import matplotlib.pyplot as plt
                     import numpy as np
@@ -58,44 +62,85 @@ paths:
                   description: Programming language
                 userId:
                   type: string
-                  description: User ID for file isolation and permissions
+                  description: User ID for sandbox isolation
       responses:
         '200':
-          description: Code executed successfully
+          description: Code executed successfully - returns MCP-style content array
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - content
+                properties:
+                  content:
+                    type: array
+                    description: MCP-style content items (text and images)
+                    items:
+                      oneOf:
+                        - type: object
+                          required:
+                            - type
+                            - text
+                          properties:
+                            type:
+                              type: string
+                              enum: [text]
+                            text:
+                              type: string
+                              description: Text output or execution status
+                        - type: object
+                          required:
+                            - type
+                            - mimeType
+                            - data
+                          properties:
+                            type:
+                              type: string
+                              enum: [image]
+                            mimeType:
+                              type: string
+                              description: MIME type (e.g., image/png, image/jpeg)
+                            data:
+                              type: string
+                              description: Base64-encoded image data (no data URL prefix)
+                            name:
+                              type: string
+                              description: Original filename
+        '400':
+          description: Invalid request
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
-                  output:
-                    type: string
-                    description: Standard output from code execution
-                  logs:
-                    type: array
-                    items:
-                      type: string
-                    description: Execution logs (stdout/stderr)
-                  files:
+                  content:
                     type: array
                     items:
                       type: object
                       properties:
-                        name:
+                        type:
                           type: string
-                        url:
+                          enum: [text]
+                        text:
                           type: string
-                          description: HTTP URL to retrieve the file
-                        mimeType:
-                          type: string
-                  error:
-                    type: string
-                    description: Error message if execution failed
-        '400':
-          description: Invalid request
         '500':
           description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum: [text]
+                        text:
+                          type: string
 `;
 }
 

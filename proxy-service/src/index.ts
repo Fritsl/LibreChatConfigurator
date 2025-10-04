@@ -42,7 +42,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// POST /execute - Execute code and return file URLs
+// POST /execute - Execute code and return MCP-style content
 app.post('/execute', async (req: Request, res: Response) => {
   const startTime = Date.now();
   const requestId = Math.random().toString(36).substring(7);
@@ -58,24 +58,27 @@ app.post('/execute', async (req: Request, res: Response) => {
     if (!code || typeof code !== 'string') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid code`);
       return res.status(400).json({
-        error: 'CLIENT_ERROR',
-        message: 'Missing or invalid "code" field'
+        content: [
+          { type: 'text', text: 'Error: Missing or invalid "code" field' }
+        ]
       });
     }
 
     if (!userId || typeof userId !== 'string') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid userId`);
       return res.status(400).json({
-        error: 'CLIENT_ERROR',
-        message: 'Missing or invalid "userId" field'
+        content: [
+          { type: 'text', text: 'Error: Missing or invalid "userId" field' }
+        ]
       });
     }
 
     if (language !== 'python' && language !== 'javascript') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Invalid language "${language}"`);
       return res.status(400).json({
-        error: 'CLIENT_ERROR',
-        message: 'Language must be "python" or "javascript"'
+        content: [
+          { type: 'text', text: `Error: Language must be "python" or "javascript", got "${language}"` }
+        ]
       });
     }
 
@@ -93,41 +96,65 @@ app.post('/execute', async (req: Request, res: Response) => {
       
       console.log(`${'='.repeat(80)}\n`);
       return res.status(200).json({
-        success: false,
-        error: result.error,
-        logs: result.logs || []
+        content: [
+          { type: 'text', text: `Execution error: ${result.error}` }
+        ]
       });
     }
 
     console.log(`[REQUEST ${requestId}] Code execution successful`);
     
-    // Store generated files and create URLs
-    const fileUrls: Array<{ name: string; url: string; mimeType: string }> = [];
+    // Build MCP-style content array
+    const content: Array<any> = [];
     
+    // Add main text output (stdout/execution result)
+    if (result.output && result.output.trim()) {
+      content.push({
+        type: 'text',
+        text: result.output
+      });
+    }
+    
+    // Add execution logs as additional text items (stdout/stderr details)
+    if (result.logs && result.logs.length > 0) {
+      const logsText = result.logs.join('\n');
+      if (logsText.trim()) {
+        content.push({
+          type: 'text',
+          text: `Execution logs:\n${logsText}`
+        });
+      }
+    }
+    
+    // If no output or logs, provide success message
+    if (content.length === 0) {
+      content.push({
+        type: 'text',
+        text: 'Code executed successfully'
+      });
+    }
+    
+    // Add images as MCP content items (base64, no data URL prefix)
     if (result.files && result.files.length > 0) {
-      console.log(`[REQUEST ${requestId}] Storing ${result.files.length} output files...`);
+      console.log(`[REQUEST ${requestId}] Converting ${result.files.length} output files to base64...`);
       
       for (const file of result.files) {
         try {
-          const storedFile = await fileStorage.storeFile(
-            userId,
-            file.name,
-            file.content,
-            file.mimeType
-          );
+          // Convert buffer to base64 (no data URL prefix)
+          const base64Data = file.content.toString('base64');
           
-          const fileUrl = `${req.protocol}://${req.get('host')}/files/${storedFile.id}`;
-          fileUrls.push({
-            name: file.name,
-            url: fileUrl,
-            mimeType: file.mimeType
+          content.push({
+            type: 'image',
+            mimeType: file.mimeType,
+            data: base64Data,
+            name: file.name
           });
           
-          console.log(`[REQUEST ${requestId}] Stored file: ${file.name} -> ${fileUrl}`);
+          console.log(`[REQUEST ${requestId}] Added image: ${file.name} (${file.mimeType}, ${file.content.length} bytes)`);
           metrics.recordFileSize(file.content.length);
         } catch (err) {
-          console.error(`[REQUEST ${requestId}] Failed to store file ${file.name}:`, err);
-          metrics.recordError('FILE_STORAGE_ERROR');
+          console.error(`[REQUEST ${requestId}] Failed to convert file ${file.name}:`, err);
+          metrics.recordError('FILE_CONVERSION_ERROR');
         }
       }
     } else {
@@ -137,18 +164,12 @@ app.post('/execute', async (req: Request, res: Response) => {
     // Update metrics
     const duration = Date.now() - startTime;
     metrics.recordExecution(language, 'success', duration / 1000);
-    metrics.updateFileCount(fileStorage.getStats().totalFiles);
 
-    console.log(`[REQUEST ${requestId}] Response: ${result.output?.length || 0} chars output, ${result.logs?.length || 0} log lines, ${fileUrls.length} files`);
+    console.log(`[REQUEST ${requestId}] Response: ${content.length} content items (${content.filter(c => c.type === 'image').length} images)`);
     console.log(`[REQUEST ${requestId}] Total duration: ${duration}ms`);
     console.log(`${'='.repeat(80)}\n`);
 
-    return res.json({
-      success: true,
-      output: result.output || '',
-      logs: result.logs || [],
-      files: fileUrls
-    });
+    return res.json({ content });
 
   } catch (error) {
     const duration = Date.now() - startTime;
@@ -159,8 +180,9 @@ app.post('/execute', async (req: Request, res: Response) => {
     metrics.recordError('PROXY_ERROR');
     
     return res.status(500).json({
-      error: 'PROXY_ERROR',
-      message: error instanceof Error ? error.message : 'Internal server error'
+      content: [
+        { type: 'text', text: `Server error: ${error instanceof Error ? error.message : 'Internal server error'}` }
+      ]
     });
   }
 });

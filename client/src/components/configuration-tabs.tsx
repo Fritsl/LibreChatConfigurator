@@ -7,6 +7,8 @@ import { StatusIndicator } from "./status-indicator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import { type Configuration } from "@shared/schema";
 import { 
   Server, 
@@ -34,7 +36,8 @@ import {
   Users,
   Zap,
   HardDrive,
-  Terminal
+  Terminal,
+  Copy
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -51,6 +54,116 @@ export function ConfigurationTabs({
   onSearchQueryChange
 }: ConfigurationTabsProps) {
   const [activeTab, setActiveTab] = useState("server");
+  const { toast } = useToast();
+
+  const copyToClipboard = async (content: string, name: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      toast({
+        title: "Copied to Clipboard",
+        description: `${name} has been copied to your clipboard`,
+      });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy to clipboard. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const generateE2BOpenAPISchema = (port: number = 3001): string => {
+    const proxyUrl = `http://e2b-proxy:${port}`;
+    
+    return `openapi: 3.0.0
+info:
+  title: E2B Code Execution
+  description: Execute Python/JavaScript code in isolated sandboxes and retrieve generated files (graphs, charts, CSV, etc.)
+  version: 1.0.0
+servers:
+  - url: ${proxyUrl}
+    description: E2B Proxy Service
+paths:
+  /execute:
+    post:
+      operationId: e2b_execute_code
+      summary: Execute Python or JavaScript code
+      description: |
+        Executes code in an isolated E2B sandbox and returns any generated files as HTTP URLs.
+        Files saved to /outputs directory in the sandbox will be automatically retrieved and made available.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - userId
+              properties:
+                code:
+                  type: string
+                  description: Python or JavaScript code to execute
+                  example: |
+                    import matplotlib.pyplot as plt
+                    import numpy as np
+                    
+                    x = np.linspace(0, 10, 100)
+                    y = np.sin(x)
+                    
+                    plt.figure(figsize=(10, 6))
+                    plt.plot(x, y)
+                    plt.title('Sine Wave')
+                    plt.xlabel('X')
+                    plt.ylabel('sin(X)')
+                    plt.grid(True)
+                    plt.savefig('/outputs/sine_wave.png')
+                language:
+                  type: string
+                  enum: [python, javascript]
+                  default: python
+                  description: Programming language
+                userId:
+                  type: string
+                  description: User ID for file isolation and permissions
+      responses:
+        '200':
+          description: Code executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  output:
+                    type: string
+                    description: Standard output from code execution
+                  logs:
+                    type: array
+                    items:
+                      type: string
+                    description: Execution logs (stdout/stderr)
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        url:
+                          type: string
+                          description: HTTP URL to retrieve the file
+                        mimeType:
+                          type: string
+                  error:
+                    type: string
+                    description: Error message if execution failed
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error`;
+  };
 
   // Define tab groups with logical organization
   const tabGroups = [
@@ -1589,34 +1702,34 @@ export function ConfigurationTabs({
                               
                               if (emailData.serviceType === "smtp") {
                                 // Clear Mailgun fields, keep SMTP fields
-                                clearedConfig.emailService = emailData.emailService ?? null;
-                                clearedConfig.emailUsername = emailData.emailUsername ?? null;
-                                clearedConfig.emailPassword = emailData.emailPassword ?? null;
-                                clearedConfig.emailFrom = emailData.emailFrom ?? null;
-                                clearedConfig.emailFromName = emailData.emailFromName ?? null;
-                                clearedConfig.mailgunApiKey = null;
-                                clearedConfig.mailgunDomain = null;
-                                clearedConfig.mailgunHost = null;
+                                clearedConfig.emailService = emailData.emailService ?? undefined;
+                                clearedConfig.emailUsername = emailData.emailUsername ?? undefined;
+                                clearedConfig.emailPassword = emailData.emailPassword ?? undefined;
+                                clearedConfig.emailFrom = emailData.emailFrom ?? undefined;
+                                clearedConfig.emailFromName = emailData.emailFromName ?? undefined;
+                                clearedConfig.mailgunApiKey = undefined;
+                                clearedConfig.mailgunDomain = undefined;
+                                clearedConfig.mailgunHost = undefined;
                               } else if (emailData.serviceType === "mailgun") {
                                 // Clear SMTP fields, keep Mailgun fields
-                                clearedConfig.emailService = null;
-                                clearedConfig.emailUsername = null;
-                                clearedConfig.emailPassword = null;
-                                clearedConfig.emailFrom = null;
-                                clearedConfig.emailFromName = null;
-                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? null;
-                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? null;
-                                clearedConfig.mailgunHost = emailData.mailgunHost ?? null;
+                                clearedConfig.emailService = undefined;
+                                clearedConfig.emailUsername = undefined;
+                                clearedConfig.emailPassword = undefined;
+                                clearedConfig.emailFrom = undefined;
+                                clearedConfig.emailFromName = undefined;
+                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? undefined;
+                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? undefined;
+                                clearedConfig.mailgunHost = emailData.mailgunHost ?? undefined;
                               } else {
                                 // Clear all fields when no provider selected
-                                clearedConfig.emailService = null;
-                                clearedConfig.emailUsername = null;
-                                clearedConfig.emailPassword = null;
-                                clearedConfig.emailFrom = null;
-                                clearedConfig.emailFromName = null;
-                                clearedConfig.mailgunApiKey = null;
-                                clearedConfig.mailgunDomain = null;
-                                clearedConfig.mailgunHost = null;
+                                clearedConfig.emailService = undefined;
+                                clearedConfig.emailUsername = undefined;
+                                clearedConfig.emailPassword = undefined;
+                                clearedConfig.emailFrom = undefined;
+                                clearedConfig.emailFromName = undefined;
+                                clearedConfig.mailgunApiKey = undefined;
+                                clearedConfig.mailgunDomain = undefined;
+                                clearedConfig.mailgunHost = undefined;
                               }
                               
                               onConfigurationChange(clearedConfig);
@@ -1680,6 +1793,42 @@ export function ConfigurationTabs({
                         />
                       );
                     })}
+                    
+                    {/* OpenAPI Schema Display for Code Execution Tab */}
+                    {tab.id === "code-execution" && configuration.e2bProxyEnabled && (
+                      <div className="col-span-full mt-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                              <span>OpenAPI Schema</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyToClipboard(
+                                  generateE2BOpenAPISchema(configuration.e2bProxyPort || 3001),
+                                  "OpenAPI Schema"
+                                )}
+                                data-testid="button-copy-openapi-schema"
+                              >
+                                <Copy className="h-4 w-4 mr-1" />
+                                Copy Schema
+                              </Button>
+                            </CardTitle>
+                            <CardDescription>
+                              This OpenAPI schema can be used to configure AI agents and assistants to execute code through the E2B proxy service.
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <ScrollArea className="h-96 rounded-md border" data-testid="openapi-schema-container">
+                              <pre className="p-4 text-sm font-mono whitespace-pre-wrap" data-testid="openapi-schema-content">
+                                {generateE2BOpenAPISchema(configuration.e2bProxyPort || 3001)}
+                              </pre>
+                            </ScrollArea>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                    
                     {tab.settings.length === 0 && (
                       <div className="col-span-full text-center py-8 text-muted-foreground">
                         <tab.icon className="h-12 w-12 mx-auto mb-4 opacity-50" />

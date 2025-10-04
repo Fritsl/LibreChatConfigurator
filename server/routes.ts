@@ -744,6 +744,9 @@ cache: ${config.cache}
 # MCP Servers Configuration
 mcpServers: ${
   (() => {
+    // Skip MCP servers if E2B proxy is enabled (HTTP proxy conflicts with MCP)
+    if (config.e2bProxyEnabled) return '{}';
+    
     if (!config.mcpServers) return '{}';
     
     // Handle both array and object formats

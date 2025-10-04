@@ -39,13 +39,21 @@ export class SandboxManager {
 
       const execution = await sandbox.runCode(code);
       
-      const logs = execution.logs || [];
+      // Combine stdout and stderr logs
+      const logs = [
+        ...(execution.logs?.stdout || []),
+        ...(execution.logs?.stderr || [])
+      ];
       
       // Check for errors
       if (execution.error) {
+        const errorMsg = execution.error.traceback 
+          ? `${execution.error.name}: ${execution.error.value}\n${execution.error.traceback.join('\n')}`
+          : `${execution.error.name}: ${execution.error.value}`;
+        
         return {
           success: false,
-          error: execution.error,
+          error: errorMsg,
           logs
         };
       }
@@ -77,7 +85,7 @@ export class SandboxManager {
 
       return {
         success: true,
-        output: execution.text || '',
+        output: execution.logs?.stdout?.join('\n') || '',
         logs,
         files
       };
@@ -90,8 +98,8 @@ export class SandboxManager {
       };
     } finally {
       if (shouldClose && sandbox) {
-        await sandbox.close().catch((err: unknown) => 
-          console.error('Failed to close sandbox:', err)
+        await sandbox.kill().catch((err: unknown) => 
+          console.error('Failed to kill sandbox:', err)
         );
       }
     }
@@ -132,10 +140,10 @@ export class SandboxManager {
     
     for (const [userId, sandbox] of this.userSandboxes.entries()) {
       try {
-        await sandbox.close();
-        console.log(`Closed sandbox for user ${userId}`);
+        await sandbox.kill();
+        console.log(`Killed sandbox for user ${userId}`);
       } catch (err) {
-        console.error(`Failed to close sandbox for user ${userId}:`, err);
+        console.error(`Failed to kill sandbox for user ${userId}:`, err);
       }
     }
     

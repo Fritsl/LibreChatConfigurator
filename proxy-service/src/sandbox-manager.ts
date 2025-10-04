@@ -83,10 +83,8 @@ export class SandboxManager {
         
         for (const fileInfo of outputFiles) {
           try {
-            const fileContent = await sandbox.files.readBytes(fileInfo.path);
-            const buffer = Buffer.isBuffer(fileContent) 
-              ? fileContent 
-              : Buffer.from(fileContent.buffer, fileContent.byteOffset, fileContent.byteLength);
+            const fileContent = await sandbox.files.read(fileInfo.path);
+            const buffer = Buffer.from(fileContent);
             
             files.push({
               name: fileInfo.name,

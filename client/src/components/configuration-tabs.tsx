@@ -431,7 +431,7 @@ paths:
           icon: Terminal,
           description: "E2B Proxy for Python/JavaScript with File/Image Rendering",
           color: "from-cyan-500 to-cyan-600",
-          settings: ["e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"],
+          settings: ["e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"],
           docUrl: "https://e2b.dev/docs",
         },
         {
@@ -1481,6 +1481,14 @@ paths:
         placeholder: "3001",
         min: 1024,
         max: 65535,
+        docUrl: "https://e2b.dev/docs",
+        docSection: "Code Execution"
+      },
+      e2bPublicBaseUrl: {
+        type: "text",
+        description: "Public base URL for accessing generated files from the browser. Use http://localhost:3001 for local deployments, or your server's public domain (e.g., https://e2b.yourdomain.com). This must be accessible from users' browsers.",
+        label: "Public Base URL",
+        placeholder: "http://localhost:3001",
         docUrl: "https://e2b.dev/docs",
         docSection: "Code Execution"
       },

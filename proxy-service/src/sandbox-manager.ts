@@ -48,7 +48,7 @@ export class SandboxManager {
       // Check for errors
       if (execution.error) {
         const errorMsg = execution.error.traceback 
-          ? `${execution.error.name}: ${execution.error.value}\n${execution.error.traceback.join('\n')}`
+          ? `${execution.error.name}: ${execution.error.value}\n${execution.error.traceback}`
           : `${execution.error.name}: ${execution.error.value}`;
         
         return {
@@ -85,7 +85,7 @@ export class SandboxManager {
 
       return {
         success: true,
-        output: execution.logs?.stdout?.join('\n') || '',
+        output: execution.text || '',
         logs,
         files
       };

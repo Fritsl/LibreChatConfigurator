@@ -13,6 +13,7 @@ const FILE_TTL_DAYS = parseInt(process.env.E2B_FILE_TTL_DAYS || '30', 10);
 const MAX_FILE_SIZE_MB = parseInt(process.env.E2B_MAX_FILE_SIZE || '50', 10);
 const SANDBOX_MODE: SandboxMode = process.env.E2B_PER_USER_SANDBOX === 'true' ? 'per-user' : 'per-request';
 const LIBRECHAT_ORIGIN = process.env.DOMAIN_CLIENT || 'http://localhost:3080';
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || `http://localhost:${PORT}`;
 
 // Validate required config
 if (!E2B_API_KEY) {
@@ -139,7 +140,7 @@ app.post('/execute', async (req: Request, res: Response) => {
           );
           
           // Generate accessible URL (includes userId for security)
-          const fileUrl = `http://e2b-proxy:${PORT}/files/${storedFile.id}?userId=${userId}`;
+          const fileUrl = `${PUBLIC_BASE_URL}/files/${storedFile.id}?userId=${userId}`;
           fileUrls.push(fileUrl);
           
           console.log(`[REQUEST ${requestId}] Saved file: ${file.name} -> ${fileUrl}`);

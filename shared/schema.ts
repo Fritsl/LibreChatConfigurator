@@ -525,6 +525,7 @@ export const configurationSchema = z.object({
   e2bApiKey: z.string().optional(), // E2B_API_KEY
   e2bProxyEnabled: z.boolean().optional(), // Enable E2B proxy service
   e2bProxyPort: z.number().optional(), // E2B proxy port (default: 3001)
+  e2bPublicBaseUrl: z.string().optional(), // Public base URL for file access (e.g., http://localhost:3001 or https://e2b.yourdomain.com)
   e2bFileTTLDays: z.number().optional(), // File TTL in days (default: 30)
   e2bMaxFileSize: z.number().optional(), // Max file size in MB (default: 50)
   e2bPerUserSandbox: z.boolean().optional(), // Per-user persistent sandboxes (default: false)

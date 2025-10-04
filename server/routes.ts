@@ -688,6 +688,7 @@ ${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 ${config.e2bProxyEnabled !== undefined ? `E2B_PROXY_ENABLED=${config.e2bProxyEnabled}` : '# E2B_PROXY_ENABLED=true'}
 ${config.e2bProxyEnabled ? `E2B_PROXY_URL=http://e2b-proxy:${config.e2bProxyPort || '3001'}` : '# E2B_PROXY_URL=http://e2b-proxy:3001'}
 ${config.e2bProxyPort ? `E2B_PROXY_PORT=${config.e2bProxyPort}` : '# E2B_PROXY_PORT=3001'}
+${config.e2bPublicBaseUrl ? `E2B_PUBLIC_BASE_URL=${config.e2bPublicBaseUrl}` : '# E2B_PUBLIC_BASE_URL=http://localhost:3001'}
 ${config.e2bFileTTLDays ? `E2B_FILE_TTL_DAYS=${config.e2bFileTTLDays}` : '# E2B_FILE_TTL_DAYS=30'}
 ${config.e2bMaxFileSize ? `E2B_MAX_FILE_SIZE=${config.e2bMaxFileSize}` : '# E2B_MAX_FILE_SIZE=50'}
 ${config.e2bPerUserSandbox !== undefined ? `E2B_PER_USER_SANDBOX=${config.e2bPerUserSandbox}` : '# E2B_PER_USER_SANDBOX=false'}
@@ -1076,6 +1077,7 @@ ${config.e2bProxyEnabled ? `
     environment:
       E2B_API_KEY: \${E2B_API_KEY}
       E2B_PROXY_PORT: 3001
+      PUBLIC_BASE_URL: \${E2B_PUBLIC_BASE_URL:-http://localhost:3001}
       E2B_FILE_TTL_DAYS: \${E2B_FILE_TTL_DAYS:-30}
       E2B_MAX_FILE_SIZE: \${E2B_MAX_FILE_SIZE:-50}
       E2B_PER_USER_SANDBOX: \${E2B_PER_USER_SANDBOX:-false}

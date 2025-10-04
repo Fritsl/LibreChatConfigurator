@@ -11,7 +11,7 @@ export function generateE2BOpenAPISchema(config: any): string {
   return `openapi: 3.0.0
 info:
   title: E2B Code Execution
-  description: Execute Python/JavaScript code in isolated sandboxes. Images and files are returned as MCP-style content items with base64 data.
+  description: Execute Python/JavaScript code in isolated sandboxes. Generated files are saved and accessible via HTTP URLs.
   version: 1.0.0
 servers:
   - url: ${proxyUrl}
@@ -22,12 +22,14 @@ paths:
       operationId: e2b_execute_code
       summary: Execute Python or JavaScript code
       description: |
-        Executes code in an isolated E2B sandbox and returns results as MCP-style content.
-        Save files to /outputs directory in the sandbox - they will be returned as base64-encoded content items.
+        Executes code in an isolated E2B sandbox and returns text output with URLs to any generated files.
+        Files saved to /outputs directory in the sandbox are automatically stored and made accessible via HTTP.
         
         IMPORTANT: To generate images/files, save them to /outputs directory:
         - Python: plt.savefig('/outputs/chart.png')
         - JavaScript: fs.writeFileSync('/outputs/data.json', content)
+        
+        The response will include HTTP URLs to access the generated files.
       requestBody:
         required: true
         content:
@@ -62,51 +64,28 @@ paths:
                   description: Programming language
                 userId:
                   type: string
-                  description: User ID for sandbox isolation
+                  description: User ID for sandbox isolation and file access control
       responses:
         '200':
-          description: Code executed successfully - returns MCP-style content array
+          description: Code executed successfully
           content:
             application/json:
               schema:
                 type: object
-                required:
-                  - content
                 properties:
-                  content:
-                    type: array
-                    description: MCP-style content items (text and images)
-                    items:
-                      oneOf:
-                        - type: object
-                          required:
-                            - type
-                            - text
-                          properties:
-                            type:
-                              type: string
-                              enum: [text]
-                            text:
-                              type: string
-                              description: Text output or execution status
-                        - type: object
-                          required:
-                            - type
-                            - mimeType
-                            - data
-                          properties:
-                            type:
-                              type: string
-                              enum: [image]
-                            mimeType:
-                              type: string
-                              description: MIME type (e.g., image/png, image/jpeg)
-                            data:
-                              type: string
-                              description: Base64-encoded image data (no data URL prefix)
-                            name:
-                              type: string
-                              description: Original filename
+                  success:
+                    type: boolean
+                    description: Whether execution succeeded
+                  output:
+                    type: string
+                    description: Text output including stdout, logs, and markdown-formatted image links
+                    example: |
+                      Chart created successfully!
+                      
+                      ![sine_wave.png](http://e2b-proxy:3001/files/abc123?userId=user-id)
+                  error:
+                    type: string
+                    description: Error message if execution failed
         '400':
           description: Invalid request
           content:
@@ -114,16 +93,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  content:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                          enum: [text]
-                        text:
-                          type: string
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
         '500':
           description: Server error
           content:
@@ -131,16 +105,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  content:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        type:
-                          type: string
-                          enum: [text]
-                        text:
-                          type: string
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
 `;
 }
 

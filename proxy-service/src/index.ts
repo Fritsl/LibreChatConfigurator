@@ -150,11 +150,12 @@ app.post('/execute', async (req: Request, res: Response) => {
         }
       }
       
-      // Add file URLs to response text
-      if (fileUrls.length > 0) {
-        responseText += '\n\nGenerated files:\n';
-        fileUrls.forEach(url => {
-          responseText += `- ${url}\n`;
+      // Add file URLs as markdown images to response text
+      if (fileUrls.length > 0 && result.files) {
+        responseText += '\n\n';
+        fileUrls.forEach((url, index) => {
+          const fileName = result.files![index]?.name || `file-${index + 1}`;
+          responseText += `![${fileName}](${url})\n`;
         });
       }
     } else {

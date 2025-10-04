@@ -683,8 +683,10 @@ ${config.mcpOauthDetectionTimeout ? `MCP_OAUTH_DETECTION_TIMEOUT=${config.mcpOau
 # =============================================================================
 # E2B Code Execution Proxy Configuration
 # =============================================================================
+${config.e2bProxyEnabled ? `CODE_EXECUTION_ENABLED=true` : '# CODE_EXECUTION_ENABLED=true'}
 ${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 ${config.e2bProxyEnabled !== undefined ? `E2B_PROXY_ENABLED=${config.e2bProxyEnabled}` : '# E2B_PROXY_ENABLED=true'}
+${config.e2bProxyEnabled ? `E2B_PROXY_URL=http://e2b-proxy:${config.e2bProxyPort || '3001'}` : '# E2B_PROXY_URL=http://e2b-proxy:3001'}
 ${config.e2bProxyPort ? `E2B_PROXY_PORT=${config.e2bProxyPort}` : '# E2B_PROXY_PORT=3001'}
 ${config.e2bFileTTLDays ? `E2B_FILE_TTL_DAYS=${config.e2bFileTTLDays}` : '# E2B_FILE_TTL_DAYS=30'}
 ${config.e2bMaxFileSize ? `E2B_MAX_FILE_SIZE=${config.e2bMaxFileSize}` : '# E2B_MAX_FILE_SIZE=50'}

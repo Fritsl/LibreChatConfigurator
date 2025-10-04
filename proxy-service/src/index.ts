@@ -224,7 +224,7 @@ app.get('/files/:fileId', async (req: Request, res: Response) => {
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
     res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
-    res.send(content);
+    res.end(content);
 
   } catch (error) {
     if (error instanceof Error && error.message.includes('Unauthorized')) {

@@ -114,7 +114,7 @@ export async function generateE2BProxyPackageJson(): Promise<string> {
         start: "node dist/index.js"
       },
       dependencies: {
-        "@e2b/code-interpreter": "^1.0.1",
+        "@e2b/code-interpreter": "^2.0.0",
         express: "^4.19.2",
         cors: "^2.8.5",
         nanoid: "^5.0.7",

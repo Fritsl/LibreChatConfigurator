@@ -1,4 +1,4 @@
-import CodeInterpreter from '@e2b/code-interpreter';
+import { Sandbox } from '@e2b/code-interpreter';
 
 export type SandboxMode = 'per-request' | 'per-user';
 
@@ -15,7 +15,7 @@ export interface ExecutionResult {
 }
 
 export class SandboxManager {
-  private userSandboxes: Map<string, CodeInterpreter> = new Map();
+  private userSandboxes: Map<string, Sandbox> = new Map();
   private mode: SandboxMode;
   private apiKey: string;
 
@@ -26,7 +26,7 @@ export class SandboxManager {
   }
 
   async executeCode(userId: string, language: 'python' | 'javascript', code: string): Promise<ExecutionResult> {
-    let sandbox: CodeInterpreter | null = null;
+    let sandbox: Sandbox | null = null;
     let shouldClose = true;
 
     try {
@@ -34,18 +34,18 @@ export class SandboxManager {
         sandbox = await this.getUserSandbox(userId);
         shouldClose = false; // Keep user sandboxes alive
       } else {
-        sandbox = await CodeInterpreter.create({ apiKey: this.apiKey });
+        sandbox = await Sandbox.create({ apiKey: this.apiKey });
       }
 
-      const execution = await sandbox.notebook.execCell(code);
+      const execution = await sandbox.runCode(code);
       
-      const logs = execution.logs.stdout.concat(execution.logs.stderr);
+      const logs = execution.logs || [];
       
       // Check for errors
       if (execution.error) {
         return {
           success: false,
-          error: `${execution.error.name}: ${execution.error.value}\n${execution.error.traceback}`,
+          error: execution.error,
           logs
         };
       }
@@ -97,11 +97,11 @@ export class SandboxManager {
     }
   }
 
-  private async getUserSandbox(userId: string): Promise<CodeInterpreter> {
+  private async getUserSandbox(userId: string): Promise<Sandbox> {
     let sandbox = this.userSandboxes.get(userId);
     
     if (!sandbox) {
-      sandbox = await CodeInterpreter.create({ apiKey: this.apiKey });
+      sandbox = await Sandbox.create({ apiKey: this.apiKey });
       this.userSandboxes.set(userId, sandbox);
       console.log(`Created persistent sandbox for user ${userId}`);
     }

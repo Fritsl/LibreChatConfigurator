@@ -58,27 +58,24 @@ app.post('/execute', async (req: Request, res: Response) => {
     if (!code || typeof code !== 'string') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid code`);
       return res.status(400).json({
-        content: [
-          { type: 'text', text: 'Error: Missing or invalid "code" field' }
-        ]
+        success: false,
+        error: 'Missing or invalid "code" field'
       });
     }
 
     if (!userId || typeof userId !== 'string') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Missing or invalid userId`);
       return res.status(400).json({
-        content: [
-          { type: 'text', text: 'Error: Missing or invalid "userId" field' }
-        ]
+        success: false,
+        error: 'Missing or invalid "userId" field'
       });
     }
 
     if (language !== 'python' && language !== 'javascript') {
       console.warn(`[REQUEST ${requestId}] Validation failed: Invalid language "${language}"`);
       return res.status(400).json({
-        content: [
-          { type: 'text', text: `Error: Language must be "python" or "javascript", got "${language}"` }
-        ]
+        success: false,
+        error: `Language must be "python" or "javascript", got "${language}"`
       });
     }
 
@@ -96,66 +93,69 @@ app.post('/execute', async (req: Request, res: Response) => {
       
       console.log(`${'='.repeat(80)}\n`);
       return res.status(200).json({
-        content: [
-          { type: 'text', text: `Execution error: ${result.error}` }
-        ]
+        success: false,
+        error: result.error || 'Code execution failed'
       });
     }
 
     console.log(`[REQUEST ${requestId}] Code execution successful`);
     
-    // Build MCP-style content array
-    const content: Array<any> = [];
+    // Build response text with output and file URLs
+    let responseText = '';
     
     // Add main text output (stdout/execution result)
     if (result.output && result.output.trim()) {
-      content.push({
-        type: 'text',
-        text: result.output
-      });
+      responseText += result.output;
     }
     
-    // Add execution logs as additional text items (stdout/stderr details)
+    // Add execution logs if present
     if (result.logs && result.logs.length > 0) {
       const logsText = result.logs.join('\n');
       if (logsText.trim()) {
-        content.push({
-          type: 'text',
-          text: `Execution logs:\n${logsText}`
-        });
+        if (responseText) responseText += '\n\n';
+        responseText += `Execution logs:\n${logsText}`;
       }
     }
     
     // If no output or logs, provide success message
-    if (content.length === 0) {
-      content.push({
-        type: 'text',
-        text: 'Code executed successfully'
-      });
+    if (!responseText) {
+      responseText = 'Code executed successfully';
     }
     
-    // Add images as MCP content items (base64, no data URL prefix)
+    // Save files and generate URLs
     if (result.files && result.files.length > 0) {
-      console.log(`[REQUEST ${requestId}] Converting ${result.files.length} output files to base64...`);
+      console.log(`[REQUEST ${requestId}] Saving ${result.files.length} output files...`);
+      
+      const fileUrls: string[] = [];
       
       for (const file of result.files) {
         try {
-          // Convert buffer to base64 (no data URL prefix)
-          const base64Data = file.content.toString('base64');
+          // Save file to storage
+          const storedFile = await fileStorage.storeFile(
+            userId,
+            file.name,
+            file.content,
+            file.mimeType
+          );
           
-          content.push({
-            type: 'image',
-            mimeType: file.mimeType,
-            data: base64Data,
-            name: file.name
-          });
+          // Generate accessible URL (includes userId for security)
+          const fileUrl = `http://e2b-proxy:${PORT}/files/${storedFile.id}?userId=${userId}`;
+          fileUrls.push(fileUrl);
           
-          console.log(`[REQUEST ${requestId}] Added image: ${file.name} (${file.mimeType}, ${file.content.length} bytes)`);
+          console.log(`[REQUEST ${requestId}] Saved file: ${file.name} -> ${fileUrl}`);
           metrics.recordFileSize(file.content.length);
         } catch (err) {
-          console.error(`[REQUEST ${requestId}] Failed to convert file ${file.name}:`, err);
-          metrics.recordError('FILE_CONVERSION_ERROR');
+          console.error(`[REQUEST ${requestId}] Failed to save file ${file.name}:`, err);
+          metrics.recordError('FILE_STORAGE_ERROR');
         }
+      }
+      
+      // Add file URLs to response text
+      if (fileUrls.length > 0) {
+        responseText += '\n\nGenerated files:\n';
+        fileUrls.forEach(url => {
+          responseText += `- ${url}\n`;
+        });
       }
     } else {
       console.log(`[REQUEST ${requestId}] No output files generated`);
@@ -165,11 +165,14 @@ app.post('/execute', async (req: Request, res: Response) => {
     const duration = Date.now() - startTime;
     metrics.recordExecution(language, 'success', duration / 1000);
 
-    console.log(`[REQUEST ${requestId}] Response: ${content.length} content items (${content.filter(c => c.type === 'image').length} images)`);
+    console.log(`[REQUEST ${requestId}] Response text length: ${responseText.length} bytes`);
     console.log(`[REQUEST ${requestId}] Total duration: ${duration}ms`);
     console.log(`${'='.repeat(80)}\n`);
 
-    return res.json({ content });
+    return res.json({ 
+      success: true,
+      output: responseText
+    });
 
   } catch (error) {
     const duration = Date.now() - startTime;
@@ -180,9 +183,8 @@ app.post('/execute', async (req: Request, res: Response) => {
     metrics.recordError('PROXY_ERROR');
     
     return res.status(500).json({
-      content: [
-        { type: 'text', text: `Server error: ${error instanceof Error ? error.message : 'Internal server error'}` }
-      ]
+      success: false,
+      error: error instanceof Error ? error.message : 'Internal server error'
     });
   }
 });

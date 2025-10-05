@@ -96,6 +96,7 @@ const interfaceSchema = z.object({
     use: z.boolean().default(false),
   }).optional(),
   fileCitations: z.boolean().default(true),
+  runCode: z.boolean().default(false), // Show "Run Code" button for code interpreter
 }).optional();
 
 // Registration Configuration
@@ -519,9 +520,13 @@ export const configurationSchema = z.object({
   
   // Weather & External APIs
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
-  librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   
-  // E2B Code Interpreter (HTTP Proxy for file/image rendering)
+  // LibreChat Code Interpreter (Paid API Service at code.librechat.ai)
+  librechatCodeEnabled: z.boolean().optional(), // Enable LibreChat Code Interpreter
+  librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
+  librechatCodeBaseUrl: z.string().optional(), // LIBRECHAT_CODE_BASEURL (optional for enterprise)
+  
+  // E2B Code Interpreter (Self-Hosted HTTP Proxy for file/image rendering)
   e2bApiKey: z.string().optional(), // E2B_API_KEY
   e2bProxyEnabled: z.boolean().optional(), // Enable E2B proxy service
   e2bProxyPort: z.number().optional(), // E2B proxy port (default: 3001)

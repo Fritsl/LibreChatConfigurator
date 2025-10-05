@@ -522,13 +522,13 @@ export const configurationSchema = z.object({
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
   
   // LibreChat Code Interpreter (Paid API Service at code.librechat.ai)
-  librechatCodeEnabled: z.boolean().optional(), // Enable LibreChat Code Interpreter
+  librechatCodeEnabled: z.boolean().default(false), // Enable LibreChat Code Interpreter (default: OFF)
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   librechatCodeBaseUrl: z.string().optional(), // LIBRECHAT_CODE_BASEURL (optional for enterprise)
   
   // E2B Code Interpreter (Self-Hosted HTTP Proxy for file/image rendering)
   e2bApiKey: z.string().optional(), // E2B_API_KEY
-  e2bProxyEnabled: z.boolean().optional(), // Enable E2B proxy service
+  e2bProxyEnabled: z.boolean().default(false), // Enable E2B proxy service (default: OFF)
   e2bProxyPort: z.number().optional(), // E2B proxy port (default: 3001)
   e2bPublicBaseUrl: z.string().optional(), // Public base URL for file access (e.g., http://localhost:3001 or https://e2b.yourdomain.com)
   e2bFileTTLDays: z.number().optional(), // File TTL in days (default: 30)

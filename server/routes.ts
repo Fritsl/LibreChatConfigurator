@@ -586,7 +586,6 @@ ${config.googleSearchApiKey ? `GOOGLE_SEARCH_API_KEY=${config.googleSearchApiKey
 ${config.googleCSEId ? `GOOGLE_CSE_ID=${config.googleCSEId}` : '# GOOGLE_CSE_ID='}
 ${config.bingSearchApiKey ? `BING_SEARCH_API_KEY=${config.bingSearchApiKey}` : '# BING_SEARCH_API_KEY='}
 ${config.openweatherApiKey ? `OPENWEATHER_API_KEY=${config.openweatherApiKey}` : '# OPENWEATHER_API_KEY='}
-${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApiKey}` : '# LIBRECHAT_CODE_API_KEY='}
 
 # =============================================================================
 # RAG API Configuration
@@ -681,8 +680,13 @@ ${config.mcpOauthOnAuthError ? `MCP_OAUTH_ON_AUTH_ERROR=${config.mcpOauthOnAuthE
 ${config.mcpOauthDetectionTimeout ? `MCP_OAUTH_DETECTION_TIMEOUT=${config.mcpOauthDetectionTimeout}` : '# MCP_OAUTH_DETECTION_TIMEOUT='}
 
 # =============================================================================
-# E2B Code Execution Proxy Configuration
+# Code Execution Configuration
 # =============================================================================
+# LibreChat Code Interpreter (Paid API Service at code.librechat.ai)
+${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApiKey}` : '# LIBRECHAT_CODE_API_KEY='}
+${config.librechatCodeBaseUrl ? `LIBRECHAT_CODE_BASEURL=${config.librechatCodeBaseUrl}` : '# LIBRECHAT_CODE_BASEURL='}
+
+# E2B Code Interpreter (Self-Hosted Proxy for Python/JavaScript)
 ${config.e2bProxyEnabled ? `CODE_EXECUTION_ENABLED=true` : '# CODE_EXECUTION_ENABLED=true'}
 ${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 ${config.e2bProxyEnabled !== undefined ? `E2B_PROXY_ENABLED=${config.e2bProxyEnabled}` : '# E2B_PROXY_ENABLED=true'}

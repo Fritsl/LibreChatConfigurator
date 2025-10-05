@@ -435,7 +435,7 @@ paths:
             "librechatCodeEnabled", "librechatCodeApiKey", "librechatCodeBaseUrl", "interface.runCode",
             "e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"
           ],
-          docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+          docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         },
         {
           id: "users",
@@ -1466,7 +1466,7 @@ paths:
         type: "boolean",
         description: "Enable LibreChat's native Code Interpreter API service. This is a paid service hosted at code.librechat.ai that provides code execution capabilities without self-hosting.",
         label: "LibreChat Code Interpreter Enabled",
-        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         docSection: "Code Execution"
       },
       librechatCodeApiKey: {
@@ -1474,7 +1474,7 @@ paths:
         description: "API key for LibreChat Code Interpreter service. Get your key from https://code.librechat.ai",
         label: "LibreChat Code API Key",
         placeholder: "lcc_...",
-        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         docSection: "Code Execution"
       },
       librechatCodeBaseUrl: {
@@ -1482,14 +1482,14 @@ paths:
         description: "Custom base URL for LibreChat Code Interpreter (optional, for enterprise self-hosted deployments). Leave empty to use default cloud service.",
         label: "LibreChat Code Base URL",
         placeholder: "https://code.yourdomain.com",
-        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         docSection: "Code Execution"
       },
       "interface.runCode": {
         type: "boolean",
         description: "Show 'Run Code' button in the LibreChat interface. Enables users to trigger code execution manually. Requires either E2B or LibreChat Code Interpreter to be enabled.",
         label: "Show Run Code Button",
-        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         docSection: "Code Execution"
       },
       

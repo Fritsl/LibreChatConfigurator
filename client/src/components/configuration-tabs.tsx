@@ -1503,7 +1503,7 @@ paths:
       },
       e2bProxyEnabled: { 
         type: "boolean", 
-        description: "Enable the E2B proxy service for code execution. When enabled, LibreChat can execute Python/JavaScript code and render generated images, charts, and data files.", 
+        description: "Enable E2B proxy integration (custom feature of this tool). Creates a Docker container with HTTP proxy connecting to E2B's third-party service. Provides: Python/JS execution, file/image rendering, and OpenAPI schema (e2b-code-execution-openapi.yaml) to configure in your agent's schema. Setup: Get API key from e2b.dev → Toggle ON → Download package → Run docker-compose up. Note: WIP integration, good starting point but not turn-key like LibreChat's native interpreter.", 
         label: "E2B Proxy Enabled",
         docUrl: "https://e2b.dev/docs",
         docSection: "Code Execution"
@@ -1832,7 +1832,7 @@ paths:
                                 <h3 className="text-sm font-semibold text-foreground px-3">E2B Code Interpreter (Self-Hosted)</h3>
                                 <div className="h-px flex-1 bg-gradient-to-r from-border via-transparent to-transparent"></div>
                               </div>
-                              <p className="text-xs text-muted-foreground mt-2 text-center">Python/JavaScript execution with HTTP proxy for file/image rendering</p>
+                              <p className="text-xs text-muted-foreground mt-2 text-center">Custom proxy integration for E2B third-party service - Creates Docker container with OpenAPI schema for agents (WIP, not turn-key)</p>
                             </div>
                             <SettingInput
                               label={fieldInfo.label}

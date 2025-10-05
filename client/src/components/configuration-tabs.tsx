@@ -429,10 +429,13 @@ paths:
           id: "code-execution",
           label: "Code Execution",
           icon: Terminal,
-          description: "E2B Proxy for Python/JavaScript with File/Image Rendering",
+          description: "E2B (Self-Hosted) & LibreChat Code Interpreter (Paid API)",
           color: "from-cyan-500 to-cyan-600",
-          settings: ["e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"],
-          docUrl: "https://e2b.dev/docs",
+          settings: [
+            "librechatCodeEnabled", "librechatCodeApiKey", "librechatCodeBaseUrl", "interface.runCode",
+            "e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"
+          ],
+          docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
         },
         {
           id: "users",
@@ -925,7 +928,6 @@ paths:
       
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key" },
-      librechatCodeApiKey: { type: "password", description: "LibreChat Code API key for code execution", label: "LibreChat Code API Key" },
       
       // RAG API
       ragApiURL: { type: "text", description: "RAG API URL", label: "RAG API URL" },
@@ -1459,7 +1461,39 @@ paths:
       "interface.marketplace.use": { type: "boolean", description: "Enable marketplace usage", label: "Marketplace" },
       "interface.fileCitations": { type: "boolean", description: "Show file citations", label: "File Citations" },
       
-      // E2B Code Execution Configuration
+      // LibreChat Code Interpreter Configuration (Paid API Service)
+      librechatCodeEnabled: {
+        type: "boolean",
+        description: "Enable LibreChat's native Code Interpreter API service. This is a paid service hosted at code.librechat.ai that provides code execution capabilities without self-hosting.",
+        label: "LibreChat Code Interpreter Enabled",
+        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docSection: "Code Execution"
+      },
+      librechatCodeApiKey: {
+        type: "password",
+        description: "API key for LibreChat Code Interpreter service. Get your key from https://code.librechat.ai",
+        label: "LibreChat Code API Key",
+        placeholder: "lcc_...",
+        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docSection: "Code Execution"
+      },
+      librechatCodeBaseUrl: {
+        type: "text",
+        description: "Custom base URL for LibreChat Code Interpreter (optional, for enterprise self-hosted deployments). Leave empty to use default cloud service.",
+        label: "LibreChat Code Base URL",
+        placeholder: "https://code.yourdomain.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docSection: "Code Execution"
+      },
+      "interface.runCode": {
+        type: "boolean",
+        description: "Show 'Run Code' button in the LibreChat interface. Enables users to trigger code execution manually. Requires either E2B or LibreChat Code Interpreter to be enabled.",
+        label: "Show Run Code Button",
+        docUrl: "https://www.librechat.ai/docs/configuration/code_execution",
+        docSection: "Code Execution"
+      },
+      
+      // E2B Code Execution Configuration (Self-Hosted)
       e2bApiKey: { 
         type: "password", 
         description: "Your E2B API key from https://e2b.dev - required for code execution sandbox access. Enables Python/JavaScript execution with file/image rendering.", 
@@ -1759,6 +1793,59 @@ paths:
                             options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
                             data-testid={`input-${setting}`}
                           />
+                        );
+                      }
+                      
+                      // Add section headers for Code Execution tab to separate interpreters
+                      if (tab.id === "code-execution" && setting === "librechatCodeEnabled") {
+                        return (
+                          <div key={`${setting}-section`} className="col-span-full">
+                            <div className="col-span-full mt-6 mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                                <h3 className="text-sm font-semibold text-foreground px-3">LibreChat Code Interpreter (Paid API Service)</h3>
+                                <div className="h-px flex-1 bg-gradient-to-r from-border via-transparent to-transparent"></div>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2 text-center">Hosted at code.librechat.ai - No self-hosting required</p>
+                            </div>
+                            <SettingInput
+                              label={fieldInfo.label}
+                              description={fieldInfo.description}
+                              docUrl={fieldInfo.docUrl}
+                              docSection={fieldInfo.docSection}
+                              type={fieldInfo.type}
+                              value={getNestedValue(configuration, setting) || false}
+                              onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
+                              options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                              data-testid={`input-${setting}`}
+                            />
+                          </div>
+                        );
+                      }
+                      
+                      if (tab.id === "code-execution" && setting === "e2bApiKey") {
+                        return (
+                          <div key={`${setting}-section`} className="col-span-full">
+                            <div className="col-span-full mt-8 mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                                <h3 className="text-sm font-semibold text-foreground px-3">E2B Code Interpreter (Self-Hosted)</h3>
+                                <div className="h-px flex-1 bg-gradient-to-r from-border via-transparent to-transparent"></div>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2 text-center">Python/JavaScript execution with HTTP proxy for file/image rendering</p>
+                            </div>
+                            <SettingInput
+                              label={fieldInfo.label}
+                              description={fieldInfo.description}
+                              docUrl={fieldInfo.docUrl}
+                              docSection={fieldInfo.docSection}
+                              type={fieldInfo.type}
+                              value={getNestedValue(configuration, setting) || ""}
+                              onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
+                              options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                              data-testid={`input-${setting}`}
+                            />
+                          </div>
                         );
                       }
                       

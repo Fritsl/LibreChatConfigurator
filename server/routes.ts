@@ -919,7 +919,7 @@ interface:
   webSearch: ${config.interface?.webSearch ?? true}
   fileSearch: ${config.interface?.fileSearch ?? true}
   fileCitations: ${config.interface?.fileCitations ?? true}
-  runCode: ${config.interface?.runCode ?? true}
+  runCode: ${config.interface?.runCode ?? false}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
   customWelcome: "${config.interface.customWelcome}"` : ''}
 

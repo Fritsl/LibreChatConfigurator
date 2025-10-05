@@ -1479,7 +1479,7 @@ paths:
       },
       librechatCodeBaseUrl: {
         type: "text",
-        description: "Custom base URL for LibreChat Code Interpreter (optional, for enterprise self-hosted deployments). Leave empty to use default cloud service.",
+        description: "Custom base URL for LibreChat Code Interpreter (for enterprise self-hosted deployments). Note: Enterprise plans are not currently offered, but this will likely change in the future. This field is available for when enterprise self-hosted Code Interpreter access becomes available. Leave empty to use the default cloud service.",
         label: "LibreChat Code Base URL",
         placeholder: "https://code.yourdomain.com",
         docUrl: "https://www.librechat.ai/docs/features/code_interpreter",

@@ -17,7 +17,11 @@ export function ConfigurationHistory({ onConfigurationLoad }: { onConfigurationL
     loadConfiguration(historyItem.id, {
       onSuccess: (config) => {
         if (onConfigurationLoad) {
-          onConfigurationLoad(config);
+          // Include the packageName from history item with the configuration
+          onConfigurationLoad({
+            ...config,
+            packageName: historyItem.packageName
+          });
         }
         toast({
           title: "Configuration Loaded",

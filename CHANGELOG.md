@@ -5,6 +5,32 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2025-10-07
+
+### Added
+- **Artifacts Tab**: New dedicated tab for LibreChat artifacts configuration (generative UI)
+  - Interface toggle for showing/hiding artifacts UI
+  - Self-hosted Sandpack bundler URL configuration option
+  - Agent capabilities checkbox interface (artifacts, context, ocr, chain, web_search)
+- **Improved Agent Capabilities UX**: Checkbox interface replaces freetext input for better usability
+- **Search Enhancement**: Clear button (X) added to settings search input for easy reset
+
+### Changed
+- **Default Capabilities**: All 9 agent capabilities now enabled by default (execute_code, file_search, actions, tools, artifacts, context, ocr, chain, web_search)
+- **Code Execution Defaults**: LibreChat Code Interpreter and E2B proxy now properly default to OFF
+- **Array Fields with Options**: Array fields that have predefined options now render as checkbox groups instead of freetext inputs
+
+### Fixed
+- LSP type errors in configuration defaults
+- Missing interface fields (runCode, artifacts) in default configurations
+
+## [1.6.0] - 2025-10-02
+
+### Added
+- **Auto-save Feature**: Configuration now automatically saves to browser localStorage
+  - Prevents data loss on page refresh, tab close, or screen lock
+  - Seamless persistence across sessions
+
 ## [0.1.0] - 2025-09-25
 
 ### Added

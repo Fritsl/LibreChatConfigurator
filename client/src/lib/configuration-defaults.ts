@@ -64,6 +64,10 @@ export const defaultConfiguration: Configuration = {
   debugConsole: false,
   consoleJSON: false,
   
+  // Code Execution Fields
+  librechatCodeEnabled: false,
+  e2bProxyEnabled: false,
+  
   // Proper nested objects for LibreChat compatibility
   registration: {
     socialLogins: [],
@@ -157,6 +161,8 @@ export const defaultConfiguration: Configuration = {
     marketplace: {
       use: false
     },
-    fileCitations: true
+    fileCitations: true,
+    runCode: false,
+    artifacts: true
   },
 };

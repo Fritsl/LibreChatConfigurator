@@ -219,6 +219,25 @@ export class FileStorage implements IStorage {
       allowPasswordReset: true,
       sessionExpiry: 900000,
       refreshTokenExpiry: 604800000,
+      
+      // Code Execution Fields
+      azureStoragePublicAccess: false,
+      librechatCodeEnabled: false,
+      e2bProxyEnabled: false,
+      redisUseAlternativeDNSLookup: false,
+      
+      // Additional Required Fields
+      search: false,
+      meiliNoAnalytics: true,
+      limitConcurrentMessages: false,
+      banViolations: false,
+      allowSharedLinks: false,
+      allowSharedLinksPublic: false,
+      summaryConvo: false,
+      nodeEnv: "production" as const,
+      noIndex: true,
+      debugConsole: false,
+      consoleJSON: false,
     };
   }
 
@@ -275,6 +294,25 @@ export class FileStorage implements IStorage {
       // Additional Database Configuration
       mongoRootUsername: "admin",
       mongoRootPassword: "password123",
+      
+      // Code Execution Fields
+      azureStoragePublicAccess: false,
+      librechatCodeEnabled: false,
+      e2bProxyEnabled: false,
+      redisUseAlternativeDNSLookup: false,
+      
+      // Additional Required Fields
+      search: false,
+      meiliNoAnalytics: true,
+      limitConcurrentMessages: false,
+      banViolations: false,
+      allowSharedLinks: false,
+      allowSharedLinksPublic: false,
+      summaryConvo: false,
+      nodeEnv: "production" as const,
+      noIndex: true,
+      debugConsole: false,
+      consoleJSON: false,
     };
   }
 

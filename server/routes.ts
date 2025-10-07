@@ -698,6 +698,11 @@ ${config.e2bMaxFileSize ? `E2B_MAX_FILE_SIZE=${config.e2bMaxFileSize}` : '# E2B_
 ${config.e2bPerUserSandbox !== undefined ? `E2B_PER_USER_SANDBOX=${config.e2bPerUserSandbox}` : '# E2B_PER_USER_SANDBOX=false'}
 
 # =============================================================================
+# Artifacts Configuration (Generative UI)
+# =============================================================================
+${config.sandpackBundlerUrl ? `SANDPACK_BUNDLER_URL=${config.sandpackBundlerUrl}` : '# SANDPACK_BUNDLER_URL='}
+
+# =============================================================================
 # User Management Configuration
 # =============================================================================
 ${config.uid ? `UID=${config.uid}` : '# UID='}
@@ -827,19 +832,14 @@ mcpServers: ${
 # Endpoints Configuration
 endpoints:
   agents:
-    disableBuilder: false
-    recursionLimit: 50
-    maxRecursionLimit: 100
+    disableBuilder: ${config.endpoints?.agents?.disableBuilder ?? false}
+    recursionLimit: ${config.endpoints?.agents?.recursionLimit ?? 50}
+    maxRecursionLimit: ${config.endpoints?.agents?.maxRecursionLimit ?? 100}
     capabilities:
-      - execute_code
-      - file_search
-      - actions
-      - tools
-      - artifacts
-      - web_search
-    maxCitations: 30
-    maxCitationsPerFile: 7
-    minRelevanceScore: 0.45
+${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"]).map((cap: string) => `      - ${cap}`).join('\n')}
+    maxCitations: ${config.endpoints?.agents?.maxCitations ?? 30}
+    maxCitationsPerFile: ${config.endpoints?.agents?.maxCitationsPerFile ?? 7}
+    minRelevanceScore: ${config.endpoints?.agents?.minRelevanceScore ?? 0.45}
   openAI:
     title: "OpenAI"
     apiKey: "\${OPENAI_API_KEY}"
@@ -920,6 +920,7 @@ interface:
   fileSearch: ${config.interface?.fileSearch ?? true}
   fileCitations: ${config.interface?.fileCitations ?? true}
   runCode: ${config.interface?.runCode ?? false}
+  artifacts: ${config.interface?.artifacts ?? true}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
   customWelcome: "${config.interface.customWelcome}"` : ''}
 

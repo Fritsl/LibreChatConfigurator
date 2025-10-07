@@ -37,7 +37,8 @@ import {
   Zap,
   HardDrive,
   Terminal,
-  Copy
+  Copy,
+  Sparkles
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -436,6 +437,17 @@ paths:
             "e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"
           ],
           docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
+        },
+        {
+          id: "artifacts",
+          label: "Artifacts",
+          icon: Sparkles,
+          description: "Generative UI - React/HTML/Mermaid Components",
+          color: "from-purple-500 to-pink-500",
+          settings: [
+            "interface.artifacts", "sandpackBundlerUrl", "endpoints.agents.capabilities"
+          ],
+          docUrl: "https://www.librechat.ai/docs/features/artifacts",
         },
         {
           id: "users",
@@ -1375,16 +1387,21 @@ paths:
       },
       "endpoints.agents.capabilities": { 
         type: "array", 
-        description: "Array of capabilities available to agents", 
+        description: "Agent capabilities determine what features are available to AI agents. Select capabilities to enable: artifacts (generative UI), context (upload as text), ocr (optical character recognition), chain (agent chaining), execute_code, file_search, actions, tools, web_search. Each capability adds specific functionality to your agents.", 
         label: "Agent Capabilities",
         options: [
           { value: "execute_code", label: "Execute Code" },
           { value: "file_search", label: "File Search" },
           { value: "actions", label: "Actions" },
-          { value: "tools", label: "Tools" }
+          { value: "tools", label: "Tools" },
+          { value: "artifacts", label: "Artifacts (Generative UI)" },
+          { value: "context", label: "Context (Upload as Text)" },
+          { value: "ocr", label: "OCR (Optical Character Recognition)" },
+          { value: "chain", label: "Chain (Agent Chaining)" },
+          { value: "web_search", label: "Web Search" }
         ],
-        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
-        docSection: "Agents Configuration"
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/agents",
+        docSection: "Artifacts"
       },
       
       // Actions Configuration
@@ -1491,6 +1508,23 @@ paths:
         label: "Show Run Code Button",
         docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
         docSection: "Code Execution"
+      },
+      
+      // Artifacts Configuration (Generative UI)
+      "interface.artifacts": {
+        type: "boolean",
+        description: "Enable artifacts UI in LibreChat interface. Artifacts allow AI to generate interactive React components, HTML/CSS/JS applications, and Mermaid diagrams that render in a side panel. When enabled, users can create, preview, and iterate on generative UI components.",
+        label: "Show Artifacts UI",
+        docUrl: "https://www.librechat.ai/docs/features/artifacts",
+        docSection: "Artifacts"
+      },
+      sandpackBundlerUrl: {
+        type: "text",
+        description: "Optional self-hosted Sandpack bundler URL for privacy/compliance. By default, artifacts use CodeSandbox's public bundler (https://*.codesandbox.io). Self-hosting ensures code stays within your infrastructure. Leave empty to use public bundler. Requires setting up the LibreChat CodeSandbox fork.",
+        label: "Self-Hosted Bundler URL",
+        placeholder: "http://your-bundler-url",
+        docUrl: "https://www.librechat.ai/docs/features/artifacts",
+        docSection: "Artifacts"
       },
       
       // E2B Code Execution Configuration (Self-Hosted)

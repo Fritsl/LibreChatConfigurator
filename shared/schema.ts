@@ -97,6 +97,7 @@ const interfaceSchema = z.object({
   }).optional(),
   fileCitations: z.boolean().default(true),
   runCode: z.boolean().default(false), // Show "Run Code" button for code interpreter
+  artifacts: z.boolean().default(true), // Show artifacts UI for generative React/HTML/Mermaid components
 }).optional();
 
 // Registration Configuration
@@ -315,8 +316,8 @@ const agentsSchema = z.object({
   maxCitationsPerFile: z.number().min(1).max(20).default(7),
   minRelevanceScore: z.number().min(0).max(1).default(0.45),
   capabilities: z.array(z.enum([
-    "execute_code", "file_search", "actions", "tools"
-  ])).default(["execute_code", "file_search", "actions", "tools"]),
+    "execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"
+  ])).default(["execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"]),
 }).optional();
 
 // Unified Endpoints Configuration for RC4
@@ -525,6 +526,9 @@ export const configurationSchema = z.object({
   librechatCodeEnabled: z.boolean().default(false), // Enable LibreChat Code Interpreter (default: OFF)
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY
   librechatCodeBaseUrl: z.string().optional(), // LIBRECHAT_CODE_BASEURL (optional for enterprise)
+  
+  // Artifacts Configuration (Generative UI with React/HTML/Mermaid)
+  sandpackBundlerUrl: z.string().optional(), // SANDPACK_BUNDLER_URL (optional self-hosted bundler for privacy/compliance)
   
   // E2B Code Interpreter (Self-Hosted HTTP Proxy for file/image rendering)
   e2bApiKey: z.string().optional(), // E2B_API_KEY

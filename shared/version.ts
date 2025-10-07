@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.6.0";
+export const TOOL_VERSION = "1.7.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -30,8 +30,8 @@ export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
-  lastUpdated: "2025-10-02",
-  changelog: "Auto-save: Configuration now automatically saves to browser storage, preventing data loss on tab close, page refresh, or screen lock."
+  lastUpdated: "2025-10-07",
+  changelog: "Improved UX: Agent capabilities now use checkbox interface instead of freetext input. Added clear button to search. All artifacts capabilities (artifacts, context, ocr, chain) now enabled by default."
 } as const;
 
 // Helper function to get the tool's version string

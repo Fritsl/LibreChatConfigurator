@@ -745,7 +745,7 @@ ${config.publicSubPath ? `PUBLIC_SUB_PATH=${config.publicSubPath}` : '# PUBLIC_S
 // Preserve all user data exactly as entered - DO NOT modify or redact anything.
 function generateYamlFile(config: any): string {
   return `# =============================================================================
-# LibreChat Configuration for v0.8.0-RC4
+# LibreChat Configuration for v0.8.0-RC5
 # =============================================================================
 
 version: 1.2.9
@@ -1173,7 +1173,7 @@ function generateDockerInstallScript(config: any): string {
 
 # =============================================================================
 # LibreChat Docker Installation Script
-# Generated Configuration for v0.8.0-RC4
+# Generated Configuration for v0.8.0-RC5
 # =============================================================================
 
 set -e
@@ -1244,7 +1244,7 @@ function generateDockerInstallScriptWindows(config: any): string {
   return `@echo off
 REM =============================================================================
 REM LibreChat Docker Installation Script
-REM Generated Configuration for v0.8.0-RC4
+REM Generated Configuration for v0.8.0-RC5
 REM =============================================================================
 
 echo 🚀 Starting LibreChat Docker installation...
@@ -1324,7 +1324,7 @@ pause
 function generateReadmeFile(config: any): string {
   return `# LibreChat Configuration
 
-This package contains a complete LibreChat v0.8.0-RC4 installation with your custom configuration (using configuration schema v${config.version}).
+This package contains a complete LibreChat v0.8.0-RC5 installation with your custom configuration (using configuration schema v${config.version}).
 
 ## 📋 Package Contents
 
@@ -1363,7 +1363,7 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 ## ⚙️ Configuration Summary
 
 ### Core Settings
-- **LibreChat Version**: v0.8.0-RC4
+- **LibreChat Version**: v0.8.0-RC5
 - **Configuration Schema**: v${config.version}
 - **Host**: ${config.host}:${config.port}
 - **Registration**: ${config.allowRegistration ? 'Enabled' : 'Disabled'}
@@ -1529,7 +1529,7 @@ If you encounter issues:
 ---
 
 **Generated on**: ${new Date().toISOString().split('T')[0]}
-**LibreChat Version**: v0.8.0-RC4
+**LibreChat Version**: v0.8.0-RC5
 **Configuration Schema**: v${config.configVer}
 **Support**: https://docs.librechat.ai
 `;

@@ -1931,7 +1931,7 @@ paths:
                           type={fieldInfo.type}
                           value={getNestedValue(configuration, setting) || ""}
                           onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                          options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                          options={fieldInfo.type === 'select' ? getSelectOptions(setting) : fieldInfo.options}
                           data-testid={`input-${setting}`}
                         />
                       );

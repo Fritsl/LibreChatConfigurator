@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Info, Eye, EyeOff, Plus, X, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,7 +26,7 @@ interface SettingInputProps {
   type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite";
   value: any;
   onChange: (value: any) => void;
-  options?: string[];
+  options?: string[] | Array<{ value: string; label: string }>;
   placeholder?: string;
   min?: number;
   max?: number;
@@ -89,15 +90,19 @@ export function SettingInput({
         );
 
       case "select":
+        const selectOptions = options.map(opt => 
+          typeof opt === 'string' ? { value: opt, label: opt } : opt
+        );
+        
         return (
           <Select value={value} onValueChange={onChange}>
             <SelectTrigger data-testid={testId}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
+              {selectOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -144,6 +149,47 @@ export function SettingInput({
         );
 
       case "array":
+        // If options are provided, render as checkbox group
+        if (options && options.length > 0) {
+          const optionsArray = options.map(opt => 
+            typeof opt === 'string' ? { value: opt, label: opt } : opt
+          );
+          
+          return (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3">
+                {optionsArray.map((option) => {
+                  const isChecked = arrayItems.includes(option.value);
+                  
+                  return (
+                    <div key={option.value} className="flex items-start space-x-3 p-3 rounded-md border hover:bg-accent/50 transition-colors">
+                      <Checkbox
+                        id={`${testId}-${option.value}`}
+                        checked={isChecked}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            handleArrayChange([...arrayItems, option.value]);
+                          } else {
+                            handleArrayChange(arrayItems.filter(item => item !== option.value));
+                          }
+                        }}
+                        data-testid={`${testId}-checkbox-${option.value}`}
+                      />
+                      <label
+                        htmlFor={`${testId}-${option.value}`}
+                        className="flex-1 cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option.label}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        }
+        
+        // Default array input with badges and add/remove buttons
         return (
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">

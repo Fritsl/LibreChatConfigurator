@@ -177,7 +177,7 @@ export class FileStorage implements IStorage {
     // Minimal RC4-compliant fallback configuration
     return {
       // LibreChat RC4 Core Settings
-      version: "0.8.0-rc5",
+      version: "0.8.0-rc4",
       cache: true,
       fileStrategy: "local",
       secureImageLinks: false,
@@ -219,14 +219,14 @@ export class FileStorage implements IStorage {
       allowPasswordReset: true,
       sessionExpiry: 900000,
       refreshTokenExpiry: 604800000,
-    } as Configuration;
+    };
   }
 
   private createDefaultTestConfiguration(): Configuration {
     // Simple RC4-compliant test configuration
     return {
       // LibreChat RC4 Core Settings
-      version: "0.8.0-rc5",
+      version: "0.8.0-rc4",
       cache: true,
       fileStrategy: "local",
       secureImageLinks: false,
@@ -275,7 +275,7 @@ export class FileStorage implements IStorage {
       // Additional Database Configuration
       mongoRootUsername: "admin",
       mongoRootPassword: "password123",
-    } as unknown as Configuration;
+    };
   }
 
   async getProfile(id: string): Promise<ConfigurationProfile | undefined> {

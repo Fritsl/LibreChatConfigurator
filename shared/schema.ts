@@ -8,7 +8,7 @@ import { getVersionInfo } from "./version";
 // LibreChat Configuration Tool Version (from central version file)
 export const CONFIG_VERSION = getVersionInfo().librechatTarget;
 
-// LibreChat v0.8.0-RC5 Configuration Schema
+// LibreChat v0.8.0-RC4 Configuration Schema
 // Pure RC4 implementation - no backwards compatibility
 
 // Client Image Resize Configuration
@@ -349,7 +349,7 @@ const endpointsSchema = z.object({
 // Main Configuration Schema for LibreChat RC4
 export const configurationSchema = z.object({
   // LibreChat RC4 version identifier
-  version: z.string().default("0.8.0-rc5"),
+  version: z.string().default("0.8.0-rc4"),
   
   // Core settings
   cache: z.boolean().default(true),

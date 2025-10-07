@@ -1,4 +1,4 @@
-// LibreChat v0.8.0-RC5 Essential Default Configuration Values
+// LibreChat v0.8.0-RC4 Essential Default Configuration Values
 // Based on official LibreChat .env.example core settings
 
 import { Configuration } from "@shared/schema";

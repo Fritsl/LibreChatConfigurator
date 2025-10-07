@@ -529,7 +529,7 @@ export default function Home() {
         const profileData = {
           name: "SELF_TEST_PROFILE",
           configuration: configuration,
-          version: "0.8.0-rc5",
+          version: "0.8.0-rc4",
           createdAt: new Date().toISOString()
         };
         const jsonString = JSON.stringify(profileData, null, 2);

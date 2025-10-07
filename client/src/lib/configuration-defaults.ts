@@ -2,7 +2,7 @@ import { type Configuration } from "@shared/schema";
 
 export const defaultConfiguration: Configuration = {
   // LibreChat RC4 Core Settings
-  version: "0.8.0-rc5",
+  version: "0.8.0-rc4",
   cache: true,
   fileStrategy: "local",
   secureImageLinks: false,
@@ -55,8 +55,6 @@ export const defaultConfiguration: Configuration = {
   allowSharedLinks: false,
   allowSharedLinksPublic: false,
   summaryConvo: false,
-  librechatCodeEnabled: false,
-  e2bProxyEnabled: false,
   
   // Missing Server Fields
   nodeEnv: "production" as const,
@@ -159,8 +157,6 @@ export const defaultConfiguration: Configuration = {
     marketplace: {
       use: false
     },
-    fileCitations: true,
-    artifacts: true,
-    runCode: false
+    fileCitations: true
   },
 };

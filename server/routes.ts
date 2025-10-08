@@ -613,9 +613,9 @@ ${config.webSearch?.googleSearchApiKey || config.webSearch?.searchProvider === '
 ${config.webSearch?.googleCSEId && config.webSearch?.searchProvider === 'google' ? `GOOGLE_CSE_ID=${config.webSearch.googleCSEId}` : '# GOOGLE_CSE_ID='}
 ${config.webSearch?.bingSearchApiKey || config.webSearch?.searchProvider === 'bing' ? `BING_SEARCH_API_KEY=${config.webSearch.bingSearchApiKey || ''}` : '# BING_SEARCH_API_KEY='}
 ${config.webSearch?.firecrawlApiKey || config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_KEY=${config.webSearch.firecrawlApiKey || ''}` : '# FIRECRAWL_API_KEY='}
-${config.webSearch?.firecrawlApiUrl && config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_URL=${config.webSearch.firecrawlApiUrl}` : '# FIRECRAWL_API_URL='}
+${config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_URL=${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}` : '# FIRECRAWL_API_URL='}
 ${config.webSearch?.jinaApiKey || config.webSearch?.rerankerType === 'jina' ? `JINA_API_KEY=${config.webSearch.jinaApiKey || ''}` : '# JINA_API_KEY='}
-${config.webSearch?.jinaRerankerUrl && config.webSearch?.rerankerType === 'jina' ? `JINA_RERANKER_URL=${config.webSearch.jinaRerankerUrl}` : '# JINA_RERANKER_URL='}
+${config.webSearch?.rerankerType === 'jina' ? `JINA_RERANKER_URL=${config.webSearch.jinaRerankerUrl || 'https://api.jina.ai/v1/rerank'}` : '# JINA_RERANKER_URL='}
 ${config.webSearch?.cohereApiKey || config.webSearch?.rerankerType === 'cohere' ? `COHERE_API_KEY=${config.webSearch.cohereApiKey || ''}` : '# COHERE_API_KEY='}
 
 # =============================================================================
@@ -1009,10 +1009,10 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   googleCSEId: "\${GOOGLE_CSE_ID}"` : ''}${config.webSearch.bingSearchApiKey || config.webSearch.searchProvider === 'bing' ? `
   bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
   scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey || config.webSearch.scraperType === 'firecrawl' ? `
-  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.firecrawlApiUrl && config.webSearch.scraperType === 'firecrawl' ? `
+  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.scraperType === 'firecrawl' ? `
   firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
   rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
-  jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.jinaRerankerUrl && config.webSearch.rerankerType === 'jina' ? `
+  jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.rerankerType === 'jina' ? `
   jinaRerankerUrl: "\${JINA_RERANKER_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
   cohereApiKey: "\${COHERE_API_KEY}"` : ''}${config.webSearch.scraperTimeout ? `
   scraperTimeout: ${config.webSearch.scraperTimeout}` : ''}${config.webSearch.safeSearch !== undefined ? `

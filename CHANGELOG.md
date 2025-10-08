@@ -5,6 +5,35 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.1] - 2025-10-08
+
+### Fixed
+- **CRITICAL: Profile Generation Blockers**: Fixed critical bugs preventing generated packages from working
+  - **JSON Profile `search` Field**: Now automatically set to `true` when webSearch is configured, `false` when disabled
+    - Was: Always `false` regardless of webSearch configuration
+    - Now: Correctly reflects whether web search is enabled
+  - **JSON Profile `searxngInstanceUrl`**: Now automatically populated when SearXNG service is included
+    - Was: Empty string even with `searxngIncludeService: true`
+    - Now: Auto-set to `"http://searxng:8080"` when Docker service included
+  - **librechat.yaml App-Level Config**: Added complete provider configuration under `app.webSearch`
+    - Added: `searchProvider`, `searxngInstanceUrl`, `searxngApiKey` fields
+    - Ensures client-side web search functionality works correctly
+  - **docker-compose.yml URL Reference**: Fixed non-existent environment variable reference
+    - Was: Referenced `${SEARXNG_INSTANCE_URL}` (removed in v1.14.0)
+    - Now: Hardcoded to `http://searxng:8080` when service included, uses env var for external instances
+  - **Profile Update Flow**: Added normalization to PUT endpoint
+    - Prevents regression when users edit saved profiles
+    - Maintains `search` and `searxngInstanceUrl` alignment with webSearch settings
+  - **Bidirectional Normalization**: Both enable and disable flows now work correctly
+    - Switching from SearXNG to 'none' properly sets `search: false`
+    - Prevents stale `search: true` flags after disabling web search
+
+### Impact
+- Generated packages now work completely out-of-the-box with no manual editing required
+- Eliminates all user-identified blockers preventing LibreChat web search from functioning
+- Both creating and editing configuration profiles maintain correct web search settings
+- Docker Compose files reference correct internal service URLs
+
 ## [1.14.0] - 2025-10-08
 
 ### Fixed

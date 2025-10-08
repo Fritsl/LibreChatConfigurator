@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.14.0";
+export const TOOL_VERSION = "1.14.1";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-08",
-  changelog: "Edge-case robustness: Fixed SearXNG rate_limit syntax, improved Docker healthchecks, removed redundant SEARXNG_INSTANCE_URL, made scraper/reranker credentials conditional. Web search configuration now production-ready."
+  changelog: "Critical profile generation fixes: Auto-set search field, populate searxngInstanceUrl, add app-level webSearch config, hardcode docker URLs. Generated packages now work out-of-the-box with no manual editing."
 } as const;
 
 // Helper function to get the tool's version string

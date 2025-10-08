@@ -81,7 +81,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const profile = await storage.createProfile(result.data);
+      // Normalize configuration before saving
+      const normalizedData = { ...result.data };
+      
+      // Auto-set search based on webSearch configuration
+      if (normalizedData.configuration?.webSearch?.searchProvider) {
+        if (normalizedData.configuration.webSearch.searchProvider !== 'none') {
+          normalizedData.configuration.search = true;
+          
+          // Auto-populate searxngInstanceUrl when service is included
+          if (normalizedData.configuration.webSearch.searchProvider === 'searxng' && 
+              normalizedData.configuration.webSearch.searxngIncludeService) {
+            normalizedData.configuration.webSearch.searxngInstanceUrl = 'http://searxng:8080';
+          }
+        } else {
+          // Explicitly set search: false when provider is 'none'
+          normalizedData.configuration.search = false;
+        }
+      }
+
+      const profile = await storage.createProfile(normalizedData);
       res.status(201).json(profile);
     } catch (error) {
       console.error("Error creating profile:", error);
@@ -92,7 +111,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update profile
   app.put("/api/profiles/:id", async (req, res) => {
     try {
-      const updates = req.body;
+      const updates = { ...req.body };
+      
+      // Normalize configuration before updating (same as create)
+      if (updates.configuration?.webSearch?.searchProvider) {
+        if (updates.configuration.webSearch.searchProvider !== 'none') {
+          updates.configuration.search = true;
+          
+          // Auto-populate searxngInstanceUrl when service is included
+          if (updates.configuration.webSearch.searchProvider === 'searxng' && 
+              updates.configuration.webSearch.searxngIncludeService) {
+            updates.configuration.webSearch.searxngInstanceUrl = 'http://searxng:8080';
+          }
+        } else {
+          // Explicitly set search: false when provider is 'none'
+          updates.configuration.search = false;
+        }
+      }
+      
       const profile = await storage.updateProfile(req.params.id, updates);
       res.json(profile);
     } catch (error) {
@@ -763,6 +799,9 @@ app:
   search: true
   webSearch:
     enabled: true
+    searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.searchProvider === 'searxng' ? `
+    searxngInstanceUrl: "${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}"
+    searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}
 ` : ''}
 # MCP Servers Configuration
 mcpServers: ${
@@ -1330,7 +1369,7 @@ ${config.embeddingsProvider ? `      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER
       # =============================================================================
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `      SEARCH: \${SEARCH}` : '      # SEARCH: ${SEARCH}'}
 ${config.webSearch?.serperApiKey ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
-${config.webSearch?.searxngIncludeService || config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
+${config.webSearch?.searxngIncludeService ? `      SEARXNG_INSTANCE_URL: http://searxng:8080` : config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
 ${config.webSearch?.searxngIncludeService ? `      SEARXNG_SECRET: \${SEARXNG_SECRET}` : '      # SEARXNG_SECRET: ${SEARXNG_SECRET}'}
 ${config.webSearch?.searxngApiKey ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
 ${config.webSearch?.braveApiKey ? `      BRAVE_API_KEY: \${BRAVE_API_KEY}` : '      # BRAVE_API_KEY: ${BRAVE_API_KEY}'}
@@ -2113,7 +2152,7 @@ rate_limit:
 
 search:
   # Safe search level: 0=off, 1=moderate, 2=strict
-  safe_search: ${config.webSearch?.safeSearch !== undefined ? config.webSearch.safeSearch : 1}
+  safe_search: ${config.webSearch?.safeSearch !== undefined ? (config.webSearch.safeSearch ? 1 : 0) : 1}
   
   # Enable both HTML and JSON formats (JSON required for LibreChat)
   formats:

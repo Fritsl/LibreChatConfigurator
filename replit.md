@@ -1,8 +1,8 @@
 # Overview
 
-This project (v1.14.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.14.1) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
-The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion with complete configuration. Web search is production-ready with proper rate limiting syntax, robust Docker healthchecks, service dependencies, and conditional scraper/reranker credentials - providing complete out-of-the-box functionality with edge-case robustness.
+The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, and package generation capabilities with automatic SearXNG service inclusion. Web search configuration is fully automated with bidirectional profile normalization, app-level YAML configuration, hardcoded Docker URLs, and proper rate limiting - providing complete out-of-the-box functionality with no manual editing required.
 
 # User Preferences
 

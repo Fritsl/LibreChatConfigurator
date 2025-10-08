@@ -284,7 +284,7 @@ export default function Home() {
             const webSearchFields = ['searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 
               'searxngInstanceUrl', 'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey',
               'googleSearchApiKey', 'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl',
-              'jinaApiKey', 'jinaRerankerUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
+              'jinaApiKey', 'jinaApiUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
             
             const incomingConfig = profileData.configuration;
             const topLevelWebSearchFields = webSearchFields.filter(field => field in incomingConfig);
@@ -348,7 +348,7 @@ export default function Home() {
             const webSearchFields = ['searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 
               'searxngInstanceUrl', 'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey',
               'googleSearchApiKey', 'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl',
-              'jinaApiKey', 'jinaRerankerUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
+              'jinaApiKey', 'jinaApiUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'];
             
             const structureWarnings: string[] = [];
             const incomingConfig = profileData.configuration;

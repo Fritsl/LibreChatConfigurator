@@ -25,7 +25,7 @@ interface WebSearchConfig {
   firecrawlApiKey?: string;
   firecrawlApiUrl?: string;
   jinaApiKey?: string;
-  jinaRerankerUrl?: string;
+  jinaApiUrl?: string;
   cohereApiKey?: string;
   scraperTimeout?: number;
   safeSearch?: boolean;
@@ -395,13 +395,13 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
               </div>
             </div>
             <div>
-              <Label htmlFor="jina-reranker-url">Jina Reranker URL</Label>
+              <Label htmlFor="jina-api-url">Jina API URL</Label>
               <Input
-                id="jina-reranker-url"
-                value={config.jinaRerankerUrl || ""}
-                onChange={(e) => updateConfig({ jinaRerankerUrl: e.target.value })}
-                placeholder="http://localhost:8787"
-                data-testid="input-jina-reranker-url"
+                id="jina-api-url"
+                value={config.jinaApiUrl || ""}
+                onChange={(e) => updateConfig({ jinaApiUrl: e.target.value })}
+                placeholder="https://api.jina.ai/v1/rerank"
+                data-testid="input-jina-api-url"
               />
             </div>
           </div>

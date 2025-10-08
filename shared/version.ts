@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.10.0";
+export const TOOL_VERSION = "1.11.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-08",
-  changelog: "CRITICAL FIXES for LibreChat RC4 web search: Fixed SEARXNG_SECRET/SEARXNG_INSTANCE_URL concatenation bug in .env. Added default URLs for FIRECRAWL_API_URL and JINA_RERANKER_URL to prevent plugin auth errors. All web search configuration now properly generated across .env, docker-compose.yml, and librechat.yaml files."
+  changelog: "CRITICAL FIXES for RC4 web search: Renamed JINA_RERANKER_URL to JINA_API_URL (LibreChat's actual field name). Auto-generate SEARXNG_SECRET to prevent 403 errors. Fixed 'No plugin auth JINA_API_URL found' and 'SearXNG API request failed: 403' errors."
 } as const;
 
 // Helper function to get the tool's version string

@@ -5,6 +5,24 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2025-10-08
+
+### Fixed
+- **CRITICAL: Jina Field Name Correction**: Fixed LibreChat RC4 field name mismatch for Jina reranker
+  - **Field Rename**: Changed `JINA_RERANKER_URL` to `JINA_API_URL` (LibreChat's actual expected field name)
+  - **Schema Update**: Renamed `jinaRerankerUrl` to `jinaApiUrl` throughout codebase
+  - **Error Resolution**: Fixes "No plugin auth JINA_API_URL found for user" error
+  - **All Files Updated**: Field name corrected in .env, docker-compose.yml, librechat.yaml, and UI components
+- **CRITICAL: SearXNG Secret Auto-Generation**: SEARXNG_SECRET now auto-generates with crypto.randomBytes
+  - **Blank Secret Fixed**: Previously left blank, causing SearXNG authentication failures
+  - **Auto-Generation**: Now generates 32-byte hex string automatically when SearXNG service is included
+  - **Error Resolution**: Fixes "SearXNG API request failed: Request failed with status code 403" error
+
+### Impact
+- Eliminates "No plugin auth JINA_API_URL found" errors in LibreChat RC4
+- Fixes SearXNG 403 authentication errors with auto-generated secrets
+- Web search functionality now works correctly out-of-the-box
+
 ## [1.10.0] - 2025-10-08
 
 ### Fixed

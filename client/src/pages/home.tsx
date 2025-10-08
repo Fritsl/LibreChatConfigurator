@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConfigurationTabs } from "@/components/configuration-tabs";
 import { PreviewModal } from "@/components/preview-modal";
 import { useConfiguration } from "@/hooks/use-configuration";
@@ -18,10 +18,19 @@ import { ConfigurationHistory } from "@/components/ConfigurationHistory";
 import { getToolVersion, getVersionInfo } from "@shared/version";
 import yaml from "js-yaml";
 
+const CONFIG_NAME_STORAGE_KEY = "librechat_configurator_name";
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-  const [configurationName, setConfigurationName] = useState("My LibreChat Configuration");
+  const [configurationName, setConfigurationName] = useState(() => {
+    try {
+      const saved = localStorage.getItem(CONFIG_NAME_STORAGE_KEY);
+      return saved || "My LibreChat Configuration";
+    } catch {
+      return "My LibreChat Configuration";
+    }
+  });
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showSelfTestConfirmation, setShowSelfTestConfirmation] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
@@ -30,6 +39,15 @@ export default function Home() {
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
+
+  // Auto-save configuration name to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(CONFIG_NAME_STORAGE_KEY, configurationName);
+    } catch {
+      // Fail silently on localStorage errors
+    }
+  }, [configurationName]);
 
   const handleSaveProfile = async () => {
     try {

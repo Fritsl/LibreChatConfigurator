@@ -1,8 +1,8 @@
 # Overview
 
-This project is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc3, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts.
+This project (v1.8.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts.
 
-The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, and package generation capabilities.
+The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion for self-hosted search.
 
 # User Preferences
 
@@ -54,6 +54,7 @@ Preferred communication style: Simple, everyday language.
 - **Tabbed Interface**: 17 categorized tabs with icons and progress indicators
 - **Input Controls**: Specialized inputs for different data types (text, number, boolean, select, arrays)
 - **Custom Endpoints**: Create multiple OpenAI-compatible endpoints with individual API keys and friendly names for organizing usage by project/team (e.g., "OpenAI - Work", "OpenAI - Personal")
+- **SearXNG Auto-Inclusion**: Toggle to automatically include SearXNG service in docker-compose with proper Docker networking (http://searxng:8080) and auto-generated secrets
 - **Preview System**: Live preview of generated configuration files
 - **Package Generation**: Complete deployment package creation with multiple file formats
 - **Search Functionality**: Global search across all configuration settings

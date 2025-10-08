@@ -120,6 +120,7 @@ const webSearchSchema = z.object({
   serperApiKey: z.string().optional(),
   searxngInstanceUrl: z.string().optional(),
   searxngApiKey: z.string().optional(),
+  searxngIncludeService: z.boolean().default(true), // Include SearXNG service in Docker Compose
   firecrawlApiKey: z.string().optional(),
   firecrawlApiUrl: z.string().optional(),
   jinaApiKey: z.string().optional(),

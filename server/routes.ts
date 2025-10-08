@@ -1098,7 +1098,16 @@ ${config.e2bProxyEnabled ? `
       retries: 3
       start_period: 10s
 ` : ''}
-  # LibreChat Application
+  # LibreChat Application${config.interface?.artifacts ? `
+  # ⚠️  ARTIFACTS ENABLED - Content Security Policy (CSP) Requirements:
+  # When artifacts are enabled (interface.artifacts: true), LibreChat loads the Sandpack bundler
+  # to render interactive React/HTML/Mermaid components. The CSP must allow:
+  # - frame-src: https://*.codesandbox.io (for public bundler) OR your SANDPACK_BUNDLER_URL
+  # - script-src: 'unsafe-eval' 'unsafe-inline' (required for code execution in sandboxed iframe)
+  # - connect-src: https://*.codesandbox.io (for bundler API calls) OR your bundler domain
+  # 
+  # If using a reverse proxy (nginx/traefik), ensure CSP headers allow these domains.
+  # Self-hosted bundler (SANDPACK_BUNDLER_URL) keeps all code within your infrastructure.` : ''}
   librechat:
     container_name: librechat-app
     image: ghcr.io/danny-avila/librechat-dev:latest
@@ -1382,6 +1391,62 @@ ${config.interface?.presets !== false ? '- ✅ Presets' : '- ❌ Presets'}
 ${config.interface?.prompts !== false ? '- ✅ Custom Prompts' : '- ❌ Custom Prompts'}
 ${config.interface?.bookmarks !== false ? '- ✅ Bookmarks' : '- ❌ Bookmarks'}
 ${config.memoryEnabled !== false ? '- ✅ Memory System' : '- ❌ Memory System'}
+${config.interface?.artifacts !== false ? '- ✅ Artifacts (Generative UI)' : '- ❌ Artifacts'}
+${config.interface?.runCode !== false ? '- ✅ Code Interpreter UI' : '- ❌ Code Interpreter UI'}
+${config.interface?.artifacts !== false ? `
+
+### 🎨 Artifacts Configuration (Generative UI)
+
+Artifacts are **ENABLED** in your configuration. This feature allows AI to generate interactive:
+- **React Components**: Dynamic UI elements with state and interactivity
+- **HTML/CSS/JS Apps**: Complete web applications rendered in a side panel
+- **Mermaid Diagrams**: Flowcharts, sequence diagrams, and data visualizations
+
+#### Agent Capabilities
+The following artifact-related capabilities are configured:
+${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"]).filter((cap: string) => ["artifacts", "execute_code", "tools"].includes(cap)).map((cap: string) => {
+  const labels: Record<string, string> = {
+    "artifacts": "Artifacts (Generative UI)",
+    "execute_code": "Execute Code",
+    "tools": "Tools"
+  };
+  return `- ✅ ${labels[cap] || cap}`;
+}).join('\n')}
+
+#### Sandpack Bundler
+${config.sandpackBundlerUrl ? `- **Mode**: Self-Hosted (Privacy/Compliance)
+- **Bundler URL**: \`${config.sandpackBundlerUrl}\`
+- **Security**: All code execution stays within your infrastructure` : `- **Mode**: Public Bundler (Default)
+- **Provider**: CodeSandbox (https://*.codesandbox.io)
+- **Note**: Code is bundled via CodeSandbox's public CDN`}
+
+#### ⚠️ Content Security Policy (CSP) Requirements
+
+If you're using a **reverse proxy** (nginx, Traefik, Caddy) or have **strict CSP headers**, you MUST allow:
+
+\`\`\`nginx
+# For artifacts with public bundler:
+Content-Security-Policy: "
+  frame-src https://*.codesandbox.io;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  connect-src https://*.codesandbox.io;
+"
+
+# For artifacts with self-hosted bundler:
+Content-Security-Policy: "
+  frame-src ${config.sandpackBundlerUrl || 'YOUR_BUNDLER_URL'};
+  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  connect-src ${config.sandpackBundlerUrl || 'YOUR_BUNDLER_URL'};
+"
+\`\`\`
+
+**Why these directives are needed:**
+- \`frame-src\`: Allows embedding the Sandpack bundler iframe for code execution
+- \`script-src 'unsafe-eval'\`: Required for dynamic code compilation in the bundler
+- \`connect-src\`: Allows API calls to the bundler service
+
+**Note**: If artifacts don't render or show CSP errors, check your reverse proxy CSP headers.
+` : ''}
 
 ### File Upload Settings
 - **Max File Size**: ${config.filesMaxSizeMB}MB

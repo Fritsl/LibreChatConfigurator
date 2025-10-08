@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.9.0";
+export const TOOL_VERSION = "1.10.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-08",
-  changelog: "CRITICAL FIX: Docker Compose now passes ALL environment variables to LibreChat container. Previously only basic variables were passed, causing LibreChat to prompt for missing API keys. Now includes all AI providers, OAuth, web search (FIRECRAWL_API_KEY, JINA_API_KEY, SEARXNG_INSTANCE_URL), code execution (LIBRECHAT_CODE_API_KEY), email, storage, and all other configured settings."
+  changelog: "CRITICAL FIXES for LibreChat RC4 web search: Fixed SEARXNG_SECRET/SEARXNG_INSTANCE_URL concatenation bug in .env. Added default URLs for FIRECRAWL_API_URL and JINA_RERANKER_URL to prevent plugin auth errors. All web search configuration now properly generated across .env, docker-compose.yml, and librechat.yaml files."
 } as const;
 
 // Helper function to get the tool's version string

@@ -1,8 +1,8 @@
 # Overview
 
-This project (v1.9.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.10.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
-The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion for self-hosted search. Docker Compose files now properly pass all 150+ environment variables to LibreChat containers.
+The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion for self-hosted search. All web search configurations (SearXNG, Firecrawl, Jina, etc.) now properly generate with correct formatting and default URLs to prevent LibreChat RC4 plugin auth errors.
 
 # User Preferences
 

@@ -5,6 +5,22 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2025-10-08
+
+### Fixed
+- **CRITICAL: Web Search Configuration Bugs**: Fixed multiple issues preventing LibreChat RC4 web search from working
+  - **SEARXNG_SECRET Concatenation**: Fixed bug where `SEARXNG_SECRET=` and `SEARXNG_INSTANCE_URL=` were concatenated on same line in .env file
+  - **Missing URL Defaults**: Added default URLs for Firecrawl and Jina when scrapers/rerankers are selected:
+    - `FIRECRAWL_API_URL` now defaults to `https://api.firecrawl.dev`
+    - `JINA_RERANKER_URL` now defaults to `https://api.jina.ai/v1/rerank`
+  - **Plugin Auth Errors**: Prevents LibreChat RC4 errors: "No plugin auth FIRECRAWL_API_URL found" and "No plugin auth JINA_API_URL found"
+  - **Consistency Across Files**: URL fields now properly included in .env, docker-compose.yml, and librechat.yaml when web search features are enabled
+
+### Impact
+- Fixes LibreChat RC4 web search functionality completely
+- Eliminates plugin auth lookup failures for Firecrawl and Jina
+- Ensures all web search configuration variables are properly formatted and available to LibreChat container
+
 ## [1.9.0] - 2025-10-08
 
 ### Fixed

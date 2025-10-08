@@ -437,7 +437,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 <SelectItem value="serper">Serper (Google Search API)</SelectItem>
                 <SelectItem value="google">Google Custom Search</SelectItem>
                 <SelectItem value="bing">Bing Search API</SelectItem>
-                <SelectItem value="searxng">SearXNG (Self-hosted)</SelectItem>
+                <SelectItem value="searxng">SearXNG</SelectItem>
                 <SelectItem value="brave">Brave Search</SelectItem>
                 <SelectItem value="tavily">Tavily Search</SelectItem>
                 <SelectItem value="perplexity">Perplexity Search</SelectItem>

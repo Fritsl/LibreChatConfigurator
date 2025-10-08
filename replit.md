@@ -1,8 +1,8 @@
 # Overview
 
-This project (v1.12.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.13.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
-The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion with complete configuration. SearXNG integration now fully functional with auto-generated settings.yml (enables JSON format), hardcoded YAML values (prevents plugin auth errors), and proper Docker volume mounts - completely resolving all 403 errors.
+The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, package generation capabilities, and automatic SearXNG service inclusion with complete configuration. Web search fully configured with SEARCH_PROVIDER environment variable, app-level search enablement in YAML, SearXNG settings.yml generation (JSON format), hardcoded YAML values (plugin auth), and proper Docker mounts - providing complete out-of-the-box functionality.
 
 # User Preferences
 

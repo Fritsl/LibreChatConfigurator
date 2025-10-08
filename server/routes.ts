@@ -757,13 +757,13 @@ function generateYamlFile(config: any): string {
 
 version: 1.2.9
 cache: ${config.cache}
-
+${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `
 # App Configuration
-${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `app:
+app:
   search: true
   webSearch:
     enabled: true
-` : '# app:\n#   search: false\n'}
+` : ''}
 # MCP Servers Configuration
 mcpServers: ${
   (() => {

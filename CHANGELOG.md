@@ -5,6 +5,24 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2025-10-08
+
+### Added
+- **SEARCH_PROVIDER Environment Variable**: Added to .env file generation when web search is enabled
+  - Automatically set to the configured search provider (searxng, brave, tavily, etc.)
+  - Required by LibreChat RC4 to identify which search service to use
+  - Only generated when searchProvider is not 'none'
+- **App-Level Search Configuration in librechat.yaml**: Added top-level `app:` section
+  - `app.search: true` - Enables search functionality at application level
+  - `app.webSearch.enabled: true` - Explicitly enables web search feature
+  - Complements existing `webSearch:` provider configuration section
+  - Conditionally generated only when web search is configured
+
+### Impact
+- Completes LibreChat RC4 web search configuration per ChatGPT recommendations
+- Ensures all required environment variables and YAML settings are present
+- Combined with v1.12.0 SearXNG fixes, provides complete out-of-the-box web search functionality
+
 ## [1.12.0] - 2025-10-08
 
 ### Fixed

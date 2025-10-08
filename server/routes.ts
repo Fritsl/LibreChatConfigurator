@@ -6,6 +6,7 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import JSZip from "jszip";
 import * as e2bGenerators from "./e2b-generators";
+import crypto from "crypto";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -604,7 +605,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 # =============================================================================
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
-${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generate with: openssl rand -hex 32)\nSEARXNG_SECRET=\n` : ''}${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}` : '# SEARXNG_INSTANCE_URL='}
+${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generated 32-byte hex string)\nSEARXNG_SECRET=${crypto.randomBytes(32).toString('hex')}\n` : ''}${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
 ${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
 ${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
@@ -615,7 +616,7 @@ ${config.webSearch?.bingSearchApiKey || config.webSearch?.searchProvider === 'bi
 ${config.webSearch?.firecrawlApiKey || config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_KEY=${config.webSearch.firecrawlApiKey || ''}` : '# FIRECRAWL_API_KEY='}
 ${config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_URL=${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}` : '# FIRECRAWL_API_URL='}
 ${config.webSearch?.jinaApiKey || config.webSearch?.rerankerType === 'jina' ? `JINA_API_KEY=${config.webSearch.jinaApiKey || ''}` : '# JINA_API_KEY='}
-${config.webSearch?.rerankerType === 'jina' ? `JINA_RERANKER_URL=${config.webSearch.jinaRerankerUrl || 'https://api.jina.ai/v1/rerank'}` : '# JINA_RERANKER_URL='}
+${config.webSearch?.rerankerType === 'jina' ? `JINA_API_URL=${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}` : '# JINA_API_URL='}
 ${config.webSearch?.cohereApiKey || config.webSearch?.rerankerType === 'cohere' ? `COHERE_API_KEY=${config.webSearch.cohereApiKey || ''}` : '# COHERE_API_KEY='}
 
 # =============================================================================
@@ -1013,7 +1014,7 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
   rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
   jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.rerankerType === 'jina' ? `
-  jinaRerankerUrl: "\${JINA_RERANKER_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
+  jinaApiUrl: "\${JINA_API_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
   cohereApiKey: "\${COHERE_API_KEY}"` : ''}${config.webSearch.scraperTimeout ? `
   scraperTimeout: ${config.webSearch.scraperTimeout}` : ''}${config.webSearch.safeSearch !== undefined ? `
   safeSearch: ${config.webSearch.safeSearch ? 1 : 0}` : ''}` : '# Web search is not configured'}
@@ -1325,7 +1326,7 @@ ${config.webSearch?.bingSearchApiKey ? `      BING_SEARCH_API_KEY: \${BING_SEARC
 ${config.webSearch?.firecrawlApiKey ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
 ${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
 ${config.webSearch?.jinaApiKey ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
-${config.webSearch?.rerankerType === 'jina' ? `      JINA_RERANKER_URL: \${JINA_RERANKER_URL}` : '      # JINA_RERANKER_URL: ${JINA_RERANKER_URL}'}
+${config.webSearch?.rerankerType === 'jina' ? `      JINA_API_URL: \${JINA_API_URL}` : '      # JINA_API_URL: ${JINA_API_URL}'}
 ${config.webSearch?.cohereApiKey ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
       
       # =============================================================================

@@ -124,7 +124,7 @@ const webSearchSchema = z.object({
   firecrawlApiKey: z.string().optional(),
   firecrawlApiUrl: z.string().optional(),
   jinaApiKey: z.string().optional(),
-  jinaRerankerUrl: z.string().optional(),
+  jinaApiUrl: z.string().optional(),
   cohereApiKey: z.string().optional(),
   braveApiKey: z.string().optional(), // RC4 addition
   tavilyApiKey: z.string().optional(), // RC4 addition

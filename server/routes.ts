@@ -188,6 +188,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["proxy-service/src/metrics.ts"] = await e2bGenerators.generateE2BProxyMetrics();
       }
 
+      // Generate SearXNG settings.yml if service is included
+      if (configuration.webSearch?.searxngIncludeService && configuration.webSearch?.searchProvider === 'searxng') {
+        packageFiles["searxng/settings.yml"] = generateSearXNGSettingsFile(configuration);
+      }
+
       // Always include a configuration settings file for easy re-import
       packageFiles["LibreChatConfigSettings.json"] = generateProfileFile(configuration);
 
@@ -1082,7 +1087,7 @@ ${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider ==
       SEARXNG_SECRET: \${SEARXNG_SECRET}
       SEARXNG_BASE_URL: "http://searxng:8080"
     volumes:
-      - searxng_config:/etc/searxng
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
     networks:
       - librechat-network
     healthcheck:
@@ -2068,6 +2073,59 @@ function generateHexSecret(byteLength: number): string {
     result += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
   }
   return result;
+}
+
+// Generate SearXNG settings.yml file with JSON format enabled
+function generateSearXNGSettingsFile(config: any): string {
+  // Generate a secret for SearXNG if not already generated (same one used in .env)
+  const searxngSecret = crypto.randomBytes(32).toString('hex');
+  
+  return `# SearXNG Configuration
+# Generated for LibreChat integration
+# This file enables JSON format for API access
+
+use_default_settings: true
+
+server:
+  # Secret key for SearXNG (used for image proxy, Redis sessions)
+  secret_key: "${searxngSecret}"
+  
+  # Bind to all interfaces inside Docker container
+  bind_address: "0.0.0.0"
+  port: 8080
+  
+  # Disable rate limiting for private instances
+  limiter: false
+  
+  # Enable image proxy for secure image loading
+  image_proxy: true
+
+search:
+  # Safe search level: 0=off, 1=moderate, 2=strict
+  safe_search: ${config.webSearch?.safeSearch !== undefined ? config.webSearch.safeSearch : 1}
+  
+  # Enable both HTML and JSON formats (JSON required for LibreChat)
+  formats:
+    - html
+    - json
+  
+  # Autocomplete settings
+  autocomplete: ""
+  
+  # Default language (empty = all languages)
+  default_lang: ""
+
+# General settings
+general:
+  # Instance name
+  instance_name: "SearXNG for LibreChat"
+  
+  # Enable debug mode for troubleshooting (optional)
+  debug: false
+
+# Enabled engines (default engines will be used)
+# You can customize this section to enable/disable specific search engines
+`;
 }
 
 // Cleanup cloud deployment resources

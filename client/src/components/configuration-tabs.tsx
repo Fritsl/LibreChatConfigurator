@@ -328,7 +328,7 @@ paths:
           icon: Search,
           description: "Web Search & External APIs",
           color: "from-violet-500 to-violet-600",
-          settings: ["webSearch", "openweatherApiKey", "librechatCodeApiKey"],
+          settings: ["webSearch", "openweatherApiKey"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
         {

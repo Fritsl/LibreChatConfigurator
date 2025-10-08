@@ -604,7 +604,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 # =============================================================================
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
-${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl || ''}` : '# SEARXNG_INSTANCE_URL='}
+${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generate with: openssl rand -hex 32)\nSEARXNG_SECRET=` : ''}${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
 ${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
 ${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
@@ -1069,7 +1069,28 @@ services:
     networks:
       - librechat-network
     command: redis-server --appendonly yes
-${config.e2bProxyEnabled ? `
+${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `
+  # SearXNG Search Engine (Self-Hosted)
+  searxng:
+    container_name: searxng
+    image: searxng/searxng:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SEARXNG_SECRET: \${SEARXNG_SECRET}
+      SEARXNG_BASE_URL: "http://searxng:8080"
+    volumes:
+      - searxng_config:/etc/searxng
+    networks:
+      - librechat-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+` : ''}${config.e2bProxyEnabled ? `
   # E2B Code Execution Proxy
   e2b-proxy:
     container_name: e2b-proxy
@@ -1114,7 +1135,7 @@ ${config.e2bProxyEnabled ? `
     restart: unless-stopped
     depends_on:
       - mongodb
-      - redis${config.e2bProxyEnabled ? '\n      - e2b-proxy' : ''}
+      - redis${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n      - searxng' : ''}${config.e2bProxyEnabled ? '\n      - e2b-proxy' : ''}
     ports:
       - "\${LIBRECHAT_PORT:-${config.port}}:3080"
     environment:
@@ -1169,7 +1190,7 @@ volumes:
   librechat_uploads:
     driver: local
   librechat_logs:
-    driver: local${config.e2bProxyEnabled ? '\n  e2b_files:\n    driver: local' : ''}
+    driver: local${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n  searxng_config:\n    driver: local' : ''}${config.e2bProxyEnabled ? '\n  e2b_files:\n    driver: local' : ''}
 
 networks:
   librechat-network:

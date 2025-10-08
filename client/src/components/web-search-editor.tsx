@@ -9,18 +9,12 @@ import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff, Info } from "lucide-rea
 import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
-  searchProvider?: "none" | "serper" | "searxng" | "brave" | "tavily" | "perplexity" | "google" | "bing";
-  scraperType?: "none" | "firecrawl" | "serper" | "brave";
+  searchProvider?: "none" | "serper" | "searxng";
+  scraperType?: "none" | "firecrawl" | "serper";
   rerankerType?: "none" | "jina" | "cohere";
   serperApiKey?: string;
   searxngInstanceUrl?: string;
   searxngApiKey?: string;
-  braveApiKey?: string;
-  tavilyApiKey?: string;
-  perplexityApiKey?: string;
-  googleSearchApiKey?: string;
-  googleCSEId?: string;
-  bingSearchApiKey?: string;
   firecrawlApiKey?: string;
   firecrawlApiUrl?: string;
   jinaApiKey?: string;
@@ -155,115 +149,6 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
           </div>
         );
 
-      case "brave":
-        return (
-          <div>
-            <Label htmlFor="brave-api-key">
-              <Search className="h-3 w-3 inline mr-1" />
-              Brave Search API Key *
-            </Label>
-            <Input
-              id="brave-api-key"
-              type="password"
-              value={config.braveApiKey || ""}
-              onChange={(e) => updateConfig({ braveApiKey: e.target.value })}
-              placeholder="Enter your Brave Search API key"
-              className="font-mono"
-              data-testid="input-brave-api-key"
-            />
-          </div>
-        );
-
-      case "tavily":
-        return (
-          <div>
-            <Label htmlFor="tavily-api-key">
-              <Search className="h-3 w-3 inline mr-1" />
-              Tavily Search API Key *
-            </Label>
-            <Input
-              id="tavily-api-key"
-              type="password"
-              value={config.tavilyApiKey || ""}
-              onChange={(e) => updateConfig({ tavilyApiKey: e.target.value })}
-              placeholder="Enter your Tavily API key"
-              className="font-mono"
-              data-testid="input-tavily-api-key"
-            />
-          </div>
-        );
-
-      case "perplexity":
-        return (
-          <div>
-            <Label htmlFor="perplexity-api-key">
-              <Search className="h-3 w-3 inline mr-1" />
-              Perplexity API Key *
-            </Label>
-            <Input
-              id="perplexity-api-key"
-              type="password"
-              value={config.perplexityApiKey || ""}
-              onChange={(e) => updateConfig({ perplexityApiKey: e.target.value })}
-              placeholder="Enter your Perplexity API key (pplx-...)"
-              className="font-mono"
-              data-testid="input-perplexity-api-key"
-            />
-          </div>
-        );
-
-      case "google":
-        return (
-          <div className="space-y-3">
-            <div>
-              <Label htmlFor="google-search-api-key">
-                <Search className="h-3 w-3 inline mr-1" />
-                Google Search API Key *
-              </Label>
-              <Input
-                id="google-search-api-key"
-                type="password"
-                value={config.googleSearchApiKey || ""}
-                onChange={(e) => updateConfig({ googleSearchApiKey: e.target.value })}
-                placeholder="Enter your Google Search API key"
-                className="font-mono"
-                data-testid="input-google-search-api-key"
-              />
-            </div>
-            <div>
-              <Label htmlFor="google-cse-id">
-                Google Custom Search Engine ID *
-              </Label>
-              <Input
-                id="google-cse-id"
-                value={config.googleCSEId || ""}
-                onChange={(e) => updateConfig({ googleCSEId: e.target.value })}
-                placeholder="Enter your Google CSE ID"
-                data-testid="input-google-cse-id"
-              />
-            </div>
-          </div>
-        );
-
-      case "bing":
-        return (
-          <div>
-            <Label htmlFor="bing-search-api-key">
-              <Search className="h-3 w-3 inline mr-1" />
-              Bing Search API Key *
-            </Label>
-            <Input
-              id="bing-search-api-key"
-              type="password"
-              value={config.bingSearchApiKey || ""}
-              onChange={(e) => updateConfig({ bingSearchApiKey: e.target.value })}
-              placeholder="Enter your Bing Search API key"
-              className="font-mono"
-              data-testid="input-bing-search-api-key"
-            />
-          </div>
-        );
-
       default:
         return null;
     }
@@ -322,13 +207,6 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
         return (
           <p className="text-xs text-muted-foreground">
             Using Serper for both search and scraping (API key configured above)
-          </p>
-        );
-
-      case "brave":
-        return (
-          <p className="text-xs text-muted-foreground">
-            Using Brave for both search and scraping (API key configured above)
           </p>
         );
 
@@ -435,12 +313,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
               <SelectContent>
                 <SelectItem value="none">None (Disable Search)</SelectItem>
                 <SelectItem value="serper">Serper (Google Search API)</SelectItem>
-                <SelectItem value="google">Google Custom Search</SelectItem>
-                <SelectItem value="bing">Bing Search API</SelectItem>
                 <SelectItem value="searxng">SearXNG</SelectItem>
-                <SelectItem value="brave">Brave Search</SelectItem>
-                <SelectItem value="tavily">Tavily Search</SelectItem>
-                <SelectItem value="perplexity">Perplexity Search</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -471,9 +344,8 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">None (No Scraping)</SelectItem>
-                <SelectItem value="firecrawl">Firecrawl (Advanced)</SelectItem>
-                <SelectItem value="serper">Serper (if using Serper search)</SelectItem>
-                <SelectItem value="brave">Brave (if using Brave search)</SelectItem>
+                <SelectItem value="firecrawl">Firecrawl</SelectItem>
+                <SelectItem value="serper">Serper</SelectItem>
               </SelectContent>
             </Select>
           </div>

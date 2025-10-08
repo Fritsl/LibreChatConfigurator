@@ -94,8 +94,6 @@ export const defaultConfiguration: Configuration = {
     firecrawlApiUrl: "",
     jinaApiKey: "",
     cohereApiKey: "",
-    braveApiKey: "",
-    tavilyApiKey: "",
     searchProvider: "serper",
     scraperType: "serper", 
     rerankerType: "jina",

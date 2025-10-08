@@ -5,6 +5,38 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2025-10-08
+
+### BREAKING CHANGES
+- **Restricted Web Search to Officially Supported Providers**: Aligned configuration with LibreChat RC4 official documentation
+  - **Removed Search Providers**: Brave, Tavily, Perplexity, Google Custom Search, Bing Search API
+  - **Kept Only Documented Providers**: Serper and SearXNG (as per official LibreChat webSearch documentation)
+  - **Removed Schema Fields**: `braveApiKey`, `tavilyApiKey`, `perplexityApiKey`, `googleSearchApiKey`, `googleCSEId`, `bingSearchApiKey` from webSearch configuration
+  - **Removed Scraper Option**: Brave scraper (kept Firecrawl and Serper as documented)
+  - **Why**: These providers were not documented in official LibreChat RC4 web search configuration and may not work reliably
+
+### Changed
+- **Schema**: Updated `searchProvider` enum to only include: "none", "serper", "searxng"
+- **Schema**: Updated `scraperType` enum to only include: "none", "firecrawl", "serper"
+- **UI**: Removed dropdown options for unsupported search providers
+- **Backend**: Removed environment variable generation for unsupported providers
+- **Backend**: Cleaned up librechat.yaml generation to exclude unsupported provider fields
+- **Backend**: Simplified docker-compose.yml to only include officially supported providers
+
+### Impact
+- Ensures all generated configurations align with official LibreChat RC4 documentation
+- Prevents users from configuring unsupported providers that may not work
+- Generated packages are guaranteed to use only tested and documented search configurations
+- Reduces configuration complexity and potential error points
+
+### Migration Guide
+If you were using an unsupported search provider:
+1. **Review LibreChat Documentation**: Check https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/web_search
+2. **Switch to Supported Provider**: 
+   - For API-based search: Use Serper (https://serper.dev)
+   - For privacy-focused search: Use SearXNG (deploy your own instance)
+3. **Alternative Options**: Consider using LibreChat's native OpenRouter integration if you need provider-specific search features
+
 ## [1.15.0] - 2025-10-08
 
 ### BREAKING CHANGES

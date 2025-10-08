@@ -114,9 +114,9 @@ const actionsSchema = z.object({
   allowedDomains: z.array(z.string()).default([]),
 }).optional();
 
-// Web Search Configuration with expanded RC4 providers
+// Web Search Configuration - Officially Supported Providers Only
 const webSearchSchema = z.object({
-  // API Keys
+  // API Keys (only officially supported providers)
   serperApiKey: z.string().optional(),
   searxngInstanceUrl: z.string().optional(),
   searxngApiKey: z.string().optional(),
@@ -125,16 +125,10 @@ const webSearchSchema = z.object({
   jinaApiKey: z.string().optional(),
   jinaApiUrl: z.string().optional(),
   cohereApiKey: z.string().optional(),
-  braveApiKey: z.string().optional(), // RC4 addition
-  tavilyApiKey: z.string().optional(), // RC4 addition
-  perplexityApiKey: z.string().optional(), // RC4 addition
-  googleSearchApiKey: z.string().optional(), // RC4 addition
-  googleCSEId: z.string().optional(), // RC4 addition
-  bingSearchApiKey: z.string().optional(), // RC4 addition
   
-  // Provider Configuration
-  searchProvider: z.enum(["none", "serper", "searxng", "brave", "tavily", "perplexity", "google", "bing"]).default("none"),
-  scraperType: z.enum(["none", "firecrawl", "serper", "brave"]).default("none"),
+  // Provider Configuration (official LibreChat documentation only)
+  searchProvider: z.enum(["none", "serper", "searxng"]).default("none"),
+  scraperType: z.enum(["none", "firecrawl", "serper"]).default("none"),
   rerankerType: z.enum(["none", "jina", "cohere"]).default("none"),
   scraperTimeout: z.number().min(1000).max(60000).default(10000),
   safeSearch: z.boolean().default(true),

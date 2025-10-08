@@ -632,12 +632,6 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
 ${config.webSearch?.searxngInstanceUrl && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
-${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
-${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
-${config.webSearch?.perplexityApiKey || config.webSearch?.searchProvider === 'perplexity' ? `PERPLEXITY_API_KEY=${config.webSearch.perplexityApiKey || ''}` : '# PERPLEXITY_API_KEY='}
-${config.webSearch?.googleSearchApiKey || config.webSearch?.searchProvider === 'google' ? `GOOGLE_SEARCH_API_KEY=${config.webSearch.googleSearchApiKey || ''}` : '# GOOGLE_SEARCH_API_KEY='}
-${config.webSearch?.googleCSEId && config.webSearch?.searchProvider === 'google' ? `GOOGLE_CSE_ID=${config.webSearch.googleCSEId}` : '# GOOGLE_CSE_ID='}
-${config.webSearch?.bingSearchApiKey || config.webSearch?.searchProvider === 'bing' ? `BING_SEARCH_API_KEY=${config.webSearch.bingSearchApiKey || ''}` : '# BING_SEARCH_API_KEY='}
 ${config.webSearch?.firecrawlApiKey || config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_KEY=${config.webSearch.firecrawlApiKey || ''}` : '# FIRECRAWL_API_KEY='}
 ${config.webSearch?.scraperType === 'firecrawl' ? `FIRECRAWL_API_URL=${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}` : '# FIRECRAWL_API_URL='}
 ${config.webSearch?.jinaApiKey || config.webSearch?.rerankerType === 'jina' ? `JINA_API_KEY=${config.webSearch.jinaApiKey || ''}` : '# JINA_API_KEY='}
@@ -1036,13 +1030,7 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper' ? `
   serperApiKey: "\${SERPER_API_KEY}"` : ''}${config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng' ? `
   searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"` : ''}${config.webSearch.searchProvider === 'searxng' ? `
-  searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}${config.webSearch.braveApiKey || config.webSearch.searchProvider === 'brave' ? `
-  braveApiKey: "\${BRAVE_API_KEY}"` : ''}${config.webSearch.tavilyApiKey || config.webSearch.searchProvider === 'tavily' ? `
-  tavilyApiKey: "\${TAVILY_API_KEY}"` : ''}${config.webSearch.perplexityApiKey || config.webSearch.searchProvider === 'perplexity' ? `
-  perplexityApiKey: "\${PERPLEXITY_API_KEY}"` : ''}${config.webSearch.googleSearchApiKey || config.webSearch.searchProvider === 'google' ? `
-  googleSearchApiKey: "\${GOOGLE_SEARCH_API_KEY}"` : ''}${config.webSearch.googleCSEId && config.webSearch.searchProvider === 'google' ? `
-  googleCSEId: "\${GOOGLE_CSE_ID}"` : ''}${config.webSearch.bingSearchApiKey || config.webSearch.searchProvider === 'bing' ? `
-  bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
+  searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
   scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey && config.webSearch.scraperType === 'firecrawl' ? `
   firecrawlApiKey: "\${FIRECRAWL_API_KEY}"
   firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
@@ -1333,10 +1321,6 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
 ${config.webSearch?.serperApiKey ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
 ${config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
 ${config.webSearch?.searxngApiKey ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
-${config.webSearch?.braveApiKey ? `      BRAVE_API_KEY: \${BRAVE_API_KEY}` : '      # BRAVE_API_KEY: ${BRAVE_API_KEY}'}
-${config.webSearch?.tavilyApiKey ? `      TAVILY_API_KEY: \${TAVILY_API_KEY}` : '      # TAVILY_API_KEY: ${TAVILY_API_KEY}'}
-${config.webSearch?.perplexityApiKey ? `      PERPLEXITY_API_KEY: \${PERPLEXITY_API_KEY}` : '      # PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}'}
-${config.webSearch?.bingSearchApiKey ? `      BING_SEARCH_API_KEY: \${BING_SEARCH_API_KEY}` : '      # BING_SEARCH_API_KEY: ${BING_SEARCH_API_KEY}'}
 ${config.webSearch?.firecrawlApiKey ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
 ${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
 ${config.webSearch?.jinaApiKey ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}

@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.8.0";
+export const TOOL_VERSION = "1.9.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-08",
-  changelog: "SearXNG auto-inclusion: When selecting SearXNG search provider, toggle to automatically include SearXNG service in docker-compose with proper networking (http://searxng:8080) and auto-generate SEARXNG_SECRET."
+  changelog: "CRITICAL FIX: Docker Compose now passes ALL environment variables to LibreChat container. Previously only basic variables were passed, causing LibreChat to prompt for missing API keys. Now includes all AI providers, OAuth, web search (FIRECRAWL_API_KEY, JINA_API_KEY, SEARXNG_INSTANCE_URL), code execution (LIBRECHAT_CODE_API_KEY), email, storage, and all other configured settings."
 } as const;
 
 // Helper function to get the tool's version string

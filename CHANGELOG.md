@@ -5,6 +5,25 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2025-10-08
+
+### Fixed
+- **CRITICAL: Docker Compose Environment Variables**: Fixed major issue where docker-compose.yml wasn't passing most environment variables to LibreChat container
+  - Previously only ~10 basic variables were passed (database, security, OPENAI_API_KEY)
+  - Now passes ALL 150+ configured environment variables organized by category
+  - Includes all AI provider API keys (OpenAI, Anthropic, Google, Groq, Mistral, DeepSeek, etc.)
+  - Includes OAuth provider credentials (Google, GitHub, Discord, Facebook, Apple, OpenID)
+  - Includes web search configuration (SEARXNG_INSTANCE_URL, FIRECRAWL_API_KEY, JINA_API_KEY, COHERE_API_KEY, etc.)
+  - Includes code execution (LIBRECHAT_CODE_API_KEY, E2B_API_KEY, E2B_PROXY_URL, etc.)
+  - Includes email, file storage (Firebase, Azure, S3), RAG API, MeiliSearch, LDAP, Turnstile
+  - Includes rate limits, features, caching, debug, OCR, subdirectory hosting configurations
+  - Uses commented/uncommented pattern to show all available variables for easy reference
+
+### Impact
+- Fixes issue where LibreChat UI prompted users to enter API keys despite them being in .env file
+- Docker Compose now properly injects environment variables from .env into the container
+- Users no longer need to manually configure credentials in LibreChat UI after deployment
+
 ## [1.8.0] - 2025-10-08
 
 ### Added

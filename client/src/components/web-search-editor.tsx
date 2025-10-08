@@ -15,7 +15,6 @@ interface WebSearchConfig {
   serperApiKey?: string;
   searxngInstanceUrl?: string;
   searxngApiKey?: string;
-  searxngIncludeService?: boolean;
   braveApiKey?: string;
   tavilyApiKey?: string;
   perplexityApiKey?: string;
@@ -108,52 +107,32 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
       case "searxng":
         return (
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md">
-              <div className="space-y-0.5">
-                <Label htmlFor="searxng-include-service" className="text-sm font-medium">
-                  Include SearXNG service in Docker Compose
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  Automatically adds SearXNG container to your deployment. Disable if using external instance.
-                </p>
-              </div>
-              <Switch
-                id="searxng-include-service"
-                checked={config.searxngIncludeService ?? true}
-                onCheckedChange={(checked) => updateConfig({ searxngIncludeService: checked })}
-                data-testid="switch-searxng-include-service"
-              />
-            </div>
             <div>
               <Label htmlFor="searxng-url">
                 <Globe className="h-3 w-3 inline mr-1" />
-                SearXNG Instance URL {config.searxngIncludeService ? "(Auto-configured)" : "*"}
+                SearXNG Instance URL *
               </Label>
               <Input
                 id="searxng-url"
-                value={config.searxngIncludeService ? "http://searxng:8080" : (config.searxngInstanceUrl || "")}
+                value={config.searxngInstanceUrl || ""}
                 onChange={(e) => updateConfig({ searxngInstanceUrl: e.target.value })}
-                placeholder={config.searxngIncludeService ? "http://searxng:8080" : "https://search.example.com"}
-                disabled={config.searxngIncludeService}
+                placeholder="https://search.example.com"
                 data-testid="input-searxng-url"
-                className={config.searxngIncludeService ? "bg-muted" : ""}
               />
-              {config.searxngIncludeService && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  <Info className="h-3 w-3 inline mr-1" />
-                  Using internal Docker service URL (http://searxng:8080)
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground mt-1">
+                <Info className="h-3 w-3 inline mr-1" />
+                Enter the URL of your external SearXNG instance
+              </p>
             </div>
             <div>
-              <Label htmlFor="searxng-api-key">SearXNG API Key</Label>
+              <Label htmlFor="searxng-api-key">SearXNG API Key (Optional)</Label>
               <div className="relative">
                 <Input
                   id="searxng-api-key"
                   type={showSearxngApiKey ? "text" : "password"}
                   value={config.searxngApiKey || ""}
                   onChange={(e) => updateConfig({ searxngApiKey: e.target.value })}
-                  placeholder="Optional API key"
+                  placeholder="Optional API key if required"
                   className="font-mono pr-10"
                   data-testid="input-searxng-api-key"
                 />

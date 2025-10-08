@@ -88,12 +88,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (normalizedData.configuration?.webSearch?.searchProvider) {
         if (normalizedData.configuration.webSearch.searchProvider !== 'none') {
           normalizedData.configuration.search = true;
-          
-          // Auto-populate searxngInstanceUrl when service is included
-          if (normalizedData.configuration.webSearch.searchProvider === 'searxng' && 
-              normalizedData.configuration.webSearch.searxngIncludeService) {
-            normalizedData.configuration.webSearch.searxngInstanceUrl = 'http://searxng:8080';
-          }
         } else {
           // Explicitly set search: false when provider is 'none'
           normalizedData.configuration.search = false;
@@ -117,12 +111,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (updates.configuration?.webSearch?.searchProvider) {
         if (updates.configuration.webSearch.searchProvider !== 'none') {
           updates.configuration.search = true;
-          
-          // Auto-populate searxngInstanceUrl when service is included
-          if (updates.configuration.webSearch.searchProvider === 'searxng' && 
-              updates.configuration.webSearch.searxngIncludeService) {
-            updates.configuration.webSearch.searxngInstanceUrl = 'http://searxng:8080';
-          }
         } else {
           // Explicitly set search: false when provider is 'none'
           updates.configuration.search = false;
@@ -222,11 +210,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["proxy-service/src/file-storage.ts"] = await e2bGenerators.generateE2BProxyFileStorage();
         packageFiles["proxy-service/src/sandbox-manager.ts"] = await e2bGenerators.generateE2BProxySandboxManager();
         packageFiles["proxy-service/src/metrics.ts"] = await e2bGenerators.generateE2BProxyMetrics();
-      }
-
-      // Generate SearXNG settings.yml if service is included
-      if (configuration.webSearch?.searxngIncludeService && configuration.webSearch?.searchProvider === 'searxng') {
-        packageFiles["searxng/settings.yml"] = generateSearXNGSettingsFile(configuration);
       }
 
       // Always include a configuration settings file for easy re-import
@@ -647,7 +630,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH_PROVIDER=${config.webSearch.searchProvider}` : '# SEARCH_PROVIDER='}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
-${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generated 32-byte hex string)\nSEARXNG_SECRET=${crypto.randomBytes(32).toString('hex')}` : '# SEARXNG_SECRET='}
+${config.webSearch?.searxngInstanceUrl && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
 ${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
 ${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
@@ -800,7 +783,7 @@ app:
   webSearch:
     enabled: true
     searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.searchProvider === 'searxng' ? `
-    searxngInstanceUrl: "${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}"
+    searxngInstanceUrl: "${config.webSearch.searxngInstanceUrl || ''}"
     searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}
 ` : ''}
 # MCP Servers Configuration
@@ -1052,7 +1035,7 @@ ${config.memory?.enabled ? `memory:
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `webSearch:
   searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper' ? `
   serperApiKey: "\${SERPER_API_KEY}"` : ''}${config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng' ? `
-  searxngInstanceUrl: "${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}"` : ''}${config.webSearch.searchProvider === 'searxng' ? `
+  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"` : ''}${config.webSearch.searchProvider === 'searxng' ? `
   searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}${config.webSearch.braveApiKey || config.webSearch.searchProvider === 'brave' ? `
   braveApiKey: "\${BRAVE_API_KEY}"` : ''}${config.webSearch.tavilyApiKey || config.webSearch.searchProvider === 'tavily' ? `
   tavilyApiKey: "\${TAVILY_API_KEY}"` : ''}${config.webSearch.perplexityApiKey || config.webSearch.searchProvider === 'perplexity' ? `
@@ -1121,28 +1104,7 @@ services:
     networks:
       - librechat-network
     command: redis-server --appendonly yes
-${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `
-  # SearXNG Search Engine (Self-Hosted)
-  searxng:
-    container_name: searxng
-    image: searxng/searxng:latest
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      SEARXNG_SECRET: \${SEARXNG_SECRET}
-      SEARXNG_BASE_URL: "http://searxng:8080"
-    volumes:
-      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
-    networks:
-      - librechat-network
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-` : ''}${config.e2bProxyEnabled ? `
+${config.e2bProxyEnabled ? `
   # E2B Code Execution Proxy
   e2b-proxy:
     container_name: e2b-proxy
@@ -1189,7 +1151,7 @@ ${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider ==
       mongodb:
         condition: service_started
       redis:
-        condition: service_started${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n      searxng:\n        condition: service_healthy' : ''}${config.e2bProxyEnabled ? '\n      e2b-proxy:\n        condition: service_started' : ''}
+        condition: service_started${config.e2bProxyEnabled ? '\n      e2b-proxy:\n        condition: service_started' : ''}
     ports:
       - "\${LIBRECHAT_PORT:-${config.port}}:3080"
     environment:
@@ -1369,8 +1331,7 @@ ${config.embeddingsProvider ? `      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER
       # =============================================================================
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `      SEARCH: \${SEARCH}` : '      # SEARCH: ${SEARCH}'}
 ${config.webSearch?.serperApiKey ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
-${config.webSearch?.searxngIncludeService ? `      SEARXNG_INSTANCE_URL: http://searxng:8080` : config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
-${config.webSearch?.searxngIncludeService ? `      SEARXNG_SECRET: \${SEARXNG_SECRET}` : '      # SEARXNG_SECRET: ${SEARXNG_SECRET}'}
+${config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
 ${config.webSearch?.searxngApiKey ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
 ${config.webSearch?.braveApiKey ? `      BRAVE_API_KEY: \${BRAVE_API_KEY}` : '      # BRAVE_API_KEY: ${BRAVE_API_KEY}'}
 ${config.webSearch?.tavilyApiKey ? `      TAVILY_API_KEY: \${TAVILY_API_KEY}` : '      # TAVILY_API_KEY: ${TAVILY_API_KEY}'}
@@ -1505,7 +1466,7 @@ volumes:
   librechat_uploads:
     driver: local
   librechat_logs:
-    driver: local${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n  searxng_config:\n    driver: local' : ''}${config.e2bProxyEnabled ? '\n  e2b_files:\n    driver: local' : ''}
+    driver: local${config.e2bProxyEnabled ? '\n  e2b_files:\n    driver: local' : ''}
 
 networks:
   librechat-network:
@@ -2121,61 +2082,6 @@ function generateHexSecret(byteLength: number): string {
     result += hexChars.charAt(Math.floor(Math.random() * hexChars.length));
   }
   return result;
-}
-
-// Generate SearXNG settings.yml file with JSON format enabled
-function generateSearXNGSettingsFile(config: any): string {
-  // Generate a secret for SearXNG if not already generated (same one used in .env)
-  const searxngSecret = crypto.randomBytes(32).toString('hex');
-  
-  return `# SearXNG Configuration
-# Generated for LibreChat integration
-# This file enables JSON format for API access
-
-use_default_settings: true
-
-server:
-  # Secret key for SearXNG (used for image proxy, Redis sessions)
-  secret_key: "${searxngSecret}"
-  
-  # Bind to all interfaces inside Docker container
-  bind_address: "0.0.0.0"
-  port: 8080
-  
-  # Enable image proxy for secure image loading
-  image_proxy: true
-
-# Rate limiting configuration
-rate_limit:
-  # Disable rate limiting for private instances
-  enabled: false
-
-search:
-  # Safe search level: 0=off, 1=moderate, 2=strict
-  safe_search: ${config.webSearch?.safeSearch !== undefined ? (config.webSearch.safeSearch ? 1 : 0) : 1}
-  
-  # Enable both HTML and JSON formats (JSON required for LibreChat)
-  formats:
-    - html
-    - json
-  
-  # Autocomplete settings
-  autocomplete: ""
-  
-  # Default language (empty = all languages)
-  default_lang: ""
-
-# General settings
-general:
-  # Instance name
-  instance_name: "SearXNG for LibreChat"
-  
-  # Enable debug mode for troubleshooting (optional)
-  debug: false
-
-# Enabled engines (default engines will be used)
-# You can customize this section to enable/disable specific search engines
-`;
 }
 
 // Cleanup cloud deployment resources

@@ -5,6 +5,37 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2025-10-08
+
+### BREAKING CHANGES
+- **Removed Local SearXNG Docker Service Creation**: Simplified SearXNG configuration
+  - **Removed**: `searxngIncludeService` toggle that automatically created SearXNG Docker container
+  - **Removed**: Automatic `settings.yml` generation for SearXNG
+  - **Removed**: SearXNG service definition from docker-compose.yml
+  - **Removed**: searxng_config Docker volume
+  - **Removed**: SEARXNG_SECRET environment variable
+  - **Why**: Local SearXNG Docker setup was complex and unreliable. Users consistently experienced 403 errors, configuration issues, and service startup problems.
+
+### Changed
+- **SearXNG as External Service Only**: Treat SearXNG like any other search provider
+  - Now requires: User-provided SearXNG instance URL (required) and optional API key
+  - Works with: Any publicly accessible SearXNG instance (self-hosted elsewhere or public)
+  - Benefits: Simpler configuration, more reliable, works out-of-the-box with external instances
+  - No more Docker complexity or auto-generated configuration files
+
+### Migration Guide
+If you were using the local SearXNG Docker service feature:
+1. Deploy SearXNG separately using its official Docker setup
+2. Configure your SearXNG instance with JSON format enabled
+3. Enter your SearXNG URL in the configuration tool (e.g., `https://search.example.com`)
+4. Optionally add an API key if your instance requires authentication
+
+### Impact
+- Eliminates all SearXNG-related Docker and configuration complexity
+- Users can now use reliable external SearXNG instances without local setup hassles
+- Configuration tool becomes more maintainable with less service-specific logic
+- Consistent with how other search providers (Brave, Tavily, Perplexity) are handled
+
 ## [1.14.1] - 2025-10-08
 
 ### Fixed

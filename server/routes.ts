@@ -609,6 +609,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 # Web Search Configuration
 # =============================================================================
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
+${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH_PROVIDER=${config.webSearch.searchProvider}` : '# SEARCH_PROVIDER='}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
 ${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generated 32-byte hex string)\nSEARXNG_SECRET=${crypto.randomBytes(32).toString('hex')}\n` : ''}${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
@@ -757,6 +758,12 @@ function generateYamlFile(config: any): string {
 version: 1.2.9
 cache: ${config.cache}
 
+# App Configuration
+${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `app:
+  search: true
+  webSearch:
+    enabled: true
+` : '# app:\n#   search: false\n'}
 # MCP Servers Configuration
 mcpServers: ${
   (() => {

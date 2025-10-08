@@ -5,6 +5,35 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2025-10-08
+
+### Fixed
+- **CRITICAL: SearXNG 403 Errors Completely Resolved**: Fixed root cause of SearXNG 403 errors with comprehensive solution
+  - **Settings File Generation**: Now generates `searxng/settings.yml` with JSON format enabled
+    - SearXNG requires `formats: [html, json]` to accept LibreChat's JSON API requests
+    - Previously SearXNG rejected requests with 403 when JSON format wasn't configured
+  - **Docker Mount**: Updated docker-compose to mount `./searxng/settings.yml:/etc/searxng/settings.yml:ro`
+    - Ensures SearXNG container uses generated configuration
+    - Read-only mount for security
+  - **Hardcoded YAML Values**: Fixed librechat.yaml to use actual values instead of ${ENV_VAR} placeholders
+    - `searxngInstanceUrl`: Now hardcoded as "http://searxng:8080" when service included
+    - `searxngApiKey`: Always present (even if empty) to signal server-configured
+    - `firecrawlApiUrl` and `jinaApiUrl`: Now hardcoded with default URLs
+    - LibreChat's plugin auth system checks for actual values vs env var references
+  - **Error Resolution**: Fixes both "SearXNG 403" and "No plugin auth SEARXNG_API_KEY found" errors
+
+### Technical Details
+- **Root Cause**: LibreChat RC4 web search failures had two causes:
+  1. SearXNG missing settings.yml with JSON format → 403 errors on API requests
+  2. librechat.yaml using ${...} placeholders → plugin auth lookup failures
+- **Solution**: Generate settings.yml + use hardcoded values in YAML to signal "server-configured"
+- **Auto-Configuration**: When searxngIncludeService=true, all SearXNG settings are automatically configured
+
+### Impact
+- Eliminates all SearXNG 403 authentication errors
+- Web search with SearXNG now works completely out-of-the-box
+- No manual configuration required - just toggle "Include SearXNG Service"
+
 ## [1.11.0] - 2025-10-08
 
 ### Fixed

@@ -1001,8 +1001,8 @@ ${config.memory?.enabled ? `memory:
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `webSearch:
   searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper' ? `
   serperApiKey: "\${SERPER_API_KEY}"` : ''}${config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng' ? `
-  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"` : ''}${config.webSearch.searxngApiKey && config.webSearch.searchProvider === 'searxng' ? `
-  searxngApiKey: "\${SEARXNG_API_KEY}"` : ''}${config.webSearch.braveApiKey || config.webSearch.searchProvider === 'brave' ? `
+  searxngInstanceUrl: "${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}"` : ''}${config.webSearch.searchProvider === 'searxng' ? `
+  searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}${config.webSearch.braveApiKey || config.webSearch.searchProvider === 'brave' ? `
   braveApiKey: "\${BRAVE_API_KEY}"` : ''}${config.webSearch.tavilyApiKey || config.webSearch.searchProvider === 'tavily' ? `
   tavilyApiKey: "\${TAVILY_API_KEY}"` : ''}${config.webSearch.perplexityApiKey || config.webSearch.searchProvider === 'perplexity' ? `
   perplexityApiKey: "\${PERPLEXITY_API_KEY}"` : ''}${config.webSearch.googleSearchApiKey || config.webSearch.searchProvider === 'google' ? `
@@ -1011,10 +1011,10 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
   scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey || config.webSearch.scraperType === 'firecrawl' ? `
   firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.scraperType === 'firecrawl' ? `
-  firecrawlApiUrl: "\${FIRECRAWL_API_URL}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
+  firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
   rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
   jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.rerankerType === 'jina' ? `
-  jinaApiUrl: "\${JINA_API_URL}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
+  jinaApiUrl: "${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
   cohereApiKey: "\${COHERE_API_KEY}"` : ''}${config.webSearch.scraperTimeout ? `
   scraperTimeout: ${config.webSearch.scraperTimeout}` : ''}${config.webSearch.safeSearch !== undefined ? `
   safeSearch: ${config.webSearch.safeSearch ? 1 : 0}` : ''}` : '# Web search is not configured'}

@@ -5,6 +5,39 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2025-10-08
+
+### Fixed
+- **SearXNG Rate Limiting Syntax**: Corrected settings.yml to use proper SearXNG YAML format
+  - Changed: `limiter: false` → `rate_limit: { enabled: false }`
+  - Prevents SearXNG configuration errors on startup
+- **Docker Healthcheck Improvements**: Enhanced SearXNG container health monitoring
+  - Interval reduced from 30s to 10s for faster detection
+  - Retries increased from 3 to 10 to handle slower startup times
+  - Reduces first-boot race conditions between services
+- **Service Dependencies**: LibreChat now waits for SearXNG to be healthy before starting
+  - Changed depends_on to use extended format with conditions
+  - SearXNG uses `condition: service_healthy` (waits for healthcheck to pass)
+  - MongoDB and Redis use `condition: service_started` (basic dependency)
+  - Prevents API calls to unhealthy SearXNG service
+- **Removed SEARXNG_INSTANCE_URL from .env**: Eliminated configuration redundancy
+  - Was previously generated in both .env and hardcoded in librechat.yaml
+  - Now only hardcoded in YAML (single source of truth)
+  - Prevents potential configuration drift between files
+- **Conditional Scraper/Reranker Credentials**: Made API keys/URLs conditional in librechat.yaml
+  - scraperType and rerankerType fields always preserved (supports post-generation key injection)
+  - firecrawlApiKey/firecrawlApiUrl only emitted when firecrawlApiKey is provided
+  - jinaApiKey/jinaApiUrl only emitted when jinaApiKey is provided
+  - cohereApiKey only emitted when cohereApiKey is provided
+  - Prevents plugin-auth errors when credentials are missing
+  - Allows users to add API keys manually after package generation
+
+### Impact
+- Web search configuration is now production-ready with improved reliability
+- Eliminates edge-case errors discovered through testing
+- Better Docker container orchestration prevents startup race conditions
+- Configuration files remain clean and maintainable with single source of truth
+
 ## [1.13.0] - 2025-10-08
 
 ### Added

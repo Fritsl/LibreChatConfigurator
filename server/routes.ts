@@ -611,7 +611,7 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH_PROVIDER=${config.webSearch.searchProvider}` : '# SEARCH_PROVIDER='}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
-${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generated 32-byte hex string)\nSEARXNG_SECRET=${crypto.randomBytes(32).toString('hex')}\n` : ''}${config.webSearch?.searxngInstanceUrl || config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngIncludeService ? 'http://searxng:8080' : (config.webSearch.searxngInstanceUrl || '')}` : '# SEARXNG_INSTANCE_URL='}
+${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? `# SearXNG Secret (auto-generated 32-byte hex string)\nSEARXNG_SECRET=${crypto.randomBytes(32).toString('hex')}` : '# SEARXNG_SECRET='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
 ${config.webSearch?.braveApiKey || config.webSearch?.searchProvider === 'brave' ? `BRAVE_API_KEY=${config.webSearch.braveApiKey || ''}` : '# BRAVE_API_KEY='}
 ${config.webSearch?.tavilyApiKey || config.webSearch?.searchProvider === 'tavily' ? `TAVILY_API_KEY=${config.webSearch.tavilyApiKey || ''}` : '# TAVILY_API_KEY='}
@@ -1021,12 +1021,12 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   googleSearchApiKey: "\${GOOGLE_SEARCH_API_KEY}"` : ''}${config.webSearch.googleCSEId && config.webSearch.searchProvider === 'google' ? `
   googleCSEId: "\${GOOGLE_CSE_ID}"` : ''}${config.webSearch.bingSearchApiKey || config.webSearch.searchProvider === 'bing' ? `
   bingSearchApiKey: "\${BING_SEARCH_API_KEY}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
-  scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey || config.webSearch.scraperType === 'firecrawl' ? `
-  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"` : ''}${config.webSearch.scraperType === 'firecrawl' ? `
+  scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey && config.webSearch.scraperType === 'firecrawl' ? `
+  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"
   firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
-  rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey || config.webSearch.rerankerType === 'jina' ? `
-  jinaApiKey: "\${JINA_API_KEY}"` : ''}${config.webSearch.rerankerType === 'jina' ? `
-  jinaApiUrl: "${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"` : ''}${config.webSearch.cohereApiKey || config.webSearch.rerankerType === 'cohere' ? `
+  rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey && config.webSearch.rerankerType === 'jina' ? `
+  jinaApiKey: "\${JINA_API_KEY}"
+  jinaApiUrl: "${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"` : ''}${config.webSearch.cohereApiKey && config.webSearch.rerankerType === 'cohere' ? `
   cohereApiKey: "\${COHERE_API_KEY}"` : ''}${config.webSearch.scraperTimeout ? `
   scraperTimeout: ${config.webSearch.scraperTimeout}` : ''}${config.webSearch.safeSearch !== undefined ? `
   safeSearch: ${config.webSearch.safeSearch ? 1 : 0}` : ''}` : '# Web search is not configured'}
@@ -1099,9 +1099,9 @@ ${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider ==
       - librechat-network
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/healthz"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
       start_period: 10s
 ` : ''}${config.e2bProxyEnabled ? `
   # E2B Code Execution Proxy
@@ -1147,8 +1147,10 @@ ${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider ==
     image: ghcr.io/danny-avila/librechat-dev:latest
     restart: unless-stopped
     depends_on:
-      - mongodb
-      - redis${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n      - searxng' : ''}${config.e2bProxyEnabled ? '\n      - e2b-proxy' : ''}
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started${config.webSearch?.searxngIncludeService && config.webSearch?.searchProvider === 'searxng' ? '\n      searxng:\n        condition: service_healthy' : ''}${config.e2bProxyEnabled ? '\n      e2b-proxy:\n        condition: service_started' : ''}
     ports:
       - "\${LIBRECHAT_PORT:-${config.port}}:3080"
     environment:
@@ -2101,11 +2103,13 @@ server:
   bind_address: "0.0.0.0"
   port: 8080
   
-  # Disable rate limiting for private instances
-  limiter: false
-  
   # Enable image proxy for secure image loading
   image_proxy: true
+
+# Rate limiting configuration
+rate_limit:
+  # Disable rate limiting for private instances
+  enabled: false
 
 search:
   # Safe search level: 0=off, 1=moderate, 2=strict

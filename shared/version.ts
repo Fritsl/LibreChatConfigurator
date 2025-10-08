@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.13.0";
+export const TOOL_VERSION = "1.14.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-08",
-  changelog: "Added SEARCH_PROVIDER env var and app: section to YAML with search enablement. Completes LibreChat RC4 web search configuration per ChatGPT recommendations. All web search components now properly configured."
+  changelog: "Edge-case robustness: Fixed SearXNG rate_limit syntax, improved Docker healthchecks, removed redundant SEARXNG_INSTANCE_URL, made scraper/reranker credentials conditional. Web search configuration now production-ready."
 } as const;
 
 // Helper function to get the tool's version string

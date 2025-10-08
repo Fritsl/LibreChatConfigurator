@@ -5,6 +5,20 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-10-08
+
+### Added
+- **SearXNG Auto-Inclusion Feature**: When selecting "SearXNG (Self-Hosted)" as web search provider
+  - New toggle switch to automatically include SearXNG service in docker-compose.yml
+  - Auto-configures proper Docker networking (http://searxng:8080 for container-to-container communication)
+  - Auto-generates SEARXNG_SECRET environment variable with instructions (openssl rand -hex 32)
+  - SearXNG service includes health checks, volume persistence, and network integration
+  - Automatically sets SEARXNG_INSTANCE_URL to service name when included, or allows custom URL when external
+
+### Changed
+- **Docker Networking**: SearXNG service URL now uses Docker service name (http://searxng:8080) instead of localhost when service is included
+- **Environment Configuration**: SEARXNG_INSTANCE_URL automatically configured based on include toggle
+
 ## [1.7.0] - 2025-10-07
 
 ### Added

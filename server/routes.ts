@@ -1323,9 +1323,9 @@ ${config.webSearch?.tavilyApiKey ? `      TAVILY_API_KEY: \${TAVILY_API_KEY}` : 
 ${config.webSearch?.perplexityApiKey ? `      PERPLEXITY_API_KEY: \${PERPLEXITY_API_KEY}` : '      # PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}'}
 ${config.webSearch?.bingSearchApiKey ? `      BING_SEARCH_API_KEY: \${BING_SEARCH_API_KEY}` : '      # BING_SEARCH_API_KEY: ${BING_SEARCH_API_KEY}'}
 ${config.webSearch?.firecrawlApiKey ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
-${config.webSearch?.firecrawlApiUrl ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
+${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
 ${config.webSearch?.jinaApiKey ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
-${config.webSearch?.jinaRerankerUrl ? `      JINA_RERANKER_URL: \${JINA_RERANKER_URL}` : '      # JINA_RERANKER_URL: ${JINA_RERANKER_URL}'}
+${config.webSearch?.rerankerType === 'jina' ? `      JINA_RERANKER_URL: \${JINA_RERANKER_URL}` : '      # JINA_RERANKER_URL: ${JINA_RERANKER_URL}'}
 ${config.webSearch?.cohereApiKey ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
       
       # =============================================================================

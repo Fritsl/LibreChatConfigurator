@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.17.1";
+export const TOOL_VERSION = "1.17.2";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-09",
-  changelog: "CRITICAL FIX: Removed invalid 'app:' wrapper from YAML generation. LibreChat RC4 was rejecting configurations due to unrecognized 'app' key. webSearch is now properly generated as a top-level YAML key."
+  changelog: "ARCHITECTURAL FIX: Consolidated YAML generation to single server-side source. Preview modal now fetches from server instead of duplicating generation logic, preventing future configuration bugs."
 } as const;
 
 // Helper function to get the tool's version string

@@ -5,6 +5,32 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.2] - 2025-10-09
+
+### Fixed - ARCHITECTURAL IMPROVEMENT
+- **Eliminated Duplicate YAML Generation**: Consolidated all file generation to single server-side source
+  - **Previous Architecture**: Preview modal generated YAML/ENV client-side while package download used server generation
+  - **Problem**: Two independent generation codebases caused bugs when only one was updated (v1.17.1 bug example)
+  - **Solution**: Preview modal now fetches files from server API instead of generating client-side
+  - **Benefits**:
+    - ✅ Single source of truth for all file generation
+    - ✅ Preview and downloaded files are guaranteed identical
+    - ✅ Future updates only need to be made in one place
+    - ✅ Prevents configuration inconsistencies and bugs
+    - ✅ Proper loading states and error handling added
+
+### Technical Details
+- Refactored `preview-modal.tsx` to use `/api/package/generate` endpoint
+- Removed ~300+ lines of duplicate generation code from client
+- Added loading spinner and error states for better UX
+- Preview now uses React hooks (useState/useEffect) to fetch from server
+- Server remains the authoritative source for all configuration file generation
+
+### Impact
+- More reliable configuration previews
+- Reduced code maintenance burden
+- Better architecture for future enhancements
+
 ## [1.17.1] - 2025-10-09
 
 ### Fixed - CRITICAL BUG

@@ -5,6 +5,24 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.1] - 2025-10-09
+
+### Fixed - CRITICAL BUG
+- **Invalid YAML Structure**: Removed incorrect `app:` wrapper from generated librechat.yaml
+  - **Issue**: LibreChat v0.8.0-RC4 was rejecting configurations with error: "Unrecognized key(s) in object: 'app'"
+  - **Root Cause**: YAML generator was wrapping webSearch config in invalid `app:` key (lines 773-782)
+  - **Fix**: Removed `app:` wrapper - `webSearch` is now properly generated as top-level YAML key
+  - **Impact**: 
+    - ✅ Generated configurations now load successfully in LibreChat RC4
+    - ✅ Firecrawl timeout and advanced options now work correctly (were being ignored due to invalid config)
+    - ✅ Web search configuration properly recognized by LibreChat
+  - **User Impact**: If you downloaded configurations from v1.17.0, they won't work. Re-download from v1.17.1
+
+### Technical Details
+- The `app:` structure was from an older LibreChat version and is not supported in RC4
+- Proper RC4 structure has `webSearch:` as a top-level key alongside `version`, `cache`, `endpoints`, etc.
+- The correct webSearch configuration was already being generated (line 1028+), but the invalid app: section appeared first and caused parsing to fail
+
 ## [1.17.0] - 2025-10-09
 
 ### Added

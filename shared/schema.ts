@@ -132,6 +132,19 @@ const webSearchSchema = z.object({
   rerankerType: z.enum(["none", "jina", "cohere"]).default("none"),
   scraperTimeout: z.number().min(1000).max(60000).default(10000),
   safeSearch: z.boolean().default(true),
+  
+  // Firecrawl Advanced Options
+  firecrawlOptions: z.object({
+    formats: z.array(z.enum(["markdown", "html", "links", "screenshot"])).default(["markdown", "links"]),
+    onlyMainContent: z.boolean().default(true),
+    timeout: z.number().min(1000).max(120000).default(20000),
+    waitFor: z.number().min(0).max(30000).default(1000),
+    blockAds: z.boolean().default(true),
+    removeBase64Images: z.boolean().default(true),
+    mobile: z.boolean().default(true),
+    maxAge: z.number().min(0).max(86400000).default(0), // max 24 hours in ms
+    proxy: z.string().default("auto"),
+  }).optional(),
 }).optional();
 
 // OCR Configuration

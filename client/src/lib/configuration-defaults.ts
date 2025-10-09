@@ -98,7 +98,18 @@ export const defaultConfiguration: Configuration = {
     scraperType: "serper", 
     rerankerType: "jina",
     scraperTimeout: 10000,
-    safeSearch: true
+    safeSearch: true,
+    firecrawlOptions: {
+      formats: ["markdown", "links"],
+      onlyMainContent: true,
+      timeout: 20000,
+      waitFor: 1000,
+      blockAds: true,
+      removeBase64Images: true,
+      mobile: true,
+      maxAge: 0,
+      proxy: "auto"
+    }
   },
   
   rateLimits: {

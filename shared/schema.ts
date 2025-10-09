@@ -646,6 +646,9 @@ export const configurationSchema = z.object({
   host: z.string().default("0.0.0.0"),
   port: z.number().min(1).max(65535).default(3080),
   debugLogging: z.boolean().default(false),
+  
+  // Configuration Metadata
+  configurationName: z.string().default("My LibreChat Configuration"),
 });
 
 export type Configuration = z.infer<typeof configurationSchema>;

@@ -41,6 +41,9 @@ export function useConfiguration() {
     domainServer: "https://api.demo.librechat.ai",
     noIndex: true,
     
+    // Configuration Metadata
+    configurationName: "Demo LibreChat Configuration",
+    
     // Security
     jwtSecret: "demo_jwt_secret_32_characters_long_abc123",
     jwtRefreshSecret: "demo_refresh_secret_32_chars_long_xyz789",
@@ -166,6 +169,7 @@ export function useConfiguration() {
     bingSearchApiKey: "demo_bing_search_key_123456789abcdef123456789",
     openweatherApiKey: "demo_weather_key_123456789abcdef123456789abc",
     librechatCodeApiKey: "demo_code_api_key_123456789abcdef123456789",
+    librechatCodeEnabled: true,
     
     // E2B Code Execution Proxy
     e2bApiKey: "demo_e2b_api_key_123456789abcdef123456789",
@@ -174,15 +178,6 @@ export function useConfiguration() {
     e2bFileTTLDays: 30,
     e2bMaxFileSize: 50,
     e2bPerUserSandbox: false,
-    
-    // RC4 Web Search Providers
-    braveApiKey: "BSA_demo_brave_search_key_123456789abcdef123456789",
-    tavilyApiKey: "tvly-demo_tavily_search_key_123456789abcdef123456",
-    serperApiKey: "demo_serper_api_key_123456789abcdef123456789abc",
-    searxngInstanceUrl: "https://demo-searxng.librechat.ai",
-    firecrawlApiKey: "fc-demo_firecrawl_key_123456789abcdef123456789",
-    jinaApiKey: "jina_demo_reranker_key_123456789abcdef123456789",
-    cohereApiKey: "demo_cohere_reranker_key_123456789abcdef123456",
     
     // RAG API
     ragApiURL: "https://demo-rag.librechat.ai/api",
@@ -289,6 +284,8 @@ export function useConfiguration() {
         use: true, // RC4 marketplace integration
       },
       fileCitations: true,
+      runCode: true, // RC4 code interpreter UI
+      artifacts: true, // RC4 artifacts/generative UI
     },
     
     // RC4 RATE LIMITS CONFIGURATION

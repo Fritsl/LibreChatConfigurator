@@ -24,6 +24,9 @@ export const defaultConfiguration: Configuration = {
   port: 3080,
   debugLogging: false,
   
+  // Configuration Metadata
+  configurationName: "My LibreChat Configuration",
+  
   // Security (empty for security)
   jwtSecret: "",
   jwtRefreshSecret: "",

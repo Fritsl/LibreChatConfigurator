@@ -1469,8 +1469,26 @@ function generateDockerInstallScript(config: any): string {
 
 set -e
 
-# Detect project name from directory (matches ZIP filename)
-PROJECT_NAME=\$(basename "$PWD")
+# Extract project name from configuration JSON file
+if [ ! -f "LibreChatConfigSettings.json" ]; then
+    echo "❌ ERROR: LibreChatConfigSettings.json not found in current directory"
+    echo "This file is required to identify the deployment project name."
+    echo "Please ensure you're running this script from the extracted deployment folder."
+    exit 1
+fi
+
+# Extract configuration name from JSON (project identifier)
+PROJECT_NAME=\$(grep -o '"configurationName"[[:space:]]*:[[:space:]]*"[^"]*"' LibreChatConfigSettings.json | sed 's/"configurationName"[[:space:]]*:[[:space:]]*"\\(.*\\)"/\\1/' | head -1)
+
+if [ -z "\$PROJECT_NAME" ]; then
+    echo "❌ ERROR: Could not extract 'configurationName' from LibreChatConfigSettings.json"
+    echo "The configuration file must contain a valid 'configurationName' field."
+    echo "This field is used as the deployment identifier to prevent data loss during updates."
+    exit 1
+fi
+
+# Sanitize project name for Docker Compose (replace spaces and special chars with hyphens)
+PROJECT_NAME=\$(echo "\$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]')
 export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
 
 echo "🚀 Starting LibreChat installation for project: \${PROJECT_NAME}"
@@ -1574,8 +1592,28 @@ REM LibreChat Docker Installation Script
 REM Generated Configuration for v0.8.0-RC4
 REM =============================================================================
 
-REM Detect project name from directory (matches ZIP filename)
-for %%I in (.) do set PROJECT_NAME=%%~nxI
+REM Check if configuration JSON exists
+if not exist "LibreChatConfigSettings.json" (
+    echo ❌ ERROR: LibreChatConfigSettings.json not found in current directory
+    echo This file is required to identify the deployment project name.
+    echo Please ensure you're running this script from the extracted deployment folder.
+    pause
+    exit /b 1
+)
+
+REM Extract and sanitize project name from JSON configuration (matches Linux: replace non-alphanum, collapse hyphens, lowercase)
+powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+set /p PROJECT_NAME=<temp_project_name.txt
+del temp_project_name.txt
+
+if "%PROJECT_NAME%"=="" (
+    echo ❌ ERROR: Could not extract 'configurationName' from LibreChatConfigSettings.json
+    echo The configuration file must contain a valid 'configurationName' field.
+    echo This field is used as the deployment identifier to prevent data loss during updates.
+    pause
+    exit /b 1
+)
+
 set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
 
 echo 🚀 Starting LibreChat installation for project: %PROJECT_NAME%
@@ -1687,15 +1725,27 @@ function generateInstallationReadme(config: any): string {
   return `LIBRECHAT INSTALLATION INSTRUCTIONS
 ====================================
 
-PROJECT-BASED DEPLOYMENT SYSTEM
---------------------------------
-This installation package uses the ZIP filename as the project identifier.
-Multiple LibreChat instances can coexist on the same machine with different names.
+PROJECT IDENTIFICATION SYSTEM
+------------------------------
+⚠️ IMPORTANT: This installation package uses the CONFIGURATION NAME from 
+LibreChatConfigSettings.json as the project identifier, NOT the folder name.
+
+Current Configuration Name: "${config.configurationName}"
+
+This means:
+✅ Folder can be renamed without breaking updates
+✅ Windows re-downloads (with "(1)" suffix) work correctly  
+✅ Same configuration always updates the same deployment
+✅ Project identity persists across file operations
+
+Multiple LibreChat instances can coexist on the same machine with different 
+configuration names.
 
 SMART INSTALLATION BEHAVIOR
 ----------------------------
 
-The installation scripts automatically detect existing deployments:
+The installation scripts automatically detect existing deployments by reading
+the configuration name from LibreChatConfigSettings.json:
 
 1. IF NO EXISTING DEPLOYMENT IS FOUND:
    → Fresh installation with new MongoDB and LibreChat
@@ -1711,6 +1761,9 @@ The installation scripts automatically detect existing deployments:
    → Run with --fresh flag
    → Deletes: All containers, volumes, and MongoDB data (including Agents)
    → Shows warning before proceeding
+
+⚠️ CRITICAL: LibreChatConfigSettings.json must exist in the same directory 
+as the install script, and must contain a valid 'configurationName' field.
 
 INSTALLATION COMMANDS
 ---------------------
@@ -1741,9 +1794,11 @@ This enables parallel workflows:
 
 CONTAINER NAMING
 -----------------
-All containers are prefixed with your project name:
-- Project: "client-acme-corp" → Containers: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
-- Project: "testing-env" → Containers: testing-env-librechat-1, testing-env-mongodb-1
+All containers are prefixed with your sanitized configuration name:
+- Config: "Client ACME Corp" → Containers: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
+- Config: "Testing Environment" → Containers: testing-environment-librechat-1, testing-environment-mongodb-1
+
+The configuration name is sanitized: lowercase, special chars → hyphens
 
 ACCESS YOUR INSTANCE
 --------------------

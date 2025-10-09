@@ -5,7 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff, Info } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Search, Globe, Zap, Shield, Clock, Eye, EyeOff, Info, ChevronDown, Settings } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 interface WebSearchConfig {
@@ -22,6 +23,17 @@ interface WebSearchConfig {
   cohereApiKey?: string;
   scraperTimeout?: number;
   safeSearch?: boolean;
+  firecrawlOptions?: {
+    formats?: ("markdown" | "html" | "links" | "screenshot")[];
+    onlyMainContent?: boolean;
+    timeout?: number;
+    waitFor?: number;
+    blockAds?: boolean;
+    removeBase64Images?: boolean;
+    mobile?: boolean;
+    maxAge?: number;
+    proxy?: string;
+  };
 }
 
 interface WebSearchEditorProps {
@@ -46,6 +58,9 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
   const [showSearxngApiKey, setShowSearxngApiKey] = useState(false);
   const [showFirecrawlApiKey, setShowFirecrawlApiKey] = useState(false);
   const [showJinaApiKey, setShowJinaApiKey] = useState(false);
+  
+  // Firecrawl advanced options visibility
+  const [showFirecrawlAdvanced, setShowFirecrawlAdvanced] = useState(false);
 
   // Sync internal state when value prop changes (e.g., from merge import)
   useEffect(() => {
@@ -200,6 +215,154 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
                 data-testid="input-firecrawl-api-url"
               />
             </div>
+            
+            <Collapsible open={showFirecrawlAdvanced} onOpenChange={setShowFirecrawlAdvanced}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-between"
+                  data-testid="toggle-firecrawl-advanced"
+                >
+                  <span className="flex items-center gap-2">
+                    <Settings className="h-3 w-3" />
+                    Advanced Firecrawl Options
+                  </span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${showFirecrawlAdvanced ? 'rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="firecrawl-timeout">Timeout (ms)</Label>
+                    <Input
+                      id="firecrawl-timeout"
+                      type="number"
+                      value={config.firecrawlOptions?.timeout || 20000}
+                      onChange={(e) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, timeout: parseInt(e.target.value) || 20000 }
+                      })}
+                      placeholder="20000"
+                      data-testid="input-firecrawl-timeout"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="firecrawl-waitfor">Wait For (ms)</Label>
+                    <Input
+                      id="firecrawl-waitfor"
+                      type="number"
+                      value={config.firecrawlOptions?.waitFor || 1000}
+                      onChange={(e) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, waitFor: parseInt(e.target.value) || 1000 }
+                      })}
+                      placeholder="1000"
+                      data-testid="input-firecrawl-waitfor"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="firecrawl-maxage">Max Age (ms)</Label>
+                    <Input
+                      id="firecrawl-maxage"
+                      type="number"
+                      value={config.firecrawlOptions?.maxAge || 0}
+                      onChange={(e) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, maxAge: parseInt(e.target.value) || 0 }
+                      })}
+                      placeholder="0"
+                      data-testid="input-firecrawl-maxage"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">0 = no cache</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="firecrawl-proxy">Proxy</Label>
+                    <Input
+                      id="firecrawl-proxy"
+                      value={config.firecrawlOptions?.proxy || "auto"}
+                      onChange={(e) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, proxy: e.target.value || "auto" }
+                      })}
+                      placeholder="auto"
+                      data-testid="input-firecrawl-proxy"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="firecrawl-onlymain">Only Main Content</Label>
+                    <Switch
+                      id="firecrawl-onlymain"
+                      checked={config.firecrawlOptions?.onlyMainContent ?? true}
+                      onCheckedChange={(checked) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, onlyMainContent: checked }
+                      })}
+                      data-testid="switch-firecrawl-onlymain"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="firecrawl-blockads">Block Ads</Label>
+                    <Switch
+                      id="firecrawl-blockads"
+                      checked={config.firecrawlOptions?.blockAds ?? true}
+                      onCheckedChange={(checked) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, blockAds: checked }
+                      })}
+                      data-testid="switch-firecrawl-blockads"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="firecrawl-removebase64">Remove Base64 Images</Label>
+                    <Switch
+                      id="firecrawl-removebase64"
+                      checked={config.firecrawlOptions?.removeBase64Images ?? true}
+                      onCheckedChange={(checked) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, removeBase64Images: checked }
+                      })}
+                      data-testid="switch-firecrawl-removebase64"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="firecrawl-mobile">Mobile Mode</Label>
+                    <Switch
+                      id="firecrawl-mobile"
+                      checked={config.firecrawlOptions?.mobile ?? true}
+                      onCheckedChange={(checked) => updateConfig({ 
+                        firecrawlOptions: { ...config.firecrawlOptions, mobile: checked }
+                      })}
+                      data-testid="switch-firecrawl-mobile"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Output Formats</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {["markdown", "html", "links", "screenshot"].map((format) => (
+                      <div key={format} className="flex items-center space-x-2">
+                        <Switch
+                          id={`format-${format}`}
+                          checked={config.firecrawlOptions?.formats?.includes(format as any) ?? (format === "markdown" || format === "links")}
+                          onCheckedChange={(checked) => {
+                            const currentFormats = config.firecrawlOptions?.formats || ["markdown", "links"];
+                            const newFormats = checked
+                              ? [...currentFormats, format as any]
+                              : currentFormats.filter(f => f !== format);
+                            updateConfig({ 
+                              firecrawlOptions: { ...config.firecrawlOptions, formats: newFormats as any }
+                            });
+                          }}
+                          data-testid={`switch-format-${format}`}
+                        />
+                        <Label htmlFor={`format-${format}`} className="text-sm capitalize">{format}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
         );
 

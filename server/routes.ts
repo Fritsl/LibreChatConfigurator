@@ -191,6 +191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (includeFiles.includes("install-script")) {
         packageFiles["install_dockerimage.sh"] = generateDockerInstallScript(configuration);
         packageFiles["install_dockerimage.bat"] = generateDockerInstallScriptWindows(configuration);
+        packageFiles["00-README-INSTALLATION.txt"] = generateInstallationReadme(configuration);
       }
 
       // Generate README.md
@@ -1468,7 +1469,12 @@ function generateDockerInstallScript(config: any): string {
 
 set -e
 
-echo "🚀 Starting LibreChat Docker installation..."
+# Detect project name from directory (matches ZIP filename)
+PROJECT_NAME=\$(basename "$PWD")
+export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
+
+echo "🚀 Starting LibreChat installation for project: \${PROJECT_NAME}"
+echo ""
 
 # Check if Docker is installed
 if ! command -v docker &> /dev/null; then
@@ -1485,6 +1491,37 @@ if ! command -v docker-compose &> /dev/null; then
 fi
 
 echo "✅ Docker and Docker Compose are installed"
+echo ""
+
+# Check for --fresh flag
+FRESH_INSTALL=false
+if [ "\$1" = "--fresh" ]; then
+    FRESH_INSTALL=true
+fi
+
+# Check if containers exist (matches both hyphen and underscore naming)
+EXISTING_CONTAINERS=\$(docker ps -a --format '{{.Names}}' | grep -E "^(\${PROJECT_NAME}-|\${PROJECT_NAME}_)" || true)
+
+if [ -n "\$EXISTING_CONTAINERS" ]; then
+    if [ "\$FRESH_INSTALL" = true ]; then
+        echo "🗑️  FRESH INSTALL MODE - Wiping all existing data..."
+        echo "⚠️  This will DELETE all MongoDB data including Agents!"
+        echo ""
+        docker-compose down -v
+        echo "✅ Existing containers and volumes removed"
+        echo ""
+    else
+        echo "🔄 UPDATE MODE - Existing deployment detected"
+        echo "📦 Preserving: MongoDB data (including Agents) and LibreChat application"
+        echo "🔧 Updating: Configuration files (.env, librechat.yaml, docker-compose.yml)"
+        echo ""
+        echo "💡 To perform a fresh install and wipe all data, run: ./install_dockerimage.sh --fresh"
+        echo ""
+    fi
+else
+    echo "🆕 FRESH INSTALLATION - No existing deployment found"
+    echo ""
+fi
 
 # Create necessary directories
 echo "📁 Creating directories..."
@@ -1526,7 +1563,7 @@ else
 fi
 
 echo ""
-echo "🎉 Docker installation complete! Enjoy using LibreChat!"
+echo "🎉 Installation complete! Enjoy using LibreChat!"
 `;
 }
 
@@ -1537,7 +1574,11 @@ REM LibreChat Docker Installation Script
 REM Generated Configuration for v0.8.0-RC4
 REM =============================================================================
 
-echo 🚀 Starting LibreChat Docker installation...
+REM Detect project name from directory (matches ZIP filename)
+for %%I in (.) do set PROJECT_NAME=%%~nxI
+set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
+
+echo 🚀 Starting LibreChat installation for project: %PROJECT_NAME%
 echo.
 
 REM Check if Docker is installed
@@ -1560,6 +1601,38 @@ if errorlevel 1 (
 
 echo ✅ Docker and Docker Compose are installed
 echo.
+
+REM Check for --fresh flag
+set FRESH_INSTALL=false
+if "%1"=="--fresh" set FRESH_INSTALL=true
+
+REM Check if containers exist (matches both hyphen and underscore naming)
+set CONTAINER_FOUND=false
+docker ps -a --format "{{.Names}}" | findstr /R "^%PROJECT_NAME%-" >nul 2>&1
+if not errorlevel 1 set CONTAINER_FOUND=true
+docker ps -a --format "{{.Names}}" | findstr /R "^%PROJECT_NAME%_" >nul 2>&1
+if not errorlevel 1 set CONTAINER_FOUND=true
+
+if "%CONTAINER_FOUND%"=="true" (
+    if "%FRESH_INSTALL%"=="true" (
+        echo 🗑️  FRESH INSTALL MODE - Wiping all existing data...
+        echo ⚠️  This will DELETE all MongoDB data including Agents!
+        echo.
+        docker-compose down -v
+        echo ✅ Existing containers and volumes removed
+        echo.
+    ) else (
+        echo 🔄 UPDATE MODE - Existing deployment detected
+        echo 📦 Preserving: MongoDB data (including Agents^) and LibreChat application
+        echo 🔧 Updating: Configuration files (.env, librechat.yaml, docker-compose.yml^)
+        echo.
+        echo 💡 To perform a fresh install and wipe all data, run: install_dockerimage.bat --fresh
+        echo.
+    )
+) else (
+    echo 🆕 FRESH INSTALLATION - No existing deployment found
+    echo.
+)
 
 REM Create necessary directories
 echo 📁 Creating directories...
@@ -1604,12 +1677,97 @@ echo 📝 To view logs: docker-compose logs -f
 echo 🛑 To stop: docker-compose down
 echo 🔄 To restart: docker-compose restart
 echo.
-echo 🎉 Docker installation complete! Enjoy using LibreChat!
+echo 🎉 Installation complete! Enjoy using LibreChat!
 echo.
 pause
 `;
 }
 
+function generateInstallationReadme(config: any): string {
+  return `LIBRECHAT INSTALLATION INSTRUCTIONS
+====================================
+
+PROJECT-BASED DEPLOYMENT SYSTEM
+--------------------------------
+This installation package uses the ZIP filename as the project identifier.
+Multiple LibreChat instances can coexist on the same machine with different names.
+
+SMART INSTALLATION BEHAVIOR
+----------------------------
+
+The installation scripts automatically detect existing deployments:
+
+1. IF NO EXISTING DEPLOYMENT IS FOUND:
+   → Fresh installation with new MongoDB and LibreChat
+   → All containers created from scratch
+
+2. IF EXISTING DEPLOYMENT WITH SAME NAME EXISTS:
+   → UPDATE MODE (default behavior)
+   → Preserves: MongoDB data (including AI Agents), LibreChat application
+   → Updates: Configuration files (.env, librechat.yaml, docker-compose.yml)
+   → Shows message: "🔄 UPDATE MODE - Only appending/merging configuration"
+
+3. TO FORCE FRESH INSTALLATION (WIPE ALL DATA):
+   → Run with --fresh flag
+   → Deletes: All containers, volumes, and MongoDB data (including Agents)
+   → Shows warning before proceeding
+
+INSTALLATION COMMANDS
+---------------------
+
+Linux/macOS:
+  chmod +x install_dockerimage.sh
+  ./install_dockerimage.sh              # Update mode (preserves data)
+  ./install_dockerimage.sh --fresh      # Fresh install (wipes data)
+
+Windows:
+  install_dockerimage.bat               # Update mode (preserves data)
+  install_dockerimage.bat --fresh       # Fresh install (wipes data)
+
+PRESERVING AI AGENTS
+---------------------
+LibreChat stores AI Agents in MongoDB but doesn't yet support export/import.
+The UPDATE MODE feature allows you to:
+
+1. Develop Agents in a running LibreChat instance (stored in MongoDB)
+2. Update configuration settings using this configurator tool
+3. Re-run installation script to apply new configs WITHOUT losing Agents
+4. Continue Agent development while iterating on configuration
+
+This enables parallel workflows:
+- Agent Development: Build and test Agents in LibreChat
+- Configuration Evolution: Refine settings through this configurator
+- Seamless Updates: Deploy config changes without data loss
+
+CONTAINER NAMING
+-----------------
+All containers are prefixed with your project name:
+- Project: "client-acme-corp" → Containers: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
+- Project: "testing-env" → Containers: testing-env-librechat-1, testing-env-mongodb-1
+
+ACCESS YOUR INSTANCE
+--------------------
+After installation completes:
+- URL: http://localhost:${config.port}
+- Registration: ${config.allowRegistration ? 'Enabled' : 'Disabled'}
+- Default Model: ${config.interface?.defaultModel || 'Not configured'}
+
+PREREQUISITES
+-------------
+- Docker and Docker Compose installed
+- At least 4GB RAM available
+- At least 10GB disk space
+- Open ports: ${config.port} (LibreChat), 27017 (MongoDB)
+
+SUPPORT & DOCUMENTATION
+-----------------------
+- Full configuration details: See README.md
+- LibreChat documentation: https://docs.librechat.ai
+- Configuration tool: LibreChat Configuration Manager v${config.version}
+
+Generated: ${new Date().toISOString()}
+`;
+}
 
 function generateReadmeFile(config: any): string {
   return `# LibreChat Configuration

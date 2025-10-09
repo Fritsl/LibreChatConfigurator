@@ -1469,8 +1469,22 @@ function generateDockerInstallScript(config: any): string {
 
 set -e
 
-# Detect project name from directory (matches ZIP filename)
-PROJECT_NAME=\$(basename "$PWD")
+# Read project name from LibreChatConfigSettings.json
+if [ ! -f "LibreChatConfigSettings.json" ]; then
+    echo "❌ Error: LibreChatConfigSettings.json not found!"
+    echo "This file is required to determine the project name for deployment."
+    exit 1
+fi
+
+# Extract project name from JSON (using grep and sed for portability)
+PROJECT_NAME=\$(grep -o '"projectName"[[:space:]]*:[[:space:]]*"[^"]*"' LibreChatConfigSettings.json | sed 's/.*"projectName"[[:space:]]*:[[:space:]]*"\\([^"]*\\)".*/\\1/')
+
+if [ -z "\$PROJECT_NAME" ]; then
+    echo "❌ Error: Could not find projectName in LibreChatConfigSettings.json"
+    echo "Please ensure the file contains a valid projectName field."
+    exit 1
+fi
+
 export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
 
 echo "🚀 Starting LibreChat installation for project: \${PROJECT_NAME}"
@@ -1574,8 +1588,24 @@ REM LibreChat Docker Installation Script
 REM Generated Configuration for v0.8.0-RC4
 REM =============================================================================
 
-REM Detect project name from directory (matches ZIP filename)
-for %%I in (.) do set PROJECT_NAME=%%~nxI
+REM Read project name from LibreChatConfigSettings.json
+if not exist "LibreChatConfigSettings.json" (
+    echo ❌ Error: LibreChatConfigSettings.json not found!
+    echo This file is required to determine the project name for deployment.
+    pause
+    exit /b 1
+)
+
+REM Extract project name from JSON using PowerShell
+for /f "delims=" %%i in ('powershell -Command "(Get-Content LibreChatConfigSettings.json | ConvertFrom-Json).projectName"') do set PROJECT_NAME=%%i
+
+if "%PROJECT_NAME%"=="" (
+    echo ❌ Error: Could not find projectName in LibreChatConfigSettings.json
+    echo Please ensure the file contains a valid projectName field.
+    pause
+    exit /b 1
+)
+
 set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
 
 echo 🚀 Starting LibreChat installation for project: %PROJECT_NAME%
@@ -1689,13 +1719,20 @@ function generateInstallationReadme(config: any): string {
 
 PROJECT-BASED DEPLOYMENT SYSTEM
 --------------------------------
-This installation package uses the ZIP filename as the project identifier.
-Multiple LibreChat instances can coexist on the same machine with different names.
+This installation package uses the PROJECT NAME from LibreChatConfigSettings.json
+as the deployment identifier. Multiple LibreChat instances can coexist on the
+same machine with different project names.
+
+PROJECT NAME: ${config.projectName || 'librechat'}
+  → Stored in: LibreChatConfigSettings.json
+  → Used for: Docker container naming and deployment identification
+  → Benefits: Rename folders freely, Windows duplicate downloads (1), (2) work correctly
 
 SMART INSTALLATION BEHAVIOR
 ----------------------------
 
-The installation scripts automatically detect existing deployments:
+The installation scripts automatically detect existing deployments by reading
+the project name from LibreChatConfigSettings.json:
 
 1. IF NO EXISTING DEPLOYMENT IS FOUND:
    → Fresh installation with new MongoDB and LibreChat
@@ -1741,9 +1778,11 @@ This enables parallel workflows:
 
 CONTAINER NAMING
 -----------------
-All containers are prefixed with your project name:
+All containers are prefixed with the project name from LibreChatConfigSettings.json:
 - Project: "client-acme-corp" → Containers: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
 - Project: "testing-env" → Containers: testing-env-librechat-1, testing-env-mongodb-1
+
+You can rename the extracted folder - the project name comes from the JSON file!
 
 ACCESS YOUR INSTANCE
 --------------------

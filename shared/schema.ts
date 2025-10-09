@@ -358,6 +358,9 @@ export const configurationSchema = z.object({
   // LibreChat RC4 version identifier
   version: z.string().default("0.8.0-rc4"),
   
+  // Project name for deployment identification (used for Docker container naming)
+  projectName: z.string().min(1).max(100).default("librechat"),
+  
   // Core settings
   cache: z.boolean().default(true),
   fileStrategy: z.union([

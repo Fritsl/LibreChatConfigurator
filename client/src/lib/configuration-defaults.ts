@@ -3,6 +3,7 @@ import { type Configuration } from "@shared/schema";
 export const defaultConfiguration: Configuration = {
   // LibreChat RC4 Core Settings
   version: "0.8.0-rc4",
+  projectName: "librechat",
   cache: true,
   fileStrategy: "local",
   secureImageLinks: false,

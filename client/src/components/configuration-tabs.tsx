@@ -198,9 +198,9 @@ paths:
           id: "server",
           label: "Server",
           icon: Server,
-          description: "Host, Port, Environment",
+          description: "Project Name, Host, Port",
           color: "from-green-500 to-green-600",
-          settings: ["host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex"],
+          settings: ["projectName", "host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -652,6 +652,14 @@ paths:
       },
       
       // Server
+      projectName: {
+        type: "text",
+        description: "Unique identifier for this LibreChat deployment. Used for Docker container naming and deployment identification. Allows multiple LibreChat instances on the same server. Default: 'librechat'. Use lowercase letters, numbers, and hyphens only.",
+        label: "Project Name",
+        placeholder: "librechat",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#server-configuration",
+        docSection: "Server Config"
+      },
       host: { 
         type: "text", 
         description: "The address where LibreChat server listens for connections. Use 0.0.0.0 to accept connections from any IP address, or localhost for local-only access. Critical for Docker deployments.", 

@@ -319,7 +319,7 @@ paths:
           icon: FileText,
           description: "File Upload & Storage",
           color: "from-teal-500 to-teal-600",
-          settings: ["fileStorage"],
+          settings: ["fileStorage", "fileConfig.endpoints", "fileConfig.serverFileSizeLimit", "fileConfig.avatarSizeLimit", "fileConfig.clientImageResize.enabled", "fileConfig.clientImageResize.maxWidth", "fileConfig.clientImageResize.maxHeight", "fileConfig.clientImageResize.quality", "fileConfig.clientImageResize.compressFormat"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
         },
         {
@@ -610,7 +610,7 @@ paths:
   // Helper function to get field type and description
   const getFieldInfo = (fieldName: string) => {
     const fieldMap: Record<string, { 
-      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite"; 
+      type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits"; 
       description: string; 
       label: string;
       docUrl?: string;
@@ -1418,6 +1418,13 @@ paths:
       "registration.allowedDomains": { type: "array", description: "Allowed domains for registration", label: "Allowed Domains" },
       
       // File Config Nested Object Fields (path-based)
+      "fileConfig.endpoints": { 
+        type: "endpoint-file-limits", 
+        description: "Configure file upload limits and supported MIME types for each AI endpoint. These settings allow you to restrict file types and sizes on a per-provider basis (OpenAI, Anthropic, Google, etc.)", 
+        label: "Per-Endpoint File Upload Limits",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Configuration"
+      },
       "fileConfig.serverFileSizeLimit": { type: "number", description: "Server file size limit in MB", label: "Server File Size Limit (MB)" },
       "fileConfig.avatarSizeLimit": { type: "number", description: "Avatar size limit in MB", label: "Avatar Size Limit (MB)" },
       "fileConfig.clientImageResize.enabled": { type: "boolean", description: "Enable client-side image resize", label: "Client Image Resize" },

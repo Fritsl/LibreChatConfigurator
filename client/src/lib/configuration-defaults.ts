@@ -75,6 +75,14 @@ export const defaultConfiguration: Configuration = {
   },
   
   fileConfig: {
+    endpoints: {
+      openAI: {
+        fileLimit: 5,
+        fileSizeLimit: 10,
+        totalSizeLimit: 50,
+        supportedMimeTypes: ["text/plain", "application/pdf"]
+      }
+    },
     serverFileSizeLimit: 20,
     avatarSizeLimit: 5,
     clientImageResize: {

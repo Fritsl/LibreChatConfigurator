@@ -15,13 +15,9 @@ interface EndpointFileLimits {
   supportedMimeTypes?: string[];
 }
 
-interface EndpointFileLimitsConfig {
-  endpoints?: Record<string, EndpointFileLimits>;
-}
-
 interface EndpointFileLimitsEditorProps {
-  value: EndpointFileLimitsConfig | null;
-  onChange: (value: EndpointFileLimitsConfig) => void;
+  value: Record<string, EndpointFileLimits> | null;
+  onChange: (value: Record<string, EndpointFileLimits>) => void;
   "data-testid"?: string;
 }
 
@@ -56,68 +52,51 @@ const COMMON_MIME_TYPES = [
 ];
 
 export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testId }: EndpointFileLimitsEditorProps) {
-  const [config, setConfig] = useState<EndpointFileLimitsConfig>({
-    endpoints: {},
-    ...value
-  });
-
+  const [config, setConfig] = useState<Record<string, EndpointFileLimits>>(value || {});
   const [customMimeType, setCustomMimeType] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (value) {
-      setConfig({
-        endpoints: {},
-        ...value
-      });
-    }
+    setConfig(value || {});
   }, [value]);
 
-  useEffect(() => {
-    onChange(config);
-  }, [config, onChange]);
+  const updateConfig = (newConfig: Record<string, EndpointFileLimits>) => {
+    setConfig(newConfig);
+    onChange(newConfig);
+  };
 
   const addEndpoint = (endpointName: string) => {
-    if (!endpointName || config.endpoints?.[endpointName]) return;
+    if (!endpointName || config[endpointName]) return;
     
-    setConfig(prev => ({
-      ...prev,
-      endpoints: {
-        ...prev.endpoints,
-        [endpointName]: {
-          fileLimit: 5,
-          fileSizeLimit: 10,
-          totalSizeLimit: 50,
-          supportedMimeTypes: ["text/plain", "application/pdf"],
-        }
+    const newConfig = {
+      ...config,
+      [endpointName]: {
+        fileLimit: 5,
+        fileSizeLimit: 10,
+        totalSizeLimit: 50,
+        supportedMimeTypes: ["text/plain", "application/pdf"],
       }
-    }));
+    };
+    updateConfig(newConfig);
   };
 
   const removeEndpoint = (endpointName: string) => {
-    setConfig(prev => {
-      const { [endpointName]: removed, ...rest } = prev.endpoints || {};
-      return {
-        ...prev,
-        endpoints: rest
-      };
-    });
+    const { [endpointName]: removed, ...rest } = config;
+    updateConfig(rest);
   };
 
   const updateEndpoint = (endpointName: string, updates: Partial<EndpointFileLimits>) => {
-    setConfig(prev => ({
-      ...prev,
-      endpoints: {
-        ...prev.endpoints,
-        [endpointName]: {
-          ...prev.endpoints?.[endpointName],
-          ...updates
-        }
+    const newConfig = {
+      ...config,
+      [endpointName]: {
+        ...config[endpointName],
+        ...updates
       }
-    }));
+    };
+    updateConfig(newConfig);
   };
 
   const addMimeType = (endpointName: string, mimeType: string) => {
-    const endpoint = config.endpoints?.[endpointName];
+    const endpoint = config[endpointName];
     if (!endpoint || !mimeType) return;
 
     const currentTypes = endpoint.supportedMimeTypes || [];
@@ -132,7 +111,7 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
   };
 
   const removeMimeType = (endpointName: string, mimeType: string) => {
-    const endpoint = config.endpoints?.[endpointName];
+    const endpoint = config[endpointName];
     if (!endpoint) return;
 
     const currentTypes = endpoint.supportedMimeTypes || [];
@@ -141,7 +120,7 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
     });
   };
 
-  const configuredEndpoints = Object.keys(config.endpoints || {});
+  const configuredEndpoints = Object.keys(config);
   const availableToAdd = AVAILABLE_ENDPOINTS.filter(
     endpoint => !configuredEndpoints.includes(endpoint.value)
   );
@@ -208,7 +187,7 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
       ) : (
         <div className="space-y-4">
           {configuredEndpoints.map(endpointName => {
-            const endpoint = config.endpoints![endpointName];
+            const endpoint = config[endpointName];
             const endpointLabel = AVAILABLE_ENDPOINTS.find(e => e.value === endpointName)?.label || endpointName;
 
             return (

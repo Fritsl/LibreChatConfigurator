@@ -17,13 +17,14 @@ import { MeiliSearchIntegrationEditor } from "@/components/meilisearch-integrati
 import { CachingIntegrationEditor } from "@/components/caching-integration-editor";
 import { FileStorageEditor } from "@/components/file-storage-editor-fixed";
 import { EmailServiceEditor } from "@/components/email-service-editor";
+import { EndpointFileLimitsEditor } from "@/components/endpoint-file-limits-editor";
 
 interface SettingInputProps {
   label: string;
   description?: string;
   docUrl?: string;
   docSection?: string;
-  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite";
+  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits";
   value: any;
   onChange: (value: any) => void;
   options?: string[] | Array<{ value: string; label: string }>;
@@ -303,6 +304,15 @@ export function SettingInput({
               newConfig[key] = val;
               onChange(newConfig);
             }}
+            data-testid={testId}
+          />
+        );
+
+      case "endpoint-file-limits":
+        return (
+          <EndpointFileLimitsEditor
+            value={value}
+            onChange={onChange}
             data-testid={testId}
           />
         );

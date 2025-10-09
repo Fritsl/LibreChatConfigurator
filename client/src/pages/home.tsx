@@ -40,22 +40,17 @@ export default function Home() {
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
 
-  // Sync configuration name with configuration object (bidirectional)
+  // Sync configuration name from configuration object to state (one-way: config → state)
   useEffect(() => {
-    // If configuration has a name and it's different from state, update state
     if (configuration.configurationName && configuration.configurationName !== configurationName) {
       setConfigurationName(configuration.configurationName);
     }
-  }, [configuration.configurationName]);
+  }, [configuration.configurationName, configurationName]);
   
-  // Auto-save configuration name to localStorage and update configuration object
+  // Auto-save configuration name to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(CONFIG_NAME_STORAGE_KEY, configurationName);
-      // Also update the configuration object
-      if (configuration.configurationName !== configurationName) {
-        updateConfiguration({ configurationName });
-      }
     } catch {
       // Fail silently on localStorage errors
     }
@@ -818,7 +813,11 @@ export default function Home() {
                 <Input
                   id="profile-name"
                   value={configurationName}
-                  onChange={(e) => setConfigurationName(e.target.value)}
+                  onChange={(e) => {
+                    const newName = e.target.value;
+                    setConfigurationName(newName);
+                    updateConfiguration({ configurationName: newName });
+                  }}
                   className="text-lg font-medium w-72 border-border"
                   placeholder="Enter configuration name..."
                   data-testid="input-config-name"

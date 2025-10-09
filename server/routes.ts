@@ -153,6 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const packageName = req.body?.packageName;
       
       console.log("🎯 [SINGLE SOURCE] Using raw frontend data - customFooter:", JSON.stringify(rawConfiguration?.customFooter));
+      console.log("🔍 [DEBUG] webSearch structure:", JSON.stringify(rawConfiguration?.webSearch, null, 2));
       
       if (!rawConfiguration) {
         return res.status(400).json({ 

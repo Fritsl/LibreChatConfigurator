@@ -130,7 +130,7 @@ const webSearchSchema = z.object({
   searchProvider: z.enum(["none", "serper", "searxng"]).default("none"),
   scraperType: z.enum(["none", "firecrawl", "serper"]).default("none"),
   rerankerType: z.enum(["none", "jina", "cohere"]).default("none"),
-  scraperTimeout: z.number().min(1000).max(60000).default(10000),
+  scraperTimeout: z.number().min(1000).max(60000).default(20000),
   safeSearch: z.boolean().default(true),
   
   // Firecrawl Advanced Options

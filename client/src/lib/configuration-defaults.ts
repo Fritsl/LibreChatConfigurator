@@ -97,7 +97,7 @@ export const defaultConfiguration: Configuration = {
     searchProvider: "serper",
     scraperType: "serper", 
     rerankerType: "jina",
-    scraperTimeout: 10000,
+    scraperTimeout: 20000,
     safeSearch: true,
     firecrawlOptions: {
       formats: ["markdown", "links"],

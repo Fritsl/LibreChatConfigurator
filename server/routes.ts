@@ -1033,7 +1033,17 @@ ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none'
   searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}${config.webSearch.scraperType && config.webSearch.scraperType !== 'none' ? `
   scraperType: "${config.webSearch.scraperType}"` : ''}${config.webSearch.firecrawlApiKey && config.webSearch.scraperType === 'firecrawl' ? `
   firecrawlApiKey: "\${FIRECRAWL_API_KEY}"
-  firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
+  firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"${config.webSearch.firecrawlOptions ? `
+  firecrawlOptions:
+    formats: [${config.webSearch.firecrawlOptions.formats?.map((f: string) => `"${f}"`).join(', ') || '"markdown", "links"'}]
+    onlyMainContent: ${config.webSearch.firecrawlOptions.onlyMainContent ?? true}
+    timeout: ${config.webSearch.firecrawlOptions.timeout ?? 20000}
+    waitFor: ${config.webSearch.firecrawlOptions.waitFor ?? 1000}
+    blockAds: ${config.webSearch.firecrawlOptions.blockAds ?? true}
+    removeBase64Images: ${config.webSearch.firecrawlOptions.removeBase64Images ?? true}
+    mobile: ${config.webSearch.firecrawlOptions.mobile ?? true}
+    maxAge: ${config.webSearch.firecrawlOptions.maxAge ?? 0}
+    proxy: "${config.webSearch.firecrawlOptions.proxy ?? 'auto'}"` : ''}` : ''}${config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none' ? `
   rerankerType: "${config.webSearch.rerankerType}"` : ''}${config.webSearch.jinaApiKey && config.webSearch.rerankerType === 'jina' ? `
   jinaApiKey: "\${JINA_API_KEY}"
   jinaApiUrl: "${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"` : ''}${config.webSearch.cohereApiKey && config.webSearch.rerankerType === 'cohere' ? `

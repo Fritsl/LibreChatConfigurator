@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { type Configuration, type InsertConfigurationProfile, type PackageGenerationRequest } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { defaultConfiguration as fallbackConfiguration } from "@/lib/configuration-defaults";
+import { deepMerge } from "@/lib/merge-utils";
 
 // This configuration hook provides demo/placeholder values for LibreChat settings.
 // Real API keys should be stored in local files (data/secrets/) and never committed to git.
@@ -360,7 +361,9 @@ export function useConfiguration() {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed;
+        // Merge saved data with fallback to populate any NEW fields added in updates
+        // This ensures backward compatibility when new config options are added
+        return deepMerge(fallbackConfiguration, parsed) as Configuration;
       }
       return fallbackConfiguration;
     } catch {

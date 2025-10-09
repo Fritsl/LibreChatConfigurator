@@ -26,16 +26,13 @@ export function PreviewModal({ configuration, onClose, onGenerate }: PreviewModa
       setError(null);
       
       try {
-        const response = await apiRequest<{ files: Record<string, string> }>("/api/package/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            configuration,
-            includeFiles: ["env", "yaml", "json"],
-          }),
+        const response = await apiRequest("POST", "/api/package/generate", {
+          configuration,
+          includeFiles: ["env", "yaml", "json"],
         });
 
-        setFiles(response.files);
+        const data = await response.json() as { files: Record<string, string> };
+        setFiles(data.files);
       } catch (err) {
         console.error("Error fetching preview:", err);
         setError("Failed to generate preview. Please try again.");

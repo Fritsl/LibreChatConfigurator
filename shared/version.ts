@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.16.0";
+export const TOOL_VERSION = "1.17.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -30,8 +30,8 @@ export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
-  lastUpdated: "2025-10-08",
-  changelog: "BREAKING: Restricted web search configuration to officially supported providers only (Serper, SearXNG). Removed unsupported providers: Brave, Tavily, Perplexity, Google, Bing to ensure generated configurations work reliably with LibreChat RC4."
+  lastUpdated: "2025-10-09",
+  changelog: "Added comprehensive Firecrawl advanced configuration options (formats, onlyMainContent, timeout, waitFor, blockAds, removeBase64Images, mobile, maxAge, proxy) with optimal defaults applied automatically when Firecrawl is selected as scraper."
 } as const;
 
 // Helper function to get the tool's version string

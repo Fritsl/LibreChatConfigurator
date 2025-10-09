@@ -5,6 +5,40 @@ All notable changes to LibreChat Configuration Tool will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2025-10-09
+
+### Added
+- **Advanced Firecrawl Configuration Options**: Comprehensive settings for optimal web scraping
+  - **Output Formats**: Select multiple formats (markdown, html, links, screenshot)
+  - **Content Filtering**: `onlyMainContent` to extract main content only
+  - **Performance Settings**: 
+    - `timeout` (20000ms default) - Maximum time to wait for page load
+    - `waitFor` (1000ms default) - Additional wait time for dynamic content
+  - **Privacy & Performance**: 
+    - `blockAds` (true default) - Block advertisements for cleaner content
+    - `removeBase64Images` (true default) - Remove embedded images for smaller payload
+    - `mobile` (true default) - Use mobile user agent for lighter markup
+  - **Caching**: `maxAge` (0 default) - Set to >0 for cached pages
+  - **Proxy**: `proxy` ("auto" default) - Automatic proxy selection for reliability
+  - **Optimal Defaults**: Best-practice settings applied automatically when Firecrawl is selected
+
+### Changed
+- **UI Enhancement**: Advanced Firecrawl options now in collapsible section for cleaner interface
+- **YAML Generation**: `firecrawlOptions` object properly formatted in generated librechat.yaml
+- **Configuration Schema**: Extended to support all Firecrawl advanced parameters
+
+### Technical Details
+- Added `firecrawlOptions` to webSearch schema with proper Zod validation
+- Updated web-search-editor.tsx with collapsible UI for advanced settings
+- Updated YAML generator to include firecrawlOptions in webSearch section
+- All options have sensible defaults matching LibreChat best practices
+
+### Why This Matters
+- **Better Performance**: Optimized settings reduce payload size and improve scraping speed
+- **Cleaner Data**: Content filtering removes ads, base64 images, and non-main content
+- **Reliability**: Auto proxy and mobile mode increase scraping success rate
+- **Flexibility**: Fine-tune all Firecrawl parameters to your specific needs
+
 ## [1.16.0] - 2025-10-08
 
 ### BREAKING CHANGES

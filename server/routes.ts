@@ -1492,6 +1492,7 @@ PROJECT_NAME=\$(echo "\$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-
 export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
 
 echo "🚀 Starting LibreChat installation for project: \${PROJECT_NAME}"
+echo "🔖 Docker Compose project name: \${COMPOSE_PROJECT_NAME}"
 echo ""
 
 # Check if Docker is installed
@@ -1525,7 +1526,7 @@ if [ -n "\$EXISTING_CONTAINERS" ]; then
         echo "🗑️  FRESH INSTALL MODE - Wiping all existing data..."
         echo "⚠️  This will DELETE all MongoDB data including Agents!"
         echo ""
-        docker-compose down -v
+        docker-compose -p "\${COMPOSE_PROJECT_NAME}" down -v
         echo "✅ Existing containers and volumes removed"
         echo ""
     else
@@ -1550,11 +1551,11 @@ chmod 755 logs uploads
 
 # Pull Docker images
 echo "📦 Pulling Docker images..."
-docker-compose pull
+docker-compose -p "\${COMPOSE_PROJECT_NAME}" pull
 
 # Start services
 echo "🔄 Starting LibreChat services..."
-docker-compose up -d
+docker-compose -p "\${COMPOSE_PROJECT_NAME}" up -d
 
 # Wait for services to be ready
 echo "⏳ Waiting for services to start..."
@@ -1562,21 +1563,21 @@ sleep 30
 
 # Check if services are running
 echo "🔍 Checking service health..."
-if docker-compose ps | grep -q "Up"; then
+if docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps | grep -q "Up"; then
     echo "✅ LibreChat is running successfully!"
     echo ""
     echo "🌐 Access your LibreChat instance at:"
     echo "   http://localhost:${config.port}"
     echo ""
     echo "📊 Service status:"
-    docker-compose ps
+    docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps
     echo ""
-    echo "📝 To view logs: docker-compose logs -f"
-    echo "🛑 To stop: docker-compose down"
-    echo "🔄 To restart: docker-compose restart"
+    echo "📝 To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
+    echo "🛑 To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
+    echo "🔄 To restart: docker-compose -p \${COMPOSE_PROJECT_NAME} restart"
 else
     echo "❌ Some services failed to start. Check logs:"
-    docker-compose logs
+    docker-compose -p "\${COMPOSE_PROJECT_NAME}" logs
     exit 1
 fi
 
@@ -1614,9 +1615,11 @@ if "%PROJECT_NAME%"=="" (
     exit /b 1
 )
 
+REM Set COMPOSE_PROJECT_NAME for Docker Compose
 set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
 
 echo 🚀 Starting LibreChat installation for project: %PROJECT_NAME%
+echo 🔖 Docker Compose project name: %COMPOSE_PROJECT_NAME%
 echo.
 
 REM Check if Docker is installed
@@ -1656,7 +1659,7 @@ if "%CONTAINER_FOUND%"=="true" (
         echo 🗑️  FRESH INSTALL MODE - Wiping all existing data...
         echo ⚠️  This will DELETE all MongoDB data including Agents!
         echo.
-        docker-compose down -v
+        docker-compose -p %COMPOSE_PROJECT_NAME% down -v
         echo ✅ Existing containers and volumes removed
         echo.
     ) else (
@@ -1680,12 +1683,12 @@ echo.
 
 REM Pull Docker images
 echo 📦 Pulling Docker images...
-docker-compose pull
+docker-compose -p %COMPOSE_PROJECT_NAME% pull
 echo.
 
 REM Start services
 echo 🔄 Starting LibreChat services...
-docker-compose up -d
+docker-compose -p %COMPOSE_PROJECT_NAME% up -d
 echo.
 
 REM Wait for services to be ready
@@ -1695,10 +1698,10 @@ echo.
 
 REM Check if services are running
 echo 🔍 Checking service health...
-docker-compose ps | findstr "Up" >nul 2>&1
+docker-compose -p %COMPOSE_PROJECT_NAME% ps | findstr "Up" >nul 2>&1
 if errorlevel 1 (
     echo ❌ Some services failed to start. Check logs:
-    docker-compose logs
+    docker-compose -p %COMPOSE_PROJECT_NAME% logs
     pause
     exit /b 1
 )
@@ -1709,11 +1712,11 @@ echo 🌐 Access your LibreChat instance at:
 echo    http://localhost:${config.port}
 echo.
 echo 📊 Service status:
-docker-compose ps
+docker-compose -p %COMPOSE_PROJECT_NAME% ps
 echo.
-echo 📝 To view logs: docker-compose logs -f
-echo 🛑 To stop: docker-compose down
-echo 🔄 To restart: docker-compose restart
+echo 📝 To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
+echo 🛑 To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
+echo 🔄 To restart: docker-compose -p %COMPOSE_PROJECT_NAME% restart
 echo.
 echo 🎉 Installation complete! Enjoy using LibreChat!
 echo.

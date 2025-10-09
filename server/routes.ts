@@ -770,16 +770,7 @@ function generateYamlFile(config: any): string {
 
 version: 1.2.9
 cache: ${config.cache}
-${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `
-# App Configuration
-app:
-  search: true
-  webSearch:
-    enabled: true
-    searchProvider: "${config.webSearch.searchProvider}"${config.webSearch.searchProvider === 'searxng' ? `
-    searxngInstanceUrl: "${config.webSearch.searxngInstanceUrl || ''}"
-    searxngApiKey: "${config.webSearch.searxngApiKey || ''}"` : ''}
-` : ''}
+
 # MCP Servers Configuration
 mcpServers: ${
   (() => {

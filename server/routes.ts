@@ -7,6 +7,7 @@ import { fromZodError } from "zod-validation-error";
 import JSZip from "jszip";
 import * as e2bGenerators from "./e2b-generators";
 import crypto from "crypto";
+import { TOOL_VERSION } from "@shared/version";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -1889,7 +1890,7 @@ function generateProfileFile(config: any): string {
   
   const profile = {
     name: profileName,
-    version: "1.0.0",
+    version: TOOL_VERSION, // Auto-synced from single source of truth
     createdAt: currentDate,
     description: `Generated LibreChat configuration profile for v${config.configVer}`,
     configuration: config

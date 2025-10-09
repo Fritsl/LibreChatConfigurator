@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.17.2";
+export const TOOL_VERSION = "1.17.3";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -31,7 +31,7 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   lastUpdated: "2025-10-09",
-  changelog: "ARCHITECTURAL FIX: Consolidated YAML generation to single server-side source. Preview modal now fetches from server instead of duplicating generation logic, preventing future configuration bugs."
+  changelog: "FIX: LibreChatConfigSettings.json now auto-syncs with tool version from single source of truth. Configuration loader merges localStorage with defaults to populate new fields for existing users."
 } as const;
 
 // Helper function to get the tool's version string

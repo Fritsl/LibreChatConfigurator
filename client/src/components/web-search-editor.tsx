@@ -514,6 +514,27 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
           </div>
 
           {renderScraperFields()}
+
+          <Separator className="my-4" />
+
+          <div>
+            <Label htmlFor="scraper-timeout">
+              <Clock className="h-3 w-3 inline mr-1" />
+              Scraper Timeout (ms)
+            </Label>
+            <Input
+              id="scraper-timeout"
+              type="number"
+              value={config.scraperTimeout || 30000}
+              onChange={(e) => updateConfig({ scraperTimeout: parseInt(e.target.value) || 30000 })}
+              min="1000"
+              max="120000"
+              data-testid="input-scraper-timeout"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Maximum time to wait for scraper response (applies to all scraper types)
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -558,22 +579,6 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="scraper-timeout">
-              <Clock className="h-3 w-3 inline mr-1" />
-              Scraper Timeout (ms)
-            </Label>
-            <Input
-              id="scraper-timeout"
-              type="number"
-              value={config.scraperTimeout || 30000}
-              onChange={(e) => updateConfig({ scraperTimeout: parseInt(e.target.value) || 30000 })}
-              min="1000"
-              max="120000"
-              data-testid="input-scraper-timeout"
-            />
-          </div>
-
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label htmlFor="safe-search">Safe Search</Label>

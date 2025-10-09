@@ -946,30 +946,27 @@ interface:
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
   customWelcome: "${config.interface.customWelcome}"` : ''}
 
+${config.fileConfig ? `
 # File Configuration
-fileConfig:
-  endpoints:
-    openAI:
-      disabled: false
-      fileLimit: ${config.fileConfig?.maxFiles ?? 5}
-      fileSizeLimit: ${config.fileConfig?.fileSizeLimit ?? 10}
-      totalSizeLimit: ${(config.fileConfig?.fileSizeLimit ?? 10) * (config.fileConfig?.maxFiles ?? 5)}
+fileConfig:${config.fileConfig.endpoints && Object.keys(config.fileConfig.endpoints).length > 0 ? `
+  endpoints:${Object.entries(config.fileConfig.endpoints).map(([endpointName, limits]: [string, any]) => `
+    ${endpointName}:${limits.disabled !== undefined ? `
+      disabled: ${limits.disabled}` : ''}${limits.fileLimit !== undefined ? `
+      fileLimit: ${limits.fileLimit}` : ''}${limits.fileSizeLimit !== undefined ? `
+      fileSizeLimit: ${limits.fileSizeLimit}` : ''}${limits.totalSizeLimit !== undefined ? `
+      totalSizeLimit: ${limits.totalSizeLimit}` : ''}${limits.supportedMimeTypes !== undefined ? (limits.supportedMimeTypes.length > 0 ? `
       supportedMimeTypes:
-${(config.fileConfig?.supportedMimeTypes ?? ['text/plain', 'application/pdf']).map((type: string) => `        - "${type}"`).join('\n')}${config.anthropicApiKey ? `
-    anthropic:
-      disabled: false
-      fileLimit: ${config.fileConfig?.maxFiles ?? 5}
-      fileSizeLimit: ${config.fileConfig?.fileSizeLimit ?? 10}
-      totalSizeLimit: ${(config.fileConfig?.fileSizeLimit ?? 10) * (config.fileConfig?.maxFiles ?? 5)}
-      supportedMimeTypes:
-${(config.fileConfig?.supportedMimeTypes ?? ['text/plain', 'application/pdf']).map((type: string) => `        - "${type}"`).join('\n')}` : ''}${config.googleApiKey ? `
-    google:
-      disabled: false
-      fileLimit: ${config.fileConfig?.maxFiles ?? 5}
-      fileSizeLimit: ${config.fileConfig?.fileSizeLimit ?? 10}
-      totalSizeLimit: ${(config.fileConfig?.fileSizeLimit ?? 10) * (config.fileConfig?.maxFiles ?? 5)}
-      supportedMimeTypes:
-${(config.fileConfig?.supportedMimeTypes ?? ['text/plain', 'application/pdf']).map((type: string) => `        - "${type}"`).join('\n')}` : ''}
+${limits.supportedMimeTypes.map((type: string) => `        - "${type}"`).join('\n')}` : `
+      supportedMimeTypes: []`) : ''}`).join('')}` : ''}${config.fileConfig.serverFileSizeLimit !== undefined ? `
+  serverFileSizeLimit: ${config.fileConfig.serverFileSizeLimit}` : ''}${config.fileConfig.avatarSizeLimit !== undefined ? `
+  avatarSizeLimit: ${config.fileConfig.avatarSizeLimit}` : ''}${config.fileConfig.clientImageResize ? `
+  clientImageResize:${config.fileConfig.clientImageResize.enabled !== undefined ? `
+    enabled: ${config.fileConfig.clientImageResize.enabled}` : ''}${config.fileConfig.clientImageResize.maxWidth !== undefined ? `
+    maxWidth: ${config.fileConfig.clientImageResize.maxWidth}` : ''}${config.fileConfig.clientImageResize.maxHeight !== undefined ? `
+    maxHeight: ${config.fileConfig.clientImageResize.maxHeight}` : ''}${config.fileConfig.clientImageResize.quality !== undefined ? `
+    quality: ${config.fileConfig.clientImageResize.quality}` : ''}${config.fileConfig.clientImageResize.compressFormat ? `
+    compressFormat: "${config.fileConfig.clientImageResize.compressFormat}"` : ''}` : ''}
+` : ''}
 
 # Rate Limits
 rateLimits:

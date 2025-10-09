@@ -120,6 +120,21 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
     });
   };
 
+  const addAllCommonTypes = (endpointName: string) => {
+    const endpoint = config[endpointName];
+    if (!endpoint) return;
+
+    const currentTypes = endpoint.supportedMimeTypes || [];
+    const allCommonTypes = COMMON_MIME_TYPES.map(t => t.value);
+    
+    // Merge current types with all common types, removing duplicates
+    const mergedTypes = Array.from(new Set([...currentTypes, ...allCommonTypes]));
+    
+    updateEndpoint(endpointName, {
+      supportedMimeTypes: mergedTypes
+    });
+  };
+
   const configuredEndpoints = Object.keys(config);
   const availableToAdd = AVAILABLE_ENDPOINTS.filter(
     endpoint => !configuredEndpoints.includes(endpoint.value)
@@ -253,7 +268,20 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
 
                   {/* MIME Types */}
                   <div>
-                    <Label className="mb-2 block">Supported File Types (MIME)</Label>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Supported File Types (MIME)</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addAllCommonTypes(endpointName)}
+                        data-testid={`button-add-all-types-${endpointName}`}
+                        className="h-7 text-xs"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Add All Common Types
+                      </Button>
+                    </div>
                     
                     {/* Current MIME Types */}
                     {endpoint.supportedMimeTypes && endpoint.supportedMimeTypes.length > 0 && (

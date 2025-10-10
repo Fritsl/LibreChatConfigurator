@@ -960,8 +960,7 @@ interface:
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome || config.customWelcome ? `
-  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}${config.interface?.customFooter || config.customFooter ? `
-  customFooter: "${config.interface?.customFooter || config.customFooter}"` : ''}
+  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration

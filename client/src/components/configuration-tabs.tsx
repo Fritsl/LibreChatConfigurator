@@ -1633,9 +1633,9 @@ paths:
         type: "textarea", 
         description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.", 
         label: "Footer Text",
-        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
-        docSection: "Interface Config",
-        technical: { yamlPath: "interface.customFooter", configFile: "librechat.yaml" }
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#application-domains",
+        docSection: "App Settings",
+        technical: { envVar: "CUSTOM_FOOTER", configFile: ".env" }
       },
       "interface.fileSearch": { type: "boolean", description: "Enable file search in interface", label: "File Search", technical: { yamlPath: "interface.fileSearch", configFile: "librechat.yaml" } },
       "interface.uploadAsText": { type: "boolean", description: "Enable upload as text feature", label: "Upload as Text", technical: { yamlPath: "interface.uploadAsText", configFile: "librechat.yaml" } },

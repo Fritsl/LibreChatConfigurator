@@ -29,8 +29,6 @@ export function useConfiguration() {
     
     // App Settings
     appTitle: "LibreChat Demo Instance", 
-    customWelcome: "Welcome to our comprehensive LibreChat demo installation! This instance showcases all possible configuration options.",
-    customFooter: "Demo Footer - LibreChat RC4 Configuration Manager - All Settings Enabled for Testing",
     helpAndFAQURL: "https://demo.librechat.ai/help",
     
     // Server
@@ -360,7 +358,20 @@ export function useConfiguration() {
         const parsed = JSON.parse(saved);
         // Merge saved data with fallback to populate any NEW fields added in updates
         // This ensures backward compatibility when new config options are added
-        return deepMerge(fallbackConfiguration, parsed) as Configuration;
+        const merged = deepMerge(fallbackConfiguration, parsed) as Configuration;
+        
+        // MIGRATION: Move legacy root-level customWelcome/customFooter to interface object
+        // This preserves data from old configurations (pre-v1.18) that had these at root level
+        if (merged.interface) {
+          if (parsed.customWelcome && (!merged.interface.customWelcome || merged.interface.customWelcome === "")) {
+            merged.interface.customWelcome = parsed.customWelcome;
+          }
+          if (parsed.customFooter && (!merged.interface.customFooter || merged.interface.customFooter === "")) {
+            merged.interface.customFooter = parsed.customFooter;
+          }
+        }
+        
+        return merged;
       }
       return fallbackConfiguration;
     } catch {

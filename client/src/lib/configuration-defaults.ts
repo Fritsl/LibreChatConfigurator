@@ -45,8 +45,6 @@ export const defaultConfiguration: Configuration = {
   
   // UI Customization
   appTitle: "",
-  customFooter: "",
-  customWelcome: "",
   
   // Additional Required RC4 Fields
   azureStoragePublicAccess: false,
@@ -151,6 +149,8 @@ export const defaultConfiguration: Configuration = {
   },
   
   interface: {
+    customWelcome: "",
+    customFooter: "",
     fileSearch: true,
     uploadAsText: false,
     privacyPolicy: {

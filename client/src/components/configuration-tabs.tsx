@@ -191,7 +191,7 @@ paths:
           icon: Settings,
           description: "Title, Welcome, Footer",
           color: "from-blue-500 to-blue-600",
-          settings: ["appTitle", "customWelcome", "customFooter", "helpAndFAQURL"],
+          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -1461,6 +1461,20 @@ paths:
       rateLimitsTtsUserWindowInMinutes: { type: "number", description: "TTS user window (minutes)", label: "TTS User Window" },
       
       // Interface Nested Object Fields (path-based)
+      "interface.customWelcome": { 
+        type: "textarea", 
+        description: "Custom welcome message shown to users when they first access LibreChat. Supports markdown formatting and {{user.name}} variable for personalization.", 
+        label: "Welcome Message",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface#customwelcome",
+        docSection: "Interface Config"
+      },
+      "interface.customFooter": { 
+        type: "textarea", 
+        description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.", 
+        label: "Footer Text",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
+        docSection: "Interface Config"
+      },
       "interface.fileSearch": { type: "boolean", description: "Enable file search in interface", label: "File Search" },
       "interface.uploadAsText": { type: "boolean", description: "Enable upload as text feature", label: "Upload as Text" },
       "interface.privacyPolicy.externalUrl": { type: "text", description: "External privacy policy URL", label: "Privacy Policy URL" },

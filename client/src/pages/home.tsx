@@ -60,9 +60,10 @@ export default function Home() {
     try {
       // ⚠️ REMINDER: Always update version in shared/version.ts when making changes!
       
-      // Create complete configuration by merging current config with ALL defaults
-      // This ensures EVERY field is present in the export for perfect 1:1 backup/restore
-      const completeConfiguration = deepMerge(defaultConfiguration, configuration);
+      // Create a complete configuration with ALL fields for 1:1 backup
+      // Use createResetConfiguration which ensures all fields are present
+      const completeDefaults = createResetConfiguration();
+      const completeConfiguration = deepMerge(completeDefaults, configuration);
       
       // Create profile data with configuration and name
       const versionInfo = getVersionInfo();

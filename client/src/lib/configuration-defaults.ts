@@ -22,8 +22,15 @@ export const defaultConfiguration: Configuration = {
   // Basic Server Configuration
   host: "0.0.0.0",
   port: 3080,
+  domainClient: "",
+  domainServer: "",
   enabledEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "agents"],
   debugLogging: false,
+  
+  // Subdirectory hosting
+  basePath: "",
+  appUrl: "",
+  publicSubPath: "",
   
   // Configuration Metadata
   configurationName: "My LibreChat Configuration",
@@ -38,14 +45,105 @@ export const defaultConfiguration: Configuration = {
   
   // Database (empty for security)
   mongoUri: "",
-  redisUri: "",
   mongoDbName: "LibreChat",
+  mongoRootUsername: "",
+  mongoRootPassword: "",
+  redisUri: "",
+  redisUsername: "",
+  redisPassword: "",
+  redisKeyPrefix: "",
+  redisKeyPrefixVar: "",
+  redisMaxListeners: 10,
   
-  // API Keys (empty for security) 
+  // Email Configuration
+  emailService: "",
+  emailUsername: "",
+  emailPassword: "",
+  emailFrom: "",
+  emailFromName: "",
+  mailgunApiKey: "",
+  mailgunDomain: "",
+  mailgunHost: "",
+  
+  // OAuth - Google
+  googleClientId: "",
+  googleClientSecret: "",
+  googleCallbackURL: "",
+  
+  // OAuth - GitHub
+  githubClientId: "",
+  githubClientSecret: "",
+  githubCallbackURL: "",
+  
+  // OAuth - Discord
+  discordClientId: "",
+  discordClientSecret: "",
+  discordCallbackURL: "",
+  
+  // OAuth - Facebook
+  facebookClientId: "",
+  facebookClientSecret: "",
+  facebookCallbackURL: "",
+  
+  // OAuth - Apple
+  appleClientId: "",
+  applePrivateKey: "",
+  appleKeyId: "",
+  appleTeamId: "",
+  appleCallbackURL: "",
+  
+  // OAuth - OpenID Connect
+  openidURL: "",
+  openidClientId: "",
+  openidClientSecret: "",
+  openidCallbackURL: "",
+  openidScope: "",
+  openidSessionSecret: "",
+  openidIssuer: "",
+  openidButtonLabel: "",
+  openidImageURL: "",
+  
+  // API Keys - Core Providers (empty for security) 
   openaiApiKey: "",
+  anthropicApiKey: "",
+  googleApiKey: "",
+  groqApiKey: "",
+  mistralApiKey: "",
+  
+  // API Keys - Additional Providers
+  deepseekApiKey: "",
+  perplexityApiKey: "",
+  fireworksApiKey: "",
+  togetheraiApiKey: "",
+  huggingfaceToken: "",
+  xaiApiKey: "",
+  nvidiaApiKey: "",
+  sambaNovaApiKey: "",
+  hyperbolicApiKey: "",
+  klusterApiKey: "",
+  nanogptApiKey: "",
+  glhfApiKey: "",
+  apipieApiKey: "",
+  unifyApiKey: "",
+  openrouterKey: "",
+  
+  // Cloud Provider Keys
+  azureApiKey: "",
+  awsAccessKeyId: "",
+  awsSecretAccessKey: "",
+  awsRegion: "",
+  firebaseApiKey: "",
+  firebaseAuthDomain: "",
+  firebaseProjectId: "",
+  firebaseStorageBucket: "",
+  firebaseMessagingSenderId: "",
+  firebaseAppId: "",
   
   // UI Customization
   appTitle: "",
+  customWelcome: "",
+  customFooter: "",
+  helpAndFAQURL: "",
   
   // Additional Required RC4 Fields
   azureStoragePublicAccess: false,
@@ -68,7 +166,16 @@ export const defaultConfiguration: Configuration = {
   
   // Code Execution Fields
   librechatCodeEnabled: false,
+  librechatCodeApiKey: "",
+  e2bApiKey: "",
   e2bProxyEnabled: false,
+  
+  // External Services
+  googleSearchApiKey: "",
+  googleCSEId: "",
+  bingSearchApiKey: "",
+  openweatherApiKey: "",
+  ragOpenaiApiKey: "",
   
   // Proper nested objects for LibreChat compatibility
   registration: {

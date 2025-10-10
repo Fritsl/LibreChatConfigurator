@@ -1069,7 +1069,6 @@ function generateDockerComposeFile(config: any): string {
 services:
   # MongoDB Database
   mongodb:
-    container_name: librechat-mongodb
     image: mongo:7.0
     restart: unless-stopped
     volumes:
@@ -1085,7 +1084,6 @@ services:
 
   # Redis Cache
   redis:
-    container_name: librechat-redis
     image: redis:7-alpine
     restart: unless-stopped
     volumes:
@@ -1096,7 +1094,6 @@ services:
 ${config.e2bProxyEnabled ? `
   # E2B Code Execution Proxy
   e2b-proxy:
-    container_name: e2b-proxy
     build:
       context: ./proxy-service
       dockerfile: Dockerfile
@@ -1133,7 +1130,6 @@ ${config.e2bProxyEnabled ? `
   # If using a reverse proxy (nginx/traefik), ensure CSP headers allow these domains.
   # Self-hosted bundler (SANDPACK_BUNDLER_URL) keeps all code within your infrastructure.` : ''}
   librechat:
-    container_name: librechat-app
     image: ghcr.io/danny-avila/librechat-dev:latest
     restart: unless-stopped
     depends_on:

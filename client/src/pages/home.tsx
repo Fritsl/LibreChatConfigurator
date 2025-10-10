@@ -594,7 +594,7 @@ export default function Home() {
       try {
         const packageResult = await generatePackage({
           packageName: "SELF_TEST_PACKAGE",
-          includeFiles: ["env", "yaml", "docker-compose", "install-script", "readme"]
+          includeFiles: ["env", "yaml", "docker-compose", "install-script", "mongo-backup", "readme"]
         });
         
         const envContent = packageResult.files[".env"];
@@ -729,7 +729,7 @@ export default function Home() {
       const packageName = configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-').replace(/\s+/g, '-');
       
       const result = await generatePackage({
-        includeFiles: ["env", "yaml", "docker-compose", "install-script", "readme"],
+        includeFiles: ["env", "yaml", "docker-compose", "install-script", "mongo-backup", "readme"],
         packageName: packageName,
       });
       

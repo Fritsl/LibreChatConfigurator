@@ -767,8 +767,9 @@ export const packageGenerationSchema = z.object({
     "yaml", 
     "docker-compose",
     "install-script",
+    "mongo-backup",
     "readme"
-  ])).default(["env", "yaml", "docker-compose", "install-script", "readme"]),
+  ])).default(["env", "yaml", "docker-compose", "install-script", "mongo-backup", "readme"]),
   packageName: z.string().optional(),
 });
 

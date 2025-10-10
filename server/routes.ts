@@ -196,6 +196,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["00-README-INSTALLATION.txt"] = generateInstallationReadme(configuration);
       }
 
+      // Generate MongoDB backup/restore scripts (both Linux/macOS and Windows)
+      if (includeFiles.includes("mongo-backup")) {
+        packageFiles["backup_mongodb.sh"] = generateMongoBackupScript(configuration);
+        packageFiles["backup_mongodb.bat"] = generateMongoBackupScriptWindows(configuration);
+        packageFiles["restore_mongodb.sh"] = generateMongoRestoreScript(configuration);
+        packageFiles["restore_mongodb.bat"] = generateMongoRestoreScriptWindows(configuration);
+      }
+
       // Generate README.md
       if (includeFiles.includes("readme")) {
         packageFiles["README.md"] = generateReadmeFile(configuration);
@@ -1808,6 +1816,299 @@ pause
 `;
 }
 
+function generateMongoBackupScript(config: any): string {
+  return `#!/bin/bash
+
+# =============================================================================
+# LibreChat MongoDB Backup Script
+# Generated Configuration for v0.8.0-RC4
+# =============================================================================
+
+set -e
+
+# Extract project name from configuration JSON file
+if [ ! -f "LibreChatConfigSettings.json" ]; then
+    echo "[ERROR] LibreChatConfigSettings.json not found in current directory"
+    echo "This file is required to identify the deployment project name."
+    exit 1
+fi
+
+PROJECT_NAME=\$(grep -o '"configurationName"[[:space:]]*:[[:space:]]*"[^"]*"' LibreChatConfigSettings.json | sed 's/"configurationName"[[:space:]]*:[[:space:]]*"\\(.*\\)"/\\1/' | head -1)
+
+if [ -z "\$PROJECT_NAME" ]; then
+    echo "[ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json"
+    exit 1
+fi
+
+# Sanitize project name for Docker Compose
+PROJECT_NAME=\$(echo "\$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]')
+export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
+
+echo "=============================================="
+echo "LibreChat MongoDB Backup"
+echo "=============================================="
+echo "Project: \$COMPOSE_PROJECT_NAME"
+echo ""
+
+# Create backup directory
+BACKUP_DIR="mongodb_backup_\$(date +%Y%m%d_%H%M%S)"
+mkdir -p "\$BACKUP_DIR"
+
+echo "[INFO] Creating MongoDB backup..."
+echo "[INFO] Backup location: ./$BACKUP_DIR"
+echo ""
+
+# Run mongodump using docker-compose exec with safe credential handling
+# Single quotes prevent host expansion, container bash expands the variables
+docker-compose -p \$COMPOSE_PROJECT_NAME exec -T mongodb bash -c 'mongodump --host=localhost --port=27017 --username="\$MONGO_INITDB_ROOT_USERNAME" --password="\$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase=admin --db="\$MONGO_INITDB_DATABASE" --out=/dump'
+
+# Copy dump from container to host using docker-compose cp
+docker-compose -p \$COMPOSE_PROJECT_NAME cp mongodb:/dump "\$BACKUP_DIR/"
+
+echo ""
+echo "[OK] MongoDB backup completed successfully!"
+echo "[INFO] Backup saved to: ./$BACKUP_DIR"
+echo ""
+echo "To share this backup:"
+echo "1. Copy the entire '$BACKUP_DIR' folder"
+echo "2. Share it along with this configuration package"
+echo "3. The recipient can use the restore script to import the data"
+echo ""
+`;
+}
+
+function generateMongoBackupScriptWindows(config: any): string {
+  return `@echo off
+REM =============================================================================
+REM LibreChat MongoDB Backup Script
+REM Generated Configuration for v0.8.0-RC4
+REM =============================================================================
+
+REM Check if configuration JSON exists
+if not exist "LibreChatConfigSettings.json" (
+    echo [ERROR] LibreChatConfigSettings.json not found in current directory
+    pause
+    exit /b 1
+)
+
+REM Extract and sanitize project name from JSON configuration
+powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+set /p PROJECT_NAME=<temp_project_name.txt
+del temp_project_name.txt
+
+if "%PROJECT_NAME%"=="" (
+    echo [ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json
+    pause
+    exit /b 1
+)
+
+set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
+
+echo ==============================================
+echo LibreChat MongoDB Backup
+echo ==============================================
+echo Project: %COMPOSE_PROJECT_NAME%
+echo.
+
+REM Create backup directory with timestamp
+for /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set mydate=%%c%%a%%b)
+for /f "tokens=1-2 delims=/: " %%a in ('time /t') do (set mytime=%%a%%b)
+set BACKUP_DIR=mongodb_backup_%mydate%_%mytime%
+mkdir "%BACKUP_DIR%"
+
+echo [INFO] Creating MongoDB backup...
+echo [INFO] Backup location: ./%BACKUP_DIR%
+echo.
+
+REM Run mongodump using docker-compose exec with safe credential handling
+REM $ variables don't expand in cmd.exe, so they pass safely to bash inside container
+docker-compose -p %COMPOSE_PROJECT_NAME% exec -T mongodb bash -c "mongodump --host=localhost --port=27017 --username=\"$MONGO_INITDB_ROOT_USERNAME\" --password=\"$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase=admin --db=\"$MONGO_INITDB_DATABASE\" --out=/dump"
+
+REM Copy dump from container to host using docker-compose cp
+docker-compose -p %COMPOSE_PROJECT_NAME% cp mongodb:/dump "%BACKUP_DIR%/"
+
+echo.
+echo [OK] MongoDB backup completed successfully!
+echo [INFO] Backup saved to: ./%BACKUP_DIR%
+echo.
+echo To share this backup:
+echo 1. Copy the entire '%BACKUP_DIR%' folder
+echo 2. Share it along with this configuration package
+echo 3. The recipient can use the restore script to import the data
+echo.
+pause
+`;
+}
+
+function generateMongoRestoreScript(config: any): string {
+  return `#!/bin/bash
+
+# =============================================================================
+# LibreChat MongoDB Restore Script
+# Generated Configuration for v0.8.0-RC4
+# =============================================================================
+
+set -e
+
+# Extract project name from configuration JSON file
+if [ ! -f "LibreChatConfigSettings.json" ]; then
+    echo "[ERROR] LibreChatConfigSettings.json not found in current directory"
+    echo "This file is required to identify the deployment project name."
+    exit 1
+fi
+
+PROJECT_NAME=\$(grep -o '"configurationName"[[:space:]]*:[[:space:]]*"[^"]*"' LibreChatConfigSettings.json | sed 's/"configurationName"[[:space:]]*:[[:space:]]*"\\(.*\\)"/\\1/' | head -1)
+
+if [ -z "\$PROJECT_NAME" ]; then
+    echo "[ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json"
+    exit 1
+fi
+
+# Sanitize project name for Docker Compose
+PROJECT_NAME=\$(echo "\$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]')
+export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
+
+echo "=============================================="
+echo "LibreChat MongoDB Restore"
+echo "=============================================="
+echo "Project: \$COMPOSE_PROJECT_NAME"
+echo ""
+
+# Find backup directory
+BACKUP_DIR=\$(ls -d mongodb_backup_* 2>/dev/null | head -1)
+
+if [ -z "\$BACKUP_DIR" ]; then
+    echo "[ERROR] No backup directory found (looking for mongodb_backup_*)"
+    echo "Please ensure the backup folder is in the current directory"
+    exit 1
+fi
+
+echo "[INFO] Found backup: \$BACKUP_DIR"
+echo ""
+
+# WARNING: This will replace existing data
+echo "=============================================="
+echo "WARNING: This will REPLACE all existing data!"
+echo "=============================================="
+echo ""
+read -p "Are you sure you want to continue? (yes/no): " -r
+echo ""
+if [[ ! \$REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+    echo "[CANCELLED] Restore cancelled by user"
+    exit 0
+fi
+
+# Ensure MongoDB container is running
+echo "[INFO] Ensuring MongoDB container is running..."
+docker-compose -p \$COMPOSE_PROJECT_NAME up -d mongodb
+sleep 5
+
+# Copy backup to container using docker-compose cp
+echo "[INFO] Copying backup to MongoDB container..."
+docker-compose -p \$COMPOSE_PROJECT_NAME cp "\$BACKUP_DIR/dump" mongodb:/
+
+# Run mongorestore using docker-compose exec with safe credential handling
+# Single quotes prevent host expansion, container bash expands the variables
+echo "[INFO] Restoring MongoDB data..."
+docker-compose -p \$COMPOSE_PROJECT_NAME exec -T mongodb bash -c 'mongorestore --host=localhost --port=27017 --username="\$MONGO_INITDB_ROOT_USERNAME" --password="\$MONGO_INITDB_ROOT_PASSWORD" --authenticationDatabase=admin --db="\$MONGO_INITDB_DATABASE" --drop /dump'
+
+# Clean up
+docker-compose -p \$COMPOSE_PROJECT_NAME exec -T mongodb rm -rf /dump
+
+echo ""
+echo "[OK] MongoDB restore completed successfully!"
+echo "[INFO] All data has been restored from: \$BACKUP_DIR"
+echo ""
+echo "You can now start LibreChat with all the imported data (Agents, conversations, etc.)"
+echo ""
+`;
+}
+
+function generateMongoRestoreScriptWindows(config: any): string {
+  return `@echo off
+REM =============================================================================
+REM LibreChat MongoDB Restore Script
+REM Generated Configuration for v0.8.0-RC4
+REM =============================================================================
+
+REM Check if configuration JSON exists
+if not exist "LibreChatConfigSettings.json" (
+    echo [ERROR] LibreChatConfigSettings.json not found in current directory
+    pause
+    exit /b 1
+)
+
+REM Extract and sanitize project name from JSON configuration
+powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+set /p PROJECT_NAME=<temp_project_name.txt
+del temp_project_name.txt
+
+if "%PROJECT_NAME%"=="" (
+    echo [ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json
+    pause
+    exit /b 1
+)
+
+set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
+
+echo ==============================================
+echo LibreChat MongoDB Restore
+echo ==============================================
+echo Project: %COMPOSE_PROJECT_NAME%
+echo.
+
+REM Find backup directory
+for /d %%i in (mongodb_backup_*) do set BACKUP_DIR=%%i
+
+if "%BACKUP_DIR%"=="" (
+    echo [ERROR] No backup directory found (looking for mongodb_backup_*)
+    echo Please ensure the backup folder is in the current directory
+    pause
+    exit /b 1
+)
+
+echo [INFO] Found backup: %BACKUP_DIR%
+echo.
+
+REM WARNING: This will replace existing data
+echo ==============================================
+echo WARNING: This will REPLACE all existing data!
+echo ==============================================
+echo.
+set /p CONFIRM="Are you sure you want to continue? (yes/no): "
+if /i not "%CONFIRM%"=="yes" (
+    echo [CANCELLED] Restore cancelled by user
+    pause
+    exit /b 0
+)
+
+REM Ensure MongoDB container is running
+echo [INFO] Ensuring MongoDB container is running...
+docker-compose -p %COMPOSE_PROJECT_NAME% up -d mongodb
+timeout /t 5 /nobreak > nul
+
+REM Copy backup to container using docker-compose cp
+echo [INFO] Copying backup to MongoDB container...
+docker-compose -p %COMPOSE_PROJECT_NAME% cp "%BACKUP_DIR%/dump" mongodb:/
+
+REM Run mongorestore using docker-compose exec with safe credential handling
+REM $ variables don't expand in cmd.exe, so they pass safely to bash inside container
+echo [INFO] Restoring MongoDB data...
+docker-compose -p %COMPOSE_PROJECT_NAME% exec -T mongodb bash -c "mongorestore --host=localhost --port=27017 --username=\"$MONGO_INITDB_ROOT_USERNAME\" --password=\"$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase=admin --db=\"$MONGO_INITDB_DATABASE\" --drop /dump"
+
+REM Clean up
+docker-compose -p %COMPOSE_PROJECT_NAME% exec -T mongodb rm -rf /dump
+
+echo.
+echo [OK] MongoDB restore completed successfully!
+echo [INFO] All data has been restored from: %BACKUP_DIR%
+echo.
+echo You can now start LibreChat with all the imported data (Agents, conversations, etc.)
+echo.
+pause
+`;
+}
+
 function generateInstallationReadme(config: any): string {
   return `LIBRECHAT INSTALLATION INSTRUCTIONS
 ====================================
@@ -1924,6 +2225,10 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - \`docker-compose.yml\` - Docker services orchestration
 - \`install_dockerimage.sh\` - Installation script for Linux/macOS
 - \`install_dockerimage.bat\` - Installation script for Windows
+- \`backup_mongodb.sh\` - MongoDB backup script for Linux/macOS
+- \`backup_mongodb.bat\` - MongoDB backup script for Windows
+- \`restore_mongodb.sh\` - MongoDB restore script for Linux/macOS
+- \`restore_mongodb.bat\` - MongoDB restore script for Windows
 - \`LibreChatConfigSettings.json\` - Configuration profile for easy re-import
 - \`README.md\` - This documentation file
 
@@ -2111,12 +2416,88 @@ docker-compose logs -f librechat
 docker-compose pull
 docker-compose up -d
 
-# Backup database
-docker-compose exec mongodb mongodump --out /backup
-
 # Clean up unused images
 docker system prune -f
 \`\`\`
+
+## 📦 MongoDB Backup & Restore
+
+This package includes scripts to backup and restore your MongoDB database, including all your custom **Agents**, conversations, and user data.
+
+### Creating a Backup
+
+**Linux/macOS:**
+\`\`\`bash
+chmod +x backup_mongodb.sh
+./backup_mongodb.sh
+\`\`\`
+
+**Windows:**
+\`\`\`cmd
+backup_mongodb.bat
+\`\`\`
+
+This will create a folder named \`mongodb_backup_YYYYMMDD_HHMMSS\` containing your complete database dump.
+
+### Restoring from Backup
+
+⚠️ **WARNING**: Restore will REPLACE all existing data!
+
+**Linux/macOS:**
+\`\`\`bash
+chmod +x restore_mongodb.sh
+./restore_mongodb.sh
+\`\`\`
+
+**Windows:**
+\`\`\`cmd
+restore_mongodb.bat
+\`\`\`
+
+The script will:
+1. Find the backup folder automatically
+2. Ask for confirmation before proceeding
+3. Restore all data including Agents, conversations, and users
+4. Clean up temporary files
+
+### Sharing Your Setup
+
+To share your complete LibreChat configuration with someone else:
+
+1. **Create a backup**:
+   \`\`\`bash
+   ./backup_mongodb.sh  # or backup_mongodb.bat on Windows
+   \`\`\`
+
+2. **Package everything**:
+   - Copy the backup folder (e.g., \`mongodb_backup_20231210_143022\`)
+   - Include all configuration files from this package
+   - Share the complete folder
+
+3. **Recipient setup**:
+   - Extract all files to a folder
+   - Run \`install_dockerimage.sh\` (or \`.bat\` on Windows)
+   - Run \`restore_mongodb.sh\` (or \`.bat\` on Windows)
+   - Access LibreChat with all your Agents and settings!
+
+### What Gets Backed Up
+
+The backup includes:
+- ✅ All custom Agents (configurations, prompts, tools)
+- ✅ User accounts and authentication data
+- ✅ Conversation history
+- ✅ Presets and custom prompts
+- ✅ Bookmarks
+- ✅ File uploads and attachments
+- ✅ All settings and preferences
+
+### Backup Best Practices
+
+1. **Regular Backups**: Create backups before major changes
+2. **Version Control**: Keep multiple backup versions
+3. **Secure Storage**: Store backups in a safe location
+4. **Test Restores**: Verify backups work before you need them
+5. **Document Changes**: Note what changed between backups
 
 ## 🔐 Security Notes
 

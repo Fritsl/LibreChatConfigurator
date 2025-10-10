@@ -1551,9 +1551,11 @@ mkdir -p logs uploads
 # Set permissions
 chmod 755 logs uploads
 
-# Pull Docker images
-echo ">> Pulling Docker images..."
-docker-compose -p "\${COMPOSE_PROJECT_NAME}" pull
+# Pull Docker images only on fresh installations (update mode uses existing images)
+if [ "\$UPDATE_MODE" = false ]; then
+    echo ">> Pulling Docker images..."
+    docker-compose -p "\${COMPOSE_PROJECT_NAME}" pull
+fi
 
 # Start services
 echo ">> Starting LibreChat services..."
@@ -1709,10 +1711,12 @@ if not exist "logs" mkdir logs
 if not exist "uploads" mkdir uploads
 echo.
 
-REM Pull Docker images
-echo ^>^> Pulling Docker images...
-docker-compose -p %COMPOSE_PROJECT_NAME% pull
-echo.
+REM Pull Docker images only on fresh installations (update mode uses existing images)
+if "%UPDATE_MODE%"=="false" (
+    echo ^>^> Pulling Docker images...
+    docker-compose -p %COMPOSE_PROJECT_NAME% pull
+    echo.
+)
 
 REM Start services
 echo ^>^> Starting LibreChat services...

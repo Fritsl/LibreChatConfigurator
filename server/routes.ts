@@ -1510,12 +1510,13 @@ echo ""
 
 # Check for --fresh flag
 FRESH_INSTALL=false
+UPDATE_MODE=false
 if [ "\$1" = "--fresh" ]; then
     FRESH_INSTALL=true
 fi
 
 # Check if containers exist (matches both hyphen and underscore naming)
-EXISTING_CONTAINERS=\$(docker ps -a --format '{{.Names}}' | grep -E "^(\${PROJECT_NAME}-|\${PROJECT_NAME}_)" || true)
+EXISTING_CONTAINERS=\$(docker ps -a --format '{{.Names}}' | grep -E "^(\${COMPOSE_PROJECT_NAME}-|\${COMPOSE_PROJECT_NAME}_)" || true)
 
 if [ -n "\$EXISTING_CONTAINERS" ]; then
     if [ "\$FRESH_INSTALL" = true ]; then
@@ -1526,6 +1527,7 @@ if [ -n "\$EXISTING_CONTAINERS" ]; then
         echo "[OK] Existing containers and volumes removed"
         echo ""
     else
+        UPDATE_MODE=true
         echo "[UPDATE MODE] Existing deployment detected"
         echo ">> Preserving: MongoDB data (including Agents) and LibreChat application"
         echo ">> Updating: Configuration files (.env, librechat.yaml, docker-compose.yml)"
@@ -1557,9 +1559,19 @@ docker-compose -p "\${COMPOSE_PROJECT_NAME}" pull
 echo ">> Starting LibreChat services..."
 docker-compose -p "\${COMPOSE_PROJECT_NAME}" up -d
 
-# Wait for services to be ready
-echo ">> Waiting for services to start..."
-sleep 30
+# Wait for services only on fresh installations (MongoDB needs time to initialize)
+if [ "\$UPDATE_MODE" = false ]; then
+    echo ">> Waiting for services to start..."
+    sleep 30
+fi
+
+# In update mode, restart containers to apply new configuration
+if [ "\$UPDATE_MODE" = true ]; then
+    echo ">> Restarting containers with updated configuration..."
+    docker-compose -p "\${COMPOSE_PROJECT_NAME}" restart
+    echo "[OK] Containers restarted successfully"
+    echo ""
+fi
 
 # Check if services are running
 echo ">> Checking service health..."
@@ -1646,13 +1658,14 @@ echo.
 
 REM Check for --fresh flag
 set FRESH_INSTALL=false
+set UPDATE_MODE=false
 if "%1"=="--fresh" set FRESH_INSTALL=true
 
 REM Check if containers exist (matches both hyphen and underscore naming)
 set CONTAINER_FOUND=false
-docker ps -a --format "{{.Names}}" | findstr /R "^%PROJECT_NAME%-" >nul 2>&1
+docker ps -a --format "{{.Names}}" | findstr /R "^%COMPOSE_PROJECT_NAME%-" >nul 2>&1
 if not errorlevel 1 set CONTAINER_FOUND=true
-docker ps -a --format "{{.Names}}" | findstr /R "^%PROJECT_NAME%_" >nul 2>&1
+docker ps -a --format "{{.Names}}" | findstr /R "^%COMPOSE_PROJECT_NAME%_" >nul 2>&1
 if not errorlevel 1 set CONTAINER_FOUND=true
 
 if "%CONTAINER_FOUND%"=="true" (
@@ -1664,6 +1677,7 @@ if "%CONTAINER_FOUND%"=="true" (
         echo [OK] Existing containers and volumes removed
         echo.
     ) else (
+        set UPDATE_MODE=true
         echo [UPDATE MODE] Existing deployment detected
         echo ^>^> Preserving: MongoDB data (including Agents^) and LibreChat application
         echo ^>^> Updating: Configuration files (.env, librechat.yaml, docker-compose.yml^)
@@ -1696,10 +1710,20 @@ echo ^>^> Starting LibreChat services...
 docker-compose -p %COMPOSE_PROJECT_NAME% up -d
 echo.
 
-REM Wait for services to be ready
-echo ^>^> Waiting for services to start...
-timeout /t 30 /nobreak >nul
-echo.
+REM Wait for services only on fresh installations (MongoDB needs time to initialize)
+if "%UPDATE_MODE%"=="false" (
+    echo ^>^> Waiting for services to start...
+    timeout /t 30 /nobreak >nul
+    echo.
+)
+
+REM In update mode, restart containers to apply new configuration
+if "%UPDATE_MODE%"=="true" (
+    echo ^>^> Restarting containers with updated configuration...
+    docker-compose -p %COMPOSE_PROJECT_NAME% restart
+    echo [OK] Containers restarted successfully
+    echo.
+)
 
 REM Check if services are running
 echo ^>^> Checking service health...
@@ -1764,6 +1788,7 @@ the configuration name from LibreChatConfigSettings.json:
    - UPDATE MODE (default behavior)
    - Preserves: MongoDB data (including AI Agents), LibreChat application
    - Updates: Configuration files (.env, librechat.yaml, docker-compose.yml)
+   - Stops containers, applies changes, restarts automatically (no waiting)
    - Shows message: "[UPDATE MODE] Only appending/merging configuration"
 
 3. TO FORCE FRESH INSTALLATION (WIPE ALL DATA):

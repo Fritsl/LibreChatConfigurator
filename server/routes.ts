@@ -1584,10 +1584,19 @@ if docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps | grep -q "Up"; then
     echo "Service status:"
     docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps
     echo ""
-    echo "Commands:"
-    echo "  To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
-    echo "  To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
-    echo "  To restart: docker-compose -p \${COMPOSE_PROJECT_NAME} restart"
+    
+    if [ "\$UPDATE_MODE" = true ]; then
+        echo "[OK] Docker has been restarted with updated configuration!"
+        echo ""
+        echo "Commands:"
+        echo "  To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
+        echo "  To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
+    else
+        echo "Commands:"
+        echo "  To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
+        echo "  To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
+        echo "  To restart: docker-compose -p \${COMPOSE_PROJECT_NAME} restart"
+    fi
 else
     echo "[ERROR] Some services failed to start. Check logs:"
     docker-compose -p "\${COMPOSE_PROJECT_NAME}" logs
@@ -1743,10 +1752,20 @@ echo.
 echo Service status:
 docker-compose -p %COMPOSE_PROJECT_NAME% ps
 echo.
-echo Commands:
-echo   To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
-echo   To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
-echo   To restart: docker-compose -p %COMPOSE_PROJECT_NAME% restart
+
+if "%UPDATE_MODE%"=="true" (
+    echo [OK] Docker has been restarted with updated configuration!
+    echo.
+    echo Commands:
+    echo   To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
+    echo   To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
+) else (
+    echo Commands:
+    echo   To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
+    echo   To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
+    echo   To restart: docker-compose -p %COMPOSE_PROJECT_NAME% restart
+)
+
 echo.
 echo Installation complete! Enjoy using LibreChat!
 echo.

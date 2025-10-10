@@ -10,315 +10,243 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
 
-## Why This Exists
+## Why This Tool Exists
 
-**LibreChat is incredibly powerful, but configuring it shouldn't require a PhD in YAML.**
+**LibreChat is powerful, but configuration shouldn't require a PhD in YAML.**
 
-Setting up LibreChat involves managing 100+ configuration options across environment variables, YAML files, OAuth providers, database connections, AI API keys, file storage backends, email services, and more. The official docs are comprehensive but scattered across dozens of pages, making it easy to miss critical settings or misconfigure complex integrations.
+This tool provides a clean UI for managing 100+ LibreChat settings and generates complete deployment packages. No more manually editing environment files or debugging YAML syntax errors.
 
-**This tool solves that.** Whether you're configuring LibreChat for your own use or creating installation packages to share with others, you get:
+**Key Benefits:**
+- ✅ **Progressive disclosure** - Pick providers first, see only relevant fields
+- ✅ **Real-time validation** - Catch errors before deployment
+- ✅ **Complete packages** - All deployment files generated in one click
+- ✅ **Smart updates** - Update LibreChat without overwriting your database
+- ✅ **Beginner-friendly** - No YAML or Docker expertise required
 
-- **Progressive disclosure** - Pick your providers first, then see only the relevant fields
-- **Real-time validation** - Catch configuration errors before deployment
-- **Complete packages** - Generate all files needed for deployment in one click
-- **Beginner-friendly** - No need to understand YAML syntax or environment variable conventions
+## Quick Start
 
-**Built by the community, for the community.** As LibreChat evolves and adds new features, this tool evolves with it. Missing a new provider or configuration option? The codebase is designed to make adding support straightforward - just update the schemas and the UI follows automatically.
+### 🌐 Online (Limited Features)
 
-**Help make LibreChat accessible to everyone.** Whether you're fixing a bug, adding support for a new AI provider, or improving the user experience, your contributions help more people deploy and enjoy LibreChat without the configuration headaches.
-
-## How to Use
-
-**This tool serves two main purposes:**
-
-1. **🔧 Configure LibreChat Settings** - Use the intuitive interface to set up all LibreChat configuration options
-2. **📦 Create One-Click Installation Packages** - Generate complete deployment packages that others can download and run immediately
-
-### 🌐 Use Online (Limited Features)
-
-**[Launch LibreChat Configuration Tool](https://librechatconfigurator.netlify.app/)**
+**[Launch Configuration Tool](https://librechatconfigurator.netlify.app/)**
 
 - ✅ Configure all LibreChat settings  
-- ✅ Download individual files (.env, librechat.yaml, JSON config)
-- ❌ **ZIP package generation will fail** - no backend on Netlify
+- ✅ Download individual files (.env, YAML, JSON)
+- ❌ ZIP package generation unavailable (no backend)
 
-### 💻 Run Locally (Full Features)
+### 💻 Local Installation (Full Features)
 
-**Prerequisites:** Node.js 20+ is required
-
-<details>
-<summary><strong>📦 Install Node.js (click to expand)</strong></summary>
-
-**Windows:**
-```powershell
-# Download and run installer from nodejs.org
-# Or use winget:
-winget install OpenJS.NodeJS
-```
-
-**macOS:**
-```bash
-# Using Homebrew (recommended):
-brew install node
-
-# Or download installer from nodejs.org
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-# Install Node.js 20:
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
-
-**Verify installation (all platforms):**
-```bash
-node --version   # Should show v20.x.x or higher
-npm --version    # Should show npm version
-```
-</details>
-
-<a id="quick-start"></a>
-
-### Quick Start
+**Prerequisites:** Node.js 20+ and Docker Desktop
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/Fritsl/LibreChatConfigurator.git
-
-# Navigate to folder
 cd LibreChatConfigurator
 
-# Install dependencies
+# Install and start
 npm install
-
-# Start the development server
 npm run dev
 
-# Open http://localhost:5000 in your browser
+# Open http://localhost:5000
 ```
 
-**What you get locally:**
-- ✅ Configure all LibreChat settings with the clean tabbed interface
-- ✅ Download individual files (.env, librechat.yaml, JSON config)
-- ✅ Generate complete installation ZIP packages with Docker setup and scripts
-- ✅ Share ready-to-deploy packages with others
-
-## Production Build
-
-For production deployment:
-
-```bash
-npm run build
-npm start
-```
-
-The app will build and serve on port 5000 in production mode.
+**Full features locally:**
+- ✅ Complete ZIP package generation with Docker Compose setup
+- ✅ Cross-platform installation scripts (.sh for Linux/macOS, .bat for Windows)
+- ✅ Smart update system using configuration names as unique identifiers
+- ✅ Profile management and configuration backup/restore
 
 ## Installing LibreChat with Generated Package
 
-After generating your LibreChat configuration package, extract the downloaded ZIP file and run the installation script:
+### 📦 Smart Installation System
 
-**Linux/macOS:**
+The generated ZIP package includes intelligent installation scripts that handle both fresh installations and updates:
+
+#### **Windows Installation**
+
+1. **Download & Extract**: Download your ZIP package from the configurator and extract it to a folder
+2. **Ensure Docker is Running**: Make sure Docker Desktop is running before proceeding
+3. **Run Installation**: Open the extracted folder and double-click `install_dockerimage.bat`
+
+#### **Linux/macOS Installation**
+
 ```bash
 chmod +x install_dockerimage.sh
 ./install_dockerimage.sh
 ```
 
-**Windows:**
-```cmd
-install_dockerimage.bat
-```
+### 🔄 How Smart Updates Work
 
-Both scripts will:
-- Verify Docker and Docker Compose are installed
-- Create necessary directories
-- Pull and start LibreChat services
-- Display access information and management commands
+**Configuration Name = Unique Identifier**
 
-Access LibreChat at `http://localhost:3080` after installation completes.
+The system uses the **Configuration Name** you set in the tool (not the ZIP filename) as a unique identifier. This name is embedded in `LibreChatConfigSettings.json` within your package.
+
+**First Installation:**
+- Creates complete LibreChat Docker setup
+- Pulls all required images from Docker Hub
+- Initializes MongoDB database
+- Starts LibreChat on port 3080
+
+**Subsequent Updates (Same Configuration Name):**
+- ✅ **Preserves MongoDB** - Your data stays intact
+- ✅ **Updates LibreChat only** - Applies new .env and YAML settings
+- ✅ **Restarts containers** - Changes take effect immediately
+- ✅ **Works across folders** - Even from a new ZIP download
+
+**Different Configuration Name:**
+- Treated as new installation
+- Creates separate Docker instance
+
+### 🎯 Typical Workflow
+
+1. **Configure in Tool** → Set "Configuration Name" at the top (e.g., "Production-LibreChat")
+2. **Download ZIP** → Generate package with all files
+3. **First Run** → `install_dockerimage.bat` creates full Docker setup on port 3080
+4. **Make Changes** → Adjust settings in configurator tool
+5. **Update Live** → Download new ZIP, run `install_dockerimage.bat` again
+   - Database preserved ✅
+   - LibreChat updated with new settings ✅
+
+### ⚠️ Development Status
+
+**This tool is under active development and may contain bugs.** Always backup your configurations and test in a non-production environment first.
 
 ## Features
 
-- **Progressive Disclosure**: Choose providers first, then see only relevant configuration fields
-- **Comprehensive Coverage**: Supports all LibreChat v0.8.0 settings - see mapping below
-- **Clean Interface**: Organized into logical tabs with search functionality
-- **Real-time Validation**: Immediate feedback on configuration issues
-- **Profile Management**: Save and load different configuration profiles
+### Configuration Management
+- **100+ Settings Coverage** - All LibreChat v0.8.0-rc4 configuration options
+- **Tabbed Interface** - 18 organized categories (Server, Security, AI Providers, etc.)
+- **Profile System** - Save and load configuration profiles with versioning
+- **Auto-Save** - Browser localStorage prevents data loss on refresh/close
 
-## Supported Configuration Settings
+### Package Generation
+- **Complete Deployment Files**:
+  - `.env` - Environment variables
+  - `librechat.yaml` - Main configuration
+  - `docker-compose.override.yml` - Docker setup
+  - `LibreChatConfigSettings.json` - Configuration metadata
+  - Installation scripts (.bat for Windows, .sh for Linux/macOS)
 
-This tool aims to support all LibreChat v0.8.0 configuration options. Here's what's currently covered:
+### Advanced Features
+- **Versioned Exports** - Metadata tracking (tool version, schema version, LibreChat target)
+- **Import Compatibility Checking** - Warns about version mismatches
+- **Custom Endpoints** - Multiple OpenAI-compatible endpoints with individual API keys
+- **DALL-E Integration** - Complete image generation setup
+- **Web Search (RC4)** - Serper and SearXNG with auto-Docker integration
+- **Smart Defaults** - Optimal configurations applied automatically
 
-**Based on [LibreChat Documentation](https://www.librechat.ai/docs/)**
+### User Experience
+- **Search Functionality** - Find any setting instantly
+- **Real-time Validation** - Immediate feedback on errors
+- **Technical Metadata** - Hover over info icons to see env var names and file paths
+- **Responsive Design** - Works on desktop, tablet, and mobile
 
-> **📝 Note about Documentation Links:** The LibreChat documentation site has a URL structure issue where `docs.librechat.ai` URLs redirect to `www.librechat.ai/docs`. All links below use the correct `www.librechat.ai` domain that actually works. If you encounter any broken links, simply replace `docs.librechat.ai` with `www.librechat.ai` in the URL.
+## Supported Configuration
 
-### Core Settings (.env)
-| Setting | Type | Documentation |
-|---------|------|---------------|
-| `APP_TITLE` | String | [Configuration](https://www.librechat.ai/docs/configuration/dotenv) |
-| `CUSTOM_FOOTER` | String | [Configuration](https://www.librechat.ai/docs/configuration/dotenv) |
-| `DOMAIN_CLIENT`, `DOMAIN_SERVER` | String | [Configuration](https://www.librechat.ai/docs/configuration/dotenv) |
-| `HOST`, `PORT` | Server | [Configuration](https://www.librechat.ai/docs/configuration/dotenv) |
-| `MONGO_URI`, `REDIS_URI` | Database | [Database Setup](https://www.librechat.ai/docs/configuration/mongodb) |
-| `JWT_SECRET`, `JWT_REFRESH_SECRET` | Security | [Security](https://www.librechat.ai/docs/configuration/dotenv) |
-| `ALLOW_REGISTRATION`, `ALLOW_EMAIL_LOGIN` | Auth | [Authentication](https://www.librechat.ai/docs/configuration/authentication) |
+This tool supports all LibreChat v0.8.0-rc4 settings organized into categories:
 
-### AI Provider API Keys (.env)
-| Provider | Environment Variables | Documentation |
-|----------|----------------------|---------------|
-| OpenAI | `OPENAI_API_KEY` | [Providers](https://www.librechat.ai/docs/configuration/pre_configured_ai/openai) |
-| Anthropic | `ANTHROPIC_API_KEY` | [Providers](https://www.librechat.ai/docs/configuration/pre_configured_ai/anthropic) |
-| Google | `GOOGLE_API_KEY` | [Providers](https://www.librechat.ai/docs/configuration/pre_configured_ai/google) |
-| Azure OpenAI | `AZURE_OPENAI_*` | [Azure Setup](https://www.librechat.ai/docs/configuration/azure) |
-| AWS Bedrock | `AWS_*` | [Bedrock Setup](https://www.librechat.ai/docs/configuration/pre_configured_ai/bedrock) |
-| 15+ Others | Various API keys | [AI Providers](https://www.librechat.ai/docs/configuration/pre_configured_ai) |
+**Core (.env)**
+- Server (APP_TITLE, HOST, PORT, domains)
+- Security (JWT secrets, session settings)
+- Database (MongoDB, Redis, PostgreSQL)
+- UI/Visibility (welcome message, footer, menu toggles)
 
-### OAuth Providers (.env)
-| Provider | Fields | Documentation |
-|----------|--------|---------------|
-| Google OAuth | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | [OAuth Setup](https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC/google) |
-| GitHub OAuth | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | [OAuth Setup](https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC/github) |
-| Discord, Facebook, Apple | Client credentials | [OAuth Setup](https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC) |
-| OpenID Connect | Custom OIDC configuration | [OAuth Setup](https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC) |
+**AI Providers (.env + YAML)**
+- OpenAI, Anthropic, Google, Azure OpenAI
+- AWS Bedrock, Groq, Mistral, Cohere
+- Custom OpenAI-compatible endpoints
+- 15+ additional providers
 
-### File Storage (.env)
-| Strategy | Configuration | Documentation |
-|----------|---------------|---------------|
-| Local | `FILE_UPLOAD_PATH` | [File Handling](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config) |
-| Firebase | `FIREBASE_*` credentials | [File Handling](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config) |
-| Azure Blob | `AZURE_STORAGE_*` | [File Handling](https://www.librechat.ai/docs/configuration/cdn/azure) |
-| Amazon S3 | `S3_*` credentials | [File Handling](https://www.librechat.ai/docs/configuration/cdn) |
+**Authentication (.env)**
+- Email/Password login
+- OAuth (Google, GitHub, Discord, Facebook, Apple, OpenID Connect)
+- Domain restrictions and registration controls
 
-### Email Configuration (.env)
-| Service | Fields | Documentation |
-|---------|--------|---------------|
-| SMTP | `EMAIL_SERVICE`, `EMAIL_USERNAME`, `EMAIL_PASSWORD` | [Email Setup](https://www.librechat.ai/docs/configuration/authentication/email_setup) |
-| Mailgun | `MAILGUN_API_KEY`, `MAILGUN_DOMAIN` | [Email Setup](https://www.librechat.ai/docs/configuration/authentication/email_setup) |
+**Advanced Features (YAML)**
+- Web Search & RAG (Serper, SearXNG, Firecrawl)
+- File Storage (Local, S3, Azure Blob, Firebase)
+- Email Services (SMTP, Mailgun)
+- Rate Limiting & Caching
+- MCP Servers (Model Context Protocol)
+- Image Generation (DALL-E 2/3)
 
-### Search & RAG (librechat.yaml)
-| Feature | Configuration | Documentation |
-|---------|---------------|---------------|
-| Web Search | `webSearch` providers (Serper, Brave, Tavily, etc.) | [Search](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config) |
-| MeiliSearch | `search`, `meilisearch*` settings | [Search](https://www.librechat.ai/docs/configuration/meilisearch) |
-| RAG API | `ragApiURL`, RAG configuration | [RAG](https://www.librechat.ai/docs/configuration/rag_api) |
-
-### Advanced Features (librechat.yaml)
-| Category | Settings | Documentation |
-|----------|----------|---------------|
-| Interface | `interface.*` UI toggles and customization | [Configuration](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface) |
-| Rate Limiting | `rateLimits.*` comprehensive limits | [Configuration](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config) |
-| File Config | `fileConfig.*` upload limits and processing | [File Handling](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config) |
-| Registration | `registration.*` domain restrictions | [Authentication](https://www.librechat.ai/docs/configuration/authentication) |
-| Caching | Cache headers and static file settings | [Configuration](https://www.librechat.ai/docs/configuration/dotenv) |
-| MCP Servers | `mcpServers.*` Model Context Protocol | [MCP](https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/mcp_servers) |
-
-**Missing something?** Please open a PR! This tool is community-driven and welcomes contributions as LibreChat evolves.
-
-**📚 Documentation Reference:**
-- [LibreChat Configuration Guide](https://www.librechat.ai/docs/configuration/)
-- [Quick Start](https://www.librechat.ai/docs/installation/docker_compose)
-- [Authentication Setup](https://www.librechat.ai/docs/configuration/authentication)
-- [RAG API](https://www.librechat.ai/docs/configuration/rag_api)
-
-## Save & Share Configurations
-
-Download your settings as JSON files to save multiple configurations locally or share with others. Go to **"Package → Preview files..."** and download the **"LibreChat Configuration Settings (JSON)"** file. Each JSON file includes all your settings and can be loaded back into the tool later.
-
-**Note:** Remove API keys and secrets before sharing configuration files with others.
+**📚 Full Documentation:** [LibreChat Configuration Guide](https://www.librechat.ai/docs/configuration/)
 
 ## Architecture
 
-This project follows a modern full-stack TypeScript architecture with clear separation of concerns:
+Modern full-stack TypeScript application:
 
 ```
-LibreChat Configuration Tool
-├── client/                 # React Frontend
-│   ├── src/
-│   │   ├── components/     # UI Components (Tabs, Forms, Inputs)
-│   │   ├── lib/           # Utilities & Defaults
-│   │   ├── hooks/         # React Hooks (useConfiguration)
-│   │   └── pages/         # Route Components
-│   └── index.html
-├── server/                 # Express Backend
-│   ├── routes.ts          # API Endpoints
-│   ├── storage.ts         # Data Layer (Memory/Database)
-│   └── vite.ts            # Development Server
-├── shared/                 # Shared Types & Schemas
-│   └── schema.ts          # Zod Validation Schemas
-└── scripts/               # Build & Release Scripts
+├── client/          # React 18 Frontend
+│   ├── components/  # Tabbed UI, Forms, Inputs
+│   ├── lib/        # Configuration defaults & utilities
+│   └── pages/      # Main configuration interface
+├── server/          # Express.js Backend
+│   ├── routes.ts   # API endpoints & file generation
+│   └── storage.ts  # In-memory storage with DB interface
+├── shared/          # Type-safe schemas (Zod)
+│   ├── schema.ts           # Configuration data models
+│   ├── schema-defaults.ts  # Dynamic defaults generator
+│   └── version.ts          # Version metadata
+└── scripts/         # Build & deployment automation
 ```
 
-### Data Flow
+**Tech Stack:**
+- Frontend: React, TypeScript, Tailwind CSS, shadcn/ui
+- Backend: Express.js, Zod validation
+- State: TanStack Query, React Hook Form
+- Build: Vite, ESBuild
 
-1. **User Input** → Frontend validates via Zod schemas
-2. **Configuration State** → Managed by React hooks with real-time validation
-3. **API Requests** → Backend processes and validates configuration data
-4. **File Generation** → Server creates `.env`, `librechat.yaml`, and Docker files
-5. **Download** → User receives complete deployment package
+## Development
 
-### Key Components
-
-- **Frontend**: React 18 + TypeScript, progressive disclosure UI, real-time validation
-- **Backend**: Express.js API, Zod validation, pluggable storage interface
-- **Shared**: Type-safe schemas ensuring frontend/backend consistency
-- **Package Generation**: Server-side `.env`, `librechat.yaml`, and Docker file creation
-
-## For Developers
-
-- **Frontend**: `/client` - React with TypeScript, Tailwind CSS, and shadcn/ui components
-- **Backend**: `/server` - Express.js with TypeScript and Zod validation
-- **Shared**: `/shared` - Common types and schemas used by both frontend and backend
-- **Scripts**: `/scripts` - Build, release, and development automation
-
-### Development Commands
+### Commands
 
 ```bash
-npm run dev          # Start development server (frontend + backend)
-npm run frontend-dev # Frontend only (Vite dev server)
-npm run backend-dev  # Backend only (Express server)
+npm run dev          # Development server (port 5000)
 npm run build        # Production build
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # TypeScript type checking
+npm start            # Production server
+npm run lint         # ESLint
+npm run type-check   # TypeScript validation
 ```
 
-### Adding New Configuration Options
+### Adding New Settings
 
-1. **Update Schema**: Add new fields to `/shared/schema.ts`
-2. **Update UI**: Add form components in `/client/src/components/`
-3. **Update Backend**: Modify generation logic in `/server/routes.ts`
-4. **Test**: Verify end-to-end functionality
+1. Update schema in `shared/schema.ts`
+2. Add UI component in `client/src/components/`
+3. Update file generators in `server/routes.ts`
+4. Test end-to-end
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Here's how to help:
 
-### Quick Contribution Steps
+1. **Fork** the repository
+2. **Create branch**: `git checkout -b feature/your-feature`
+3. **Make changes** and test thoroughly
+4. **Submit PR** with clear description
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-provider`
-3. Make your changes and test thoroughly
-4. Submit a pull request with a clear description
+**Areas needing help:**
+- 🤖 New AI provider integrations
+- 🎨 UI/UX improvements
+- 📚 Documentation enhancements
+- 🧪 Test coverage
+- 🌍 Internationalization
 
-### Areas We Need Help
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-- **New AI Providers**: Add support for emerging AI services
-- **UI/UX Improvements**: Enhance the user experience
-- **Documentation**: Improve setup guides and examples
-- **Testing**: Add comprehensive test coverage
-- **Internationalization**: Add support for multiple languages
+## Known Issues (v1.18.0)
+
+- **modelSpecs.addedEndpoints bug**: LibreChat RC4 has a known issue where this setting causes interface visibility problems. Keep it disabled (empty array) unless you need custom model specs.
+- **Active development**: Tool is evolving with LibreChat. Report bugs via [GitHub Issues](https://github.com/Fritsl/LibreChatConfigurator/issues).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- **LibreChat Team**: For creating an amazing open-source AI chat platform
-- **Contributors**: Everyone who has helped improve this configuration tool
-- **Community**: Users who provide feedback and report issues
+- **LibreChat Team** - For the amazing open-source AI platform
+- **Contributors** - Everyone improving this tool
+- **Community** - Users providing feedback and bug reports
 
 ---
 

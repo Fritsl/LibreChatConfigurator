@@ -1,8 +1,10 @@
 # Overview
 
-This project (v1.18.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 80+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.18.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 100+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
 The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, and package generation capabilities. Web search configuration strictly follows official LibreChat RC4 documentation, supporting only tested and documented providers: Serper (API-based search) and SearXNG (external instance). Firecrawl scraper includes comprehensive advanced configuration options (formats, content filtering, performance settings, privacy controls) with optimal defaults applied automatically.
+
+**Smart Installation System**: ZIP packages include intelligent cross-platform installation scripts (install_dockerimage.bat for Windows, install_dockerimage.sh for Linux/macOS) that use the Configuration Name as a unique identifier. First run creates full LibreChat Docker setup; subsequent runs with matching config name update only LibreChat container while preserving MongoDB database. This enables live configuration updates without data loss.
 
 **Architecture v1.18.0 - Versioned Configuration System**: Introduced schema-driven configuration management with automatic version tracking and migration support. Every JSON export now includes structured metadata (tool version, schema version, LibreChat target, timestamp) enabling forward compatibility. Dynamic schema defaults generator automatically includes new fields as LibreChat evolves, eliminating hardcoded defaults. Import system detects version mismatches and displays compatibility warnings. All configuration file generation (ENV, YAML, JSON) handled server-side as single source of truth. Configuration loader uses deep merge to populate new fields for existing users. UPDATE MODE optimized: skips service wait time and automatically restarts containers without user prompts.
 
@@ -46,11 +48,12 @@ Preferred communication style: Simple, everyday language.
 - **File Generation**: Server-side package generation for deployment files
 
 ## Configuration Management
-- **Schema Definition**: Comprehensive Zod schemas covering all 80+ LibreChat settings
+- **Schema Definition**: Comprehensive Zod schemas covering all 100+ LibreChat settings
 - **Category Organization**: Settings organized into 18 logical categories (Server, Security, Database, UI/Visibility, Image Generation, etc.)
 - **Profile System**: Save and load configuration profiles with versioning support
 - **Real-time Validation**: Client and server-side validation with detailed error reporting
 - **Auto-Persistence**: Configuration automatically saved to browser localStorage to prevent data loss on page refresh, tab close, or screen lock
+- **Smart Installation**: Configuration name (set in UI) serves as unique identifier for Docker installations, enabling safe updates without database overwrites
 
 ## Versioned Configuration System (v1.18.0+)
 **Future-Proof Architecture**: Eliminates reliance on hardcoded defaults through dynamic schema-driven generation.

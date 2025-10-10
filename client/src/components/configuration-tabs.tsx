@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { type Configuration } from "@shared/schema";
 import { 
@@ -38,7 +39,8 @@ import {
   HardDrive,
   Terminal,
   Copy,
-  Sparkles
+  Sparkles,
+  Info
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -1844,6 +1846,14 @@ paths:
                     </div>
                   </CardHeader>
                   <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {tab.id === "ui-visibility" && (
+                      <Alert className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
+                        <Info className="h-4 w-4" />
+                        <AlertDescription className="text-sm">
+                          <strong>Hide Deprecated Plugins Menu:</strong> To remove the "Plugins (Depreciated)" menu from LibreChat, go to the <strong>Server Configuration</strong> tab and exclude <code className="px-1 py-0.5 bg-muted rounded text-xs">gptPlugins</code> from the <strong>Enabled Endpoints</strong> list. By default, gptPlugins is excluded (use Agents instead).
+                        </AlertDescription>
+                      </Alert>
+                    )}
                     {tab.settings.map((setting) => {
                       const fieldInfo = getFieldInfo(setting);
                       

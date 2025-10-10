@@ -1557,14 +1557,14 @@ paths:
       "interface.endpointsMenu": { type: "boolean", description: "Show endpoints menu", label: "Endpoints Menu", technical: { yamlPath: "interface.endpointsMenu", configFile: "librechat.yaml" } },
       "interface.modelSelect": { 
         type: "boolean", 
-        description: "Enable custom model selection interface. When enabled with 'Visible Endpoints', only the specified endpoints will appear in the UI (this is the proper way to hide deprecated Plugins menu).", 
+        description: "Enable the model selection dropdown in the UI. This allows users to choose between different AI models and providers.", 
         label: "Enable Model Select Interface", 
         technical: { yamlPath: "interface.modelSelect", configFile: "librechat.yaml" } 
       },
       "modelSpecs.addedEndpoints": { 
         type: "array", 
-        description: "⚠️ WARNING: Known LibreChat Bug - Keep this setting EMPTY/OFF. When enabled, it causes conflicts with other interface settings (e.g., Presets will show even when disabled). This setting controls which AI model providers appear in the dropdown, but has unintended side effects in RC4.", 
-        label: "🔴 Visible Endpoints (UI) - KEEP OFF", 
+        description: "⚠️ KNOWN BUG: This setting causes interface visibility settings to break (e.g., Presets shows even when you disable it). Keep this field EMPTY unless you fully understand the risks. Designed for custom model specs, but has unintended side effects in LibreChat RC4.", 
+        label: "🔴 Visible Endpoints (UI) - KEEP EMPTY", 
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/model_specs",
         docSection: "Model Specs",
         technical: { yamlPath: "modelSpecs.addedEndpoints", configFile: "librechat.yaml" }
@@ -1863,7 +1863,7 @@ paths:
                       <Alert variant="warning" className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
                         <Info className="h-4 w-4" />
                         <AlertDescription className="text-sm">
-                          <strong>About the Deprecated Plugins Menu:</strong> LibreChat v0.8.0-rc4 includes a deprecated "Plugins (Depreciated)" menu that cannot be removed through normal settings. The "Visible Endpoints (UI)" setting below was originally intended as a workaround, but it <strong>causes bugs with other interface settings</strong> (e.g., Presets showing when disabled). <strong>Keep "Visible Endpoints (UI)" OFF</strong> to avoid these issues. Use Agents instead of the deprecated Plugins feature.
+                          <strong>⚠️ LibreChat RC4 Bug Warning:</strong> The "Visible Endpoints (UI)" setting below has a known bug that causes interface settings to malfunction (e.g., Presets showing when disabled). <strong>Keep it empty/OFF</strong> to avoid issues. The deprecated "Plugins" menu cannot be hidden in RC4 - just ignore it and use Agents instead.
                         </AlertDescription>
                       </Alert>
                     )}
@@ -2013,32 +2013,6 @@ paths:
                               docSection={fieldInfo.docSection}
                               type={fieldInfo.type}
                               value={getNestedValue(configuration, setting) || ""}
-                              onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                              options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
-                              data-testid={`input-${setting}`}
-                              technical={fieldInfo.technical}
-                            />
-                          </div>
-                        );
-                      }
-                      
-                      // Special handling for modelSpecs.addedEndpoints - show warning alert
-                      if (setting === "modelSpecs.addedEndpoints") {
-                        return (
-                          <div key={`${setting}-wrapper`} className="col-span-full">
-                            <Alert variant="destructive" className="mb-4" data-testid="alert-modelspecs-warning">
-                              <Info className="h-4 w-4" />
-                              <AlertDescription className="text-sm">
-                                <strong>🔴 LibreChat RC4 Bug - Keep This Setting OFF:</strong> This setting causes conflicts with interface visibility settings. When enabled, menus like "Presets" will show even when disabled. Originally designed for custom model specs, enabling it without proper configuration breaks LibreChat's UI. <strong>Leave this field empty unless you fully understand the risks.</strong>
-                              </AlertDescription>
-                            </Alert>
-                            <SettingInput
-                              label={fieldInfo.label}
-                              description={fieldInfo.description}
-                              docUrl={fieldInfo.docUrl}
-                              docSection={fieldInfo.docSection}
-                              type={fieldInfo.type}
-                              value={getNestedValue(configuration, setting) || []}
                               onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                               options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
                               data-testid={`input-${setting}`}

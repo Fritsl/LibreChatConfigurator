@@ -617,6 +617,18 @@ ${config.bingSearchApiKey ? `BING_SEARCH_API_KEY=${config.bingSearchApiKey}` : '
 ${config.openweatherApiKey ? `OPENWEATHER_API_KEY=${config.openweatherApiKey}` : '# OPENWEATHER_API_KEY='}
 
 # =============================================================================
+# Image Generation (DALL-E) Configuration
+# =============================================================================
+${config.dalleApiKey ? `DALLE_API_KEY=${config.dalleApiKey}` : '# DALLE_API_KEY='}
+${config.dalle3ApiKey ? `DALLE3_API_KEY=${config.dalle3ApiKey}` : '# DALLE3_API_KEY='}
+${config.dalle2ApiKey ? `DALLE2_API_KEY=${config.dalle2ApiKey}` : '# DALLE2_API_KEY='}
+${config.dalleReverseProxy ? `DALLE_REVERSE_PROXY=${config.dalleReverseProxy}` : '# DALLE_REVERSE_PROXY='}
+${config.dalle3BaseUrl ? `DALLE3_BASEURL=${config.dalle3BaseUrl}` : '# DALLE3_BASEURL='}
+${config.dalle2BaseUrl ? `DALLE2_BASEURL=${config.dalle2BaseUrl}` : '# DALLE2_BASEURL='}
+${config.dalle3SystemPrompt ? `DALLE3_SYSTEM_PROMPT=${config.dalle3SystemPrompt}` : '# DALLE3_SYSTEM_PROMPT='}
+${config.dalle2SystemPrompt ? `DALLE2_SYSTEM_PROMPT=${config.dalle2SystemPrompt}` : '# DALLE2_SYSTEM_PROMPT='}
+
+# =============================================================================
 # RAG API Configuration
 # =============================================================================
 ${config.ragApiURL ? `RAG_API_URL=${config.ragApiURL}` : '# RAG_API_URL='}
@@ -1306,6 +1318,18 @@ ${config.googleSearchApiKey ? `      GOOGLE_SEARCH_API_KEY: \${GOOGLE_SEARCH_API
 ${config.googleCSEId ? `      GOOGLE_CSE_ID: \${GOOGLE_CSE_ID}` : '      # GOOGLE_CSE_ID: ${GOOGLE_CSE_ID}'}
 ${config.bingSearchApiKey ? `      BING_SEARCH_API_KEY: \${BING_SEARCH_API_KEY}` : '      # BING_SEARCH_API_KEY: ${BING_SEARCH_API_KEY}'}
 ${config.openweatherApiKey ? `      OPENWEATHER_API_KEY: \${OPENWEATHER_API_KEY}` : '      # OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}'}
+      
+      # =============================================================================
+      # Image Generation (DALL-E) Configuration
+      # =============================================================================
+${config.dalleApiKey ? `      DALLE_API_KEY: \${DALLE_API_KEY}` : '      # DALLE_API_KEY: ${DALLE_API_KEY}'}
+${config.dalle3ApiKey ? `      DALLE3_API_KEY: \${DALLE3_API_KEY}` : '      # DALLE3_API_KEY: ${DALLE3_API_KEY}'}
+${config.dalle2ApiKey ? `      DALLE2_API_KEY: \${DALLE2_API_KEY}` : '      # DALLE2_API_KEY: ${DALLE2_API_KEY}'}
+${config.dalleReverseProxy ? `      DALLE_REVERSE_PROXY: \${DALLE_REVERSE_PROXY}` : '      # DALLE_REVERSE_PROXY: ${DALLE_REVERSE_PROXY}'}
+${config.dalle3BaseUrl ? `      DALLE3_BASEURL: \${DALLE3_BASEURL}` : '      # DALLE3_BASEURL: ${DALLE3_BASEURL}'}
+${config.dalle2BaseUrl ? `      DALLE2_BASEURL: \${DALLE2_BASEURL}` : '      # DALLE2_BASEURL: ${DALLE2_BASEURL}'}
+${config.dalle3SystemPrompt ? `      DALLE3_SYSTEM_PROMPT: \${DALLE3_SYSTEM_PROMPT}` : '      # DALLE3_SYSTEM_PROMPT: ${DALLE3_SYSTEM_PROMPT}'}
+${config.dalle2SystemPrompt ? `      DALLE2_SYSTEM_PROMPT: \${DALLE2_SYSTEM_PROMPT}` : '      # DALLE2_SYSTEM_PROMPT: ${DALLE2_SYSTEM_PROMPT}'}
       
       # =============================================================================
       # RAG API Configuration

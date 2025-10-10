@@ -334,6 +334,15 @@ paths:
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
         {
+          id: "image-gen",
+          label: "Image Generation",
+          icon: Camera,
+          description: "DALL-E Configuration",
+          color: "from-pink-500 to-pink-600",
+          settings: ["dalleApiKey", "dalle3ApiKey", "dalle2ApiKey", "dalleReverseProxy", "dalle3BaseUrl", "dalle2BaseUrl", "dalle3SystemPrompt", "dalle2SystemPrompt"],
+          docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        },
+        {
           id: "meili",
           label: "MeiliSearch",
           icon: Search,
@@ -962,6 +971,75 @@ paths:
       azureStorageConnectionString: { type: "password", description: "Azure storage connection string", label: "Azure Storage Connection String", technical: { envVar: "AZURE_STORAGE_CONNECTION_STRING", configFile: ".env" } },
       azureStoragePublicAccess: { type: "boolean", description: "Azure storage public access", label: "Azure Storage Public Access", technical: { envVar: "AZURE_STORAGE_PUBLIC_ACCESS", configFile: ".env" } },
       azureContainerName: { type: "text", description: "Azure container name", label: "Azure Container Name", technical: { envVar: "AZURE_CONTAINER_NAME", configFile: ".env" } },
+      
+      // Image Generation (DALL-E)
+      dalleApiKey: { 
+        type: "password", 
+        description: "API key for DALL-E image generation. Required to enable AI image generation via Agents. Can use your OpenAI API key or a dedicated DALL-E key.", 
+        label: "DALL-E API Key",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE_API_KEY", configFile: ".env" } 
+      },
+      dalle3ApiKey: { 
+        type: "password", 
+        description: "Dedicated API key for DALL-E 3 (optional). If not set, uses DALLE_API_KEY.", 
+        label: "DALL-E 3 API Key",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE3_API_KEY", configFile: ".env" } 
+      },
+      dalle2ApiKey: { 
+        type: "password", 
+        description: "Dedicated API key for DALL-E 2 (optional). If not set, uses DALLE_API_KEY.", 
+        label: "DALL-E 2 API Key",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE2_API_KEY", configFile: ".env" } 
+      },
+      dalleReverseProxy: { 
+        type: "text", 
+        description: "Custom reverse proxy URL for DALL-E requests (optional).", 
+        label: "DALL-E Reverse Proxy",
+        placeholder: "https://your-proxy-url",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE_REVERSE_PROXY", configFile: ".env" } 
+      },
+      dalle3BaseUrl: { 
+        type: "text", 
+        description: "Custom base URL for DALL-E 3 API (optional). Default: https://api.openai.com/v1", 
+        label: "DALL-E 3 Base URL",
+        placeholder: "https://api.openai.com/v1",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE3_BASEURL", configFile: ".env" } 
+      },
+      dalle2BaseUrl: { 
+        type: "text", 
+        description: "Custom base URL for DALL-E 2 API (optional). Default: https://api.openai.com/v1", 
+        label: "DALL-E 2 Base URL",
+        placeholder: "https://api.openai.com/v1",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE2_BASEURL", configFile: ".env" } 
+      },
+      dalle3SystemPrompt: { 
+        type: "textarea", 
+        description: "Custom system prompt for DALL-E 3 image generation (optional).", 
+        label: "DALL-E 3 System Prompt",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE3_SYSTEM_PROMPT", configFile: ".env" } 
+      },
+      dalle2SystemPrompt: { 
+        type: "textarea", 
+        description: "Custom system prompt for DALL-E 2 image generation (optional).", 
+        label: "DALL-E 2 System Prompt",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "Image Generation",
+        technical: { envVar: "DALLE2_SYSTEM_PROMPT", configFile: ".env" } 
+      },
       
       // External APIs
       openweatherApiKey: { type: "password", description: "OpenWeather API key for weather information", label: "OpenWeather API Key", technical: { envVar: "OPENWEATHER_API_KEY", configFile: ".env" } },

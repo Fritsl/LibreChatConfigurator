@@ -1,6 +1,6 @@
 # Overview
 
-This project (v1.17.5) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 73+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.17.5) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 80+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
 The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, and package generation capabilities. Web search configuration strictly follows official LibreChat RC4 documentation, supporting only tested and documented providers: Serper (API-based search) and SearXNG (external instance). Firecrawl scraper includes comprehensive advanced configuration options (formats, content filtering, performance settings, privacy controls) with optimal defaults applied automatically.
 
@@ -46,8 +46,8 @@ Preferred communication style: Simple, everyday language.
 - **File Generation**: Server-side package generation for deployment files
 
 ## Configuration Management
-- **Schema Definition**: Comprehensive Zod schemas covering all 73+ LibreChat settings
-- **Category Organization**: Settings organized into 17 logical categories (Server, Security, Database, UI/Visibility, etc.)
+- **Schema Definition**: Comprehensive Zod schemas covering all 80+ LibreChat settings
+- **Category Organization**: Settings organized into 18 logical categories (Server, Security, Database, UI/Visibility, Image Generation, etc.)
 - **Profile System**: Save and load configuration profiles with versioning support
 - **Real-time Validation**: Client and server-side validation with detailed error reporting
 - **Auto-Persistence**: Configuration automatically saved to browser localStorage to prevent data loss on page refresh, tab close, or screen lock
@@ -59,9 +59,10 @@ Preferred communication style: Simple, everyday language.
 - **Connection**: Environment-based database URL configuration
 
 ## Key Features
-- **Tabbed Interface**: 17 categorized tabs with icons and progress indicators
+- **Tabbed Interface**: 18 categorized tabs with icons and progress indicators
 - **Input Controls**: Specialized inputs for different data types (text, number, boolean, select, arrays)
 - **Custom Endpoints**: Create multiple OpenAI-compatible endpoints with individual API keys and friendly names for organizing usage by project/team (e.g., "OpenAI - Work", "OpenAI - Personal")
+- **Image Generation (DALL-E)**: Comprehensive DALL-E configuration for AI image generation via Agents, including support for DALL-E 2 and DALL-E 3, custom base URLs, reverse proxies, and system prompts
 - **SearXNG Auto-Inclusion**: Toggle to automatically include SearXNG service in docker-compose with proper Docker networking (http://searxng:8080) and auto-generated secrets
 - **Preview System**: Live preview of generated configuration files
 - **Package Generation**: Complete deployment package creation with multiple file formats

@@ -539,6 +539,16 @@ export const configurationSchema = z.object({
   // Weather & External APIs
   openweatherApiKey: z.string().optional(), // OPENWEATHER_API_KEY
   
+  // Image Generation (DALL-E)
+  dalleApiKey: z.string().optional(), // DALLE_API_KEY
+  dalle3ApiKey: z.string().optional(), // DALLE3_API_KEY
+  dalle2ApiKey: z.string().optional(), // DALLE2_API_KEY
+  dalleReverseProxy: z.string().optional(), // DALLE_REVERSE_PROXY
+  dalle3BaseUrl: z.string().optional(), // DALLE3_BASEURL
+  dalle2BaseUrl: z.string().optional(), // DALLE2_BASEURL
+  dalle3SystemPrompt: z.string().optional(), // DALLE3_SYSTEM_PROMPT
+  dalle2SystemPrompt: z.string().optional(), // DALLE2_SYSTEM_PROMPT
+  
   // LibreChat Code Interpreter (Paid API Service at code.librechat.ai)
   librechatCodeEnabled: z.boolean().default(false), // Enable LibreChat Code Interpreter (default: OFF)
   librechatCodeApiKey: z.string().optional(), // LIBRECHAT_CODE_API_KEY

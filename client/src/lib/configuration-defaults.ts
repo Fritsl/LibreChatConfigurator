@@ -177,6 +177,37 @@ export const defaultConfiguration: Configuration = {
   openweatherApiKey: "",
   ragOpenaiApiKey: "",
   
+  // Optional nested objects with schema-compliant defaults
+  actions: {
+    allowedDomains: []
+  },
+  memory: {
+    disabled: true,
+    personalize: false,
+    messageWindowSize: 5
+  },
+  ocr: {
+    strategy: "mistral_ocr" as const,
+    mistralModel: "pixtral-12b-2409"
+  },
+  stt: {
+    provider: "openai" as const,
+    model: "whisper-1",
+    streaming: false,
+    punctuation: true,
+    profanityFilter: false
+  },
+  tts: {
+    provider: "openai" as const,
+    model: "tts-1",
+    voice: "alloy",
+    speed: 1.0,
+    quality: "standard" as const,
+    streaming: false
+  },
+  mcpServers: {},
+  endpoints: {},
+  
   // Proper nested objects for LibreChat compatibility
   registration: {
     socialLogins: [],

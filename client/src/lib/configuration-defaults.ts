@@ -22,6 +22,7 @@ export const defaultConfiguration: Configuration = {
   // Basic Server Configuration
   host: "0.0.0.0",
   port: 3080,
+  enabledEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "agents"],
   debugLogging: false,
   
   // Configuration Metadata

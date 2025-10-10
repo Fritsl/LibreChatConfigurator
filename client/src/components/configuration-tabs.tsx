@@ -200,7 +200,7 @@ paths:
           icon: Server,
           description: "Host, Port, Environment",
           color: "from-green-500 to-green-600",
-          settings: ["host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex"],
+          settings: ["host", "port", "enabledEndpoints", "nodeEnv", "domainClient", "domainServer", "noIndex"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -652,6 +652,14 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#port",
         docSection: "Server Config",
         technical: { envVar: "PORT", configFile: ".env" }
+      },
+      enabledEndpoints: {
+        type: "array",
+        description: "Select which AI endpoints/providers to enable in LibreChat. Note: gptPlugins is deprecated - use 'agents' instead. Excluding gptPlugins hides the deprecated 'Plugins' menu.",
+        label: "Enabled Endpoints",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#endpoints",
+        docSection: "Server Config",
+        technical: { envVar: "ENDPOINTS", configFile: ".env" }
       },
       nodeEnv: { 
         type: "select", 

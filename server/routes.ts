@@ -463,6 +463,7 @@ ${config.helpAndFAQURL ? `HELP_AND_FAQ_URL=${config.helpAndFAQURL}` : '# HELP_AN
 # =============================================================================
 ${config.host ? `HOST=${config.host}` : 'HOST=0.0.0.0'}
 ${config.port ? `PORT=${config.port}` : 'PORT=3080'}
+${config.enabledEndpoints && config.enabledEndpoints.length > 0 ? `ENDPOINTS=${config.enabledEndpoints.join(',')}` : 'ENDPOINTS=openAI,anthropic,google,azureOpenAI,agents'}
 ${config.nodeEnv ? `NODE_ENV=${config.nodeEnv}` : '# NODE_ENV=production'}
 ${config.domainClient ? `DOMAIN_CLIENT=${config.domainClient}` : '# DOMAIN_CLIENT='}
 ${config.domainServer ? `DOMAIN_SERVER=${config.domainServer}` : '# DOMAIN_SERVER='}

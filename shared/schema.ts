@@ -646,6 +646,10 @@ export const configurationSchema = z.object({
   host: z.string().default("0.0.0.0"),
   port: z.number().min(1).max(65535).default(3080),
   debugLogging: z.boolean().default(false),
+  enabledEndpoints: z.array(z.enum([
+    "openAI", "anthropic", "google", "azureOpenAI", "agents", 
+    "azureAssistants", "bedrock", "cohere", "assistants", "gptPlugins"
+  ])).default(["openAI", "anthropic", "google", "azureOpenAI", "agents"]), // ENDPOINTS - gptPlugins excluded by default (deprecated)
   
   // Configuration Metadata
   configurationName: z.string().default("My LibreChat Configuration"),

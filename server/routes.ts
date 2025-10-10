@@ -1532,6 +1532,10 @@ if [ -n "\$EXISTING_CONTAINERS" ]; then
         echo ""
         echo "TIP: To perform a fresh install and wipe all data, run: ./install_dockerimage.sh --fresh"
         echo ""
+        echo ">> Stopping existing containers..."
+        docker-compose -p "\${COMPOSE_PROJECT_NAME}" down
+        echo "[OK] Containers stopped (volumes preserved)"
+        echo ""
     fi
 else
     echo "[FRESH INSTALLATION] No existing deployment found"
@@ -1665,6 +1669,10 @@ if "%CONTAINER_FOUND%"=="true" (
         echo ^>^> Updating: Configuration files (.env, librechat.yaml, docker-compose.yml^)
         echo.
         echo TIP: To perform a fresh install and wipe all data, run: install_dockerimage.bat --fresh
+        echo.
+        echo ^>^> Stopping existing containers...
+        docker-compose -p %COMPOSE_PROJECT_NAME% down
+        echo [OK] Containers stopped (volumes preserved^)
         echo.
     )
 ) else (

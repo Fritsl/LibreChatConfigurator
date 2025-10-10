@@ -108,7 +108,9 @@ The system uses the **Configuration Name** you set in the tool (not the ZIP file
 
 ### 📦 What's in the ZIP Package?
 
-Each generated package contains 6 files:
+Each generated package contains these files:
+
+#### Core Files (Always Included)
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
@@ -118,8 +120,19 @@ Each generated package contains 6 files:
 | **`LibreChatConfigSettings.json`** | Configuration metadata with unique name identifier | Used by installation scripts to detect update vs. fresh install. Also for backup/restore in this tool. |
 | **`install_dockerimage.bat`** | Windows installation script | **Run this on Windows** - handles Docker setup and updates automatically. |
 | **`install_dockerimage.sh`** | Linux/macOS installation script | **Run this on Linux/macOS** - handles Docker setup and updates automatically. |
+| **`00-README-INSTALLATION.txt`** | Installation instructions | Read this first - contains step-by-step setup guide. |
+| **`README.md`** | Documentation about your configuration | Reference for what settings you configured. |
 
-**Quick Start:** Just run the installation script for your OS - it uses all other files automatically.
+#### Database Backup Scripts (Optional)
+
+| File | Purpose | When to Use |
+|------|---------|-------------|
+| **`backup_mongodb.bat`** | Windows MongoDB backup script | Run on Windows to create a database backup before major changes. |
+| **`backup_mongodb.sh`** | Linux/macOS MongoDB backup script | Run on Linux/macOS to create a database backup before major changes. |
+| **`restore_mongodb.bat`** | Windows MongoDB restore script | Run on Windows to restore a previous database backup. |
+| **`restore_mongodb.sh`** | Linux/macOS MongoDB restore script | Run on Linux/macOS to restore a previous database backup. |
+
+**Quick Start:** Run the installation script for your OS (`.bat` for Windows, `.sh` for Linux/macOS) - it handles everything automatically.
 
 **Manual Installation:** If not using Docker, copy `.env` and `librechat.yaml` to your LibreChat directory.
 

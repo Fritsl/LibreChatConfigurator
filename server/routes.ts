@@ -464,8 +464,8 @@ function generateEnvFile(config: any): string {
 # App Configuration
 # =============================================================================
 ${config.appTitle ? `APP_TITLE=${config.appTitle}` : '# APP_TITLE=LibreChat'}
-${config.customWelcome ? `CUSTOM_WELCOME=${config.customWelcome}` : '# CUSTOM_WELCOME='}
-${config.customFooter ? `CUSTOM_FOOTER=${config.customFooter}` : '# CUSTOM_FOOTER='}
+${config.interface?.customWelcome || config.customWelcome ? `CUSTOM_WELCOME=${config.interface?.customWelcome ?? config.customWelcome}` : '# CUSTOM_WELCOME='}
+${config.interface?.customFooter || config.customFooter ? `CUSTOM_FOOTER=${config.interface?.customFooter ?? config.customFooter}` : '# CUSTOM_FOOTER='}
 ${config.helpAndFAQURL ? `HELP_AND_FAQ_URL=${config.helpAndFAQURL}` : '# HELP_AND_FAQ_URL='}
 
 # =============================================================================
@@ -968,7 +968,8 @@ interface:
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome || config.customWelcome ? `
-  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}
+  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}${config.interface?.customFooter || config.customFooter ? `
+  customFooter: "${config.interface?.customFooter || config.customFooter}"` : ''}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration
@@ -1189,8 +1190,8 @@ ${config.redisUseAlternativeDNSLookup !== undefined ? `      REDIS_USE_ALTERNATI
 ${config.domainClient ? `      DOMAIN_CLIENT: \${DOMAIN_CLIENT}` : '      # DOMAIN_CLIENT: ${DOMAIN_CLIENT}'}
 ${config.domainServer ? `      DOMAIN_SERVER: \${DOMAIN_SERVER}` : '      # DOMAIN_SERVER: ${DOMAIN_SERVER}'}
 ${config.appTitle ? `      APP_TITLE: \${APP_TITLE}` : '      # APP_TITLE: ${APP_TITLE}'}
-${config.customWelcome ? `      CUSTOM_WELCOME: \${CUSTOM_WELCOME}` : '      # CUSTOM_WELCOME: ${CUSTOM_WELCOME}'}
-${config.customFooter ? `      CUSTOM_FOOTER: \${CUSTOM_FOOTER}` : '      # CUSTOM_FOOTER: ${CUSTOM_FOOTER}'}
+${config.interface?.customWelcome || config.customWelcome ? `      CUSTOM_WELCOME: \${CUSTOM_WELCOME}` : '      # CUSTOM_WELCOME: ${CUSTOM_WELCOME}'}
+${config.interface?.customFooter || config.customFooter ? `      CUSTOM_FOOTER: \${CUSTOM_FOOTER}` : '      # CUSTOM_FOOTER: ${CUSTOM_FOOTER}'}
 ${config.helpAndFaqUrl ? `      HELP_AND_FAQ_URL: \${HELP_AND_FAQ_URL}` : '      # HELP_AND_FAQ_URL: ${HELP_AND_FAQ_URL}'}
 ${config.noIndex !== undefined ? `      NO_INDEX: \${NO_INDEX}` : '      # NO_INDEX: ${NO_INDEX}'}
       

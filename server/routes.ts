@@ -958,7 +958,8 @@ interface:
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
-  customWelcome: "${config.interface.customWelcome}"` : ''}
+  customWelcome: "${config.interface.customWelcome}"` : ''}${config.interface?.customFooter ? `
+  customFooter: "${config.interface.customFooter}"` : ''}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration

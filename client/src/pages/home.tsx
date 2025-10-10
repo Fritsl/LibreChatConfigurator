@@ -60,12 +60,16 @@ export default function Home() {
     try {
       // ⚠️ REMINDER: Always update version in shared/version.ts when making changes!
       
+      // Create complete configuration by merging current config with ALL defaults
+      // This ensures EVERY field is present in the export for perfect 1:1 backup/restore
+      const completeConfiguration = deepMerge(defaultConfiguration, configuration);
+      
       // Create profile data with configuration and name
       const versionInfo = getVersionInfo();
       const profileData = {
         name: configurationName,
         description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
-        configuration: configuration,
+        configuration: completeConfiguration,
         toolVersion: versionInfo.toolVersion,
         librechatTarget: versionInfo.librechatTarget,
         createdAt: new Date().toISOString(),

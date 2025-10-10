@@ -22,16 +22,20 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.17.4";
+export const TOOL_VERSION = "1.18.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 
+// Configuration Schema Version (for migration tracking)
+export const SCHEMA_VERSION = "1.0.0";
+
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
-  lastUpdated: "2025-10-09",
-  changelog: "UX FIX: Moved Scraper Timeout to Web Scraper section for better organization. Added helpful description explaining timeout applies to all scraper types."
+  schemaVersion: SCHEMA_VERSION,
+  lastUpdated: "2025-10-10",
+  changelog: "ARCHITECTURE: Implemented versioned schema-driven configuration with dynamic defaults generation and migration system for future-proof exports/imports."
 } as const;
 
 // Helper function to get the tool's version string
@@ -45,3 +49,118 @@ export const getVersionInfo = () => VERSION_INFO;
 
 // Legacy helper for backward compatibility (returns tool version)
 export const getVersion = () => TOOL_VERSION;
+
+/**
+ * VERSIONED CONFIGURATION SYSTEM
+ * Export/Import metadata and migration infrastructure
+ */
+
+/**
+ * Export metadata contract - included in every JSON export
+ */
+export interface ExportMetadata {
+  toolVersion: string;          // Version of the configurator that created this export
+  librechatVersion: string;     // Target LibreChat version
+  schemaVersion: string;        // Configuration schema version
+  exportDate: string;           // ISO timestamp of export
+  configurationName?: string;   // Optional configuration name
+}
+
+/**
+ * Import result with conflict detection
+ */
+export interface ImportResult {
+  success: boolean;
+  configuration?: any;
+  metadata?: ExportMetadata;
+  conflicts?: ImportConflict[];
+  warnings?: string[];
+}
+
+/**
+ * Types of conflicts that can occur during import
+ */
+export type ConflictType = 
+  | "missing_field"      // New field in current schema not in import
+  | "removed_field"      // Field in import not in current schema
+  | "renamed_field"      // Field was renamed between versions
+  | "type_mismatch"      // Field type changed between versions
+  | "invalid_value"      // Value doesn't pass validation
+  | "version_mismatch";  // Major version incompatibility
+
+/**
+ * Conflict details for user resolution
+ */
+export interface ImportConflict {
+  type: ConflictType;
+  field: string;
+  message: string;
+  oldValue?: any;
+  newValue?: any;
+  resolution?: "auto" | "manual" | "skip";
+  severity: "error" | "warning" | "info";
+}
+
+/**
+ * Migration definition for schema version upgrades
+ */
+export interface SchemaMigration {
+  fromVersion: string;
+  toVersion: string;
+  description: string;
+  migrate: (config: any) => { config: any; conflicts: ImportConflict[] };
+}
+
+/**
+ * Create export metadata for current version
+ */
+export function createExportMetadata(configurationName?: string): ExportMetadata {
+  return {
+    toolVersion: TOOL_VERSION,
+    librechatVersion: LIBRECHAT_TARGET_VERSION,
+    schemaVersion: SCHEMA_VERSION,
+    exportDate: new Date().toISOString(),
+    configurationName,
+  };
+}
+
+/**
+ * Check if import is compatible with current version
+ */
+export function checkVersionCompatibility(metadata: ExportMetadata): {
+  compatible: boolean;
+  warnings: string[];
+  requiresMigration: boolean;
+} {
+  const warnings: string[] = [];
+  let requiresMigration = false;
+
+  // Check schema version
+  if (metadata.schemaVersion !== SCHEMA_VERSION) {
+    requiresMigration = true;
+    warnings.push(
+      `Configuration was exported with schema v${metadata.schemaVersion}, current is v${SCHEMA_VERSION}. Migration may be required.`
+    );
+  }
+
+  // Check tool version
+  if (metadata.toolVersion !== TOOL_VERSION) {
+    warnings.push(
+      `Configuration was created with configurator v${metadata.toolVersion}, current is v${TOOL_VERSION}.`
+    );
+  }
+
+  // Check LibreChat version
+  if (metadata.librechatVersion !== LIBRECHAT_TARGET_VERSION) {
+    warnings.push(
+      `Configuration targets LibreChat ${metadata.librechatVersion}, current target is ${LIBRECHAT_TARGET_VERSION}.`
+    );
+  }
+
+  // For now, all versions are compatible (we'll add breaking change detection later)
+  return {
+    compatible: true,
+    warnings,
+    requiresMigration,
+  };
+}

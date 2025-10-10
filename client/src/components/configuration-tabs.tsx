@@ -364,10 +364,10 @@ paths:
       label: "FEATURES & INTERFACE",
       tabs: [
         {
-          id: "features",
-          label: "Features",
+          id: "ui-visibility",
+          label: "UI/Visibility",
           icon: Eye,
-          description: "Feature Toggles",
+          description: "Control Interface Elements & Features",
           color: "from-purple-500 to-purple-600",
           settings: ["allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",

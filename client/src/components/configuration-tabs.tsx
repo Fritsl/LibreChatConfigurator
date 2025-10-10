@@ -1863,7 +1863,7 @@ paths:
                       <Alert className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
                         <Info className="h-4 w-4" />
                         <AlertDescription className="text-sm">
-                          <strong>Hide Deprecated Plugins Menu:</strong> To remove the "Plugins (Depreciated)" menu from LibreChat, go to the <strong>Server Configuration</strong> tab and exclude <code className="px-1 py-0.5 bg-muted rounded text-xs">gptPlugins</code> from the <strong>Enabled Endpoints</strong> list. By default, gptPlugins is excluded (use Agents instead).
+                          <strong>Hide Deprecated Plugins Menu:</strong> To remove the "Plugins (Depreciated)" menu from LibreChat, ensure both: (1) <strong>Enable Model Select Interface</strong> is ON (see below), and (2) <strong>Visible Endpoints (UI)</strong> excludes <code className="px-1 py-0.5 bg-muted rounded text-xs">gptPlugins</code>. By default, both settings are configured correctly to hide the deprecated menu (use Agents instead of Plugins).
                         </AlertDescription>
                       </Alert>
                     )}

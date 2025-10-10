@@ -187,7 +187,11 @@ export class FileStorage implements IStorage {
       // Basic Server Configuration
       host: "0.0.0.0",
       port: 3080,
+      enabledEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "agents"],
       debugLogging: false,
+      
+      // Configuration Metadata
+      configurationName: "My LibreChat Configuration",
       
       // Security (empty for security)
       jwtSecret: "",
@@ -238,6 +242,31 @@ export class FileStorage implements IStorage {
       noIndex: true,
       debugConsole: false,
       consoleJSON: false,
+      
+      // Interface Configuration
+      interface: {
+        customWelcome: "",
+        customFooter: "",
+        fileSearch: true,
+        uploadAsText: false,
+        endpointsMenu: true,
+        modelSelect: true,
+        parameters: true,
+        sidePanel: true,
+        presets: true,
+        prompts: true,
+        bookmarks: true,
+        multiConvo: false,
+        agents: true,
+        fileCitations: true,
+        runCode: false,
+        artifacts: true
+      },
+      
+      // Model Specs Configuration
+      modelSpecs: {
+        addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+      },
     };
   }
 
@@ -267,7 +296,11 @@ export class FileStorage implements IStorage {
       // Basic Server Configuration
       host: "0.0.0.0",
       port: 3080,
+      enabledEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "agents"],
       debugLogging: false,
+      
+      // Configuration Metadata
+      configurationName: "Default test",
       
       // Security (empty for security)
       jwtSecret: "",
@@ -313,6 +346,31 @@ export class FileStorage implements IStorage {
       noIndex: true,
       debugConsole: false,
       consoleJSON: false,
+      
+      // Interface Configuration
+      interface: {
+        customWelcome: "Welcome to LibreChat Test",
+        customFooter: "Test Configuration",
+        fileSearch: true,
+        uploadAsText: false,
+        endpointsMenu: true,
+        modelSelect: true,
+        parameters: true,
+        sidePanel: true,
+        presets: true,
+        prompts: true,
+        bookmarks: true,
+        multiConvo: false,
+        agents: true,
+        fileCitations: true,
+        runCode: false,
+        artifacts: true
+      },
+      
+      // Model Specs Configuration
+      modelSpecs: {
+        addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+      },
     };
   }
 

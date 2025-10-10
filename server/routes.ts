@@ -948,6 +948,13 @@ interface:
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
   customWelcome: "${config.interface.customWelcome}"` : ''}
 
+${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
+# Model Specs Configuration
+modelSpecs:
+  list:
+    - addedEndpoints:
+${config.modelSpecs.addedEndpoints.map((endpoint: string) => `        - "${endpoint}"`).join('\n')}
+` : ''}
 ${config.fileConfig ? `
 # File Configuration
 fileConfig:${config.fileConfig.endpoints && Object.keys(config.fileConfig.endpoints).length > 0 ? `

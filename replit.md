@@ -6,6 +6,8 @@ The system implements a full-stack architecture with React frontend, Express bac
 
 **Architecture v1.17.5**: All configuration file generation (ENV, YAML, JSON) is handled server-side as a single source of truth. The preview modal fetches files from the server API rather than duplicating generation logic, ensuring preview and downloaded files are always identical. LibreChatConfigSettings.json version auto-syncs with tool version. Configuration loader uses deep merge to populate new fields for existing users. Welcome Message and Footer Text fields properly integrated into interface object structure. UPDATE MODE optimized: skips service wait time and automatically restarts containers without user prompts - users simply run the .bat/.sh script for instant updates.
 
+**UI Organization**: The UI/Visibility tab is the first tab in the interface, consolidating app title, welcome message, footer text, help URL, and all interface visibility settings in one central location. Technical metadata tooltips display the exact env var/YAML path and target file for each configuration field.
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

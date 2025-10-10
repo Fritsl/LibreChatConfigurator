@@ -54,7 +54,7 @@ export function ConfigurationTabs({
   searchQuery,
   onSearchQueryChange
 }: ConfigurationTabsProps) {
-  const [activeTab, setActiveTab] = useState("server");
+  const [activeTab, setActiveTab] = useState("ui-visibility");
   const { toast } = useToast();
 
   const copyToClipboard = async (content: string, name: string) => {
@@ -186,13 +186,13 @@ paths:
       label: "CORE CONFIGURATION",
       tabs: [
         {
-          id: "app",
-          label: "App Settings",
-          icon: Settings,
-          description: "Title, Welcome, Footer",
-          color: "from-blue-500 to-blue-600",
-          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL"],
-          docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+          id: "ui-visibility",
+          label: "UI/Visibility",
+          icon: Eye,
+          description: "App Title, Welcome, Interface & Features",
+          color: "from-purple-500 to-purple-600",
+          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations", "interface.runCode", "interface.artifacts"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
           id: "server",
@@ -361,20 +361,6 @@ paths:
       ]
     },
     {
-      label: "FEATURES & INTERFACE",
-      tabs: [
-        {
-          id: "ui-visibility",
-          label: "UI/Visibility",
-          icon: Eye,
-          description: "Control Interface Elements & Features",
-          color: "from-purple-500 to-purple-600",
-          settings: ["allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations"],
-          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
-        },
-      ]
-    },
-    {
       label: "SECURITY & LIMITS",
       tabs: [
         {
@@ -433,7 +419,7 @@ paths:
           description: "E2B (Self-Hosted) & LibreChat Code Interpreter (Paid API)",
           color: "from-cyan-500 to-cyan-600",
           settings: [
-            "librechatCodeEnabled", "librechatCodeApiKey", "librechatCodeBaseUrl", "interface.runCode",
+            "librechatCodeEnabled", "librechatCodeApiKey", "librechatCodeBaseUrl",
             "e2bApiKey", "e2bProxyEnabled", "e2bProxyPort", "e2bPublicBaseUrl", "e2bFileTTLDays", "e2bMaxFileSize", "e2bPerUserSandbox"
           ],
           docUrl: "https://www.librechat.ai/docs/features/code_interpreter",
@@ -445,7 +431,7 @@ paths:
           description: "Generative UI - React/HTML/Mermaid Components",
           color: "from-purple-500 to-pink-500",
           settings: [
-            "interface.artifacts", "sandpackBundlerUrl", "endpoints.agents.capabilities"
+            "sandpackBundlerUrl", "endpoints.agents.capabilities"
           ],
           docUrl: "https://www.librechat.ai/docs/features/artifacts",
         },

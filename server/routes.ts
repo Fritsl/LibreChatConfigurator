@@ -1467,7 +1467,7 @@ set -e
 
 # Extract project name from configuration JSON file
 if [ ! -f "LibreChatConfigSettings.json" ]; then
-    echo "❌ ERROR: LibreChatConfigSettings.json not found in current directory"
+    echo "[ERROR] LibreChatConfigSettings.json not found in current directory"
     echo "This file is required to identify the deployment project name."
     echo "Please ensure you're running this script from the extracted deployment folder."
     exit 1
@@ -1477,7 +1477,7 @@ fi
 PROJECT_NAME=\$(grep -o '"configurationName"[[:space:]]*:[[:space:]]*"[^"]*"' LibreChatConfigSettings.json | sed 's/"configurationName"[[:space:]]*:[[:space:]]*"\\(.*\\)"/\\1/' | head -1)
 
 if [ -z "\$PROJECT_NAME" ]; then
-    echo "❌ ERROR: Could not extract 'configurationName' from LibreChatConfigSettings.json"
+    echo "[ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json"
     echo "The configuration file must contain a valid 'configurationName' field."
     echo "This field is used as the deployment identifier to prevent data loss during updates."
     exit 1
@@ -1487,25 +1487,25 @@ fi
 PROJECT_NAME=\$(echo "\$PROJECT_NAME" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | tr '[:upper:]' '[:lower:]')
 export COMPOSE_PROJECT_NAME="\${PROJECT_NAME}"
 
-echo "🚀 Starting LibreChat installation for project: \${PROJECT_NAME}"
-echo "🔖 Docker Compose project name: \${COMPOSE_PROJECT_NAME}"
+echo ">> Starting LibreChat installation for project: \${PROJECT_NAME}"
+echo ">> Docker Compose project name: \${COMPOSE_PROJECT_NAME}"
 echo ""
 
 # Check if Docker is installed
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker is not installed. Please install Docker first."
+    echo "[ERROR] Docker is not installed. Please install Docker first."
     echo "Visit: https://docs.docker.com/get-docker/"
     exit 1
 fi
 
 # Check if Docker Compose is installed
 if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+    echo "[ERROR] Docker Compose is not installed. Please install Docker Compose first."
     echo "Visit: https://docs.docker.com/compose/install/"
     exit 1
 fi
 
-echo "✅ Docker and Docker Compose are installed"
+echo "[OK] Docker and Docker Compose are installed"
 echo ""
 
 # Check for --fresh flag
@@ -1519,66 +1519,67 @@ EXISTING_CONTAINERS=\$(docker ps -a --format '{{.Names}}' | grep -E "^(\${PROJEC
 
 if [ -n "\$EXISTING_CONTAINERS" ]; then
     if [ "\$FRESH_INSTALL" = true ]; then
-        echo "🗑️  FRESH INSTALL MODE - Wiping all existing data..."
-        echo "⚠️  This will DELETE all MongoDB data including Agents!"
+        echo "[FRESH INSTALL] Wiping all existing data..."
+        echo "[WARNING] This will DELETE all MongoDB data including Agents!"
         echo ""
         docker-compose -p "\${COMPOSE_PROJECT_NAME}" down -v
-        echo "✅ Existing containers and volumes removed"
+        echo "[OK] Existing containers and volumes removed"
         echo ""
     else
-        echo "🔄 UPDATE MODE - Existing deployment detected"
-        echo "📦 Preserving: MongoDB data (including Agents) and LibreChat application"
-        echo "🔧 Updating: Configuration files (.env, librechat.yaml, docker-compose.yml)"
+        echo "[UPDATE MODE] Existing deployment detected"
+        echo ">> Preserving: MongoDB data (including Agents) and LibreChat application"
+        echo ">> Updating: Configuration files (.env, librechat.yaml, docker-compose.yml)"
         echo ""
-        echo "💡 To perform a fresh install and wipe all data, run: ./install_dockerimage.sh --fresh"
+        echo "TIP: To perform a fresh install and wipe all data, run: ./install_dockerimage.sh --fresh"
         echo ""
     fi
 else
-    echo "🆕 FRESH INSTALLATION - No existing deployment found"
+    echo "[FRESH INSTALLATION] No existing deployment found"
     echo ""
 fi
 
 # Create necessary directories
-echo "📁 Creating directories..."
+echo ">> Creating directories..."
 mkdir -p logs uploads
 
 # Set permissions
 chmod 755 logs uploads
 
 # Pull Docker images
-echo "📦 Pulling Docker images..."
+echo ">> Pulling Docker images..."
 docker-compose -p "\${COMPOSE_PROJECT_NAME}" pull
 
 # Start services
-echo "🔄 Starting LibreChat services..."
+echo ">> Starting LibreChat services..."
 docker-compose -p "\${COMPOSE_PROJECT_NAME}" up -d
 
 # Wait for services to be ready
-echo "⏳ Waiting for services to start..."
+echo ">> Waiting for services to start..."
 sleep 30
 
 # Check if services are running
-echo "🔍 Checking service health..."
+echo ">> Checking service health..."
 if docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps | grep -q "Up"; then
-    echo "✅ LibreChat is running successfully!"
+    echo "[OK] LibreChat is running successfully!"
     echo ""
-    echo "🌐 Access your LibreChat instance at:"
+    echo "Access your LibreChat instance at:"
     echo "   http://localhost:${config.port}"
     echo ""
-    echo "📊 Service status:"
+    echo "Service status:"
     docker-compose -p "\${COMPOSE_PROJECT_NAME}" ps
     echo ""
-    echo "📝 To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
-    echo "🛑 To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
-    echo "🔄 To restart: docker-compose -p \${COMPOSE_PROJECT_NAME} restart"
+    echo "Commands:"
+    echo "  To view logs: docker-compose -p \${COMPOSE_PROJECT_NAME} logs -f"
+    echo "  To stop: docker-compose -p \${COMPOSE_PROJECT_NAME} down"
+    echo "  To restart: docker-compose -p \${COMPOSE_PROJECT_NAME} restart"
 else
-    echo "❌ Some services failed to start. Check logs:"
+    echo "[ERROR] Some services failed to start. Check logs:"
     docker-compose -p "\${COMPOSE_PROJECT_NAME}" logs
     exit 1
 fi
 
 echo ""
-echo "🎉 Installation complete! Enjoy using LibreChat!"
+echo "Installation complete! Enjoy using LibreChat!"
 `;
 }
 
@@ -1591,7 +1592,7 @@ REM ============================================================================
 
 REM Check if configuration JSON exists
 if not exist "LibreChatConfigSettings.json" (
-    echo ❌ ERROR: LibreChatConfigSettings.json not found in current directory
+    echo [ERROR] LibreChatConfigSettings.json not found in current directory
     echo This file is required to identify the deployment project name.
     echo Please ensure you're running this script from the extracted deployment folder.
     pause
@@ -1604,7 +1605,7 @@ set /p PROJECT_NAME=<temp_project_name.txt
 del temp_project_name.txt
 
 if "%PROJECT_NAME%"=="" (
-    echo ❌ ERROR: Could not extract 'configurationName' from LibreChatConfigSettings.json
+    echo [ERROR] Could not extract 'configurationName' from LibreChatConfigSettings.json
     echo The configuration file must contain a valid 'configurationName' field.
     echo This field is used as the deployment identifier to prevent data loss during updates.
     pause
@@ -1614,14 +1615,14 @@ if "%PROJECT_NAME%"=="" (
 REM Set COMPOSE_PROJECT_NAME for Docker Compose
 set COMPOSE_PROJECT_NAME=%PROJECT_NAME%
 
-echo 🚀 Starting LibreChat installation for project: %PROJECT_NAME%
-echo 🔖 Docker Compose project name: %COMPOSE_PROJECT_NAME%
+echo ^>^> Starting LibreChat installation for project: %PROJECT_NAME%
+echo ^>^> Docker Compose project name: %COMPOSE_PROJECT_NAME%
 echo.
 
 REM Check if Docker is installed
 docker --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Docker is not installed. Please install Docker first.
+    echo [ERROR] Docker is not installed. Please install Docker first.
     echo Visit: https://docs.docker.com/get-docker/
     pause
     exit /b 1
@@ -1630,13 +1631,13 @@ if errorlevel 1 (
 REM Check if Docker Compose is installed
 docker-compose --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Docker Compose is not installed. Please install Docker Compose first.
+    echo [ERROR] Docker Compose is not installed. Please install Docker Compose first.
     echo Visit: https://docs.docker.com/compose/install/
     pause
     exit /b 1
 )
 
-echo ✅ Docker and Docker Compose are installed
+echo [OK] Docker and Docker Compose are installed
 echo.
 
 REM Check for --fresh flag
@@ -1652,69 +1653,70 @@ if not errorlevel 1 set CONTAINER_FOUND=true
 
 if "%CONTAINER_FOUND%"=="true" (
     if "%FRESH_INSTALL%"=="true" (
-        echo 🗑️  FRESH INSTALL MODE - Wiping all existing data...
-        echo ⚠️  This will DELETE all MongoDB data including Agents!
+        echo [FRESH INSTALL] Wiping all existing data...
+        echo [WARNING] This will DELETE all MongoDB data including Agents!
         echo.
         docker-compose -p %COMPOSE_PROJECT_NAME% down -v
-        echo ✅ Existing containers and volumes removed
+        echo [OK] Existing containers and volumes removed
         echo.
     ) else (
-        echo 🔄 UPDATE MODE - Existing deployment detected
-        echo 📦 Preserving: MongoDB data (including Agents^) and LibreChat application
-        echo 🔧 Updating: Configuration files (.env, librechat.yaml, docker-compose.yml^)
+        echo [UPDATE MODE] Existing deployment detected
+        echo ^>^> Preserving: MongoDB data (including Agents^) and LibreChat application
+        echo ^>^> Updating: Configuration files (.env, librechat.yaml, docker-compose.yml^)
         echo.
-        echo 💡 To perform a fresh install and wipe all data, run: install_dockerimage.bat --fresh
+        echo TIP: To perform a fresh install and wipe all data, run: install_dockerimage.bat --fresh
         echo.
     )
 ) else (
-    echo 🆕 FRESH INSTALLATION - No existing deployment found
+    echo [FRESH INSTALLATION] No existing deployment found
     echo.
 )
 
 REM Create necessary directories
-echo 📁 Creating directories...
+echo ^>^> Creating directories...
 if not exist "logs" mkdir logs
 if not exist "uploads" mkdir uploads
 echo.
 
 REM Pull Docker images
-echo 📦 Pulling Docker images...
+echo ^>^> Pulling Docker images...
 docker-compose -p %COMPOSE_PROJECT_NAME% pull
 echo.
 
 REM Start services
-echo 🔄 Starting LibreChat services...
+echo ^>^> Starting LibreChat services...
 docker-compose -p %COMPOSE_PROJECT_NAME% up -d
 echo.
 
 REM Wait for services to be ready
-echo ⏳ Waiting for services to start...
+echo ^>^> Waiting for services to start...
 timeout /t 30 /nobreak >nul
 echo.
 
 REM Check if services are running
-echo 🔍 Checking service health...
+echo ^>^> Checking service health...
 docker-compose -p %COMPOSE_PROJECT_NAME% ps | findstr "Up" >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Some services failed to start. Check logs:
+    echo [ERROR] Some services failed to start. Check logs:
     docker-compose -p %COMPOSE_PROJECT_NAME% logs
     pause
     exit /b 1
 )
 
-echo ✅ LibreChat is running successfully!
+echo [OK] LibreChat is running successfully!
 echo.
-echo 🌐 Access your LibreChat instance at:
+echo Access your LibreChat instance at:
 echo    http://localhost:${config.port}
 echo.
-echo 📊 Service status:
+echo Service status:
 docker-compose -p %COMPOSE_PROJECT_NAME% ps
 echo.
-echo 📝 To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
-echo 🛑 To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
-echo 🔄 To restart: docker-compose -p %COMPOSE_PROJECT_NAME% restart
+echo Commands:
+echo   To view logs: docker-compose -p %COMPOSE_PROJECT_NAME% logs -f
+echo   To stop: docker-compose -p %COMPOSE_PROJECT_NAME% down
+echo   To restart: docker-compose -p %COMPOSE_PROJECT_NAME% restart
 echo.
-echo 🎉 Installation complete! Enjoy using LibreChat!
+echo Installation complete! Enjoy using LibreChat!
 echo.
 pause
 `;
@@ -1726,16 +1728,16 @@ function generateInstallationReadme(config: any): string {
 
 PROJECT IDENTIFICATION SYSTEM
 ------------------------------
-⚠️ IMPORTANT: This installation package uses the CONFIGURATION NAME from 
+IMPORTANT: This installation package uses the CONFIGURATION NAME from 
 LibreChatConfigSettings.json as the project identifier, NOT the folder name.
 
 Current Configuration Name: "${config.configurationName}"
 
 This means:
-✅ Folder can be renamed without breaking updates
-✅ Windows re-downloads (with "(1)" suffix) work correctly  
-✅ Same configuration always updates the same deployment
-✅ Project identity persists across file operations
+- Folder can be renamed without breaking updates
+- Windows re-downloads (with "(1)" suffix) work correctly  
+- Same configuration always updates the same deployment
+- Project identity persists across file operations
 
 Multiple LibreChat instances can coexist on the same machine with different 
 configuration names.
@@ -1747,21 +1749,21 @@ The installation scripts automatically detect existing deployments by reading
 the configuration name from LibreChatConfigSettings.json:
 
 1. IF NO EXISTING DEPLOYMENT IS FOUND:
-   → Fresh installation with new MongoDB and LibreChat
-   → All containers created from scratch
+   - Fresh installation with new MongoDB and LibreChat
+   - All containers created from scratch
 
 2. IF EXISTING DEPLOYMENT WITH SAME NAME EXISTS:
-   → UPDATE MODE (default behavior)
-   → Preserves: MongoDB data (including AI Agents), LibreChat application
-   → Updates: Configuration files (.env, librechat.yaml, docker-compose.yml)
-   → Shows message: "🔄 UPDATE MODE - Only appending/merging configuration"
+   - UPDATE MODE (default behavior)
+   - Preserves: MongoDB data (including AI Agents), LibreChat application
+   - Updates: Configuration files (.env, librechat.yaml, docker-compose.yml)
+   - Shows message: "[UPDATE MODE] Only appending/merging configuration"
 
 3. TO FORCE FRESH INSTALLATION (WIPE ALL DATA):
-   → Run with --fresh flag
-   → Deletes: All containers, volumes, and MongoDB data (including Agents)
-   → Shows warning before proceeding
+   - Run with --fresh flag
+   - Deletes: All containers, volumes, and MongoDB data (including Agents)
+   - Shows warning before proceeding
 
-⚠️ CRITICAL: LibreChatConfigSettings.json must exist in the same directory 
+CRITICAL: LibreChatConfigSettings.json must exist in the same directory 
 as the install script, and must contain a valid 'configurationName' field.
 
 INSTALLATION COMMANDS
@@ -1794,10 +1796,10 @@ This enables parallel workflows:
 CONTAINER NAMING
 -----------------
 All containers are prefixed with your sanitized configuration name:
-- Config: "Client ACME Corp" → Containers: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
-- Config: "Testing Environment" → Containers: testing-environment-librechat-1, testing-environment-mongodb-1
+- Config: "Client ACME Corp" becomes: client-acme-corp-librechat-1, client-acme-corp-mongodb-1
+- Config: "Testing Environment" becomes: testing-environment-librechat-1, testing-environment-mongodb-1
 
-The configuration name is sanitized: lowercase, special chars → hyphens
+The configuration name is sanitized: lowercase, special chars replaced with hyphens
 
 ACCESS YOUR INSTANCE
 --------------------
@@ -1828,7 +1830,7 @@ function generateReadmeFile(config: any): string {
 
 This package contains a complete LibreChat v0.8.0-RC4 installation with your custom configuration (using configuration schema v${config.version}).
 
-## 📋 Package Contents
+## Package Contents
 
 - \`.env\` - Environment variables configuration
 - \`librechat.yaml\` - Main LibreChat configuration file
@@ -1838,7 +1840,7 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - \`LibreChatConfigSettings.json\` - Configuration profile for easy re-import
 - \`README.md\` - This documentation file
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **Prerequisites**
    - Docker and Docker Compose installed
@@ -1862,7 +1864,7 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
    - Open your browser to: http://localhost:${config.port}
    - Register an account (${config.allowRegistration ? 'enabled' : 'disabled'})
 
-## ⚙️ Configuration Summary
+## Configuration Summary
 
 ### Core Settings
 - **LibreChat Version**: v0.8.0-RC4
@@ -1877,18 +1879,18 @@ This package contains a complete LibreChat v0.8.0-RC4 installation with your cus
 - **Parameters UI**: ${config.interface?.parameters !== false ? 'Visible' : 'Hidden'}
 
 ### Features Enabled
-${config.interface?.agents !== false ? '- ✅ AI Agents' : '- ❌ AI Agents'}
-${config.interface?.webSearch !== false ? '- ✅ Web Search' : '- ❌ Web Search'}
-${config.interface?.fileSearch !== false ? '- ✅ File Search' : '- ❌ File Search'}
-${config.interface?.presets !== false ? '- ✅ Presets' : '- ❌ Presets'}
-${config.interface?.prompts !== false ? '- ✅ Custom Prompts' : '- ❌ Custom Prompts'}
-${config.interface?.bookmarks !== false ? '- ✅ Bookmarks' : '- ❌ Bookmarks'}
-${config.memoryEnabled !== false ? '- ✅ Memory System' : '- ❌ Memory System'}
-${config.interface?.artifacts !== false ? '- ✅ Artifacts (Generative UI)' : '- ❌ Artifacts'}
-${config.interface?.runCode !== false ? '- ✅ Code Interpreter UI' : '- ❌ Code Interpreter UI'}
+${config.interface?.agents !== false ? '- [ENABLED] AI Agents' : '- [DISABLED] AI Agents'}
+${config.interface?.webSearch !== false ? '- [ENABLED] Web Search' : '- [DISABLED] Web Search'}
+${config.interface?.fileSearch !== false ? '- [ENABLED] File Search' : '- [DISABLED] File Search'}
+${config.interface?.presets !== false ? '- [ENABLED] Presets' : '- [DISABLED] Presets'}
+${config.interface?.prompts !== false ? '- [ENABLED] Custom Prompts' : '- [DISABLED] Custom Prompts'}
+${config.interface?.bookmarks !== false ? '- [ENABLED] Bookmarks' : '- [DISABLED] Bookmarks'}
+${config.memoryEnabled !== false ? '- [ENABLED] Memory System' : '- [DISABLED] Memory System'}
+${config.interface?.artifacts !== false ? '- [ENABLED] Artifacts (Generative UI)' : '- [DISABLED] Artifacts'}
+${config.interface?.runCode !== false ? '- [ENABLED] Code Interpreter UI' : '- [DISABLED] Code Interpreter UI'}
 ${config.interface?.artifacts !== false ? `
 
-### 🎨 Artifacts Configuration (Generative UI)
+### Artifacts Configuration (Generative UI)
 
 Artifacts are **ENABLED** in your configuration. This feature allows AI to generate interactive:
 - **React Components**: Dynamic UI elements with state and interactivity
@@ -1903,7 +1905,7 @@ ${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "ac
     "execute_code": "Execute Code",
     "tools": "Tools"
   };
-  return `- ✅ ${labels[cap] || cap}`;
+  return `- [ENABLED] ${labels[cap] || cap}`;
 }).join('\n')}
 
 #### Sandpack Bundler
@@ -1913,7 +1915,7 @@ ${config.sandpackBundlerUrl ? `- **Mode**: Self-Hosted (Privacy/Compliance)
 - **Provider**: CodeSandbox (https://*.codesandbox.io)
 - **Note**: Code is bundled via CodeSandbox's public CDN`}
 
-#### ⚠️ Content Security Policy (CSP) Requirements
+#### Content Security Policy (CSP) Requirements
 
 If you're using a **reverse proxy** (nginx, Traefik, Caddy) or have **strict CSP headers**, you MUST allow:
 
@@ -1994,9 +1996,9 @@ The main configuration file controls:
 A complete configuration profile that can be re-imported into the LibreChat Configuration Interface:
 - Full configuration backup
 - Easy re-loading for future modifications
-- Compatible with the Profile → Import Profile feature
+- Compatible with the Profile > Import Profile feature
 
-## 🐳 Docker Commands
+## Docker Commands
 
 ### Basic Operations
 \`\`\`bash
@@ -2037,7 +2039,7 @@ docker system prune -f
 4. **Network Access**: Configure firewall rules for production use
 5. **HTTPS**: Use a reverse proxy with SSL/TLS in production
 
-## 🌐 Production Deployment
+## Production Deployment
 
 For production use, consider:
 
@@ -2205,9 +2207,9 @@ async function simulateRailwayDeployment(deployment: any): Promise<void> {
       "Configuring environment variables...",
       "Deploying to Railway...",
       "Allocating resources...",
-      "✅ Deployment successful!",
-      `🌐 Public URL: ${publicUrl}`,
-      `🔑 Admin access: ${publicUrl}/admin`
+      "[OK] Deployment successful!",
+      `Public URL: ${publicUrl}`,
+      `Admin access: ${publicUrl}/admin`
     ]
   });
 }
@@ -2295,7 +2297,7 @@ async function cleanupCloudDeployment(deployment: any): Promise<void> {
       status: "stopped",
       deploymentLogs: [
         ...deployment.deploymentLogs,
-        "🛑 Deployment stopped",
+        "[STOPPED] Deployment stopped",
         "Cleaning up resources..."
       ]
     });

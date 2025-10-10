@@ -1,10 +1,10 @@
 # Overview
 
-This project (v1.17.5) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 80+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
+This project (v1.18.0) is a comprehensive web-based configuration interface for LibreChat v0.8.0-rc4, designed to provide a professional, modern UI for managing all 80+ configuration settings. The application allows users to configure LibreChat settings through an intuitive interface and generate complete installation packages including environment files, YAML configurations, and deployment scripts with proper Docker Compose environment variable passthrough.
 
 The system implements a full-stack architecture with React frontend, Express backend, and Drizzle ORM for data persistence. It features a tabbed configuration interface with real-time validation, configuration profile management, and package generation capabilities. Web search configuration strictly follows official LibreChat RC4 documentation, supporting only tested and documented providers: Serper (API-based search) and SearXNG (external instance). Firecrawl scraper includes comprehensive advanced configuration options (formats, content filtering, performance settings, privacy controls) with optimal defaults applied automatically.
 
-**Architecture v1.17.5**: All configuration file generation (ENV, YAML, JSON) is handled server-side as a single source of truth. The preview modal fetches files from the server API rather than duplicating generation logic, ensuring preview and downloaded files are always identical. LibreChatConfigSettings.json version auto-syncs with tool version. Configuration loader uses deep merge to populate new fields for existing users. Welcome Message and Footer Text fields properly integrated into interface object structure. UPDATE MODE optimized: skips service wait time and automatically restarts containers without user prompts - users simply run the .bat/.sh script for instant updates.
+**Architecture v1.18.0 - Versioned Configuration System**: Introduced schema-driven configuration management with automatic version tracking and migration support. Every JSON export now includes structured metadata (tool version, schema version, LibreChat target, timestamp) enabling forward compatibility. Dynamic schema defaults generator automatically includes new fields as LibreChat evolves, eliminating hardcoded defaults. Import system detects version mismatches and displays compatibility warnings. All configuration file generation (ENV, YAML, JSON) handled server-side as single source of truth. Configuration loader uses deep merge to populate new fields for existing users. UPDATE MODE optimized: skips service wait time and automatically restarts containers without user prompts.
 
 **UI Organization**: The UI/Visibility tab is the first tab in the interface, consolidating app title, welcome message, footer text, help URL, and all interface visibility settings in one central location. A yellow warning alert at the top explains the LibreChat RC4 bug with modelSpecs.addedEndpoints and advises keeping it OFF. Technical metadata is displayed in clickable popovers (click the info icon) showing the exact env var/YAML path and target file for each configuration field.
 
@@ -51,6 +51,42 @@ Preferred communication style: Simple, everyday language.
 - **Profile System**: Save and load configuration profiles with versioning support
 - **Real-time Validation**: Client and server-side validation with detailed error reporting
 - **Auto-Persistence**: Configuration automatically saved to browser localStorage to prevent data loss on page refresh, tab close, or screen lock
+
+## Versioned Configuration System (v1.18.0+)
+**Future-Proof Architecture**: Eliminates reliance on hardcoded defaults through dynamic schema-driven generation.
+
+### Export Metadata
+Every JSON export includes structured version metadata:
+- **toolVersion**: Configurator version that created the export (e.g., "1.18.0")
+- **librechatVersion**: Target LibreChat version (e.g., "0.8.0-rc4")
+- **schemaVersion**: Configuration schema version for migration tracking (e.g., "1.0.0")
+- **exportDate**: ISO timestamp of export creation
+- **configurationName**: Optional name for identification
+
+### Dynamic Schema Defaults
+- **Automatic Field Detection**: New fields added to LibreChat RC4+ are automatically included in exports
+- **Zod Schema Walking**: Recursively generates defaults from schema definitions (objects, arrays, enums, optionals)
+- **Explicit Overrides**: Applies user-friendly defaults for better UX (e.g., cache enabled, memory disabled)
+- **Cached Generation**: Generates defaults once, returns copies to prevent mutations
+
+### Import Compatibility Checking
+- **Version Detection**: Imports automatically check for tool, schema, and LibreChat version mismatches
+- **Warning System**: Displays non-intrusive warnings when importing configs from different versions
+- **Graceful Degradation**: All versions remain compatible; new fields use defaults if missing from old exports
+- **Future Migration Support**: Infrastructure ready for schema migrations when breaking changes occur
+
+### Benefits
+1. **No Stale Defaults**: System automatically adapts as LibreChat adds new configuration fields
+2. **Complete Backups**: Exports always include ALL fields (100+ vs old 51), ensuring 1:1 restore capability
+3. **Version Transparency**: Users see exactly which versions created each export
+4. **Forward Compatible**: Configurations can be safely moved between configurator versions
+5. **Migration Ready**: Infrastructure in place to handle future breaking changes with conflict resolution
+
+### Technical Implementation
+- **shared/version.ts**: Central version management and metadata contract
+- **shared/schema-defaults.ts**: Dynamic defaults generator from Zod schemas
+- **client/src/pages/home.tsx**: Export/import with version checking
+- **Backward Compatible**: Legacy exports without metadata still work; new exports include both old and new metadata structures
 
 ## Data Storage Solutions
 - **Current**: Memory-based storage using Map data structures

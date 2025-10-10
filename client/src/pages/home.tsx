@@ -368,13 +368,31 @@ export default function Home() {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           try {
             const profileData = JSON.parse(event.target?.result as string);
             
             // Validate configuration structure
             if (!profileData.configuration) {
               throw new Error("Invalid configuration format: missing configuration data");
+            }
+
+            // ✨ NEW: Check version compatibility if metadata exists
+            if (profileData.metadata) {
+              const { checkVersionCompatibility } = await import("@shared/version");
+              const compatibility = checkVersionCompatibility(profileData.metadata);
+              
+              if (compatibility.warnings.length > 0) {
+                console.log("⚠️ [VERSION CHECK] Import compatibility warnings:");
+                compatibility.warnings.forEach(w => console.log(`   - ${w}`));
+                
+                // Show version warning toast
+                toast({
+                  title: "⚠️ Version Mismatch Detected",
+                  description: compatibility.warnings[0], // Show first warning
+                  variant: "default",
+                });
+              }
             }
 
             // Collect imported field names for display

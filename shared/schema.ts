@@ -100,6 +100,15 @@ const interfaceSchema = z.object({
   artifacts: z.boolean().default(true), // Show artifacts UI for generative React/HTML/Mermaid components
 }).optional();
 
+// Model Specs Configuration - Controls which endpoints are visible in UI
+const modelSpecsSchema = z.object({
+  addedEndpoints: z.array(z.enum([
+    "openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents",
+    "groq", "openRouter", "mistral", "xAI", "perplexity", "deepseek",
+    "bedrock", "cohere", "ollama", "localAI", "gptPlugins"
+  ])).default(["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]),
+}).optional();
+
 // Registration Configuration
 const registrationSchema = z.object({
   socialLogins: z.array(z.enum([
@@ -378,6 +387,7 @@ export const configurationSchema = z.object({
   
   // Configuration objects
   interface: interfaceSchema,
+  modelSpecs: modelSpecsSchema,
   fileConfig: fileConfigSchema,
   rateLimits: rateLimitsSchema,
   registration: registrationSchema,

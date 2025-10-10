@@ -186,4 +186,8 @@ export const defaultConfiguration: Configuration = {
     runCode: false,
     artifacts: true
   },
+  
+  modelSpecs: {
+    addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+  },
 };

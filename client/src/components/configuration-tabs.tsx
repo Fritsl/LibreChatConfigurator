@@ -193,7 +193,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations", "interface.runCode", "interface.artifacts"],
+          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations", "interface.runCode", "interface.artifacts"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -1555,7 +1555,20 @@ paths:
       "interface.termsOfService.modalTitle": { type: "text", description: "Terms modal title", label: "Terms Modal Title", technical: { yamlPath: "interface.termsOfService.modalTitle", configFile: "librechat.yaml" } },
       "interface.termsOfService.modalContent": { type: "textarea", description: "Terms modal content", label: "Terms Modal Content", technical: { yamlPath: "interface.termsOfService.modalContent", configFile: "librechat.yaml" } },
       "interface.endpointsMenu": { type: "boolean", description: "Show endpoints menu", label: "Endpoints Menu", technical: { yamlPath: "interface.endpointsMenu", configFile: "librechat.yaml" } },
-      "interface.modelSelect": { type: "boolean", description: "Show model selection", label: "Model Select", technical: { yamlPath: "interface.modelSelect", configFile: "librechat.yaml" } },
+      "interface.modelSelect": { 
+        type: "boolean", 
+        description: "Enable custom model selection interface. When enabled with 'Visible Endpoints', only the specified endpoints will appear in the UI (this is the proper way to hide deprecated Plugins menu).", 
+        label: "Enable Model Select Interface", 
+        technical: { yamlPath: "interface.modelSelect", configFile: "librechat.yaml" } 
+      },
+      "modelSpecs.addedEndpoints": { 
+        type: "array", 
+        description: "Select which endpoints are visible in the LibreChat UI. Works with 'Enable Model Select Interface' to control the model picker menu. Excluding gptPlugins removes the deprecated 'Plugins' menu.", 
+        label: "Visible Endpoints (UI)", 
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/model_specs",
+        docSection: "Model Specs",
+        technical: { yamlPath: "modelSpecs.addedEndpoints", configFile: "librechat.yaml" } 
+      },
       "interface.parameters": { type: "boolean", description: "Show parameters panel", label: "Parameters Panel", technical: { yamlPath: "interface.parameters", configFile: "librechat.yaml" } },
       "interface.sidePanel": { type: "boolean", description: "Show side panel", label: "Side Panel", technical: { yamlPath: "interface.sidePanel", configFile: "librechat.yaml" } },
       "interface.presets": { type: "boolean", description: "Show presets", label: "Presets", technical: { yamlPath: "interface.presets", configFile: "librechat.yaml" } },

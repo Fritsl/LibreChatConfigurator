@@ -620,6 +620,11 @@ paths:
       min?: number;
       max?: number;
       step?: number;
+      technical?: {
+        envVar?: string;
+        yamlPath?: string;
+        configFile: ".env" | "librechat.yaml" | ".env & librechat.yaml";
+      };
     }> = {
       // App Settings
       appTitle: { 
@@ -627,14 +632,22 @@ paths:
         description: "Sets the custom application title displayed in the browser tab and header. This overrides the default 'LibreChat' branding with your preferred name.", 
         label: "App Title",
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#application-domains",
-        docSection: "App Settings"
+        docSection: "App Settings",
+        technical: {
+          envVar: "APP_TITLE",
+          configFile: ".env"
+        }
       },
       helpAndFAQURL: { 
         type: "text", 
         description: "URL to your help documentation or FAQ page. This creates a help link in the interface for user support.", 
         label: "Help & FAQ URL",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
-        docSection: "Interface Config"
+        docSection: "Interface Config",
+        technical: {
+          envVar: "HELP_AND_FAQ_URL",
+          configFile: ".env"
+        }
       },
       
       // Server
@@ -1803,6 +1816,7 @@ paths:
                             docSection={fieldInfo.docSection}
                             type={fieldInfo.type}
                             value={emailCompositeValue}
+                            technical={fieldInfo.technical}
                             onChange={(emailData) => {
                               // Spread composite object back into individual flat fields
                               // Explicitly clear inactive provider fields based on serviceType from emailData
@@ -1870,6 +1884,7 @@ paths:
                               onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                               options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
                               data-testid={`input-${setting}`}
+                              technical={fieldInfo.technical}
                             />
                           </div>
                         );
@@ -1896,6 +1911,7 @@ paths:
                               onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                               options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
                               data-testid={`input-${setting}`}
+                              technical={fieldInfo.technical}
                             />
                           </div>
                         );
@@ -1912,6 +1928,7 @@ paths:
                             docSection={fieldInfo.docSection}
                             type={fieldInfo.type}
                             value={getNestedValue(configuration, setting) || false}
+                            technical={fieldInfo.technical}
                             onChange={(value) => {
                               const updates: any = { e2bProxyEnabled: value };
                               
@@ -1951,6 +1968,7 @@ paths:
                           onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
                           options={fieldInfo.type === 'select' ? getSelectOptions(setting) : fieldInfo.options}
                           data-testid={`input-${setting}`}
+                          technical={fieldInfo.technical}
                         />
                       );
                     })}

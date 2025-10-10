@@ -34,6 +34,11 @@ interface SettingInputProps {
   step?: number;
   fieldName?: string;
   "data-testid"?: string;
+  technical?: {
+    envVar?: string;
+    yamlPath?: string;
+    configFile: ".env" | "librechat.yaml" | ".env & librechat.yaml";
+  };
 }
 
 export function SettingInput({
@@ -51,6 +56,7 @@ export function SettingInput({
   step,
   fieldName,
   "data-testid": testId,
+  technical,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
@@ -416,6 +422,16 @@ export function SettingInput({
             <TooltipContent className="max-w-sm">
               <div className="space-y-3">
                 <p className="text-sm">{description}</p>
+                {technical && (
+                  <div className="border-t pt-2">
+                    <p className="text-xs font-mono text-muted-foreground">
+                      {technical.envVar && `→ Sets ${technical.envVar}`}
+                      {technical.yamlPath && `→ Sets ${technical.yamlPath}`}
+                      {' in '}
+                      <span className="font-semibold">{technical.configFile}</span>
+                    </p>
+                  </div>
+                )}
                 {docUrl && (
                   <div className="border-t pt-2">
                     <Button

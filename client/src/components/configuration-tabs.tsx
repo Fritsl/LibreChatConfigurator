@@ -447,6 +447,20 @@ paths:
           docUrl: "https://www.librechat.ai/docs/features/artifacts",
         },
         {
+          id: "memory",
+          label: "Memory",
+          icon: Brain,
+          description: "Conversation Memory & Personalization",
+          color: "from-indigo-500 to-purple-600",
+          settings: [
+            "memory.disabled", "memory.personalize", "memory.validKeys", "memory.tokenLimit", "memory.messageWindowSize",
+            "memory.agent.id", "memory.agent.provider", "memory.agent.model", "memory.agent.instructions",
+            "memory.agent.model_parameters.temperature", "memory.agent.model_parameters.max_tokens",
+            "memory.agent.model_parameters.top_p", "memory.agent.model_parameters.frequency_penalty"
+          ],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        },
+        {
           id: "users",
           label: "Users",
           icon: FileText,
@@ -1713,6 +1727,122 @@ paths:
         docUrl: "https://www.librechat.ai/docs/features/artifacts",
         docSection: "Artifacts",
         technical: { envVar: "SANDPACK_BUNDLER_URL", configFile: ".env" }
+      },
+      
+      // Memory Configuration
+      "memory.disabled": {
+        type: "boolean",
+        description: "Disable conversation memory functionality. When enabled (checked), memory features are turned OFF and conversations won't be remembered. Default: ON (memory disabled).",
+        label: "Disable Memory System",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory",
+        technical: { yamlPath: "memory.disabled", configFile: "librechat.yaml" }
+      },
+      "memory.personalize": {
+        type: "boolean",
+        description: "Allow users to opt in/out of memory features via chat interface toggle. When OFF, memory is completely disabled regardless of user preference. Default: OFF (no personalization).",
+        label: "Enable User Personalization Toggle",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory",
+        technical: { yamlPath: "memory.personalize", configFile: "librechat.yaml" }
+      },
+      "memory.validKeys": {
+        type: "array",
+        description: "Specify which keys are valid for memory storage (e.g., 'user_preferences', 'conversation_context', 'personal_info'). Controls what types of information can be stored. Leave empty for no restrictions.",
+        label: "Valid Memory Keys",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory",
+        technical: { yamlPath: "memory.validKeys", configFile: "librechat.yaml" }
+      },
+      "memory.tokenLimit": {
+        type: "number",
+        description: "Maximum tokens for memory storage and processing. Controls memory usage and costs. Leave empty for no limit.",
+        label: "Token Limit",
+        placeholder: "2000",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory",
+        technical: { yamlPath: "memory.tokenLimit", configFile: "librechat.yaml" }
+      },
+      "memory.messageWindowSize": {
+        type: "number",
+        description: "Number of recent messages to include in memory context window. Default: 5 messages.",
+        label: "Message Window Size",
+        placeholder: "5",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory",
+        technical: { yamlPath: "memory.messageWindowSize", configFile: "librechat.yaml" }
+      },
+      "memory.agent.id": {
+        type: "text",
+        description: "Reference to existing agent by ID for memory processing. Alternative to configuring a custom agent below.",
+        label: "Agent ID (Reference)",
+        placeholder: "memory-agent-001",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent",
+        technical: { yamlPath: "memory.agent.id", configFile: "librechat.yaml" }
+      },
+      "memory.agent.provider": {
+        type: "text",
+        description: "AI provider for memory agent (e.g., 'openAI', 'anthropic', 'google'). Required for custom agent configuration.",
+        label: "Agent Provider",
+        placeholder: "openAI",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent",
+        technical: { yamlPath: "memory.agent.provider", configFile: "librechat.yaml" }
+      },
+      "memory.agent.model": {
+        type: "text",
+        description: "Model to use for memory processing (e.g., 'gpt-4', 'claude-3-sonnet'). Required for custom agent configuration.",
+        label: "Agent Model",
+        placeholder: "gpt-4",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent",
+        technical: { yamlPath: "memory.agent.model", configFile: "librechat.yaml" }
+      },
+      "memory.agent.instructions": {
+        type: "textarea",
+        description: "Custom instructions for memory handling. Replaces default instructions. Should specify when to set/delete memory, especially with validKeys.",
+        label: "Agent Instructions",
+        placeholder: "Store memory using only the specified validKeys...",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent",
+        technical: { yamlPath: "memory.agent.instructions", configFile: "librechat.yaml" }
+      },
+      "memory.agent.model_parameters.temperature": {
+        type: "number",
+        description: "Temperature for memory agent (0-2). Lower = more focused. Recommended: 0.2-0.3 for consistent memory handling.",
+        label: "Temperature",
+        placeholder: "0.2",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent Parameters",
+        technical: { yamlPath: "memory.agent.model_parameters.temperature", configFile: "librechat.yaml" }
+      },
+      "memory.agent.model_parameters.max_tokens": {
+        type: "number",
+        description: "Maximum tokens for agent responses. Controls memory update verbosity.",
+        label: "Max Tokens",
+        placeholder: "1500",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent Parameters",
+        technical: { yamlPath: "memory.agent.model_parameters.max_tokens", configFile: "librechat.yaml" }
+      },
+      "memory.agent.model_parameters.top_p": {
+        type: "number",
+        description: "Top P for nucleus sampling (0-1). Controls randomness in memory decisions.",
+        label: "Top P",
+        placeholder: "0.8",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent Parameters",
+        technical: { yamlPath: "memory.agent.model_parameters.top_p", configFile: "librechat.yaml" }
+      },
+      "memory.agent.model_parameters.frequency_penalty": {
+        type: "number",
+        description: "Frequency penalty (-2 to 2). Reduces repetition in memory updates.",
+        label: "Frequency Penalty",
+        placeholder: "0.1",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/memory",
+        docSection: "Memory Agent Parameters",
+        technical: { yamlPath: "memory.agent.model_parameters.frequency_penalty", configFile: "librechat.yaml" }
       },
       
       // E2B Code Execution Configuration (Self-Hosted)

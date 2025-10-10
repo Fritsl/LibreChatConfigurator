@@ -156,6 +156,29 @@ const webSearchSchema = z.object({
   }).optional(),
 }).optional();
 
+// Memory Configuration
+const memoryAgentSchema = z.object({
+  id: z.string().optional(), // Reference to existing agent by ID
+  provider: z.string().optional(), // e.g., "openAI", "anthropic"
+  model: z.string().optional(), // e.g., "gpt-4"
+  instructions: z.string().optional(), // Custom memory handling instructions
+  model_parameters: z.object({
+    temperature: z.number().min(0).max(2).optional(),
+    max_tokens: z.number().min(1).optional(),
+    top_p: z.number().min(0).max(1).optional(),
+    frequency_penalty: z.number().min(-2).max(2).optional(),
+  }).optional(),
+}).optional();
+
+const memorySchema = z.object({
+  disabled: z.boolean().default(true), // Default: memory DISABLED
+  validKeys: z.array(z.string()).optional(),
+  tokenLimit: z.number().min(1).optional(),
+  personalize: z.boolean().default(false), // Default: personalization OFF
+  messageWindowSize: z.number().min(1).max(100).default(5),
+  agent: memoryAgentSchema,
+}).optional();
+
 // OCR Configuration
 const ocrSchema = z.object({
   apiKey: z.string().optional(),
@@ -393,6 +416,7 @@ export const configurationSchema = z.object({
   registration: registrationSchema,
   actions: actionsSchema,
   webSearch: webSearchSchema,
+  memory: memorySchema,
   ocr: ocrSchema,
   stt: sttSchema,
   tts: ttsSchema,

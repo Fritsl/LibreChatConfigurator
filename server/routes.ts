@@ -1014,28 +1014,25 @@ rateLimits:
     userWindowInMinutes: 1
 
 # Memory Configuration
-${config.memory?.enabled ? `memory:
-  disabled: false
+${config.memory && (config.memory.disabled !== undefined || config.memory.personalize !== undefined || config.memory.validKeys || config.memory.tokenLimit || config.memory.messageWindowSize || config.memory.agent) ? `memory:${config.memory.disabled !== undefined ? `
+  disabled: ${config.memory.disabled}` : ''}${config.memory.personalize !== undefined ? `
+  personalize: ${config.memory.personalize}` : ''}${config.memory.validKeys && config.memory.validKeys.length > 0 ? `
   validKeys:
-    - "user_preferences"
-    - "conversation_context"
-    - "learned_facts"
-    - "personal_information"
-  tokenLimit: ${config.memory?.tokenLimit ?? 10000}
-  personalize: ${config.memory?.personalize ?? true}
-  messageWindowSize: ${config.memory?.messageWindowSize ?? 10}
-  agent:
-    provider: "${config.memory?.agent?.provider ?? 'openai'}"
-    model: "gpt-4"
+${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : ''}${config.memory.tokenLimit ? `
+  tokenLimit: ${config.memory.tokenLimit}` : ''}${config.memory.messageWindowSize ? `
+  messageWindowSize: ${config.memory.messageWindowSize}` : ''}${config.memory.agent ? `
+  agent:${config.memory.agent.id ? `
+    id: "${config.memory.agent.id}"` : ''}${config.memory.agent.provider ? `
+    provider: "${config.memory.agent.provider}"` : ''}${config.memory.agent.model ? `
+    model: "${config.memory.agent.model}"` : ''}${config.memory.agent.instructions ? `
     instructions: |
-      Store memory using only the specified validKeys.
-      For user_preferences: save explicitly stated preferences.
-      For conversation_context: save important facts or ongoing projects.
-      For learned_facts: save objective information about the user.
-      For personal_information: save only what the user explicitly shares.
-    model_parameters:
-      temperature: 0.2
-      max_tokens: 2000` : '# Memory system is disabled'}
+      ${config.memory.agent.instructions.split('\n').join('\n      ')}` : ''}${config.memory.agent.model_parameters ? `
+    model_parameters:${config.memory.agent.model_parameters.temperature !== undefined ? `
+      temperature: ${config.memory.agent.model_parameters.temperature}` : ''}${config.memory.agent.model_parameters.max_tokens ? `
+      max_tokens: ${config.memory.agent.model_parameters.max_tokens}` : ''}${config.memory.agent.model_parameters.top_p !== undefined ? `
+      top_p: ${config.memory.agent.model_parameters.top_p}` : ''}${config.memory.agent.model_parameters.frequency_penalty !== undefined ? `
+      frequency_penalty: ${config.memory.agent.model_parameters.frequency_penalty}` : ''}` : ''}` : ''}
+` : '# Memory system is not configured'}
 
 # Web Search Configuration
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `webSearch:

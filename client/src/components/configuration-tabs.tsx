@@ -629,20 +629,6 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#application-domains",
         docSection: "App Settings"
       },
-      customWelcome: { 
-        type: "textarea", 
-        description: "Custom welcome message shown to users when they first access LibreChat. Supports markdown formatting for rich text.", 
-        label: "Welcome Message",
-        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
-        docSection: "Interface Config"
-      },
-      customFooter: { 
-        type: "textarea", 
-        description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.", 
-        label: "Footer Text",
-        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
-        docSection: "Interface Config"
-      },
       helpAndFAQURL: { 
         type: "text", 
         description: "URL to your help documentation or FAQ page. This creates a help link in the interface for user support.", 

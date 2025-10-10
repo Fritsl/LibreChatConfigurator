@@ -187,7 +187,10 @@ export const defaultConfiguration: Configuration = {
     artifacts: true
   },
   
+  // modelSpecs: Intentionally left empty due to LibreChat RC4 bug
+  // When enabled, it causes interface.presets and other visibility settings to malfunction
+  // Users should leave this field empty unless they fully understand the risks
   modelSpecs: {
-    addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+    addedEndpoints: []
   },
 };

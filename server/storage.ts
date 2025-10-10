@@ -263,9 +263,10 @@ export class FileStorage implements IStorage {
         artifacts: true
       },
       
-      // Model Specs Configuration
+      // Model Specs Configuration - Empty due to LibreChat RC4 bug
+      // When populated, causes conflicts with interface visibility settings
       modelSpecs: {
-        addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+        addedEndpoints: []
       },
     };
   }
@@ -367,9 +368,10 @@ export class FileStorage implements IStorage {
         artifacts: true
       },
       
-      // Model Specs Configuration
+      // Model Specs Configuration - Empty due to LibreChat RC4 bug
+      // When populated, causes conflicts with interface visibility settings
       modelSpecs: {
-        addedEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]
+        addedEndpoints: []
       },
     };
   }

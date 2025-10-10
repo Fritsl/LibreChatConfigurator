@@ -7,7 +7,7 @@ import { fromZodError } from "zod-validation-error";
 import JSZip from "jszip";
 import * as e2bGenerators from "./e2b-generators";
 import crypto from "crypto";
-import { TOOL_VERSION } from "@shared/version";
+import { TOOL_VERSION, createExportMetadata, getVersionInfo } from "@shared/version";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -2564,15 +2564,25 @@ If you encounter issues:
 }
 
 function generateProfileFile(config: any): string {
-  const currentDate = new Date().toISOString();
-  const profileName = `LibreChat-v${config.configVer}-${currentDate.split('T')[0]}`;
+  const configName = config.configurationName || 'LibreChat Configuration';
   
+  // Create structured version metadata (same as client-side export)
+  const metadata = createExportMetadata(configName);
+  const versionInfo = getVersionInfo();
+  
+  // Match client-side export structure exactly for 1:1 parity
   const profile = {
-    name: profileName,
-    version: TOOL_VERSION, // Auto-synced from single source of truth
-    createdAt: currentDate,
-    description: `Generated LibreChat configuration profile for v${config.configVer}`,
-    configuration: config
+    name: configName, // ✅ Same as client: use configurationName directly
+    description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
+    configuration: config, // ✅ Complete configuration already merged by client
+    metadata: metadata, // ✨ Structured version metadata for migration support
+    // Legacy fields for backward compatibility
+    toolVersion: versionInfo.toolVersion,
+    librechatTarget: versionInfo.librechatTarget,
+    createdAt: new Date().toISOString(),
+    exportedFrom: `LibreChat Configuration Manager v${versionInfo.toolVersion}`,
+    lastUpdated: versionInfo.lastUpdated,
+    changelog: versionInfo.changelog
   };
   
   return JSON.stringify(profile, null, 2);

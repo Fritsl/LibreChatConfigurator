@@ -106,6 +106,23 @@ The system uses the **Configuration Name** you set in the tool (not the ZIP file
    - Database preserved ✅
    - LibreChat updated with new settings ✅
 
+### 📦 What's in the ZIP Package?
+
+Each generated package contains 6 files:
+
+| File | Purpose | When to Use |
+|------|---------|-------------|
+| **`.env`** | Environment variables (API keys, secrets, server settings) | Automatically used by installation scripts. Can also manually place in LibreChat directory. |
+| **`librechat.yaml`** | Main LibreChat configuration (UI settings, endpoints, features) | Automatically used by installation scripts. Can also manually place in LibreChat directory. |
+| **`docker-compose.override.yml`** | Docker service configuration with environment passthrough | Automatically used by installation scripts for Docker deployments. |
+| **`LibreChatConfigSettings.json`** | Configuration metadata with unique name identifier | Used by installation scripts to detect update vs. fresh install. Also for backup/restore in this tool. |
+| **`install_dockerimage.bat`** | Windows installation script | **Run this on Windows** - handles Docker setup and updates automatically. |
+| **`install_dockerimage.sh`** | Linux/macOS installation script | **Run this on Linux/macOS** - handles Docker setup and updates automatically. |
+
+**Quick Start:** Just run the installation script for your OS - it uses all other files automatically.
+
+**Manual Installation:** If not using Docker, copy `.env` and `librechat.yaml` to your LibreChat directory.
+
 ### ⚠️ Development Status
 
 **This tool is under active development and may contain bugs.** Always backup your configurations and test in a non-production environment first.

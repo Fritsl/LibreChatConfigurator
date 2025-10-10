@@ -153,7 +153,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const includeFiles = req.body?.includeFiles || ["env", "yaml", "docker-compose", "install-script", "readme"];
       const packageName = req.body?.packageName;
       
-      console.log("🎯 [SINGLE SOURCE] Using raw frontend data - customFooter:", JSON.stringify(rawConfiguration?.customFooter));
+      console.log("🎯 [SINGLE SOURCE] Using raw frontend data:");
+      console.log("  - customFooter (top-level):", JSON.stringify(rawConfiguration?.customFooter));
+      console.log("  - customFooter (interface):", JSON.stringify(rawConfiguration?.interface?.customFooter));
       console.log("🔍 [DEBUG] webSearch structure:", JSON.stringify(rawConfiguration?.webSearch, null, 2));
       
       if (!rawConfiguration) {
@@ -957,9 +959,9 @@ interface:
   fileCitations: ${config.interface?.fileCitations ?? true}
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
-  temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome ? `
-  customWelcome: "${config.interface.customWelcome}"` : ''}${config.interface?.customFooter ? `
-  customFooter: "${config.interface.customFooter}"` : ''}
+  temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome || config.customWelcome ? `
+  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}${config.interface?.customFooter || config.customFooter ? `
+  customFooter: "${config.interface?.customFooter || config.customFooter}"` : ''}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration

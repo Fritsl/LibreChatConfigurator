@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Info, Eye, EyeOff, Plus, X, ExternalLink } from "lucide-react";
 import { useState } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MCPServersEditor } from "@/components/mcp-servers-editor";
 import { CustomEndpointsEditor } from "@/components/custom-endpoints-editor";
 import { WebSearchEditor } from "@/components/web-search-editor";
@@ -415,11 +415,13 @@ export function SettingInput({
           {label}
         </Label>
         {description && (
-          <Tooltip>
-            <TooltipTrigger>
-              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-sm">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-auto p-0 hover:bg-transparent">
+                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="max-w-sm">
               <div className="space-y-3">
                 <p className="text-sm">{description}</p>
                 {technical && (
@@ -447,8 +449,8 @@ export function SettingInput({
                   </div>
                 )}
               </div>
-            </TooltipContent>
-          </Tooltip>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
       {renderInput()}

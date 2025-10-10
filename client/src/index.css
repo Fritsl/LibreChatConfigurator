@@ -108,3 +108,7 @@
     @apply bg-yellow-100 text-yellow-700; 
   }
 }
+
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}

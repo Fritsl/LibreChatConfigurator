@@ -7,7 +7,13 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, X, Trash2, Network } from "lucide-react";
+import { Plus, X, Trash2, Network, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface CustomEndpoint {
   name?: string;
@@ -49,20 +55,62 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
     onChange(updatedEndpoints);
   };
 
-  const addEndpoint = () => {
-    const newEndpoint: CustomEndpoint = {
-      name: `endpoint-${endpoints.length}`,
-      baseURL: "https://api.openai.com/v1",
-      models: {
-        default: ["gpt-4"],
-        fetch: false
-      },
-      titleConvo: true,
-      titleMethod: "completion",
-      summarize: false,
-      forcePrompt: false,
-      headers: {}
-    };
+  const addEndpoint = (template: "openai" | "ollama" | "custom" = "custom") => {
+    let newEndpoint: CustomEndpoint;
+    
+    switch (template) {
+      case "ollama":
+        newEndpoint = {
+          name: "Ollama",
+          apiKey: "ollama",
+          baseURL: "http://localhost:11434/v1/",
+          models: {
+            default: ["llama3:latest", "mistral:latest"],
+            fetch: true
+          },
+          titleConvo: true,
+          titleModel: "current_model",
+          titleMethod: "completion",
+          summarize: false,
+          summaryModel: "current_model",
+          forcePrompt: false,
+          modelDisplayLabel: "Ollama",
+          headers: {}
+        };
+        break;
+      
+      case "openai":
+        newEndpoint = {
+          name: "OpenAI",
+          baseURL: "https://api.openai.com/v1",
+          models: {
+            default: ["gpt-4", "gpt-3.5-turbo"],
+            fetch: false
+          },
+          titleConvo: true,
+          titleMethod: "completion",
+          summarize: false,
+          forcePrompt: false,
+          headers: {}
+        };
+        break;
+      
+      default:
+        newEndpoint = {
+          name: `Endpoint ${endpoints.length + 1}`,
+          baseURL: "https://api.example.com/v1",
+          models: {
+            default: ["model-name"],
+            fetch: false
+          },
+          titleConvo: true,
+          titleMethod: "completion",
+          summarize: false,
+          forcePrompt: false,
+          headers: {}
+        };
+    }
+    
     updateEndpoints([...endpoints, newEndpoint]);
   };
 
@@ -148,18 +196,36 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
         <div className="flex items-center space-x-2">
           <Network className="h-5 w-5 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Create multiple OpenAI-compatible endpoints with individual API keys and names (e.g., "OpenAI - Work", "OpenAI - Personal")
+            Create OpenAI-compatible endpoints - supports Ollama, custom APIs, and more
           </p>
         </div>
-        <Button
-          type="button"
-          onClick={addEndpoint}
-          size="sm"
-          data-testid="button-add-custom-endpoint"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Endpoint
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              size="sm"
+              data-testid="button-add-custom-endpoint"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Endpoint
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => addEndpoint("ollama")} data-testid="menu-add-ollama">
+              <Network className="h-4 w-4 mr-2" />
+              Ollama (Local LLM)
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addEndpoint("openai")} data-testid="menu-add-openai">
+              <Network className="h-4 w-4 mr-2" />
+              OpenAI Compatible
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addEndpoint("custom")} data-testid="menu-add-custom">
+              <Network className="h-4 w-4 mr-2" />
+              Custom Endpoint
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {endpoints.length === 0 && (
@@ -217,11 +283,11 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                 id={`endpoint-baseurl-${endpointIndex}`}
                 value={endpoint.baseURL || ""}
                 onChange={(e) => updateEndpoint(endpointIndex, { baseURL: e.target.value })}
-                placeholder="https://api.openai.com/v1"
+                placeholder="https://api.openai.com/v1 or http://localhost:11434/v1/"
                 data-testid={`input-endpoint-baseurl-${endpointIndex}`}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                OpenAI-compatible API endpoint URL
+                OpenAI-compatible API endpoint URL (e.g., Ollama: http://localhost:11434/v1/)
               </p>
             </div>
 
@@ -235,11 +301,11 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                 type="password"
                 value={endpoint.apiKey || ""}
                 onChange={(e) => updateEndpoint(endpointIndex, { apiKey: e.target.value })}
-                placeholder="sk-..."
+                placeholder="sk-... (use 'ollama' for Ollama endpoints)"
                 data-testid={`input-endpoint-apikey-${endpointIndex}`}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                API key for this specific endpoint (keep separate for work/personal billing)
+                API key for authentication (Ollama accepts any value like "ollama")
               </p>
             </div>
 
@@ -267,7 +333,7 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                     <Input
                       value={model}
                       onChange={(e) => updateModel(endpointIndex, modelIndex, e.target.value)}
-                      placeholder="gpt-4, gpt-3.5-turbo, etc."
+                      placeholder="gpt-4, llama3:latest, mistral, etc."
                       data-testid={`input-model-${endpointIndex}-${modelIndex}`}
                     />
                     <Button

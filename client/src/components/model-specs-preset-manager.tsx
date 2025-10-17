@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2, Info } from "lucide-react";
 
 interface ModelSpecPreset {
   name: string;
   label?: string;
+  description?: string;
+  default?: boolean;
   preset: {
     endpoint: string;
     agent_id?: string;
@@ -45,6 +48,8 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
     const newPreset: ModelSpecPreset = {
       name: "",
       label: "",
+      description: "",
+      default: false,
       preset: {
         endpoint: "agents",
         agent_id: "",
@@ -57,16 +62,20 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
     onChange(presets.filter((_, i) => i !== index));
   };
 
-  const updatePreset = (index: number, field: string, value: string) => {
+  const updatePreset = (index: number, field: string, value: string | boolean) => {
     const updated = [...presets];
     if (field === "name") {
-      updated[index].name = value;
+      updated[index].name = value as string;
     } else if (field === "label") {
-      updated[index].label = value;
+      updated[index].label = value as string;
+    } else if (field === "description") {
+      updated[index].description = value as string;
+    } else if (field === "default") {
+      updated[index].default = value as boolean;
     } else if (field === "endpoint") {
-      updated[index].preset.endpoint = value;
+      updated[index].preset.endpoint = value as string;
     } else if (field === "agent_id") {
-      updated[index].preset.agent_id = value;
+      updated[index].preset.agent_id = value as string;
     }
     onChange(updated);
   };
@@ -121,6 +130,20 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor={`preset-${index}-description`}>Description (optional)</Label>
+              <Input
+                id={`preset-${index}-description`}
+                value={preset.description || ""}
+                onChange={(e) => updatePreset(index, "description", e.target.value)}
+                placeholder="AI Agents for complex tasks"
+                data-testid={`input-preset-description-${index}`}
+              />
+              <p className="text-xs text-muted-foreground">
+                Shown to users when selecting this model spec
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor={`preset-${index}-endpoint`}>Endpoint *</Label>
@@ -153,6 +176,18 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
                   For default agent selection (agents endpoint only)
                 </p>
               </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={`preset-${index}-default`}
+                checked={preset.default || false}
+                onCheckedChange={(checked) => updatePreset(index, "default", !!checked)}
+                data-testid={`checkbox-preset-default-${index}`}
+              />
+              <Label htmlFor={`preset-${index}-default`} className="cursor-pointer">
+                Set as default (auto-select for new chats)
+              </Label>
             </div>
           </CardContent>
         </Card>

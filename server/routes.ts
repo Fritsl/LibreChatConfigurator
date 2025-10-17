@@ -770,6 +770,12 @@ ${config.cdnProvider ? `CDN_PROVIDER=${config.cdnProvider}` : '# CDN_PROVIDER='}
 ${config.ocrApiKey ? `OCR_API_KEY=${config.ocrApiKey}` : '# OCR_API_KEY=your_ocr_api_key_here'}
 ${config.ocrApiBase ? `OCR_BASEURL=${config.ocrApiBase}` : '# OCR_BASEURL=https://api.mistral.ai/v1'}
 
+# Speech-to-Text (STT) Service API Keys
+${config.stt?.apiKey ? `STT_API_KEY=${config.stt.apiKey}` : '# STT_API_KEY=your_stt_api_key_here'}
+
+# Text-to-Speech (TTS) Service API Keys
+${config.tts?.apiKey ? `TTS_API_KEY=${config.tts.apiKey}` : '# TTS_API_KEY=your_tts_api_key_here'}
+
 # =============================================================================
 # Advanced Database Configuration
 # =============================================================================
@@ -1107,6 +1113,47 @@ ${config.ocrProvider ? `ocr:
   mistralModel: "mistral-ocr-latest"` : ''}
   apiKey: "\${OCR_API_KEY}"
   baseURL: "\${OCR_BASEURL}"` : '# OCR is not configured'}
+
+# Speech-to-Text (STT) Configuration
+${config.stt ? `stt:${config.stt.provider ? `
+  provider: "${config.stt.provider}"` : ''}${config.stt.model ? `
+  model: "${config.stt.model}"` : ''}${config.stt.apiKey ? `
+  apiKey: "\${STT_API_KEY}"` : ''}${config.stt.baseURL ? `
+  baseURL: "${config.stt.baseURL}"` : ''}${config.stt.language ? `
+  language: "${config.stt.language}"` : ''}${config.stt.streaming !== undefined ? `
+  streaming: ${config.stt.streaming}` : ''}${config.stt.punctuation !== undefined ? `
+  punctuation: ${config.stt.punctuation}` : ''}${config.stt.profanityFilter !== undefined ? `
+  profanityFilter: ${config.stt.profanityFilter}` : ''}` : '# STT is not configured'}
+
+# Text-to-Speech (TTS) Configuration
+${config.tts ? `tts:${config.tts.provider ? `
+  provider: "${config.tts.provider}"` : ''}${config.tts.model ? `
+  model: "${config.tts.model}"` : ''}${config.tts.voice ? `
+  voice: "${config.tts.voice}"` : ''}${config.tts.apiKey ? `
+  apiKey: "\${TTS_API_KEY}"` : ''}${config.tts.baseURL ? `
+  baseURL: "${config.tts.baseURL}"` : ''}${config.tts.speed !== undefined ? `
+  speed: ${config.tts.speed}` : ''}${config.tts.quality ? `
+  quality: "${config.tts.quality}"` : ''}${config.tts.streaming !== undefined ? `
+  streaming: ${config.tts.streaming}` : ''}` : '# TTS is not configured'}
+
+# Speech Experience (UI-Level) Configuration
+${config.speech?.speechTab ? `speech:
+  speechTab:${config.speech.speechTab.conversationMode !== undefined ? `
+    conversationMode: ${config.speech.speechTab.conversationMode}` : ''}${config.speech.speechTab.advancedMode !== undefined ? `
+    advancedMode: ${config.speech.speechTab.advancedMode}` : ''}${config.speech.speechTab.speechToText ? `
+    speechToText:${config.speech.speechTab.speechToText.engineSTT ? `
+      engineSTT: "${config.speech.speechTab.speechToText.engineSTT}"` : ''}${config.speech.speechTab.speechToText.languageSTT ? `
+      languageSTT: "${config.speech.speechTab.speechToText.languageSTT}"` : ''}${config.speech.speechTab.speechToText.autoTranscribeAudio !== undefined ? `
+      autoTranscribeAudio: ${config.speech.speechTab.speechToText.autoTranscribeAudio}` : ''}${config.speech.speechTab.speechToText.decibelValue !== undefined ? `
+      decibelValue: ${config.speech.speechTab.speechToText.decibelValue}` : ''}${config.speech.speechTab.speechToText.autoSendText !== undefined ? `
+      autoSendText: ${config.speech.speechTab.speechToText.autoSendText}` : ''}` : ''}${config.speech.speechTab.textToSpeech ? `
+    textToSpeech:${config.speech.speechTab.textToSpeech.engineTTS ? `
+      engineTTS: "${config.speech.speechTab.textToSpeech.engineTTS}"` : ''}${config.speech.speechTab.textToSpeech.voice ? `
+      voice: "${config.speech.speechTab.textToSpeech.voice}"` : ''}${config.speech.speechTab.textToSpeech.languageTTS ? `
+      languageTTS: "${config.speech.speechTab.textToSpeech.languageTTS}"` : ''}${config.speech.speechTab.textToSpeech.automaticPlayback !== undefined ? `
+      automaticPlayback: ${config.speech.speechTab.textToSpeech.automaticPlayback}` : ''}${config.speech.speechTab.textToSpeech.playbackRate !== undefined ? `
+      playbackRate: ${config.speech.speechTab.textToSpeech.playbackRate}` : ''}${config.speech.speechTab.textToSpeech.cacheTTS !== undefined ? `
+      cacheTTS: ${config.speech.speechTab.textToSpeech.cacheTTS}` : ''}` : ''}` : '# Speech UI configuration is not configured'}
 
 # Actions Configuration
 ${config.e2bProxyEnabled || (config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0) ? `actions:${config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0 ? `
@@ -1495,6 +1542,16 @@ ${config.consoleJson !== undefined ? `      CONSOLE_JSON: \${CONSOLE_JSON}` : ' 
       # =============================================================================
 ${config.ocrProvider ? `      OCR_API_KEY: \${OCR_API_KEY}` : '      # OCR_API_KEY: ${OCR_API_KEY}'}
 ${config.ocrProvider ? `      OCR_BASEURL: \${OCR_BASEURL}` : '      # OCR_BASEURL: ${OCR_BASEURL}'}
+      
+      # =============================================================================
+      # Speech-to-Text (STT) Configuration
+      # =============================================================================
+${config.stt?.apiKey ? `      STT_API_KEY: \${STT_API_KEY}` : '      # STT_API_KEY: ${STT_API_KEY}'}
+      
+      # =============================================================================
+      # Text-to-Speech (TTS) Configuration
+      # =============================================================================
+${config.tts?.apiKey ? `      TTS_API_KEY: \${TTS_API_KEY}` : '      # TTS_API_KEY: ${TTS_API_KEY}'}
       
       # =============================================================================
       # RC4 Subdirectory Hosting

@@ -211,6 +211,29 @@ const ttsSchema = z.object({
   streaming: z.boolean().default(false),
 }).optional();
 
+// UI-Level Speech Configuration (for speech/voice experience in LibreChat UI)
+const speechSchema = z.object({
+  speechTab: z.object({
+    conversationMode: z.boolean().default(false),
+    advancedMode: z.boolean().default(false),
+    speechToText: z.object({
+      engineSTT: z.string().default("browser"),
+      languageSTT: z.string().default("en-US"),
+      autoTranscribeAudio: z.boolean().default(false),
+      decibelValue: z.number().min(-100).max(0).default(-45),
+      autoSendText: z.number().min(0).max(10000).default(0),
+    }).optional(),
+    textToSpeech: z.object({
+      engineTTS: z.string().default("browser"),
+      voice: z.string().default("alloy"),
+      languageTTS: z.string().default("en"),
+      automaticPlayback: z.boolean().default(false),
+      playbackRate: z.number().min(0.25).max(4.0).default(1.0),
+      cacheTTS: z.boolean().default(false),
+    }).optional(),
+  }).optional(),
+}).optional();
+
 // MCP Servers Configuration
 const mcpServerSchema = z.object({
   type: z.enum(["stdio", "websocket", "sse", "streamable-http"]).optional(),
@@ -420,6 +443,7 @@ export const configurationSchema = z.object({
   ocr: ocrSchema,
   stt: sttSchema,
   tts: ttsSchema,
+  speech: speechSchema,
   mcpServers: mcpServersSchema,
   endpoints: endpointsSchema,
   

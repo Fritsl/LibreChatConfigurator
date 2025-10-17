@@ -34,6 +34,7 @@ import {
   Settings,
   Mic,
   Volume2,
+  Headphones,
   Users,
   Zap,
   HardDrive,
@@ -531,6 +532,29 @@ paths:
       color: "from-blue-400 to-blue-500",
       settings: ["tts.provider", "tts.model", "tts.voice", "tts.apiKey", "tts.baseURL", "tts.speed", "tts.quality", "tts.streaming"],
       docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/text_to_speech",
+    },
+    {
+      id: "speech",
+      label: "Speech Experience",
+      icon: Headphones,
+      description: "UI Speech/Voice Settings",
+      color: "from-indigo-400 to-indigo-500",
+      settings: [
+        "speech.speechTab.conversationMode",
+        "speech.speechTab.advancedMode",
+        "speech.speechTab.speechToText.engineSTT",
+        "speech.speechTab.speechToText.languageSTT",
+        "speech.speechTab.speechToText.autoTranscribeAudio",
+        "speech.speechTab.speechToText.decibelValue",
+        "speech.speechTab.speechToText.autoSendText",
+        "speech.speechTab.textToSpeech.engineTTS",
+        "speech.speechTab.textToSpeech.voice",
+        "speech.speechTab.textToSpeech.languageTTS",
+        "speech.speechTab.textToSpeech.automaticPlayback",
+        "speech.speechTab.textToSpeech.playbackRate",
+        "speech.speechTab.textToSpeech.cacheTTS"
+      ],
+      docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
     },
     {
       id: "assistants",
@@ -1395,6 +1419,129 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/tts",
         docSection: "TTS Configuration",
         technical: { yamlPath: "tts.streaming", configFile: "librechat.yaml" }
+      },
+      
+      // Speech Experience Configuration (UI-Level Settings)
+      "speech.speechTab.conversationMode": {
+        type: "boolean",
+        description: "Enable conversation mode for continuous voice interaction",
+        label: "Conversation Mode",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.conversationMode", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.advancedMode": {
+        type: "boolean",
+        description: "Show advanced speech settings in the UI",
+        label: "Advanced Mode",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.advancedMode", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.speechToText.engineSTT": {
+        type: "text",
+        description: "STT engine to use in UI (e.g., 'browser', 'external')",
+        label: "UI STT Engine",
+        placeholder: "browser",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.speechToText.engineSTT", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.speechToText.languageSTT": {
+        type: "text",
+        description: "Language for STT in UI (e.g., 'en-US', 'English (US)')",
+        label: "UI STT Language",
+        placeholder: "en-US",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.speechToText.languageSTT", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.speechToText.autoTranscribeAudio": {
+        type: "boolean",
+        description: "Automatically transcribe audio input when detected",
+        label: "Auto Transcribe",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.speechToText.autoTranscribeAudio", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.speechToText.decibelValue": {
+        type: "number",
+        description: "Decibel threshold for speech detection (-100 to 0)",
+        label: "Decibel Threshold",
+        placeholder: "-45",
+        min: -100,
+        max: 0,
+        step: 1,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.speechToText.decibelValue", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.speechToText.autoSendText": {
+        type: "number",
+        description: "Auto-send delay in ms after transcription (0 = disabled)",
+        label: "Auto Send Delay (ms)",
+        placeholder: "0",
+        min: 0,
+        max: 10000,
+        step: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.speechToText.autoSendText", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.engineTTS": {
+        type: "text",
+        description: "TTS engine to use in UI (e.g., 'browser', 'external')",
+        label: "UI TTS Engine",
+        placeholder: "browser",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.engineTTS", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.voice": {
+        type: "text",
+        description: "Voice to use in UI TTS (e.g., 'alloy', 'echo', 'fable')",
+        label: "UI TTS Voice",
+        placeholder: "alloy",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.voice", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.languageTTS": {
+        type: "text",
+        description: "Language for TTS in UI (e.g., 'en', 'es', 'fr')",
+        label: "UI TTS Language",
+        placeholder: "en",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.languageTTS", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.automaticPlayback": {
+        type: "boolean",
+        description: "Automatically play TTS responses in the UI",
+        label: "Auto Playback",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.automaticPlayback", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.playbackRate": {
+        type: "number",
+        description: "TTS playback speed in UI (0.25 to 4.0)",
+        label: "Playback Speed",
+        placeholder: "1.0",
+        min: 0.25,
+        max: 4.0,
+        step: 0.25,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.playbackRate", configFile: "librechat.yaml" }
+      },
+      "speech.speechTab.textToSpeech.cacheTTS": {
+        type: "boolean",
+        description: "Cache TTS output in UI to avoid re-synthesis",
+        label: "Cache TTS",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        docSection: "Speech Configuration",
+        technical: { yamlPath: "speech.speechTab.textToSpeech.cacheTTS", configFile: "librechat.yaml" }
       },
       
       // Assistants Configuration

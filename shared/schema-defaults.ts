@@ -178,6 +178,29 @@ export function generateConfigurationDefaults(): Configuration {
       streaming: false
     },
     
+    // Speech UI defaults
+    speech: {
+      speechTab: {
+        conversationMode: false,
+        advancedMode: false,
+        speechToText: {
+          engineSTT: "browser",
+          languageSTT: "en-US",
+          autoTranscribeAudio: false,
+          decibelValue: -45,
+          autoSendText: 0
+        },
+        textToSpeech: {
+          engineTTS: "browser",
+          voice: "alloy",
+          languageTTS: "en",
+          automaticPlayback: false,
+          playbackRate: 1.0,
+          cacheTTS: false
+        }
+      }
+    },
+    
     // Empty nested objects
     actions: {
       allowedDomains: []

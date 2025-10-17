@@ -416,24 +416,6 @@ paths:
       label: "SPEECH & VOICE",
       tabs: [
         {
-          id: "stt",
-          label: "Speech-to-Text",
-          icon: Mic,
-          description: "Speech Recognition",
-          color: "from-green-400 to-green-500",
-          settings: ["stt.provider", "stt.model", "stt.apiKey", "stt.baseURL", "stt.language", "stt.streaming", "stt.punctuation", "stt.profanityFilter"],
-          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech_to_text",
-        },
-        {
-          id: "tts",
-          label: "Text-to-Speech",
-          icon: Volume2,
-          description: "Voice Synthesis",
-          color: "from-blue-400 to-blue-500",
-          settings: ["tts.provider", "tts.model", "tts.voice", "tts.apiKey", "tts.baseURL", "tts.speed", "tts.quality", "tts.streaming"],
-          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/text_to_speech",
-        },
-        {
           id: "speech",
           label: "Speech Experience",
           icon: Headphones,
@@ -455,6 +437,24 @@ paths:
             "speech.speechTab.textToSpeech.cacheTTS"
           ],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        },
+        {
+          id: "stt",
+          label: "Speech-to-Text",
+          icon: Mic,
+          description: "Speech Recognition",
+          color: "from-green-400 to-green-500",
+          settings: ["stt.provider", "stt.model", "stt.apiKey", "stt.baseURL", "stt.language", "stt.streaming", "stt.punctuation", "stt.profanityFilter"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech_to_text",
+        },
+        {
+          id: "tts",
+          label: "Text-to-Speech",
+          icon: Volume2,
+          description: "Voice Synthesis",
+          color: "from-blue-400 to-blue-500",
+          settings: ["tts.provider", "tts.model", "tts.voice", "tts.apiKey", "tts.baseURL", "tts.speed", "tts.quality", "tts.streaming"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/text_to_speech",
         },
       ]
     },

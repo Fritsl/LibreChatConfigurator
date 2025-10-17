@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { SettingInput } from "./setting-input";
 import { StatusIndicator } from "./status-indicator";
+import { SpeechPresetSelector } from "./speech-preset-selector";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -415,6 +416,15 @@ paths:
     {
       label: "SPEECH & VOICE",
       tabs: [
+        {
+          id: "speech-default",
+          label: "Speech Default",
+          icon: Zap,
+          description: "Quick Preset Configuration",
+          color: "from-yellow-400 to-orange-500",
+          settings: ["speech.preset.selected", "speech.preset.customLanguage", "speech.preset.customVoice"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
+        },
         {
           id: "speech",
           label: "Speech Experience",
@@ -2317,16 +2327,100 @@ paths:
                       />
                     </div>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {tab.id === "ui-visibility" && (
-                      <Alert variant="warning" className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
-                        <Info className="h-4 w-4" />
-                        <AlertDescription className="text-sm">
-                          <strong>⚠️ LibreChat RC4 Bug Warning:</strong> The "Visible Endpoints (UI)" setting below has a known bug that causes interface settings to malfunction (e.g., Presets showing when disabled). <strong>Keep it empty/OFF</strong> to avoid issues. The deprecated "Plugins" menu cannot be hidden in RC4 - just ignore it and use Agents instead.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                    {tab.settings.map((setting) => {
+                  <CardContent>
+                    {tab.id === "speech-default" ? (
+                      <div className="col-span-full">
+                        <SpeechPresetSelector
+                          currentPreset={getNestedValue(configuration, "speech.preset.selected")}
+                          configuration={configuration}
+                          onApplyPreset={(presetId, customValues) => {
+                            // Apply preset settings
+                            const presetSettings: Record<string, any> = {};
+                            
+                            // Map preset values to configuration
+                            Object.entries(customValues).forEach(([key, value]) => {
+                              setNestedValue(presetSettings, key, value);
+                            });
+                            
+                            // Get preset configuration based on preset ID
+                            if (presetId === "chatgpt-feel") {
+                              const chatgptPreset = {
+                                "stt.provider": "openai",
+                                "stt.model": "whisper-1",
+                                "stt.streaming": true,
+                                "stt.punctuation": true,
+                                "stt.profanityFilter": false,
+                                "tts.provider": "openai",
+                                "tts.model": "tts-1-hd",
+                                "tts.quality": "hd",
+                                "tts.streaming": true,
+                                "speech.speechTab.conversationMode": true,
+                                "speech.speechTab.advancedMode": true,
+                                "speech.speechTab.speechToText.engineSTT": "external",
+                                "speech.speechTab.speechToText.autoTranscribeAudio": true,
+                                "speech.speechTab.speechToText.decibelValue": -45,
+                                "speech.speechTab.speechToText.autoSendText": 1000,
+                                "speech.speechTab.textToSpeech.engineTTS": "external",
+                                "speech.speechTab.textToSpeech.automaticPlayback": true,
+                                "speech.speechTab.textToSpeech.playbackRate": 1.0,
+                                "speech.speechTab.textToSpeech.cacheTTS": true,
+                              };
+                              Object.entries(chatgptPreset).forEach(([key, value]) => {
+                                setNestedValue(presetSettings, key, value);
+                              });
+                            } else if (presetId === "private-cheap") {
+                              const privatePreset = {
+                                "stt.provider": "local",
+                                "stt.model": "browser",
+                                "stt.streaming": false,
+                                "stt.punctuation": false,
+                                "stt.profanityFilter": false,
+                                "tts.provider": "local",
+                                "tts.model": "browser",
+                                "tts.quality": "standard",
+                                "tts.streaming": false,
+                                "speech.speechTab.conversationMode": false,
+                                "speech.speechTab.advancedMode": false,
+                                "speech.speechTab.speechToText.engineSTT": "browser",
+                                "speech.speechTab.speechToText.autoTranscribeAudio": false,
+                                "speech.speechTab.speechToText.decibelValue": -45,
+                                "speech.speechTab.speechToText.autoSendText": 0,
+                                "speech.speechTab.textToSpeech.engineTTS": "browser",
+                                "speech.speechTab.textToSpeech.automaticPlayback": false,
+                                "speech.speechTab.textToSpeech.playbackRate": 1.0,
+                                "speech.speechTab.textToSpeech.cacheTTS": true,
+                              };
+                              Object.entries(privatePreset).forEach(([key, value]) => {
+                                setNestedValue(presetSettings, key, value);
+                              });
+                            }
+                            
+                            // Merge with existing configuration
+                            const updatedConfig = { ...configuration };
+                            Object.entries(presetSettings).forEach(([key, value]) => {
+                              setNestedValue(updatedConfig, key, value);
+                            });
+                            
+                            onConfigurationChange(updatedConfig);
+                            
+                            toast({
+                              title: "Preset Applied",
+                              description: `${presetId === "chatgpt-feel" ? "ChatGPT Feel" : "Private & Cheap"} preset has been applied successfully.`,
+                            });
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {tab.id === "ui-visibility" && (
+                          <Alert variant="warning" className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
+                            <Info className="h-4 w-4" />
+                            <AlertDescription className="text-sm">
+                              <strong>⚠️ LibreChat RC4 Bug Warning:</strong> The "Visible Endpoints (UI)" setting below has a known bug that causes interface settings to malfunction (e.g., Presets showing when disabled). <strong>Keep it empty/OFF</strong> to avoid issues. The deprecated "Plugins" menu cannot be hidden in RC4 - just ignore it and use Agents instead.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                        {tab.settings.map((setting) => {
                       const fieldInfo = getFieldInfo(setting);
                       
                       // Get options for select fields
@@ -2536,6 +2630,8 @@ paths:
                         />
                       );
                     })}
+                      </div>
+                    )}
                     
                     {/* OpenAPI Schema Display for Code Execution Tab */}
                     {tab.id === "code-execution" && configuration.e2bProxyEnabled && (

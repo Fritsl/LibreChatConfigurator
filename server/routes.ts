@@ -789,12 +789,20 @@ ${config.publicSubPath ? `PUBLIC_SUB_PATH=${config.publicSubPath}` : '# PUBLIC_S
 
 // CRITICAL: This function generates YAML files with real configuration data.
 // Preserve all user data exactly as entered - DO NOT modify or redact anything.
+
+// Helper function to escape single quotes in YAML strings
+function escapeYamlString(str: string): string {
+  if (!str) return '';
+  // In YAML, single quotes are escaped by doubling them
+  return str.replace(/'/g, "''");
+}
+
 function generateYamlFile(config: any): string {
   return `# =============================================================================
 # LibreChat Configuration for v0.8.0-RC4
 # =============================================================================
 
-version: 1.2.9
+version: 1.3.0
 cache: ${config.cache}
 
 # MCP Servers Configuration
@@ -918,20 +926,40 @@ ${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "ac
       - "presence_penalty"
       - "stop"
     titleConvo: true
-    titleModel: "gemini-1.5-flash"` : ''}${(config.groqApiKey || config.mistralApiKey) ? `
+    titleModel: "gemini-1.5-flash"` : ''}${config.endpoints?.custom && config.endpoints.custom.length > 0 ? `
+  custom:
+${config.endpoints.custom.map((endpoint: any) => `    - name: '${escapeYamlString(endpoint.name)}'${endpoint.apiKey ? `
+      apiKey: '${escapeYamlString(endpoint.apiKey)}'` : ''}
+      baseURL: '${escapeYamlString(endpoint.baseURL)}'
+      models:${endpoint.models?.fetch !== undefined ? `
+        fetch: ${endpoint.models.fetch}` : ''}${endpoint.models?.default && endpoint.models.default.length > 0 ? `
+        default:
+${endpoint.models.default.map((model: string) => `          - "${model}"`).join('\n')}` : ''}${endpoint.titleConvo !== undefined ? `
+      titleConvo: ${endpoint.titleConvo}` : ''}${endpoint.titleModel ? `
+      titleModel: '${escapeYamlString(endpoint.titleModel)}'` : ''}${endpoint.titleMethod ? `
+      titleMethod: '${escapeYamlString(endpoint.titleMethod)}'` : ''}${endpoint.summarize !== undefined ? `
+      summarize: ${endpoint.summarize}` : ''}${endpoint.summaryModel ? `
+      summaryModel: '${escapeYamlString(endpoint.summaryModel)}'` : ''}${endpoint.forcePrompt !== undefined ? `
+      forcePrompt: ${endpoint.forcePrompt}` : ''}${endpoint.modelDisplayLabel ? `
+      modelDisplayLabel: '${escapeYamlString(endpoint.modelDisplayLabel)}'` : ''}${endpoint.addParams && Object.keys(endpoint.addParams).length > 0 ? `
+      addParams:
+${Object.entries(endpoint.addParams).map(([key, value]) => `        ${key}: ${JSON.stringify(value)}`).join('\n')}` : ''}${endpoint.dropParams && endpoint.dropParams.length > 0 ? `
+      dropParams:
+${endpoint.dropParams.map((param: string) => `        - '${escapeYamlString(param)}'`).join('\n')}` : ''}${endpoint.headers && Object.keys(endpoint.headers).length > 0 ? `
+      headers:
+${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlString(key)}: '${escapeYamlString(value as string)}'`).join('\n')}` : ''}`).join('\n')}` : (config.groqApiKey || config.mistralApiKey) ? `
   custom:${config.groqApiKey ? `
     - name: 'groq'
       apiKey: '\${GROQ_API_KEY}'
       baseURL: 'https://api.groq.com/openai/v1/'
       models:
         fetch: false
-        default: [
-          "llama3-70b-8192",
-          "llama3-8b-8192", 
-          "llama2-70b-4096",
-          "mixtral-8x7b-32768",
-          "gemma-7b-it"
-        ]
+        default:
+          - "llama3-70b-8192"
+          - "llama3-8b-8192"
+          - "llama2-70b-4096"
+          - "mixtral-8x7b-32768"
+          - "gemma-7b-it"
       titleConvo: true
       titleModel: 'mixtral-8x7b-32768'
       modelDisplayLabel: 'Groq'` : ''}${config.mistralApiKey ? `${config.groqApiKey ? `
@@ -941,16 +969,19 @@ ${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "ac
       baseURL: 'https://api.mistral.ai/v1'
       models:
         fetch: true
-        default: [
-          "mistral-tiny",
-          "mistral-small", 
-          "mistral-medium",
-          "mistral-large-latest"
-        ]
+        default:
+          - "mistral-tiny"
+          - "mistral-small"
+          - "mistral-medium"
+          - "mistral-large-latest"
       titleConvo: true
       titleModel: 'mistral-tiny'
       modelDisplayLabel: 'Mistral'
-      dropParams: ['stop', 'user', 'frequency_penalty', 'presence_penalty']` : ''}` : ''}
+      dropParams:
+        - 'stop'
+        - 'user'
+        - 'frequency_penalty'
+        - 'presence_penalty'` : ''}` : ''}
 
 # Interface Configuration
 interface:

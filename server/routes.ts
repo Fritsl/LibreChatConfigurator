@@ -1016,10 +1016,14 @@ modelSpecs:
 ${config.modelSpecs.addedEndpoints.map((endpoint: string) => `        - "${endpoint}"`).join('\n')}
 ` : ''}${config.modelSpecs?.list && config.modelSpecs.list.length > 0 ? `
 # Model Specs Presets Configuration
-modelSpecs:
+modelSpecs:${config.modelSpecs.enforce !== undefined ? `
+  enforce: ${config.modelSpecs.enforce}` : ''}${config.modelSpecs.prioritize !== undefined ? `
+  prioritize: ${config.modelSpecs.prioritize}` : ''}
   list:
-${config.modelSpecs.list.map((preset: any) => `    - name: "${preset.name}"
-      label: "${preset.label}"
+${config.modelSpecs.list.map((preset: any) => `    - name: "${preset.name}"${preset.label ? `
+      label: "${preset.label}"` : ''}${preset.description ? `
+      description: "${preset.description}"` : ''}${preset.default ? `
+      default: ${preset.default}` : ''}
       preset:
         endpoint: "${preset.preset.endpoint}"${preset.preset.agent_id ? `
         agent_id: "${preset.preset.agent_id}"` : ''}`).join('\n')}

@@ -2370,12 +2370,12 @@ paths:
                               });
                             } else if (presetId === "private-cheap") {
                               const privatePreset = {
-                                "stt.provider": "browser",
+                                "stt.provider": "local",
                                 "stt.model": "",
                                 "stt.streaming": false,
                                 "stt.punctuation": true,
                                 "stt.profanityFilter": false,
-                                "tts.provider": "browser",
+                                "tts.provider": "local",
                                 "tts.model": "",
                                 "tts.quality": "standard",
                                 "tts.streaming": false,

@@ -82,12 +82,12 @@ const PRESETS: SpeechPreset[] = [
     requiresApiKey: false,
     requiredFields: ["language"],
     settings: {
-      "stt.provider": "browser",
+      "stt.provider": "local",
       "stt.model": "",
       "stt.streaming": false,
       "stt.punctuation": true,
       "stt.profanityFilter": false,
-      "tts.provider": "browser",
+      "tts.provider": "local",
       "tts.model": "",
       "tts.quality": "standard",
       "tts.streaming": false,
@@ -134,14 +134,13 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
       if (preset.id === "chatgpt-feel") {
         // OpenAI uses ISO 639-1 (en, es, fr)
         customValues["stt.language"] = language;
-        customValues["speech.speechTab.speechToText.languageSTT"] = `${language}-${language.toUpperCase()}`; // Convert to BCP-47
+        customValues["speech.speechTab.speechToText.languageSTT"] = `${language}-${language.toUpperCase()}`; // UI uses BCP-47
         customValues["speech.speechTab.textToSpeech.languageTTS"] = language;
       } else if (preset.id === "private-cheap") {
-        // Browser uses BCP-47 format (en-US, es-ES)
-        const bcpLanguage = `${language}-${language.toUpperCase()}`;
-        customValues["stt.language"] = bcpLanguage;
-        customValues["speech.speechTab.speechToText.languageSTT"] = bcpLanguage;
-        customValues["speech.speechTab.textToSpeech.languageTTS"] = bcpLanguage;
+        // Browser uses BCP-47 format (en-US, es-ES) for all fields
+        customValues["stt.language"] = language;
+        customValues["speech.speechTab.speechToText.languageSTT"] = language;
+        customValues["speech.speechTab.textToSpeech.languageTTS"] = language;
       }
     }
 
@@ -151,8 +150,8 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
       customValues["tts.apiKey"] = apiKey;
     }
 
-    // Set voice
-    if (ttsVoice) {
+    // Set voice (only for ChatGPT preset; browser preset doesn't set specific voice)
+    if (preset.id === "chatgpt-feel" && ttsVoice) {
       customValues["tts.voice"] = ttsVoice;
       customValues["speech.speechTab.textToSpeech.voice"] = ttsVoice;
     }
@@ -252,27 +251,52 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="language">Language (ISO 639-1 code) *</Label>
+              <Label htmlFor="language">
+                {preset.id === "chatgpt-feel" ? "Language (ISO 639-1 code) *" : "Language (BCP-47 code) *"}
+              </Label>
               <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger id="language" data-testid="select-preset-language">
                   <SelectValue placeholder="Select language..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="en">English (en)</SelectItem>
-                  <SelectItem value="es">Spanish (es)</SelectItem>
-                  <SelectItem value="fr">French (fr)</SelectItem>
-                  <SelectItem value="de">German (de)</SelectItem>
-                  <SelectItem value="it">Italian (it)</SelectItem>
-                  <SelectItem value="pt">Portuguese (pt)</SelectItem>
-                  <SelectItem value="ru">Russian (ru)</SelectItem>
-                  <SelectItem value="ja">Japanese (ja)</SelectItem>
-                  <SelectItem value="ko">Korean (ko)</SelectItem>
-                  <SelectItem value="zh">Chinese (zh)</SelectItem>
-                  <SelectItem value="ar">Arabic (ar)</SelectItem>
-                  <SelectItem value="hi">Hindi (hi)</SelectItem>
-                  <SelectItem value="nl">Dutch (nl)</SelectItem>
-                  <SelectItem value="pl">Polish (pl)</SelectItem>
-                  <SelectItem value="tr">Turkish (tr)</SelectItem>
+                  {preset.id === "chatgpt-feel" ? (
+                    <>
+                      <SelectItem value="en">English (en)</SelectItem>
+                      <SelectItem value="es">Spanish (es)</SelectItem>
+                      <SelectItem value="fr">French (fr)</SelectItem>
+                      <SelectItem value="de">German (de)</SelectItem>
+                      <SelectItem value="it">Italian (it)</SelectItem>
+                      <SelectItem value="pt">Portuguese (pt)</SelectItem>
+                      <SelectItem value="ru">Russian (ru)</SelectItem>
+                      <SelectItem value="ja">Japanese (ja)</SelectItem>
+                      <SelectItem value="ko">Korean (ko)</SelectItem>
+                      <SelectItem value="zh">Chinese (zh)</SelectItem>
+                      <SelectItem value="ar">Arabic (ar)</SelectItem>
+                      <SelectItem value="hi">Hindi (hi)</SelectItem>
+                      <SelectItem value="nl">Dutch (nl)</SelectItem>
+                      <SelectItem value="pl">Polish (pl)</SelectItem>
+                      <SelectItem value="tr">Turkish (tr)</SelectItem>
+                    </>
+                  ) : (
+                    <>
+                      <SelectItem value="en-US">English US (en-US)</SelectItem>
+                      <SelectItem value="en-GB">English GB (en-GB)</SelectItem>
+                      <SelectItem value="es-ES">Spanish (es-ES)</SelectItem>
+                      <SelectItem value="fr-FR">French (fr-FR)</SelectItem>
+                      <SelectItem value="de-DE">German (de-DE)</SelectItem>
+                      <SelectItem value="it-IT">Italian (it-IT)</SelectItem>
+                      <SelectItem value="pt-BR">Portuguese BR (pt-BR)</SelectItem>
+                      <SelectItem value="ru-RU">Russian (ru-RU)</SelectItem>
+                      <SelectItem value="ja-JP">Japanese (ja-JP)</SelectItem>
+                      <SelectItem value="ko-KR">Korean (ko-KR)</SelectItem>
+                      <SelectItem value="zh-CN">Chinese CN (zh-CN)</SelectItem>
+                      <SelectItem value="ar-SA">Arabic (ar-SA)</SelectItem>
+                      <SelectItem value="hi-IN">Hindi (hi-IN)</SelectItem>
+                      <SelectItem value="nl-NL">Dutch (nl-NL)</SelectItem>
+                      <SelectItem value="pl-PL">Polish (pl-PL)</SelectItem>
+                      <SelectItem value="tr-TR">Turkish (tr-TR)</SelectItem>
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>

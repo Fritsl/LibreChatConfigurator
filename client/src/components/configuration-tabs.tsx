@@ -2347,7 +2347,7 @@ paths:
                               const chatgptPreset = {
                                 "stt.provider": "openai",
                                 "stt.model": "whisper-1",
-                                "stt.streaming": true,
+                                "stt.streaming": false,
                                 "stt.punctuation": true,
                                 "stt.profanityFilter": false,
                                 "tts.provider": "openai",
@@ -2355,7 +2355,7 @@ paths:
                                 "tts.quality": "hd",
                                 "tts.streaming": true,
                                 "speech.speechTab.conversationMode": true,
-                                "speech.speechTab.advancedMode": true,
+                                "speech.speechTab.advancedMode": false,
                                 "speech.speechTab.speechToText.engineSTT": "external",
                                 "speech.speechTab.speechToText.autoTranscribeAudio": true,
                                 "speech.speechTab.speechToText.decibelValue": -45,

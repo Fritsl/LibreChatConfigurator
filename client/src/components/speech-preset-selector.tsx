@@ -45,7 +45,7 @@ const PRESETS: SpeechPreset[] = [
   {
     id: "chatgpt-feel",
     name: "ChatGPT Feel",
-    description: "High-quality OpenAI-powered speech with advanced features",
+    description: "High-quality OpenAI-powered speech with conversation mode",
     icon: Sparkles,
     color: "from-blue-500 to-purple-500",
     requiresApiKey: true,
@@ -53,7 +53,7 @@ const PRESETS: SpeechPreset[] = [
     settings: {
       "stt.provider": "openai",
       "stt.model": "whisper-1",
-      "stt.streaming": true,
+      "stt.streaming": false,
       "stt.punctuation": true,
       "stt.profanityFilter": false,
       "tts.provider": "openai",
@@ -62,7 +62,7 @@ const PRESETS: SpeechPreset[] = [
       "tts.quality": "hd",
       "tts.streaming": true,
       "speech.speechTab.conversationMode": true,
-      "speech.speechTab.advancedMode": true,
+      "speech.speechTab.advancedMode": false,
       "speech.speechTab.speechToText.engineSTT": "external",
       "speech.speechTab.speechToText.autoTranscribeAudio": true,
       "speech.speechTab.speechToText.decibelValue": -45,

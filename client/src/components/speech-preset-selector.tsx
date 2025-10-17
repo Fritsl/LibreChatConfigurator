@@ -48,8 +48,8 @@ const PRESETS: SpeechPreset[] = [
     description: "High-quality OpenAI-powered speech with conversation mode",
     icon: Sparkles,
     color: "from-blue-500 to-purple-500",
-    requiresApiKey: true,
-    requiredFields: ["language", "apiKey"],
+    requiresApiKey: false,
+    requiredFields: ["language"],
     settings: {
       "stt.provider": "openai",
       "stt.model": "whisper-1",
@@ -149,8 +149,8 @@ export function SpeechPresetSelector({ currentPreset, configuration, fieldInfo, 
       }
     }
 
-    // Set API key if required
-    if (preset.requiresApiKey && apiKey) {
+    // Set API key if provided (optional for OpenAI - will fall back to OPENAI_API_KEY)
+    if (preset.id === "chatgpt-feel" && apiKey) {
       customValues["stt.apiKey"] = apiKey;
       customValues["tts.apiKey"] = apiKey;
     }
@@ -281,40 +281,40 @@ export function SpeechPresetSelector({ currentPreset, configuration, fieldInfo, 
               </Select>
             </div>
 
-            {preset.requiresApiKey && (
-              <div className="space-y-2">
-                <Label htmlFor="apiKey">OpenAI API Key *</Label>
-                <Input
-                  id="apiKey"
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
-                  data-testid="input-preset-apikey"
-                />
-                <p className="text-xs text-muted-foreground">
-                  This will be used for both STT and TTS
-                </p>
-              </div>
-            )}
-
             {preset.id === "chatgpt-feel" && (
-              <div className="space-y-2">
-                <Label htmlFor="ttsVoice">TTS Voice (optional)</Label>
-                <Select value={ttsVoice} onValueChange={setTtsVoice}>
-                  <SelectTrigger id="ttsVoice" data-testid="select-preset-voice">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="alloy">Alloy</SelectItem>
-                    <SelectItem value="echo">Echo</SelectItem>
-                    <SelectItem value="fable">Fable</SelectItem>
-                    <SelectItem value="onyx">Onyx</SelectItem>
-                    <SelectItem value="nova">Nova</SelectItem>
-                    <SelectItem value="shimmer">Shimmer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="apiKey">OpenAI API Key (optional)</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder="sk-..."
+                    data-testid="input-preset-apikey"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave blank to use the general OPENAI_API_KEY environment variable. Only provide if you want to use a different key for STT/TTS.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ttsVoice">TTS Voice (optional)</Label>
+                  <Select value={ttsVoice} onValueChange={setTtsVoice}>
+                    <SelectTrigger id="ttsVoice" data-testid="select-preset-voice">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alloy">Alloy</SelectItem>
+                      <SelectItem value="echo">Echo</SelectItem>
+                      <SelectItem value="fable">Fable</SelectItem>
+                      <SelectItem value="onyx">Onyx</SelectItem>
+                      <SelectItem value="nova">Nova</SelectItem>
+                      <SelectItem value="shimmer">Shimmer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
             )}
 
             <Button 

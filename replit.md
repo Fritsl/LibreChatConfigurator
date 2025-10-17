@@ -103,6 +103,9 @@ Every JSON export includes structured version metadata:
 - **Custom Endpoints**: Create multiple OpenAI-compatible endpoints with individual API keys and friendly names for organizing usage by project/team (e.g., "OpenAI - Work", "OpenAI - Personal")
 - **Image Generation (DALL-E)**: Comprehensive DALL-E configuration for AI image generation via Agents, including support for DALL-E 2 and DALL-E 3, custom base URLs, reverse proxies, and system prompts
 - **SearXNG Auto-Inclusion**: Toggle to automatically include SearXNG service in docker-compose with proper Docker networking (http://searxng:8080) and auto-generated secrets
+- **Speech Preset System**: Quick-start presets for speech configuration with two options:
+  - **ChatGPT Feel**: OpenAI Whisper STT + OpenAI TTS (tts-1-hd), conversation mode enabled, ISO 639-1 language codes (en, es, fr), customizable voice (alloy, echo, fable, onyx, nova, shimmer)
+  - **Private & Cheap**: Browser-based speech (local provider), no API keys required, BCP-47 language codes (en-US, es-ES), uses browser's native speech capabilities
 - **Preview System**: Live preview of generated configuration files
 - **Package Generation**: Complete deployment package creation with multiple file formats
 - **Search Functionality**: Global search across all configuration settings

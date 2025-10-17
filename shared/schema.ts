@@ -213,6 +213,11 @@ const ttsSchema = z.object({
 
 // UI-Level Speech Configuration (for speech/voice experience in LibreChat UI)
 const speechSchema = z.object({
+  preset: z.object({
+    selected: z.enum(["none", "chatgpt-feel", "private-cheap"]).default("none"),
+    customLanguage: z.string().optional(),
+    customVoice: z.string().optional(),
+  }).optional(),
   speechTab: z.object({
     conversationMode: z.boolean().default(false),
     advancedMode: z.boolean().default(false),

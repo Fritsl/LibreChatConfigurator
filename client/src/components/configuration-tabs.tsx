@@ -2420,7 +2420,7 @@ paths:
                               
                               onConfigurationChange(clearedConfig);
                             }}
-                            options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                            options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
                             data-testid={`input-${setting}`}
                           />
                         );
@@ -2446,7 +2446,7 @@ paths:
                               type={fieldInfo.type}
                               value={getNestedValue(configuration, setting) || false}
                               onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                              options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                              options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
                               data-testid={`input-${setting}`}
                               technical={fieldInfo.technical}
                             />
@@ -2473,7 +2473,7 @@ paths:
                               type={fieldInfo.type}
                               value={getNestedValue(configuration, setting) || ""}
                               onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                              options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                              options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
                               data-testid={`input-${setting}`}
                               technical={fieldInfo.technical}
                             />
@@ -2514,7 +2514,7 @@ paths:
                               
                               onConfigurationChange({ ...configuration, ...updates });
                             }}
-                            options={fieldInfo.type === 'select' ? getSelectOptions(setting) : undefined}
+                            options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
                             data-testid={`input-${setting}`}
                           />
                         );

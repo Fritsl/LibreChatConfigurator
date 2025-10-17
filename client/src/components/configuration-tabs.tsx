@@ -1217,7 +1217,7 @@ paths:
       // OCR Configuration
       "ocr.apiKey": { 
         type: "password", 
-        description: "API key for OCR service", 
+        description: "API key for OCR service. Required for Mistral OCR (uses your Mistral API key) or custom OCR providers. No automatic fallback to other keys.", 
         label: "OCR API Key",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/ocr",
         docSection: "OCR Configuration",
@@ -1292,7 +1292,7 @@ paths:
       },
       "stt.apiKey": { 
         type: "password", 
-        description: "API key for STT service", 
+        description: "API key for STT service. When using OpenAI provider, leave blank to use the general OPENAI_API_KEY. Required for other providers (Azure, Google, Deepgram, AssemblyAI).", 
         label: "STT API Key",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/stt",
         docSection: "STT Configuration",
@@ -1378,7 +1378,7 @@ paths:
       },
       "tts.apiKey": { 
         type: "password", 
-        description: "API key for TTS service", 
+        description: "API key for TTS service. When using OpenAI provider, leave blank to use the general OPENAI_API_KEY. Required for other providers (Azure, Google, ElevenLabs, AWS).", 
         label: "TTS API Key",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/tts",
         docSection: "TTS Configuration",

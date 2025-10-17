@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { SettingInput } from "./setting-input";
 import { StatusIndicator } from "./status-indicator";
 import { SpeechPresetSelector } from "./speech-preset-selector";
+import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -2634,6 +2635,28 @@ paths:
                         />
                       );
                     })}
+                      </div>
+                    )}
+                    
+                    {/* Model Specs Presets for UI/Visibility Tab */}
+                    {tab.id === "ui-visibility" && (
+                      <div className="col-span-full mt-6">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle>Model Specs Presets</CardTitle>
+                            <CardDescription>
+                              Configure presets to control which endpoints users see and set default agents. For agents-only mode, add a preset with endpoint "agents" and optionally specify an agent_id.
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <ModelSpecsPresetManager
+                              presets={getNestedValue(configuration, "modelSpecs.list") || []}
+                              onChange={(presets) => {
+                                onConfigurationChange(setNestedValue(configuration, "modelSpecs.list", presets.length > 0 ? presets : undefined));
+                              }}
+                            />
+                          </CardContent>
+                        </Card>
                       </div>
                     )}
                     

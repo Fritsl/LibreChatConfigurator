@@ -1014,6 +1014,15 @@ modelSpecs:
   list:
     - addedEndpoints:
 ${config.modelSpecs.addedEndpoints.map((endpoint: string) => `        - "${endpoint}"`).join('\n')}
+` : ''}${config.modelSpecs?.list && config.modelSpecs.list.length > 0 ? `
+# Model Specs Presets Configuration
+modelSpecs:
+  list:
+${config.modelSpecs.list.map((preset: any) => `    - name: "${preset.name}"
+      label: "${preset.label}"
+      preset:
+        endpoint: "${preset.preset.endpoint}"${preset.preset.agent_id ? `
+        agent_id: "${preset.preset.agent_id}"` : ''}`).join('\n')}
 ` : ''}
 ${config.fileConfig ? `
 # File Configuration

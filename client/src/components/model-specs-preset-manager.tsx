@@ -46,8 +46,8 @@ const ENDPOINT_OPTIONS = [
 export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPresetManagerProps) {
   const addPreset = () => {
     const newPreset: ModelSpecPreset = {
-      name: "",
-      label: "",
+      name: "Agents",
+      label: "Agents",
       description: "",
       default: false,
       preset: {

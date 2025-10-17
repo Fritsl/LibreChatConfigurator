@@ -1440,7 +1440,7 @@ paths:
       },
       "speech.speechTab.speechToText.engineSTT": {
         type: "text",
-        description: "STT engine to use in UI (e.g., 'browser', 'external')",
+        description: "STT engine to use in UI (browser or external)",
         label: "UI STT Engine",
         placeholder: "browser",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
@@ -1449,7 +1449,7 @@ paths:
       },
       "speech.speechTab.speechToText.languageSTT": {
         type: "text",
-        description: "Language for STT in UI (e.g., 'en-US', 'English (US)')",
+        description: "Language for STT in UI - any BCP-47 language code (en-US, es-ES, fr-FR, etc.)",
         label: "UI STT Language",
         placeholder: "en-US",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
@@ -1490,7 +1490,7 @@ paths:
       },
       "speech.speechTab.textToSpeech.engineTTS": {
         type: "text",
-        description: "TTS engine to use in UI (e.g., 'browser', 'external')",
+        description: "TTS engine to use in UI (browser or external)",
         label: "UI TTS Engine",
         placeholder: "browser",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
@@ -1499,7 +1499,7 @@ paths:
       },
       "speech.speechTab.textToSpeech.voice": {
         type: "text",
-        description: "Voice to use in UI TTS (e.g., 'alloy', 'echo', 'fable')",
+        description: "Voice to use in UI TTS - depends on provider (OpenAI: alloy/echo/fable/onyx/nova/shimmer, ElevenLabs: custom voices, etc.)",
         label: "UI TTS Voice",
         placeholder: "alloy",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
@@ -1508,7 +1508,7 @@ paths:
       },
       "speech.speechTab.textToSpeech.languageTTS": {
         type: "text",
-        description: "Language for TTS in UI (e.g., 'en', 'es', 'fr')",
+        description: "Language for TTS in UI - 2-letter ISO code (en, es, fr, de, it, pt, zh, ja, ko, etc.)",
         label: "UI TTS Language",
         placeholder: "en",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",

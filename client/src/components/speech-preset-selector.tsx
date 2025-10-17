@@ -108,10 +108,11 @@ const PRESETS: SpeechPreset[] = [
 interface SpeechPresetSelectorProps {
   currentPreset?: string;
   configuration: any;
+  fieldInfo: Record<string, any>;
   onApplyPreset: (presetId: string, customValues: any) => void;
 }
 
-export function SpeechPresetSelector({ currentPreset, configuration, onApplyPreset }: SpeechPresetSelectorProps) {
+export function SpeechPresetSelector({ currentPreset, configuration, fieldInfo, onApplyPreset }: SpeechPresetSelectorProps) {
   const [selectedPreset, setSelectedPreset] = useState<string>(currentPreset || "");
   const [language, setLanguage] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
@@ -119,6 +120,10 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
 
   const preset = PRESETS.find(p => p.id === selectedPreset);
   const isApplied = currentPreset === selectedPreset;
+  
+  // Get language options from existing field definitions
+  const iso639Options = fieldInfo["stt.language"]?.options || [];
+  const bcp47Options = fieldInfo["speech.speechTab.speechToText.languageSTT"]?.options || [];
 
   const handleApply = () => {
     if (!selectedPreset || !preset) return;
@@ -260,42 +265,17 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
                 </SelectTrigger>
                 <SelectContent>
                   {preset.id === "chatgpt-feel" ? (
-                    <>
-                      <SelectItem value="en">English (en)</SelectItem>
-                      <SelectItem value="es">Spanish (es)</SelectItem>
-                      <SelectItem value="fr">French (fr)</SelectItem>
-                      <SelectItem value="de">German (de)</SelectItem>
-                      <SelectItem value="it">Italian (it)</SelectItem>
-                      <SelectItem value="pt">Portuguese (pt)</SelectItem>
-                      <SelectItem value="ru">Russian (ru)</SelectItem>
-                      <SelectItem value="ja">Japanese (ja)</SelectItem>
-                      <SelectItem value="ko">Korean (ko)</SelectItem>
-                      <SelectItem value="zh">Chinese (zh)</SelectItem>
-                      <SelectItem value="ar">Arabic (ar)</SelectItem>
-                      <SelectItem value="hi">Hindi (hi)</SelectItem>
-                      <SelectItem value="nl">Dutch (nl)</SelectItem>
-                      <SelectItem value="pl">Polish (pl)</SelectItem>
-                      <SelectItem value="tr">Turkish (tr)</SelectItem>
-                    </>
+                    iso639Options.map((option: any) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))
                   ) : (
-                    <>
-                      <SelectItem value="en-US">English US (en-US)</SelectItem>
-                      <SelectItem value="en-GB">English GB (en-GB)</SelectItem>
-                      <SelectItem value="es-ES">Spanish (es-ES)</SelectItem>
-                      <SelectItem value="fr-FR">French (fr-FR)</SelectItem>
-                      <SelectItem value="de-DE">German (de-DE)</SelectItem>
-                      <SelectItem value="it-IT">Italian (it-IT)</SelectItem>
-                      <SelectItem value="pt-BR">Portuguese BR (pt-BR)</SelectItem>
-                      <SelectItem value="ru-RU">Russian (ru-RU)</SelectItem>
-                      <SelectItem value="ja-JP">Japanese (ja-JP)</SelectItem>
-                      <SelectItem value="ko-KR">Korean (ko-KR)</SelectItem>
-                      <SelectItem value="zh-CN">Chinese CN (zh-CN)</SelectItem>
-                      <SelectItem value="ar-SA">Arabic (ar-SA)</SelectItem>
-                      <SelectItem value="hi-IN">Hindi (hi-IN)</SelectItem>
-                      <SelectItem value="nl-NL">Dutch (nl-NL)</SelectItem>
-                      <SelectItem value="pl-PL">Polish (pl-PL)</SelectItem>
-                      <SelectItem value="tr-TR">Turkish (tr-TR)</SelectItem>
-                    </>
+                    bcp47Options.map((option: any) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))
                   )}
                 </SelectContent>
               </Select>

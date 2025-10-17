@@ -2333,6 +2333,10 @@ paths:
                         <SpeechPresetSelector
                           currentPreset={getNestedValue(configuration, "speech.preset.selected")}
                           configuration={configuration}
+                          fieldInfo={{
+                            "stt.language": getFieldInfo("stt.language"),
+                            "speech.speechTab.speechToText.languageSTT": getFieldInfo("speech.speechTab.speechToText.languageSTT")
+                          }}
                           onApplyPreset={(presetId, customValues) => {
                             // Apply preset settings
                             const presetSettings: Record<string, any> = {};

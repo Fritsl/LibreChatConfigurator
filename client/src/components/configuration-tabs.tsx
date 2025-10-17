@@ -1500,10 +1500,13 @@ paths:
         technical: { yamlPath: "speech.speechTab.advancedMode", configFile: "librechat.yaml" }
       },
       "speech.speechTab.speechToText.engineSTT": {
-        type: "text",
-        description: "STT engine to use in UI (browser or external)",
+        type: "select",
+        description: "STT engine to use in UI (browser uses Web Speech API, external uses configured STT service)",
         label: "UI STT Engine",
-        placeholder: "browser",
+        options: [
+          { value: "browser", label: "Browser" },
+          { value: "external", label: "External" }
+        ],
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
         docSection: "Speech Configuration",
         technical: { yamlPath: "speech.speechTab.speechToText.engineSTT", configFile: "librechat.yaml" }
@@ -1550,10 +1553,13 @@ paths:
         technical: { yamlPath: "speech.speechTab.speechToText.autoSendText", configFile: "librechat.yaml" }
       },
       "speech.speechTab.textToSpeech.engineTTS": {
-        type: "text",
-        description: "TTS engine to use in UI (browser or external)",
+        type: "select",
+        description: "TTS engine to use in UI (browser uses Web Speech API, external uses configured TTS service)",
         label: "UI TTS Engine",
-        placeholder: "browser",
+        options: [
+          { value: "browser", label: "Browser" },
+          { value: "external", label: "External" }
+        ],
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/speech",
         docSection: "Speech Configuration",
         technical: { yamlPath: "speech.speechTab.textToSpeech.engineTTS", configFile: "librechat.yaml" }

@@ -107,6 +107,18 @@ const modelSpecsSchema = z.object({
     "groq", "openRouter", "mistral", "xAI", "perplexity", "deepseek",
     "bedrock", "cohere", "ollama", "localAI", "gptPlugins"
   ])).default(["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]),
+  list: z.array(z.object({
+    name: z.string(),
+    label: z.string().optional(),
+    preset: z.object({
+      endpoint: z.enum([
+        "openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents",
+        "groq", "openRouter", "mistral", "xAI", "perplexity", "deepseek",
+        "bedrock", "cohere", "ollama", "localAI", "gptPlugins"
+      ]),
+      agent_id: z.string().optional(),
+    }),
+  })).optional(),
 }).optional();
 
 // Registration Configuration

@@ -107,9 +107,13 @@ const modelSpecsSchema = z.object({
     "groq", "openRouter", "mistral", "xAI", "perplexity", "deepseek",
     "bedrock", "cohere", "ollama", "localAI", "gptPlugins"
   ])).default(["openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents"]),
+  enforce: z.boolean().default(false).optional(), // RC4: Force users to select from modelSpecs list
+  prioritize: z.boolean().default(false).optional(), // RC4: Make modelSpecs primary UI element
   list: z.array(z.object({
     name: z.string(),
     label: z.string().optional(),
+    description: z.string().optional(), // RC4: Agent/model description
+    default: z.boolean().optional(), // RC4: Auto-select this spec for new chats
     preset: z.object({
       endpoint: z.enum([
         "openAI", "anthropic", "google", "azureOpenAI", "assistants", "agents",

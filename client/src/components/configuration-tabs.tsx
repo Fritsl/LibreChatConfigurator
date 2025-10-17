@@ -6,11 +6,13 @@ import { SettingInput } from "./setting-input";
 import { StatusIndicator } from "./status-indicator";
 import { SpeechPresetSelector } from "./speech-preset-selector";
 import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
+import { UserExperiencePresets } from "./user-experience-presets";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { type Configuration } from "@shared/schema";
 import { 
@@ -2416,16 +2418,67 @@ paths:
                         />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <>
                         {tab.id === "ui-visibility" && (
-                          <Alert variant="warning" className="lg:col-span-2 mb-4" data-testid="alert-hide-plugins-info">
-                            <Info className="h-4 w-4" />
-                            <AlertDescription className="text-sm">
-                              <strong>⚠️ LibreChat RC4 Bug Warning:</strong> The "Visible Endpoints (UI)" setting below has a known bug that causes interface settings to malfunction (e.g., Presets showing when disabled). <strong>Keep it empty/OFF</strong> to avoid issues. The deprecated "Plugins" menu cannot be hidden in RC4 - just ignore it and use Agents instead.
-                            </AlertDescription>
-                          </Alert>
+                          <div className="col-span-full mb-6">
+                            {/* User Experience Mode Presets */}
+                            <UserExperiencePresets
+                              currentMode={getNestedValue(configuration, "ux.preset.mode")}
+                              configuration={configuration}
+                              onApplyPreset={(presetId, agentId) => {
+                                const updatedConfig = { ...configuration };
+                                
+                                if (presetId === "agents-only") {
+                                  // Apply agents-only settings
+                                  setNestedValue(updatedConfig, "interface.endpointsMenu", false);
+                                  setNestedValue(updatedConfig, "interface.modelSelect", false);
+                                  setNestedValue(updatedConfig, "modelSpecs.list", [
+                                    {
+                                      name: "Agents",
+                                      label: "Agents",
+                                      preset: {
+                                        endpoint: "agents",
+                                        agent_id: agentId || ""
+                                      }
+                                    }
+                                  ]);
+                                  setNestedValue(updatedConfig, "ux.preset.mode", "agents-only");
+                                } else if (presetId === "standard") {
+                                  // Restore standard settings
+                                  setNestedValue(updatedConfig, "interface.endpointsMenu", true);
+                                  setNestedValue(updatedConfig, "interface.modelSelect", true);
+                                  setNestedValue(updatedConfig, "modelSpecs.list", undefined);
+                                  setNestedValue(updatedConfig, "ux.preset.mode", "standard");
+                                }
+                                
+                                onConfigurationChange(updatedConfig);
+                                
+                                toast({
+                                  title: "User Experience Applied",
+                                  description: `${presetId === "agents-only" ? "Agents-Only Mode" : "Standard Mode"} has been applied successfully.`,
+                                });
+                              }}
+                            />
+                            
+                            <Separator className="my-8" />
+                            
+                            {/* Section: Interface Visibility Settings */}
+                            <div className="mb-6">
+                              <h3 className="text-lg font-semibold mb-1">Interface Visibility</h3>
+                              <p className="text-sm text-muted-foreground mb-4">Control which UI elements and features users can access</p>
+                              
+                              <Alert variant="warning" className="mb-4" data-testid="alert-hide-plugins-info">
+                                <Info className="h-4 w-4" />
+                                <AlertDescription className="text-sm">
+                                  <strong>⚠️ LibreChat RC4 Bug Warning:</strong> The "Visible Endpoints (UI)" setting below has a known bug that causes interface settings to malfunction (e.g., Presets showing when disabled). <strong>Keep it empty/OFF</strong> to avoid issues. The deprecated "Plugins" menu cannot be hidden in RC4 - just ignore it and use Agents instead.
+                                </AlertDescription>
+                              </Alert>
+                            </div>
+                          </div>
                         )}
-                        {tab.settings.map((setting) => {
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {tab.settings.map((setting) => {
                       const fieldInfo = getFieldInfo(setting);
                       
                       // Get options for select fields
@@ -2635,11 +2688,21 @@ paths:
                         />
                       );
                     })}
-                      </div>
-                    )}
-                    
-                    {/* Model Specs Presets for UI/Visibility Tab */}
-                    {tab.id === "ui-visibility" && (
+                        </div>
+                        
+                        {/* Model Specs Presets for UI/Visibility Tab */}
+                        {tab.id === "ui-visibility" && (
+                          <div className="col-span-full mt-6">
+                            <Separator className="mb-6" />
+                            <div className="mb-6">
+                              <h3 className="text-lg font-semibold mb-1">Advanced: Model Specs Configuration</h3>
+                              <p className="text-sm text-muted-foreground">Configure model presets manually (not needed if using presets above)</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Model Specs Presets Manager - Only show if not using quick presets */}
+                        {tab.id === "ui-visibility" && getNestedValue(configuration, "ux.preset.mode") !== "agents-only" && (
                       <div className="col-span-full mt-6">
                         <Card>
                           <CardHeader>
@@ -2700,6 +2763,8 @@ paths:
                         <tab.icon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>This section will contain configuration options for {tab.label.toLowerCase()}.</p>
                       </div>
+                    )}
+                      </>
                     )}
                   </CardContent>
                 </Card>

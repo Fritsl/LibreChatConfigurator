@@ -106,6 +106,10 @@ Every JSON export includes structured version metadata:
 - **Speech Preset System**: Quick-start presets for speech configuration with two options:
   - **ChatGPT Feel**: OpenAI Whisper STT + OpenAI TTS (tts-1-hd), conversation mode enabled, ISO 639-1 language codes (en, es, fr), customizable voice (alloy, echo, fable, onyx, nova, shimmer)
   - **Private & Cheap**: Browser-based speech (local provider), no API keys required, BCP-47 language codes (en-US, es-ES), uses browser's native speech capabilities
+- **User Experience Presets**: One-click configuration presets for common LibreChat deployment scenarios:
+  - **Agents-Only Mode**: Configures LibreChat RC4 for dedicated agents workflow by setting all required fields (modelSpecs.enforce=true, modelSpecs.prioritize=true, endpoints.agents.disableBuilder=true, interface.presets=false, interface.endpointsMenu=false, interface.modelSelect=false) with automatic default agent selection
+  - **Standard Mode**: Restores default LibreChat interface with full endpoint menu and model selection
+- **Model Specs Configuration**: Manual control over modelSpecs settings with support for all LibreChat RC4 fields (name, label, description, default, endpoint, agent_id) enabling custom preset definitions and fine-grained UI control
 - **Preview System**: Live preview of generated configuration files
 - **Package Generation**: Complete deployment package creation with multiple file formats
 - **Search Functionality**: Global search across all configuration settings

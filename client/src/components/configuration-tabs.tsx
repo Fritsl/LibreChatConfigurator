@@ -2370,25 +2370,25 @@ paths:
                               });
                             } else if (presetId === "private-cheap") {
                               const privatePreset = {
-                                "stt.provider": "local",
-                                "stt.model": "browser",
+                                "stt.provider": "browser",
+                                "stt.model": "",
                                 "stt.streaming": false,
-                                "stt.punctuation": false,
+                                "stt.punctuation": true,
                                 "stt.profanityFilter": false,
-                                "tts.provider": "local",
-                                "tts.model": "browser",
+                                "tts.provider": "browser",
+                                "tts.model": "",
                                 "tts.quality": "standard",
                                 "tts.streaming": false,
-                                "speech.speechTab.conversationMode": false,
+                                "speech.speechTab.conversationMode": true,
                                 "speech.speechTab.advancedMode": false,
                                 "speech.speechTab.speechToText.engineSTT": "browser",
-                                "speech.speechTab.speechToText.autoTranscribeAudio": false,
+                                "speech.speechTab.speechToText.autoTranscribeAudio": true,
                                 "speech.speechTab.speechToText.decibelValue": -45,
-                                "speech.speechTab.speechToText.autoSendText": 0,
+                                "speech.speechTab.speechToText.autoSendText": 1000,
                                 "speech.speechTab.textToSpeech.engineTTS": "browser",
-                                "speech.speechTab.textToSpeech.automaticPlayback": false,
+                                "speech.speechTab.textToSpeech.automaticPlayback": true,
                                 "speech.speechTab.textToSpeech.playbackRate": 1.0,
-                                "speech.speechTab.textToSpeech.cacheTTS": true,
+                                "speech.speechTab.textToSpeech.cacheTTS": false,
                               };
                               Object.entries(privatePreset).forEach(([key, value]) => {
                                 setNestedValue(presetSettings, key, value);

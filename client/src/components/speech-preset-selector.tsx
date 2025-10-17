@@ -82,25 +82,25 @@ const PRESETS: SpeechPreset[] = [
     requiresApiKey: false,
     requiredFields: ["language"],
     settings: {
-      "stt.provider": "local",
-      "stt.model": "browser",
+      "stt.provider": "browser",
+      "stt.model": "",
       "stt.streaming": false,
-      "stt.punctuation": false,
+      "stt.punctuation": true,
       "stt.profanityFilter": false,
-      "tts.provider": "local",
-      "tts.model": "browser",
+      "tts.provider": "browser",
+      "tts.model": "",
       "tts.quality": "standard",
       "tts.streaming": false,
-      "speech.speechTab.conversationMode": false,
+      "speech.speechTab.conversationMode": true,
       "speech.speechTab.advancedMode": false,
       "speech.speechTab.speechToText.engineSTT": "browser",
-      "speech.speechTab.speechToText.autoTranscribeAudio": false,
+      "speech.speechTab.speechToText.autoTranscribeAudio": true,
       "speech.speechTab.speechToText.decibelValue": -45,
-      "speech.speechTab.speechToText.autoSendText": 0,
+      "speech.speechTab.speechToText.autoSendText": 1000,
       "speech.speechTab.textToSpeech.engineTTS": "browser",
-      "speech.speechTab.textToSpeech.automaticPlayback": false,
+      "speech.speechTab.textToSpeech.automaticPlayback": true,
       "speech.speechTab.textToSpeech.playbackRate": 1.0,
-      "speech.speechTab.textToSpeech.cacheTTS": true,
+      "speech.speechTab.textToSpeech.cacheTTS": false,
     }
   }
 ];
@@ -131,9 +131,18 @@ export function SpeechPresetSelector({ currentPreset, configuration, onApplyPres
 
     // Set language fields
     if (language) {
-      customValues["stt.language"] = language;
-      customValues["speech.speechTab.speechToText.languageSTT"] = `${language}-${language.toUpperCase()}`; // Convert to BCP-47
-      customValues["speech.speechTab.textToSpeech.languageTTS"] = language;
+      if (preset.id === "chatgpt-feel") {
+        // OpenAI uses ISO 639-1 (en, es, fr)
+        customValues["stt.language"] = language;
+        customValues["speech.speechTab.speechToText.languageSTT"] = `${language}-${language.toUpperCase()}`; // Convert to BCP-47
+        customValues["speech.speechTab.textToSpeech.languageTTS"] = language;
+      } else if (preset.id === "private-cheap") {
+        // Browser uses BCP-47 format (en-US, es-ES)
+        const bcpLanguage = `${language}-${language.toUpperCase()}`;
+        customValues["stt.language"] = bcpLanguage;
+        customValues["speech.speechTab.speechToText.languageSTT"] = bcpLanguage;
+        customValues["speech.speechTab.textToSpeech.languageTTS"] = bcpLanguage;
+      }
     }
 
     // Set API key if required

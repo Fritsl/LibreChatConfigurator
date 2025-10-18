@@ -2431,15 +2431,18 @@ paths:
                                 if (presetId === "agents-only") {
                                   // Apply agents-only settings - Complete LibreChat RC4 configuration
                                   
-                                  // 1. Hide UI elements
+                                  // 1. Restrict to agents endpoint only (ENDPOINTS env variable)
+                                  setNestedValue(updatedConfig, "enabledEndpoints", ["agents"]);
+                                  
+                                  // 2. Hide UI elements
                                   setNestedValue(updatedConfig, "interface.endpointsMenu", false);
                                   setNestedValue(updatedConfig, "interface.modelSelect", false);
                                   setNestedValue(updatedConfig, "interface.presets", false);
                                   
-                                  // 2. Configure agents endpoint
+                                  // 3. Configure agents endpoint
                                   setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", true);
                                   
-                                  // 3. Configure modelSpecs with enforcement
+                                  // 4. Configure modelSpecs with enforcement
                                   setNestedValue(updatedConfig, "modelSpecs.enforce", true);
                                   setNestedValue(updatedConfig, "modelSpecs.prioritize", true);
                                   setNestedValue(updatedConfig, "modelSpecs.list", [
@@ -2455,10 +2458,11 @@ paths:
                                     }
                                   ]);
                                   
-                                  // 4. Track preset mode
+                                  // 5. Track preset mode
                                   setNestedValue(updatedConfig, "ux.preset.mode", "agents-only");
                                 } else if (presetId === "standard") {
                                   // Restore standard settings
+                                  setNestedValue(updatedConfig, "enabledEndpoints", ["openAI", "anthropic", "google", "azureOpenAI", "agents"]);
                                   setNestedValue(updatedConfig, "interface.endpointsMenu", true);
                                   setNestedValue(updatedConfig, "interface.modelSelect", true);
                                   setNestedValue(updatedConfig, "interface.presets", true);

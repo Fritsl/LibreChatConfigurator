@@ -65,6 +65,7 @@ const rateLimitsSchema = z.object({
 const interfaceSchema = z.object({
   customWelcome: z.string().optional(),
   customFooter: z.string().optional(),
+  defaultPreset: z.string().optional(), // RC4: Name of preset to use as default
   fileSearch: z.boolean().default(true),
   uploadAsText: z.boolean().default(false), // RC4 "Upload as Text" feature
   privacyPolicy: z.object({
@@ -87,6 +88,7 @@ const interfaceSchema = z.object({
   bookmarks: z.boolean().default(true),
   multiConvo: z.boolean().default(false),
   agents: z.boolean().default(true),
+  webSearch: z.boolean().default(true), // RC4: Show web search UI
   peoplePicker: z.object({
     users: z.boolean().default(true),
     groups: z.boolean().default(true),

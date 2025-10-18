@@ -1004,7 +1004,8 @@ interface:
   fileCitations: ${config.interface?.fileCitations ?? true}
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
-  temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.customWelcome || config.customWelcome ? `
+  temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.defaultPreset ? `
+  defaultPreset: "${config.interface.defaultPreset}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
   customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}${config.interface?.customFooter || config.customFooter ? `
   customFooter: "${config.interface?.customFooter || config.customFooter}"` : ''}
 

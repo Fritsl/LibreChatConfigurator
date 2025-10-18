@@ -122,6 +122,7 @@ const modelSpecsSchema = z.object({
         "groq", "openRouter", "mistral", "xAI", "perplexity", "deepseek",
         "bedrock", "cohere", "ollama", "localAI", "gptPlugins"
       ]),
+      model: z.string().optional(), // RC4: Specific model to enforce (e.g., "gpt-4o", "claude-3-5-sonnet")
       agent_id: z.string().optional(),
     }),
   })).optional(),

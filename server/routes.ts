@@ -1026,7 +1026,8 @@ ${config.modelSpecs.list.map((preset: any) => `    - name: "${preset.name}"${pre
       description: "${preset.description}"` : ''}${preset.default ? `
       default: ${preset.default}` : ''}
       preset:
-        endpoint: "${preset.preset.endpoint}"${preset.preset.agent_id ? `
+        endpoint: "${preset.preset.endpoint}"${preset.preset.model ? `
+        model: "${preset.preset.model}"` : ''}${preset.preset.agent_id ? `
         agent_id: "${preset.preset.agent_id}"` : ''}`).join('\n')}
 ` : ''}
 ${config.fileConfig ? `

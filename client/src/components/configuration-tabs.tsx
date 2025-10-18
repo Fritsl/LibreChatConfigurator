@@ -2686,6 +2686,14 @@ paths:
                       
                       // Special handling for e2bProxyEnabled - auto-fill defaults when enabled
                       if (setting === "e2bProxyEnabled") {
+                        const isHighlighted = searchQuery && (
+                          setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
+                        );
+                        
                         return (
                           <SettingInput
                             key={setting}
@@ -2696,6 +2704,7 @@ paths:
                             type={fieldInfo.type}
                             value={getNestedValue(configuration, setting) || false}
                             technical={fieldInfo.technical}
+                            highlighted={isHighlighted}
                             onChange={(value) => {
                               const updates: any = { e2bProxyEnabled: value };
                               
@@ -2723,6 +2732,15 @@ paths:
                         );
                       }
                       
+                      // Check if this setting matches the search query
+                      const isHighlighted = searchQuery && (
+                        setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                        (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                        (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
+                      );
+                      
                       return (
                         <SettingInput
                           key={setting}
@@ -2736,6 +2754,7 @@ paths:
                           options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : undefined}
                           data-testid={`input-${setting}`}
                           technical={fieldInfo.technical}
+                          highlighted={isHighlighted}
                         />
                       );
                     })}

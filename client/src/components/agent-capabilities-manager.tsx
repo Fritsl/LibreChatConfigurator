@@ -127,7 +127,8 @@ export function AgentCapabilitiesManager({
       return "optional";
     }
     
-    const isConfigured = capability.configFields.some(field => {
+    // Check if ALL required fields are configured (use every, not some)
+    const isConfigured = capability.configFields.every(field => {
       const value = getNestedValue(configuration, field);
       if (Array.isArray(value)) {
         return value.length > 0;

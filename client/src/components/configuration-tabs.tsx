@@ -7,6 +7,7 @@ import { StatusIndicator } from "./status-indicator";
 import { SpeechPresetSelector } from "./speech-preset-selector";
 import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
 import { UserExperiencePresets } from "./user-experience-presets";
+import { AgentCapabilitiesManager } from "./agent-capabilities-manager";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -2650,6 +2651,34 @@ paths:
                               options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
                               data-testid={`input-${setting}`}
                               technical={fieldInfo.technical}
+                            />
+                          </div>
+                        );
+                      }
+                      
+                      // Special handling for agent capabilities - use custom guided component
+                      if (setting === "endpoints.agents.capabilities") {
+                        return (
+                          <div key={setting} className="space-y-2">
+                            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              {fieldInfo.label}
+                            </label>
+                            {fieldInfo.description && (
+                              <p className="text-sm text-muted-foreground mb-4">
+                                {fieldInfo.description}
+                              </p>
+                            )}
+                            <AgentCapabilitiesManager
+                              selectedCapabilities={getNestedValue(configuration, setting) || []}
+                              configuration={configuration}
+                              onCapabilitiesChange={(capabilities) => {
+                                onConfigurationChange(setNestedValue(configuration, setting, capabilities.length > 0 ? capabilities : undefined));
+                              }}
+                              onNavigateToTab={(tabId) => {
+                                setActiveTab(tabId);
+                                // Scroll to top after tab change
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
                             />
                           </div>
                         );

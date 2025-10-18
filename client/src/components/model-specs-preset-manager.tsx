@@ -14,6 +14,7 @@ interface ModelSpecPreset {
   default?: boolean;
   preset: {
     endpoint: string;
+    model?: string;
     agent_id?: string;
   };
 }
@@ -74,6 +75,8 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
       updated[index].default = value as boolean;
     } else if (field === "endpoint") {
       updated[index].preset.endpoint = value as string;
+    } else if (field === "model") {
+      updated[index].preset.model = value as string;
     } else if (field === "agent_id") {
       updated[index].preset.agent_id = value as string;
     }
@@ -85,9 +88,9 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
       <Alert data-testid="alert-modelspecs-info">
         <Info className="h-4 w-4" />
         <AlertDescription>
-          <strong>Model Specs Presets:</strong> Configure preset endpoints to control what users see. 
-          For agents-only mode: set <code>endpoint: "agents"</code> and optionally add an <code>agent_id</code> to make it the default. 
-          Get agent IDs from your LibreChat MongoDB → agents collection.
+          <strong>Model Specs Presets:</strong> Configure preset endpoints and models to control what users see. 
+          Set <code>endpoint</code> (required), optionally specify a <code>model</code> (e.g., "gpt-4o"), and for agents add an <code>agent_id</code> for default selection. 
+          Get agent IDs from your LibreChat MongoDB → agents collection. When <code>enforce: true</code> is set above, users must use these specs.
         </AlertDescription>
       </Alert>
 
@@ -144,38 +147,51 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor={`preset-${index}-endpoint`}>Endpoint *</Label>
-                <Select
-                  value={preset.preset.endpoint}
-                  onValueChange={(value) => updatePreset(index, "endpoint", value)}
-                >
-                  <SelectTrigger id={`preset-${index}-endpoint`} data-testid={`select-preset-endpoint-${index}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ENDPOINT_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor={`preset-${index}-agent-id`}>Agent ID (optional)</Label>
-                <Input
-                  id={`preset-${index}-agent-id`}
-                  value={preset.preset.agent_id || ""}
-                  onChange={(e) => updatePreset(index, "agent_id", e.target.value)}
-                  placeholder="agent_xyz123..."
-                  data-testid={`input-preset-agent-id-${index}`}
-                />
-                <p className="text-xs text-muted-foreground">
-                  For default agent selection (agents endpoint only)
-                </p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor={`preset-${index}-endpoint`}>Endpoint *</Label>
+              <Select
+                value={preset.preset.endpoint}
+                onValueChange={(value) => updatePreset(index, "endpoint", value)}
+              >
+                <SelectTrigger id={`preset-${index}-endpoint`} data-testid={`select-preset-endpoint-${index}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ENDPOINT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor={`preset-${index}-model`}>Model (optional)</Label>
+              <Input
+                id={`preset-${index}-model`}
+                value={preset.preset.model || ""}
+                onChange={(e) => updatePreset(index, "model", e.target.value)}
+                placeholder="e.g., gpt-4o, claude-3-5-sonnet"
+                data-testid={`input-preset-model-${index}`}
+              />
+              <p className="text-xs text-muted-foreground">
+                Specific model to enforce (e.g., "gpt-4o" for OpenAI, "claude-3-5-sonnet" for Anthropic)
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor={`preset-${index}-agent-id`}>Agent ID (optional)</Label>
+              <Input
+                id={`preset-${index}-agent-id`}
+                value={preset.preset.agent_id || ""}
+                onChange={(e) => updatePreset(index, "agent_id", e.target.value)}
+                placeholder="agent_xyz123..."
+                data-testid={`input-preset-agent-id-${index}`}
+              />
+              <p className="text-xs text-muted-foreground">
+                For default agent selection (agents endpoint only)
+              </p>
             </div>
 
             <div className="flex items-center space-x-2">

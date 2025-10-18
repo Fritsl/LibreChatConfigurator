@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -64,6 +64,21 @@ export function ConfigurationTabs({
 }: ConfigurationTabsProps) {
   const [activeTab, setActiveTab] = useState("ui-visibility");
   const { toast } = useToast();
+  
+  // Auto-scroll to first highlighted setting when search changes or tab changes
+  useEffect(() => {
+    if (searchQuery) {
+      setTimeout(() => {
+        const firstHighlighted = document.querySelector('[data-highlighted="true"]');
+        if (firstHighlighted) {
+          firstHighlighted.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 150);
+    }
+  }, [searchQuery, activeTab]);
 
   const copyToClipboard = async (content: string, name: string) => {
     try {
@@ -2686,13 +2701,13 @@ paths:
                       
                       // Special handling for e2bProxyEnabled - auto-fill defaults when enabled
                       if (setting === "e2bProxyEnabled") {
-                        const isHighlighted = searchQuery && (
+                        const isHighlighted = Boolean(searchQuery && (
                           setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
                           (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
                           (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-                        );
+                        ));
                         
                         return (
                           <SettingInput
@@ -2733,13 +2748,13 @@ paths:
                       }
                       
                       // Check if this setting matches the search query
-                      const isHighlighted = searchQuery && (
+                      const isHighlighted = Boolean(searchQuery && (
                         setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
                         (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
                         (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-                      );
+                      ));
                       
                       return (
                         <SettingInput

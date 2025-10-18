@@ -803,6 +803,23 @@ function escapeYamlString(str: string): string {
   return str.replace(/'/g, "''");
 }
 
+// Helper function to escape double-quoted YAML strings
+function escapeYamlDoubleQuoted(str: string): string {
+  if (!str) return '';
+  // In YAML double-quoted strings, escape special characters to prevent injection:
+  // 1. Backslashes first (\ → \\) to avoid double-escaping
+  // 2. Newlines (\n → \\n) to prevent multiline injection
+  // 3. Carriage returns (\r → \\r)
+  // 4. Tabs (\t → \\t)
+  // 5. Double quotes (" → \")
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+    .replace(/"/g, '\\"');
+}
+
 function generateYamlFile(config: any): string {
   return `# =============================================================================
 # LibreChat Configuration for v0.8.0-RC4
@@ -838,20 +855,21 @@ mcpServers: ${
     }
     
     return `\n${serversToProcess.map(([serverName, server]: [string, any]) => {
-      let serverConfig = `  ${serverName}:\n    type: ${server.type || 'streamable-http'}`;
+      // Use single quotes for server name (key) to prevent injection
+      let serverConfig = `  '${escapeYamlString(serverName)}':\n    type: "${escapeYamlDoubleQuoted(server.type || 'streamable-http')}"`;
       
       if (server.url) {
-        serverConfig += `\n    url: "${server.url}"`;
+        serverConfig += `\n    url: "${escapeYamlDoubleQuoted(server.url)}"`;
       }
       
       if (server.command) {
-        serverConfig += `\n    command: "${server.command}"`;
+        serverConfig += `\n    command: "${escapeYamlDoubleQuoted(server.command)}"`;
       }
       
       if (server.args && server.args.length > 0) {
         serverConfig += `\n    args:`;
         server.args.forEach((arg: string) => {
-          serverConfig += `\n      - "${arg}"`;
+          serverConfig += `\n      - "${escapeYamlDoubleQuoted(arg)}"`;
         });
       }
       
@@ -864,7 +882,8 @@ mcpServers: ${
       if (server.headers && Object.keys(server.headers).length > 0) {
         serverConfig += `\n    headers:`;
         Object.entries(server.headers).forEach(([k, v]) => {
-          serverConfig += `\n      ${k}: "${v}"`;
+          // Escape both header key and value
+          serverConfig += `\n      '${escapeYamlString(k)}': "${escapeYamlDoubleQuoted(String(v))}"`;
         });
       }
       
@@ -877,7 +896,7 @@ mcpServers: ${
       }
       
       if (server.iconPath) {
-        serverConfig += `\n    iconPath: "${server.iconPath}"`;
+        serverConfig += `\n    iconPath: "${escapeYamlDoubleQuoted(server.iconPath)}"`;
       }
       
       if (server.chatMenu !== undefined) {
@@ -1005,9 +1024,9 @@ interface:
   runCode: ${config.interface?.runCode ?? false}
   artifacts: ${config.interface?.artifacts ?? true}
   temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.defaultPreset ? `
-  defaultPreset: "${config.interface.defaultPreset}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
-  customWelcome: "${config.interface?.customWelcome || config.customWelcome}"` : ''}${config.interface?.customFooter || config.customFooter ? `
-  customFooter: "${config.interface?.customFooter || config.customFooter}"` : ''}
+  defaultPreset: "${escapeYamlDoubleQuoted(config.interface.defaultPreset)}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
+  customWelcome: "${escapeYamlDoubleQuoted(config.interface?.customWelcome || config.customWelcome)}"` : ''}${config.interface?.customFooter || config.customFooter ? `
+  customFooter: "${escapeYamlDoubleQuoted(config.interface?.customFooter || config.customFooter)}"` : ''}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration
@@ -1021,14 +1040,14 @@ modelSpecs:${config.modelSpecs.enforce !== undefined ? `
   enforce: ${config.modelSpecs.enforce}` : ''}${config.modelSpecs.prioritize !== undefined ? `
   prioritize: ${config.modelSpecs.prioritize}` : ''}
   list:
-${config.modelSpecs.list.map((preset: any) => `    - name: "${preset.name}"${preset.label ? `
-      label: "${preset.label}"` : ''}${preset.description ? `
-      description: "${preset.description}"` : ''}${preset.default ? `
+${config.modelSpecs.list.map((preset: any) => `    - name: "${escapeYamlDoubleQuoted(preset.name)}"${preset.label ? `
+      label: "${escapeYamlDoubleQuoted(preset.label)}"` : ''}${preset.description ? `
+      description: "${escapeYamlDoubleQuoted(preset.description)}"` : ''}${preset.default ? `
       default: ${preset.default}` : ''}
       preset:
         endpoint: "${preset.preset.endpoint}"${preset.preset.model ? `
-        model: "${preset.preset.model}"` : ''}${preset.preset.agent_id ? `
-        agent_id: "${preset.preset.agent_id}"` : ''}`).join('\n')}
+        model: "${escapeYamlDoubleQuoted(preset.preset.model)}"` : ''}${preset.preset.agent_id ? `
+        agent_id: "${escapeYamlDoubleQuoted(preset.preset.agent_id)}"` : ''}`).join('\n')}
 ` : ''}
 ${config.fileConfig ? `
 # File Configuration

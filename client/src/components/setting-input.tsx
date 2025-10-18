@@ -39,6 +39,7 @@ interface SettingInputProps {
     yamlPath?: string;
     configFile: ".env" | "librechat.yaml" | ".env & librechat.yaml";
   };
+  highlighted?: boolean;
 }
 
 export function SettingInput({
@@ -57,6 +58,7 @@ export function SettingInput({
   fieldName,
   "data-testid": testId,
   technical,
+  highlighted = false,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
@@ -409,7 +411,7 @@ export function SettingInput({
   };
 
   return (
-    <div className="space-y-2">
+    <div className={`space-y-2 ${highlighted ? 'p-4 -mx-4 rounded-lg bg-yellow-100 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 animate-pulse' : ''}`} data-highlighted={highlighted}>
       <div className="flex items-center space-x-2">
         <Label className="text-sm font-medium text-foreground">
           {label}

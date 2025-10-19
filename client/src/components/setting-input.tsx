@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Info, Eye, EyeOff, Plus, X, ExternalLink } from "lucide-react";
+import { Info, Eye, EyeOff, Plus, X, ExternalLink, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MCPServersEditor } from "@/components/mcp-servers-editor";
@@ -40,6 +40,9 @@ interface SettingInputProps {
     configFile: ".env" | "librechat.yaml" | ".env & librechat.yaml";
   };
   highlighted?: boolean;
+  disabled?: boolean;
+  disabledMessage?: string;
+  onNavigateToRelatedSetting?: () => void;
 }
 
 export function SettingInput({
@@ -59,6 +62,9 @@ export function SettingInput({
   "data-testid": testId,
   technical,
   highlighted = false,
+  disabled = false,
+  disabledMessage,
+  onNavigateToRelatedSetting,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
@@ -86,15 +92,43 @@ export function SettingInput({
     switch (type) {
       case "boolean":
         return (
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={Boolean(value)}
-              onCheckedChange={onChange}
-              data-testid={testId}
-            />
-            <span className="text-sm text-muted-foreground">
-              {value ? "Enabled" : "Disabled"}
-            </span>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={Boolean(value)}
+                onCheckedChange={onChange}
+                data-testid={testId}
+                disabled={disabled}
+              />
+              <span className="text-sm text-muted-foreground">
+                {value ? "Enabled" : "Disabled"}
+              </span>
+              {disabled && (
+                <Lock className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
+            {disabled && disabledMessage && (
+              <div className="flex items-start gap-2 p-3 rounded-md bg-muted/50 border border-border">
+                <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {disabledMessage}
+                  </p>
+                  {onNavigateToRelatedSetting && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onNavigateToRelatedSetting}
+                      className="h-8 text-xs"
+                      data-testid="navigate-to-related-setting"
+                    >
+                      <ArrowRight className="h-3 w-3 mr-1" />
+                      Configure Model Specs
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         );
 

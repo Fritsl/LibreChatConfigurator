@@ -2458,6 +2458,17 @@ paths:
                       </div>
                     ) : (
                       <>
+                        {tab.id === "search" && (
+                          <div className="col-span-full mb-6">
+                            <Alert data-testid="alert-search-result-limits">
+                              <Info className="h-4 w-4" />
+                              <AlertDescription>
+                                <strong>💡 Limiting Search Results:</strong> To control how many search results agents use, configure the citation limits in the <strong>Agents</strong> tab: <em>Max Citations</em> (default: 30), <em>Max Citations Per File</em> (default: 7), and <em>Min Relevance Score</em> (default: 0.45). These settings determine how many results are included and their quality threshold.
+                              </AlertDescription>
+                            </Alert>
+                          </div>
+                        )}
+                        
                         {tab.id === "ui-visibility" && (
                           <div className="col-span-full mb-6">
                             {/* User Experience Mode Presets */}

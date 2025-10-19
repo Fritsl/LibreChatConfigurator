@@ -82,7 +82,7 @@ const interfaceSchema = z.object({
     modalTitle: z.string().optional(),
     modalContent: z.string().optional(),
   }).optional(),
-  modelSelect: z.boolean().default(true), // Required for modelSpecs.addedEndpoints
+  modelSelect: z.boolean().default(true), // RC4: Show model selector dropdown (replaces deprecated interface.endpointsMenu from v1.2.3)
   parameters: z.boolean().default(true),
   sidePanel: z.boolean().default(true),
   presets: z.boolean().default(true),

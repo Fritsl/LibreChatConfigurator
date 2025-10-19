@@ -15,6 +15,7 @@ The UI consolidates settings like app title, welcome message, and interface visi
   - `interface.temporaryChatRetention`: Chat retention period in hours (1-8760, default: 720)
   - `interface.webSearch`: Toggle web search UI visibility
 - **Schema Compliance**: Updated all configuration defaults, UI presets, and test data to match current LibreChat RC4 specifications
+- **Smart UI Disable System**: Added dependency-aware UI that automatically disables `interface.modelSelect` when `modelSpecs.addedEndpoints` is populated, matching LibreChat's behavior. Shows clear explanation with lock icon and provides "Configure Model Specs" button that scrolls to and highlights the dependent field. Prevents confusing state where user sets modelSelect=false but LibreChat silently enables it.
 
 # User Preferences
 

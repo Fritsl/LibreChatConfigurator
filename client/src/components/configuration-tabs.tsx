@@ -2381,11 +2381,11 @@ paths:
                           }}
                           onApplyPreset={(presetId, customValues) => {
                             // Apply preset settings
-                            const presetSettings: Record<string, any> = {};
+                            let presetSettings: Record<string, any> = {};
                             
                             // Map preset values to configuration
                             Object.entries(customValues).forEach(([key, value]) => {
-                              setNestedValue(presetSettings, key, value);
+                              presetSettings = setNestedValue(presetSettings, key, value);
                             });
                             
                             // Get preset configuration based on preset ID
@@ -2412,7 +2412,7 @@ paths:
                                 "speech.speechTab.textToSpeech.cacheTTS": true,
                               };
                               Object.entries(chatgptPreset).forEach(([key, value]) => {
-                                setNestedValue(presetSettings, key, value);
+                                presetSettings = setNestedValue(presetSettings, key, value);
                               });
                             } else if (presetId === "private-cheap") {
                               const privatePreset = {
@@ -2437,14 +2437,14 @@ paths:
                                 "speech.speechTab.textToSpeech.cacheTTS": false,
                               };
                               Object.entries(privatePreset).forEach(([key, value]) => {
-                                setNestedValue(presetSettings, key, value);
+                                presetSettings = setNestedValue(presetSettings, key, value);
                               });
                             }
                             
                             // Merge with existing configuration
-                            const updatedConfig = { ...configuration };
+                            let updatedConfig = { ...configuration };
                             Object.entries(presetSettings).forEach(([key, value]) => {
-                              setNestedValue(updatedConfig, key, value);
+                              updatedConfig = setNestedValue(updatedConfig, key, value);
                             });
                             
                             onConfigurationChange(updatedConfig);
@@ -2465,26 +2465,26 @@ paths:
                               currentMode={getNestedValue(configuration, "ux.preset.mode")}
                               configuration={configuration}
                               onApplyPreset={(presetId, agentId) => {
-                                const updatedConfig = { ...configuration };
+                                let updatedConfig = { ...configuration };
                                 
                                 if (presetId === "agents-only") {
                                   // Apply agents-only settings - Complete LibreChat RC4 configuration
                                   
                                   // 1. Restrict to agents endpoint only (ENDPOINTS env variable)
-                                  setNestedValue(updatedConfig, "enabledEndpoints", ["agents"]);
+                                  updatedConfig = setNestedValue(updatedConfig, "enabledEndpoints", ["agents"]);
                                   
                                   // 2. Hide UI elements (using interface.modelSelect per RC4 docs)
-                                  setNestedValue(updatedConfig, "interface.modelSelect", false);
-                                  setNestedValue(updatedConfig, "interface.presets", false);
+                                  updatedConfig = setNestedValue(updatedConfig, "interface.modelSelect", false);
+                                  updatedConfig = setNestedValue(updatedConfig, "interface.presets", false);
                                   
                                   // 3. Configure agents endpoint
-                                  setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", true);
+                                  updatedConfig = setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", true);
                                   
                                   // 4. Configure modelSpecs with enforcement
-                                  setNestedValue(updatedConfig, "modelSpecs.enforce", true);
-                                  setNestedValue(updatedConfig, "modelSpecs.prioritize", true);
-                                  setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear to allow modelSelect disable
-                                  setNestedValue(updatedConfig, "modelSpecs.list", [
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.enforce", true);
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.prioritize", true);
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear to allow modelSelect disable
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.list", [
                                     {
                                       name: "Agents",
                                       label: "Agents",
@@ -2498,18 +2498,18 @@ paths:
                                   ]);
                                   
                                   // 5. Track preset mode
-                                  setNestedValue(updatedConfig, "ux.preset.mode", "agents-only");
+                                  updatedConfig = setNestedValue(updatedConfig, "ux.preset.mode", "agents-only");
                                 } else if (presetId === "standard") {
                                   // Restore standard settings
-                                  setNestedValue(updatedConfig, "enabledEndpoints", ["openAI", "anthropic", "google", "azureOpenAI", "agents"]);
-                                  setNestedValue(updatedConfig, "interface.modelSelect", true);
-                                  setNestedValue(updatedConfig, "interface.presets", true);
-                                  setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", false);
-                                  setNestedValue(updatedConfig, "modelSpecs.enforce", undefined);
-                                  setNestedValue(updatedConfig, "modelSpecs.prioritize", undefined);
-                                  setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear addedEndpoints
-                                  setNestedValue(updatedConfig, "modelSpecs.list", undefined);
-                                  setNestedValue(updatedConfig, "ux.preset.mode", "standard");
+                                  updatedConfig = setNestedValue(updatedConfig, "enabledEndpoints", ["openAI", "anthropic", "google", "azureOpenAI", "agents"]);
+                                  updatedConfig = setNestedValue(updatedConfig, "interface.modelSelect", true);
+                                  updatedConfig = setNestedValue(updatedConfig, "interface.presets", true);
+                                  updatedConfig = setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", false);
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.enforce", undefined);
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.prioritize", undefined);
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear addedEndpoints
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.list", undefined);
+                                  updatedConfig = setNestedValue(updatedConfig, "ux.preset.mode", "standard");
                                 }
                                 
                                 onConfigurationChange(updatedConfig);

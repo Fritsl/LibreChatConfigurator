@@ -455,6 +455,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 function generateEnvFile(config: any): string {
   const currentDate = new Date().toISOString().split('T')[0];
   
+  // DEBUG: Log enabledEndpoints value
+  console.log('🔍 [ENDPOINTS DEBUG] generateEnvFile called with enabledEndpoints:', JSON.stringify(config.enabledEndpoints));
+  
   return `# =============================================================================
 # LibreChat Environment Configuration (RC4)
 # Generated on ${currentDate}
@@ -473,17 +476,7 @@ ${config.helpAndFAQURL ? `HELP_AND_FAQ_URL=${config.helpAndFAQURL}` : '# HELP_AN
 # =============================================================================
 ${config.host ? `HOST=${config.host}` : 'HOST=0.0.0.0'}
 ${config.port ? `PORT=${config.port}` : 'PORT=3080'}
-${ 
-  // LibreChat RC4 Beta: ENDPOINTS controls which providers are visible in the UI
-  // This is unusual architecture - visibility should be in YAML, not .env
-  // TODO: Update when LibreChat moves endpoint visibility to librechat.yaml
-  (() => {
-    console.log('🔍 [ENDPOINTS DEBUG] enabledEndpoints:', JSON.stringify(config.enabledEndpoints));
-    return config.enabledEndpoints && config.enabledEndpoints.length > 0 
-      ? `ENDPOINTS=${config.enabledEndpoints.join(',')}` 
-      : 'ENDPOINTS=openAI,anthropic,google,azureOpenAI,agents';
-  })()
-}
+${config.enabledEndpoints && config.enabledEndpoints.length > 0 ? `ENDPOINTS=${config.enabledEndpoints.join(',')}` : 'ENDPOINTS=openAI,anthropic,google,azureOpenAI,agents'}
 ${config.nodeEnv ? `NODE_ENV=${config.nodeEnv}` : '# NODE_ENV=production'}
 ${config.domainClient ? `DOMAIN_CLIENT=${config.domainClient}` : '# DOMAIN_CLIENT='}
 ${config.domainServer ? `DOMAIN_SERVER=${config.domainServer}` : '# DOMAIN_SERVER='}

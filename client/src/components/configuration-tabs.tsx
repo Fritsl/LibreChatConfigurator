@@ -1759,7 +1759,7 @@ paths:
       // Agents Configuration
       "endpoints.agents.recursionLimit": { 
         type: "number", 
-        description: "Maximum depth of recursive reasoning for agent chains (1-100)", 
+        description: "Default number of steps an agent can take in a single run. Users can adjust this in the UI up to the Max Recursion Limit. Higher values allow more complex multi-step reasoning but increase costs and latency. Range: 1-100, LibreChat default when unset: 25", 
         label: "Recursion Limit",
         placeholder: "25",
         min: 1,
@@ -1770,7 +1770,7 @@ paths:
       },
       "endpoints.agents.maxRecursionLimit": { 
         type: "number", 
-        description: "Maximum allowed recursion limit that can be set (1-200)", 
+        description: "Absolute maximum number of steps users can configure for agent runs. This sets the ceiling for the 'Max Agent Steps' slider in Advanced Settings. Use this to prevent users from setting excessively high step counts. Range: 1-200, LibreChat default: inherits Recursion Limit value (or 25 if both unset)", 
         label: "Max Recursion Limit",
         placeholder: "25",
         min: 1,

@@ -2483,6 +2483,7 @@ paths:
                                   // 4. Configure modelSpecs with enforcement
                                   setNestedValue(updatedConfig, "modelSpecs.enforce", true);
                                   setNestedValue(updatedConfig, "modelSpecs.prioritize", true);
+                                  setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear to allow modelSelect disable
                                   setNestedValue(updatedConfig, "modelSpecs.list", [
                                     {
                                       name: "Agents",
@@ -2506,6 +2507,7 @@ paths:
                                   setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", false);
                                   setNestedValue(updatedConfig, "modelSpecs.enforce", undefined);
                                   setNestedValue(updatedConfig, "modelSpecs.prioritize", undefined);
+                                  setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear addedEndpoints
                                   setNestedValue(updatedConfig, "modelSpecs.list", undefined);
                                   setNestedValue(updatedConfig, "ux.preset.mode", "standard");
                                 }

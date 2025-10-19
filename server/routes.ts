@@ -455,9 +455,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 function generateEnvFile(config: any): string {
   const currentDate = new Date().toISOString().split('T')[0];
   
-  // DEBUG: Log enabledEndpoints value
-  console.log('🔍 [ENDPOINTS DEBUG] generateEnvFile called with enabledEndpoints:', JSON.stringify(config.enabledEndpoints));
-  
   return `# =============================================================================
 # LibreChat Environment Configuration (RC4)
 # Generated on ${currentDate}

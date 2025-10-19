@@ -6,6 +6,16 @@ The system features a React frontend, Express backend, and Drizzle ORM, offering
 
 The UI consolidates settings like app title, welcome message, and interface visibility. The system addresses a known LibreChat RC4 bug related to `modelSpecs.addedEndpoints` by disabling it by default due to its impact on interface visibility settings. It also provides granular control over "Enabled Endpoints" to configure available AI providers.
 
+# Recent Changes
+
+## October 19, 2025
+- **Interface Schema Migration**: Removed deprecated `interface.endpointsMenu` field (deprecated in LibreChat v1.2.4) and migrated to `interface.modelSelect` throughout the codebase
+- **New RC4 Fields Added**: Integrated missing fields from LibreChat v1.2.4 documentation:
+  - `interface.mcpServers.placeholder`: Placeholder text for MCP server configuration
+  - `interface.temporaryChatRetention`: Chat retention period in hours (1-8760, default: 720)
+  - `interface.webSearch`: Toggle web search UI visibility
+- **Schema Compliance**: Updated all configuration defaults, UI presets, and test data to match current LibreChat RC4 specifications
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

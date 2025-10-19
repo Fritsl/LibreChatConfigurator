@@ -136,6 +136,105 @@ Each generated package contains these files:
 
 **Manual Installation:** If not using Docker, copy `.env` and `librechat.yaml` to your LibreChat directory.
 
+### 🛠️ Local Development Setup (Alternative to Docker)
+
+**Best Approach: Configuration Export → Local Development**
+
+If you want to develop LibreChat locally in VS Code with hot-reload and full debugging capabilities instead of using Docker, this workflow combines the power of this configuration tool with local development:
+
+#### The Workflow
+
+1. **Configure in This Tool**
+   - Use this configurator to visually set up all your LibreChat settings
+   - Configure API keys, endpoints, features, UI settings, etc.
+   - Generate and download the ZIP package
+
+2. **Extract Configuration Files**
+   - Open the downloaded ZIP package
+   - Extract **only** these two files:
+     - `.env` - All environment variables
+     - `librechat.yaml` - All YAML configuration
+
+3. **Clone LibreChat from GitHub**
+   ```bash
+   # Create a development folder
+   mkdir librechat-dev
+   cd librechat-dev
+   
+   # Clone the official LibreChat repository
+   git clone https://github.com/danny-avila/LibreChat.git
+   cd LibreChat
+   ```
+
+4. **Copy Configuration Files**
+   ```bash
+   # Copy the extracted files into your LibreChat root directory
+   # Place .env and librechat.yaml in the same folder as package.json
+   ```
+
+5. **Set Up Local Development**
+   ```bash
+   # Install dependencies
+   npm install
+   
+   # Start MongoDB (using Docker)
+   npm run backend:dev:docker
+   
+   # In a new terminal: Start backend with hot-reload
+   npm run backend:dev
+   
+   # In another terminal: Start frontend with hot-reload
+   npm run frontend:dev
+   ```
+
+6. **Access LibreChat**
+   - Frontend: http://localhost:3090
+   - Backend API: http://localhost:3080
+   - Changes to code auto-reload instantly
+
+#### Benefits of This Approach
+
+- ✅ **Visual Configuration** - Use this tool's UI instead of manually editing files
+- ✅ **Full Source Access** - Edit LibreChat source code directly in VS Code
+- ✅ **Hot Reload** - See changes instantly without rebuilding containers
+- ✅ **Debugging** - Use VS Code debugger, breakpoints, step-through
+- ✅ **AI Assistant Ready** - Use GitHub Copilot or cursor.ai on the actual codebase
+- ✅ **Version Control** - Commit your changes with git
+- ✅ **Fast Iteration** - No Docker build times
+
+#### Using Copilot/AI Assistants
+
+**Starting from an empty folder with AI help:**
+
+1. **Ask your AI assistant** (Copilot, Cursor, etc.):
+   ```
+   "Clone LibreChat from https://github.com/danny-avila/LibreChat.git
+   and set it up for local development. I have a .env and librechat.yaml
+   configuration file ready to use."
+   ```
+
+2. **Let AI guide you** through:
+   - Installing Node.js dependencies
+   - Setting up MongoDB (local or Docker)
+   - Starting backend and frontend servers
+   - Troubleshooting any setup issues
+
+3. **AI can help with**:
+   - Customizing LibreChat features
+   - Adding new endpoints or models
+   - Debugging configuration issues
+   - Understanding the codebase structure
+
+**Pro tip**: Keep this configurator open in a browser tab. When you need to change settings, use the UI, re-download the package, and copy the new `.env` and `librechat.yaml` files to your local LibreChat folder. Restart the servers to apply changes.
+
+#### When to Use Each Approach
+
+| Deployment Method | Best For | Setup Time |
+|-------------------|----------|------------|
+| **Docker (.bat/.sh scripts)** | Production deployments, quick setup, no code changes | 2 minutes |
+| **Local Development** | Development, testing, customization, learning LibreChat | 10-15 minutes |
+| **Docker Dev with Volumes** | Hybrid: Docker but with local file editing | 5 minutes |
+
 ### ⚠️ Development Status
 
 **This tool is under active development and may contain bugs.** Always backup your configurations and test in a non-production environment first.

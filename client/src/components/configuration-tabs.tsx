@@ -2720,6 +2720,58 @@ paths:
                         );
                       }
                       
+                      // Special handling for interface.modelSelect - must be enabled when using modelSpecs.addedEndpoints
+                      if (setting === "interface.modelSelect") {
+                        const addedEndpoints = getNestedValue(configuration, "modelSpecs.addedEndpoints") || [];
+                        const isDisabled = addedEndpoints.length > 0;
+                        
+                        const isHighlighted = Boolean(searchQuery && (
+                          setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                          (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
+                        ));
+                        
+                        return (
+                          <SettingInput
+                            key={setting}
+                            label={fieldInfo.label}
+                            description={fieldInfo.description}
+                            docUrl={fieldInfo.docUrl}
+                            docSection={fieldInfo.docSection}
+                            type={fieldInfo.type}
+                            value={isDisabled ? true : getNestedValue(configuration, setting) || false}
+                            onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
+                            technical={fieldInfo.technical}
+                            highlighted={isHighlighted}
+                            disabled={isDisabled}
+                            disabledMessage={
+                              isDisabled 
+                                ? "This setting is automatically enabled because you're using Model Specs Added Endpoints. To disable this, first remove all items from the 'Visible Endpoints (UI)' field in the Model Specs section below."
+                                : undefined
+                            }
+                            onNavigateToRelatedSetting={
+                              isDisabled 
+                                ? () => {
+                                    // Scroll to the modelSpecs.addedEndpoints field
+                                    const element = document.querySelector('[data-testid="input-modelSpecs.addedEndpoints"]');
+                                    if (element) {
+                                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                      // Add a brief highlight effect
+                                      element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+                                      setTimeout(() => {
+                                        element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+                                      }, 2000);
+                                    }
+                                  }
+                                : undefined
+                            }
+                            data-testid={`input-${setting}`}
+                          />
+                        );
+                      }
+                      
                       // Special handling for e2bProxyEnabled - auto-fill defaults when enabled
                       if (setting === "e2bProxyEnabled") {
                         const isHighlighted = Boolean(searchQuery && (

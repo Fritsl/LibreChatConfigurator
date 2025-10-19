@@ -1789,7 +1789,7 @@ paths:
       },
       "endpoints.agents.maxCitations": { 
         type: "number", 
-        description: "Maximum number of citations per agent response (1-100)", 
+        description: "Maximum total citations an agent can use across all sources. Controls how many search results are included. Range: 1-100, Default: 30", 
         label: "Max Citations",
         placeholder: "30",
         min: 1,
@@ -1800,7 +1800,7 @@ paths:
       },
       "endpoints.agents.maxCitationsPerFile": { 
         type: "number", 
-        description: "Maximum citations allowed from a single file (1-20)", 
+        description: "Maximum citations from any single source/file to prevent over-reliance on one result. Range: 1-20, Default: 7", 
         label: "Max Citations Per File",
         placeholder: "7",
         min: 1,
@@ -1811,7 +1811,7 @@ paths:
       },
       "endpoints.agents.minRelevanceScore": { 
         type: "number", 
-        description: "Minimum relevance score for including search results (0.0-1.0)", 
+        description: "Minimum relevance threshold for including search results - higher values mean stricter filtering. Range: 0.0-1.0, Default: 0.45", 
         label: "Min Relevance Score",
         placeholder: "0.45",
         min: 0,

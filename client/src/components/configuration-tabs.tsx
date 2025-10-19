@@ -214,7 +214,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.endpointsMenu", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.fileCitations", "interface.runCode", "interface.artifacts"],
+          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -1926,7 +1926,14 @@ paths:
       "interface.termsOfService.modalAcceptance": { type: "boolean", description: "Require modal acceptance of terms", label: "Terms Modal Acceptance", technical: { yamlPath: "interface.termsOfService.modalAcceptance", configFile: "librechat.yaml" } },
       "interface.termsOfService.modalTitle": { type: "text", description: "Terms modal title", label: "Terms Modal Title", technical: { yamlPath: "interface.termsOfService.modalTitle", configFile: "librechat.yaml" } },
       "interface.termsOfService.modalContent": { type: "textarea", description: "Terms modal content", label: "Terms Modal Content", technical: { yamlPath: "interface.termsOfService.modalContent", configFile: "librechat.yaml" } },
-      "interface.endpointsMenu": { type: "boolean", description: "Show endpoints menu", label: "Endpoints Menu", technical: { yamlPath: "interface.endpointsMenu", configFile: "librechat.yaml" } },
+      "interface.mcpServers.placeholder": { 
+        type: "text", 
+        description: "Placeholder text displayed in the MCP (Model Context Protocol) server selection dropdown when no server is selected.", 
+        label: "MCP Servers Placeholder", 
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface#mcpservers",
+        docSection: "Interface Config",
+        technical: { yamlPath: "interface.mcpServers.placeholder", configFile: "librechat.yaml" } 
+      },
       "interface.modelSelect": { 
         type: "boolean", 
         description: "Enable the model selection dropdown in the UI. This allows users to choose between different AI models and providers.", 
@@ -1948,6 +1955,22 @@ paths:
       "interface.bookmarks": { type: "boolean", description: "Show bookmarks", label: "Bookmarks", technical: { yamlPath: "interface.bookmarks", configFile: "librechat.yaml" } },
       "interface.multiConvo": { type: "boolean", description: "Enable multiple conversations", label: "Multi Conversation", technical: { yamlPath: "interface.multiConvo", configFile: "librechat.yaml" } },
       "interface.agents": { type: "boolean", description: "Show agents", label: "Agents", technical: { yamlPath: "interface.agents", configFile: "librechat.yaml" } },
+      "interface.webSearch": { 
+        type: "boolean", 
+        description: "Enable the web search button in the chat interface. Allows users to perform web searches during conversations.", 
+        label: "Web Search", 
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface#websearch",
+        docSection: "Interface Config",
+        technical: { yamlPath: "interface.webSearch", configFile: "librechat.yaml" } 
+      },
+      "interface.temporaryChatRetention": { 
+        type: "number", 
+        description: "Chat retention time in hours (minimum 1, maximum 8760). Default is 720 hours (30 days) if not specified.", 
+        label: "Temporary Chat Retention (hours)", 
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
+        docSection: "Interface Config",
+        technical: { yamlPath: "interface.temporaryChatRetention", configFile: "librechat.yaml" } 
+      },
       "interface.peoplePicker.users": { type: "boolean", description: "Show users in people picker", label: "People Picker Users", technical: { yamlPath: "interface.peoplePicker.users", configFile: "librechat.yaml" } },
       "interface.peoplePicker.groups": { type: "boolean", description: "Show groups in people picker", label: "People Picker Groups", technical: { yamlPath: "interface.peoplePicker.groups", configFile: "librechat.yaml" } },
       "interface.peoplePicker.roles": { type: "boolean", description: "Show roles in people picker", label: "People Picker Roles", technical: { yamlPath: "interface.peoplePicker.roles", configFile: "librechat.yaml" } },
@@ -2450,8 +2473,7 @@ paths:
                                   // 1. Restrict to agents endpoint only (ENDPOINTS env variable)
                                   setNestedValue(updatedConfig, "enabledEndpoints", ["agents"]);
                                   
-                                  // 2. Hide UI elements
-                                  setNestedValue(updatedConfig, "interface.endpointsMenu", false);
+                                  // 2. Hide UI elements (using interface.modelSelect per RC4 docs)
                                   setNestedValue(updatedConfig, "interface.modelSelect", false);
                                   setNestedValue(updatedConfig, "interface.presets", false);
                                   
@@ -2479,7 +2501,6 @@ paths:
                                 } else if (presetId === "standard") {
                                   // Restore standard settings
                                   setNestedValue(updatedConfig, "enabledEndpoints", ["openAI", "anthropic", "google", "azureOpenAI", "agents"]);
-                                  setNestedValue(updatedConfig, "interface.endpointsMenu", true);
                                   setNestedValue(updatedConfig, "interface.modelSelect", true);
                                   setNestedValue(updatedConfig, "interface.presets", true);
                                   setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", false);

@@ -15,7 +15,6 @@ interface UXPreset {
   icon: any;
   color: string;
   settings: {
-    "interface.endpointsMenu": boolean;
     "interface.modelSelect": boolean;
     "modelSpecs.list"?: any[];
   };
@@ -31,7 +30,6 @@ const PRESETS: UXPreset[] = [
     color: "from-blue-500 to-cyan-500",
     requiresAgentId: false,
     settings: {
-      "interface.endpointsMenu": false,
       "interface.modelSelect": false,
       "modelSpecs.list": [
         {
@@ -53,7 +51,6 @@ const PRESETS: UXPreset[] = [
     color: "from-purple-500 to-pink-500",
     requiresAgentId: false,
     settings: {
-      "interface.endpointsMenu": true,
       "interface.modelSelect": true,
       "modelSpecs.list": undefined
     }

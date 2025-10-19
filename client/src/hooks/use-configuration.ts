@@ -264,7 +264,6 @@ export function useConfiguration() {
         modalTitle: "Terms of Service",
         modalContent: "Please accept our terms to continue using LibreChat Demo."
       },
-      endpointsMenu: true,
       modelSelect: true,
       parameters: true,
       sidePanel: true,
@@ -273,6 +272,7 @@ export function useConfiguration() {
       bookmarks: true,
       multiConvo: true, // RC4 multi-conversation feature
       agents: true,
+      webSearch: true,
       peoplePicker: {
         users: true,
         groups: true,

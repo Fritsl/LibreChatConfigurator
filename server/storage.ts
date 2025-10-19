@@ -249,7 +249,6 @@ export class FileStorage implements IStorage {
         customFooter: "",
         fileSearch: true,
         uploadAsText: false,
-        endpointsMenu: true,
         modelSelect: true,
         parameters: true,
         sidePanel: true,
@@ -258,6 +257,7 @@ export class FileStorage implements IStorage {
         bookmarks: true,
         multiConvo: false,
         agents: true,
+        webSearch: true,
         fileCitations: true,
         runCode: false,
         artifacts: true
@@ -354,7 +354,6 @@ export class FileStorage implements IStorage {
         customFooter: "Test Configuration",
         fileSearch: true,
         uploadAsText: false,
-        endpointsMenu: true,
         modelSelect: true,
         parameters: true,
         sidePanel: true,
@@ -363,6 +362,7 @@ export class FileStorage implements IStorage {
         bookmarks: true,
         multiConvo: false,
         agents: true,
+        webSearch: true,
         fileCitations: true,
         runCode: false,
         artifacts: true

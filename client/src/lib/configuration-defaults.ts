@@ -288,6 +288,9 @@ export const defaultConfiguration: Configuration = {
   },
   
   interface: {
+    mcpServers: {
+      placeholder: "MCP Servers"
+    },
     customWelcome: "",
     customFooter: "",
     fileSearch: true,
@@ -303,7 +306,6 @@ export const defaultConfiguration: Configuration = {
       modalTitle: "",
       modalContent: ""
     },
-    endpointsMenu: true,
     modelSelect: true,
     parameters: true,
     sidePanel: true,
@@ -312,6 +314,10 @@ export const defaultConfiguration: Configuration = {
     bookmarks: true,
     multiConvo: false,
     agents: true,
+    webSearch: true,
+    runCode: false,
+    fileCitations: true,
+    artifacts: true,
     peoplePicker: {
       users: true,
       groups: true,
@@ -320,9 +326,7 @@ export const defaultConfiguration: Configuration = {
     marketplace: {
       use: false
     },
-    fileCitations: true,
-    runCode: false,
-    artifacts: true
+    temporaryChatRetention: 720
   },
   
   // modelSpecs: Intentionally left empty due to LibreChat RC4 bug

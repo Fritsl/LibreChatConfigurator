@@ -63,6 +63,9 @@ const rateLimitsSchema = z.object({
 
 // Interface Configuration
 const interfaceSchema = z.object({
+  mcpServers: z.object({
+    placeholder: z.string().optional(),
+  }).optional(),
   customWelcome: z.string().optional(),
   customFooter: z.string().optional(),
   defaultPreset: z.string().optional(), // RC4: Name of preset to use as default
@@ -79,8 +82,7 @@ const interfaceSchema = z.object({
     modalTitle: z.string().optional(),
     modalContent: z.string().optional(),
   }).optional(),
-  endpointsMenu: z.boolean().default(true),
-  modelSelect: z.boolean().default(true),
+  modelSelect: z.boolean().default(true), // Required for modelSpecs.addedEndpoints
   parameters: z.boolean().default(true),
   sidePanel: z.boolean().default(true),
   presets: z.boolean().default(true),
@@ -89,6 +91,9 @@ const interfaceSchema = z.object({
   multiConvo: z.boolean().default(false),
   agents: z.boolean().default(true),
   webSearch: z.boolean().default(true), // RC4: Show web search UI
+  runCode: z.boolean().default(false), // Show "Run Code" button for code interpreter
+  fileCitations: z.boolean().default(true),
+  artifacts: z.boolean().default(true), // Show artifacts UI for generative React/HTML/Mermaid components
   peoplePicker: z.object({
     users: z.boolean().default(true),
     groups: z.boolean().default(true),
@@ -97,9 +102,7 @@ const interfaceSchema = z.object({
   marketplace: z.object({
     use: z.boolean().default(false),
   }).optional(),
-  fileCitations: z.boolean().default(true),
-  runCode: z.boolean().default(false), // Show "Run Code" button for code interpreter
-  artifacts: z.boolean().default(true), // Show artifacts UI for generative React/HTML/Mermaid components
+  temporaryChatRetention: z.number().min(1).max(8760).optional(), // Chat retention in hours (1-8760, default: 720)
 }).optional();
 
 // Model Specs Configuration - Controls which endpoints are visible in UI

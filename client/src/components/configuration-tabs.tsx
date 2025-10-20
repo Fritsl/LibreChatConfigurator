@@ -740,6 +740,18 @@ paths:
         type: "array",
         description: "Controls which AI providers appear in the endpoint dropdown menu that users see. This sets the ENDPOINTS variable in .env (not YAML). Important: The endpoints you select here must actually be configured with API keys and settings, or users will see errors. You can also use this to hide endpoints - for example, select only 'agents' for an agents-only experience. Note: gptPlugins is deprecated.",
         label: "Enabled Endpoints (Dropdown Visibility)",
+        options: [
+          { value: "openAI", label: "OpenAI" },
+          { value: "anthropic", label: "Anthropic (Claude)" },
+          { value: "google", label: "Google (Gemini)" },
+          { value: "azureOpenAI", label: "Azure OpenAI" },
+          { value: "agents", label: "Agents" },
+          { value: "azureAssistants", label: "Azure Assistants" },
+          { value: "bedrock", label: "AWS Bedrock" },
+          { value: "cohere", label: "Cohere" },
+          { value: "assistants", label: "OpenAI Assistants" },
+          { value: "gptPlugins", label: "GPT Plugins (Deprecated)" }
+        ],
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#endpoints",
         docSection: "UI Visibility",
         technical: { envVar: "ENDPOINTS", configFile: ".env" }

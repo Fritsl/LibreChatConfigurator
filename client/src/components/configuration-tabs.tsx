@@ -214,7 +214,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
+          settings: ["enabledEndpoints", "appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -223,7 +223,7 @@ paths:
           icon: Server,
           description: "Host, Port, Environment",
           color: "from-green-500 to-green-600",
-          settings: ["host", "port", "enabledEndpoints", "nodeEnv", "domainClient", "domainServer", "noIndex"],
+          settings: ["host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -738,10 +738,10 @@ paths:
       },
       enabledEndpoints: {
         type: "array",
-        description: "Select which AI endpoints/providers to enable in LibreChat. Note: gptPlugins is deprecated - use 'agents' instead. Excluding gptPlugins hides the deprecated 'Plugins' menu.",
-        label: "Enabled Endpoints",
+        description: "Controls which AI providers appear in the endpoint dropdown menu that users see. This sets the ENDPOINTS variable in .env (not YAML). Important: The endpoints you select here must actually be configured with API keys and settings, or users will see errors. You can also use this to hide endpoints - for example, select only 'agents' for an agents-only experience. Note: gptPlugins is deprecated.",
+        label: "Enabled Endpoints (Dropdown Visibility)",
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#endpoints",
-        docSection: "Server Config",
+        docSection: "UI Visibility",
         technical: { envVar: "ENDPOINTS", configFile: ".env" }
       },
       nodeEnv: { 
@@ -2471,6 +2471,14 @@ paths:
                         
                         {tab.id === "ui-visibility" && (
                           <div className="col-span-full mb-6">
+                            {/* Informational Alert about Enabled Endpoints */}
+                            <Alert className="mb-6" data-testid="alert-enabled-endpoints-info">
+                              <Info className="h-4 w-4" />
+                              <AlertDescription>
+                                <strong>📋 About Enabled Endpoints:</strong> The <em>Enabled Endpoints</em> setting controls which AI providers appear in the dropdown menu users see in LibreChat. This is set in the <code>.env</code> file (ENDPOINTS variable), not the YAML config. Make sure the endpoints you enable here are actually configured with API keys and settings in the appropriate tabs (Core AI APIs, Extended AI APIs, Custom Endpoints, etc.), or users will encounter errors. You can use this to hide endpoints - for example, the <em>Agents-Only Mode</em> preset below sets this to only "agents".
+                              </AlertDescription>
+                            </Alert>
+                            
                             {/* User Experience Mode Presets */}
                             <UserExperiencePresets
                               currentMode={getNestedValue(configuration, "ux.preset.mode")}

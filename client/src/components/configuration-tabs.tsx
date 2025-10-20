@@ -2483,14 +2483,6 @@ paths:
                         
                         {tab.id === "ui-visibility" && (
                           <div className="col-span-full mb-6">
-                            {/* Informational Alert about Enabled Endpoints */}
-                            <Alert className="mb-6" data-testid="alert-enabled-endpoints-info">
-                              <Info className="h-4 w-4" />
-                              <AlertDescription>
-                                <strong>📋 About Enabled Endpoints:</strong> The <em>Enabled Endpoints</em> setting controls which AI providers appear in the dropdown menu users see in LibreChat. This is set in the <code>.env</code> file (ENDPOINTS variable), not the YAML config. Make sure the endpoints you enable here are actually configured with API keys and settings in the appropriate tabs (Core AI APIs, Extended AI APIs, Custom Endpoints, etc.), or users will encounter errors. You can use this to hide endpoints - for example, the <em>Agents-Only Mode</em> preset below sets this to only "agents".
-                              </AlertDescription>
-                            </Alert>
-                            
                             {/* User Experience Mode Presets */}
                             <UserExperiencePresets
                               currentMode={getNestedValue(configuration, "ux.preset.mode")}

@@ -696,7 +696,7 @@ ${config.webSearch?.cohereApiKey || config.webSearch?.rerankerType === 'cohere' 
 # =============================================================================
 ${config.meilisearchURL ? `MEILISEARCH_URL=${config.meilisearchURL}` : '# MEILISEARCH_URL='}
 ${config.meilisearchMasterKey ? `MEILISEARCH_MASTER_KEY=${config.meilisearchMasterKey}` : '# MEILISEARCH_MASTER_KEY='}
-${config.meiliNoAnalytics !== undefined ? `MEILI_NO_ANALYTICS=${config.meiliNoAnalytics}` : '# MEILI_NO_ANALYTICS=true'}
+${config.meilisearchURL ? `MEILI_NO_ANALYTICS=${config.meiliNoAnalytics ?? true}` : '# MEILI_NO_ANALYTICS=true'}
 
 # =============================================================================
 # Rate Limiting & Security Configuration

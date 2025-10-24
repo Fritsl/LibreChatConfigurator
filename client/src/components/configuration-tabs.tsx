@@ -232,7 +232,7 @@ paths:
           icon: Shield,
           description: "JWT, Encryption, Passwords",
           color: "from-red-500 to-red-600",
-          settings: ["jwtSecret", "jwtRefreshSecret", "credsKey", "credsIV", "emailVerificationRequired", "minPasswordLength", "sessionExpiry", "refreshTokenExpiry"],
+          settings: ["jwtSecret", "jwtRefreshSecret", "credsKey", "credsIV", "emailVerificationRequired", "allowUnverifiedEmailLogin", "minPasswordLength", "sessionExpiry", "refreshTokenExpiry"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
       ]
@@ -829,6 +829,14 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#authentication",
         docSection: "Security",
         technical: { envVar: "EMAIL_VERIFICATION_REQUIRED", configFile: ".env" }
+      },
+      allowUnverifiedEmailLogin: { 
+        type: "boolean", 
+        description: "Allow users to log in before verifying their email address. When enabled, users can access LibreChat immediately after registration without clicking the verification link. Useful for development, private instances, or when email service is not configured. Set to false for stricter security in production.", 
+        label: "Allow Unverified Email Login",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#authentication",
+        docSection: "Security",
+        technical: { envVar: "ALLOW_UNVERIFIED_EMAIL_LOGIN", configFile: ".env" }
       },
       minPasswordLength: { 
         type: "number", 

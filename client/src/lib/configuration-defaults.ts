@@ -14,6 +14,7 @@ export const defaultConfiguration: Configuration = {
   redisPingInterval: 30000,
   minPasswordLength: 8,
   emailVerificationRequired: false,
+  allowUnverifiedEmailLogin: true,
   allowRegistration: true,
   allowEmailLogin: true,
   allowSocialLogin: false,

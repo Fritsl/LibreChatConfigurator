@@ -494,6 +494,7 @@ export const configurationSchema = z.object({
   
   // Email Verification
   emailVerificationRequired: z.boolean().default(false), // EMAIL_VERIFICATION_REQUIRED
+  allowUnverifiedEmailLogin: z.boolean().default(true), // ALLOW_UNVERIFIED_EMAIL_LOGIN
   
   // Core Application Settings
   appTitle: z.string().optional(), // APP_TITLE

@@ -488,6 +488,7 @@ ${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${generateHexSec
 ${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${generateHexSecret(16)}`}
 ${config.minPasswordLength ? `MIN_PASSWORD_LENGTH=${config.minPasswordLength}` : '# MIN_PASSWORD_LENGTH=8'}
 ${config.emailVerificationRequired !== undefined ? `EMAIL_VERIFICATION_REQUIRED=${config.emailVerificationRequired}` : 'EMAIL_VERIFICATION_REQUIRED=false'}
+${config.allowUnverifiedEmailLogin !== undefined ? `ALLOW_UNVERIFIED_EMAIL_LOGIN=${config.allowUnverifiedEmailLogin}` : 'ALLOW_UNVERIFIED_EMAIL_LOGIN=true'}
 ${config.sessionExpiry ? `SESSION_EXPIRY=${config.sessionExpiry}` : 'SESSION_EXPIRY=1000 * 60 * 15'}
 ${config.refreshTokenExpiry ? `REFRESH_TOKEN_EXPIRY=${config.refreshTokenExpiry}` : 'REFRESH_TOKEN_EXPIRY=1000 * 60 * 60 * 24 * 7'}
 
@@ -1317,6 +1318,7 @@ ${config.noIndex !== undefined ? `      NO_INDEX: \${NO_INDEX}` : '      # NO_IN
       CREDS_IV: \${CREDS_IV}
 ${config.minPasswordLength ? `      MIN_PASSWORD_LENGTH: \${MIN_PASSWORD_LENGTH}` : '      # MIN_PASSWORD_LENGTH: ${MIN_PASSWORD_LENGTH}'}
 ${config.emailVerificationRequired !== undefined ? `      EMAIL_VERIFICATION_REQUIRED: \${EMAIL_VERIFICATION_REQUIRED}` : `      EMAIL_VERIFICATION_REQUIRED: \${EMAIL_VERIFICATION_REQUIRED:-false}`}
+${config.allowUnverifiedEmailLogin !== undefined ? `      ALLOW_UNVERIFIED_EMAIL_LOGIN: \${ALLOW_UNVERIFIED_EMAIL_LOGIN}` : `      ALLOW_UNVERIFIED_EMAIL_LOGIN: \${ALLOW_UNVERIFIED_EMAIL_LOGIN:-true}`}
       SESSION_EXPIRY: \${SESSION_EXPIRY:-${config.sessionExpiry || '1000 * 60 * 15'}}
       REFRESH_TOKEN_EXPIRY: \${REFRESH_TOKEN_EXPIRY:-${config.refreshTokenExpiry || '1000 * 60 * 60 * 24 * 7'}}
       

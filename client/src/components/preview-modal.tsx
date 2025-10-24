@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,10 @@ export function PreviewModal({ configuration, onClose, onGenerate }: PreviewModa
   const [files, setFiles] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Create a stable reference to configuration by stringifying it
+  // This prevents infinite loops caused by object reference changes
+  const configHash = useMemo(() => JSON.stringify(configuration), [configuration]);
 
   useEffect(() => {
     const fetchPreview = async () => {
@@ -47,7 +51,7 @@ export function PreviewModal({ configuration, onClose, onGenerate }: PreviewModa
     };
 
     fetchPreview();
-  }, [configuration, toast]);
+  }, [configHash]);
 
   const copyToClipboard = async (content: string, filename: string) => {
     try {

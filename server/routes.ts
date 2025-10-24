@@ -12,6 +12,27 @@ import { TOOL_VERSION, createExportMetadata, getVersionInfo } from "@shared/vers
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
 
+// Cache for generated secrets to prevent flickering in preview
+interface CachedSecrets {
+  jwtSecret: string;
+  jwtRefreshSecret: string;
+  credsKey: string;
+  credsIV: string;
+}
+const secretsCache = new Map<string, CachedSecrets>();
+
+function getCachedSecrets(configName: string): CachedSecrets {
+  if (!secretsCache.has(configName)) {
+    secretsCache.set(configName, {
+      jwtSecret: generateSecureSecret(32),
+      jwtRefreshSecret: generateSecureSecret(32),
+      credsKey: generateHexSecret(32),
+      credsIV: generateHexSecret(16),
+    });
+  }
+  return secretsCache.get(configName)!;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get default configuration
@@ -455,6 +476,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 function generateEnvFile(config: any): string {
   const currentDate = new Date().toISOString().split('T')[0];
   
+  // Get or generate cached secrets for this configuration
+  const configName = config.configurationName || 'default';
+  const cachedSecrets = getCachedSecrets(configName);
+  
   return `# =============================================================================
 # LibreChat Environment Configuration (RC4)
 # Generated on ${currentDate}
@@ -482,10 +507,10 @@ ${config.noIndex !== undefined ? `NO_INDEX=${config.noIndex}` : '# NO_INDEX=true
 # =============================================================================
 # Security Configuration
 # =============================================================================
-${config.jwtSecret ? `JWT_SECRET=${config.jwtSecret}` : `JWT_SECRET=${generateSecureSecret(32)}`}
-${config.jwtRefreshSecret ? `JWT_REFRESH_SECRET=${config.jwtRefreshSecret}` : `JWT_REFRESH_SECRET=${generateSecureSecret(32)}`}
-${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${generateHexSecret(32)}`}
-${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${generateHexSecret(16)}`}
+${config.jwtSecret ? `JWT_SECRET=${config.jwtSecret}` : `JWT_SECRET=${cachedSecrets.jwtSecret}`}
+${config.jwtRefreshSecret ? `JWT_REFRESH_SECRET=${config.jwtRefreshSecret}` : `JWT_REFRESH_SECRET=${cachedSecrets.jwtRefreshSecret}`}
+${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${cachedSecrets.credsKey}`}
+${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${cachedSecrets.credsIV}`}
 ${config.minPasswordLength ? `MIN_PASSWORD_LENGTH=${config.minPasswordLength}` : '# MIN_PASSWORD_LENGTH=8'}
 ${config.emailVerificationRequired !== undefined ? `EMAIL_VERIFICATION_REQUIRED=${config.emailVerificationRequired}` : 'EMAIL_VERIFICATION_REQUIRED=false'}
 ${config.allowUnverifiedEmailLogin !== undefined ? `ALLOW_UNVERIFIED_EMAIL_LOGIN=${config.allowUnverifiedEmailLogin}` : 'ALLOW_UNVERIFIED_EMAIL_LOGIN=true'}

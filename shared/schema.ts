@@ -492,6 +492,9 @@ export const configurationSchema = z.object({
   // Minimum Password Length
   minPasswordLength: z.number().min(6).max(128).default(8),
   
+  // Email Verification
+  emailVerificationRequired: z.boolean().default(false), // EMAIL_VERIFICATION_REQUIRED
+  
   // Core Application Settings
   appTitle: z.string().optional(), // APP_TITLE
   customWelcome: z.string().optional(), // CUSTOM_WELCOME  

@@ -232,7 +232,7 @@ paths:
           icon: Shield,
           description: "JWT, Encryption, Passwords",
           color: "from-red-500 to-red-600",
-          settings: ["jwtSecret", "jwtRefreshSecret", "credsKey", "credsIV", "minPasswordLength", "sessionExpiry", "refreshTokenExpiry"],
+          settings: ["jwtSecret", "jwtRefreshSecret", "credsKey", "credsIV", "emailVerificationRequired", "minPasswordLength", "sessionExpiry", "refreshTokenExpiry"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
       ]
@@ -821,6 +821,14 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#credentials-configuration",
         docSection: "Security",
         technical: { envVar: "CREDS_IV", configFile: ".env" }
+      },
+      emailVerificationRequired: { 
+        type: "boolean", 
+        description: "Require users to verify their email address before they can access LibreChat. When enabled, new users must click the verification link sent to their email before logging in. Requires email service to be configured.", 
+        label: "Require Email Verification",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#authentication",
+        docSection: "Security",
+        technical: { envVar: "EMAIL_VERIFICATION_REQUIRED", configFile: ".env" }
       },
       minPasswordLength: { 
         type: "number", 

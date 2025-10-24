@@ -13,6 +13,7 @@ export const defaultConfiguration: Configuration = {
   titleConvo: true,
   redisPingInterval: 30000,
   minPasswordLength: 8,
+  emailVerificationRequired: false,
   allowRegistration: true,
   allowEmailLogin: true,
   allowSocialLogin: false,

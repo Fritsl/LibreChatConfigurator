@@ -11,6 +11,7 @@ The UI consolidates settings like app title, welcome message, and interface visi
 ## October 26, 2025
 - **Model Specs Enforce/Prioritize Controls**: Added manual toggle controls for `modelSpecs.enforce` and `modelSpecs.prioritize` in the UI/Visibility tab. These settings are critical for default agent functionality - without them, LibreChat ignores configured agent IDs and shows the "last used agent" instead.
 - **Agent ID Warning System**: ModelSpecsPresetManager now displays a prominent warning when users set an `agent_id` without enabling both `enforce` and `prioritize` flags. The warning explains that the agent ID won't work as a default without these settings and provides clear instructions to fix it.
+- **Upload as Text UX Improvement**: Added clear cross-references between the two separate "Upload as Text" settings (UI/Visibility and Agent Capabilities) to prevent user confusion. Each setting now explicitly explains what it controls and that both must be configured together to fully disable the feature.
 - **MeiliSearch Configuration Fix**: Fixed MEILI_NO_ANALYTICS to only appear as an active setting when MEILISEARCH_URL is configured, preventing errors when MeiliSearch is not in use.
 - **Secret Caching System**: Implemented server-side caching for JWT_SECRET, JWT_REFRESH_SECRET, CREDS_KEY, and CREDS_IV to prevent regeneration across multiple preview requests, eliminating preview modal flickering issues.
 

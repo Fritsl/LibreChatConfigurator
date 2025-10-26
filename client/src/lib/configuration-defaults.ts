@@ -7,6 +7,8 @@ export const defaultConfiguration: Configuration = {
   fileStrategy: "local",
   secureImageLinks: false,
   imageOutputType: "png",
+  filteredTools: [],
+  includedTools: [],
   temporaryChatRetention: 720,
   
   // Required RC4 Fields
@@ -254,16 +256,35 @@ export const defaultConfiguration: Configuration = {
   },
   memory: {
     disabled: true,
+    validKeys: [],
+    tokenLimit: 1000,
     personalize: false,
-    messageWindowSize: 5
+    messageWindowSize: 5,
+    agent: {
+      id: "",
+      provider: "",
+      model: "",
+      instructions: "",
+      model_parameters: {
+        temperature: 1.0,
+        max_tokens: 1000,
+        top_p: 1.0,
+        frequency_penalty: 0
+      }
+    }
   },
   ocr: {
+    apiKey: "",
+    baseURL: "",
     strategy: "mistral_ocr" as const,
     mistralModel: "pixtral-12b-2409"
   },
   stt: {
     provider: "openai" as const,
     model: "whisper-1",
+    apiKey: "",
+    baseURL: "",
+    language: "",
     streaming: false,
     punctuation: true,
     profanityFilter: false
@@ -272,6 +293,8 @@ export const defaultConfiguration: Configuration = {
     provider: "openai" as const,
     model: "tts-1",
     voice: "alloy",
+    apiKey: "",
+    baseURL: "",
     speed: 1.0,
     quality: "standard" as const,
     streaming: false
@@ -281,6 +304,25 @@ export const defaultConfiguration: Configuration = {
       selected: "none" as const,
       customLanguage: "",
       customVoice: ""
+    },
+    speechTab: {
+      conversationMode: false,
+      advancedMode: false,
+      speechToText: {
+        engineSTT: "browser",
+        languageSTT: "en-US",
+        autoTranscribeAudio: false,
+        decibelValue: -45,
+        autoSendText: 0
+      },
+      textToSpeech: {
+        engineTTS: "browser",
+        voice: "alloy",
+        languageTTS: "en",
+        automaticPlayback: false,
+        playbackRate: 1.0,
+        cacheTTS: false
+      }
     }
   },
   mcpServers: {},
@@ -325,10 +367,11 @@ export const defaultConfiguration: Configuration = {
     firecrawlApiKey: "",
     firecrawlApiUrl: "",
     jinaApiKey: "",
+    jinaApiUrl: "",
     cohereApiKey: "",
-    searchProvider: "serper",
-    scraperType: "serper", 
-    rerankerType: "jina",
+    searchProvider: "none",
+    scraperType: "none", 
+    rerankerType: "none",
     scraperTimeout: 20000,
     safeSearch: true,
     firecrawlOptions: {
@@ -377,6 +420,7 @@ export const defaultConfiguration: Configuration = {
     },
     customWelcome: "",
     customFooter: "",
+    defaultPreset: "",
     fileSearch: true,
     uploadAsText: false,
     privacyPolicy: {
@@ -417,6 +461,9 @@ export const defaultConfiguration: Configuration = {
   // When enabled, it causes interface.presets and other visibility settings to malfunction
   // Users should leave this field empty unless they fully understand the risks
   modelSpecs: {
-    addedEndpoints: []
+    addedEndpoints: [],
+    enforce: false,
+    prioritize: false,
+    list: []
   },
 };

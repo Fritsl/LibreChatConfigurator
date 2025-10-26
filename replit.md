@@ -8,7 +8,13 @@ The UI consolidates settings like app title, welcome message, and interface visi
 
 # Recent Changes
 
-## October 26, 2025
+## October 26, 2025  
+- **100% Configuration Field Coverage**: Fixed critical persistence issue where 68+ fields were missing from defaultConfiguration, causing data loss across localStorage save/load and JSON export/import. Added all missing fields including:
+  - **Top-level fields (50+)**: filteredTools, includedTools, DALL-E (8 fields), RAG API (7 fields), E2B extended (4 fields), Azure OpenAI (4 fields), AWS extended (3 fields), Azure Storage (2 fields), MeiliSearch (2 fields), Rate limiting/security (10 fields), LDAP (5 fields), Turnstile (2 fields), Caching (5 fields), MCP OAuth (2 fields), System (3 fields), and various URLs/API keys
+  - **Nested object fields (18+)**: webSearch.jinaApiUrl, memory (validKeys, tokenLimit, agent with full model_parameters), ocr (apiKey, baseURL), stt (apiKey, baseURL, language), tts (apiKey, baseURL), speech.speechTab (complete STT/TTS configuration), interface.defaultPreset, modelSpecs (enforce, prioritize, list)
+  - All user configuration data now persists correctly across browser reloads, localStorage operations, and JSON import/export cycles
+
+## Earlier October 26, 2025
 - **Model Specs Enforce/Prioritize Controls**: Added manual toggle controls for `modelSpecs.enforce` and `modelSpecs.prioritize` in the UI/Visibility tab. These settings are critical for default agent functionality - without them, LibreChat ignores configured agent IDs and shows the "last used agent" instead.
 - **Agent ID Warning System**: ModelSpecsPresetManager now displays a prominent warning when users set an `agent_id` without enabling both `enforce` and `prioritize` flags. The warning explains that the agent ID won't work as a default without these settings and provides clear instructions to fix it.
 - **Upload as Text UX Improvement**: Added clear cross-references between the two separate "Upload as Text" settings (UI/Visibility and Agent Capabilities) to prevent user confusion. Each setting now explicitly explains what it controls and that both must be configured together to fully disable the feature.

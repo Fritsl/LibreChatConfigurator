@@ -155,6 +155,24 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
         Configure file upload limits and allowed MIME types for each AI endpoint. These settings override global limits for specific providers.
       </p>
 
+      {/* Important Note for Enabled Endpoints */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
+        <div className="flex gap-3">
+          <div className="text-blue-600 dark:text-blue-400 mt-0.5">
+            <FileText className="h-5 w-5" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              Configure file limits for your enabled endpoints
+            </p>
+            <p className="text-xs text-blue-800 dark:text-blue-200">
+              Make sure to add file upload configuration for each endpoint you've enabled in "Enabled Endpoints" (especially <strong>agents</strong>). 
+              Without proper configuration, LibreChat will use restrictive default limits that may reject valid files.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Add Endpoint Section */}
       <Card className="border-dashed">
         <CardHeader className="pb-3">

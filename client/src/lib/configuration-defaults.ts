@@ -222,7 +222,13 @@ export const defaultConfiguration: Configuration = {
         fileLimit: 5,
         fileSizeLimit: 10,
         totalSizeLimit: 50,
-        supportedMimeTypes: ["text/plain", "application/pdf"]
+        supportedMimeTypes: ["text/plain", "application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif"]
+      },
+      agents: {
+        fileLimit: 5,
+        fileSizeLimit: 10,
+        totalSizeLimit: 50,
+        supportedMimeTypes: ["text/plain", "application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "text/csv", "text/markdown", "application/json", "text/html", "text/xml", "application/zip"]
       }
     },
     serverFileSizeLimit: 20,

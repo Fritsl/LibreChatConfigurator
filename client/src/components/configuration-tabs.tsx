@@ -1851,8 +1851,8 @@ paths:
       },
       "endpoints.agents.capabilities": { 
         type: "array", 
-        description: "Agent capabilities determine what features are available to AI agents. Select capabilities to enable: artifacts (generative UI), context (upload as text), ocr (optical character recognition), chain (agent chaining), execute_code, file_search, actions, tools, web_search. Each capability adds specific functionality to your agents.", 
-        label: "Agent Capabilities",
+        description: "⚠️ Controls what features agents can USE. Note: 'Context (Upload as Text)' has a SEPARATE UI visibility setting in UI/Visibility tab - you need to configure BOTH to fully control the feature. Select capabilities to enable: artifacts (generative UI), context (upload as text - agent processing), ocr (optical character recognition), chain (agent chaining), execute_code, file_search, actions, tools, web_search.", 
+        label: "Agent Capabilities (Functionality)",
         options: [
           { value: "execute_code", label: "Execute Code" },
           { value: "file_search", label: "File Search" },
@@ -1946,7 +1946,12 @@ paths:
         technical: { envVar: "CUSTOM_FOOTER", configFile: ".env" }
       },
       "interface.fileSearch": { type: "boolean", description: "Enable file search in interface", label: "File Search", technical: { yamlPath: "interface.fileSearch", configFile: "librechat.yaml" } },
-      "interface.uploadAsText": { type: "boolean", description: "Enable upload as text feature", label: "Upload as Text", technical: { yamlPath: "interface.uploadAsText", configFile: "librechat.yaml" } },
+      "interface.uploadAsText": { 
+        type: "boolean", 
+        description: "⚠️ UI VISIBILITY ONLY: Controls whether the 'Upload as Text' button appears in the interface. To fully disable Upload as Text, you MUST ALSO disable it in the Agents tab → Agent Capabilities → uncheck 'Context (Upload as Text)'. These are TWO SEPARATE settings that work together: this one hides the UI button, the other prevents agents from processing text uploads.", 
+        label: "Upload as Text (UI Button)", 
+        technical: { yamlPath: "interface.uploadAsText", configFile: "librechat.yaml" } 
+      },
       "interface.privacyPolicy.externalUrl": { type: "text", description: "External privacy policy URL", label: "Privacy Policy URL", technical: { yamlPath: "interface.privacyPolicy.externalUrl", configFile: "librechat.yaml" } },
       "interface.privacyPolicy.openNewTab": { type: "boolean", description: "Open privacy policy in new tab", label: "Privacy Policy New Tab", technical: { yamlPath: "interface.privacyPolicy.openNewTab", configFile: "librechat.yaml" } },
       "interface.termsOfService.externalUrl": { type: "text", description: "External terms of service URL", label: "Terms of Service URL", technical: { yamlPath: "interface.termsOfService.externalUrl", configFile: "librechat.yaml" } },

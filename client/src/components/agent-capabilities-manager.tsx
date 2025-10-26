@@ -69,7 +69,7 @@ const CAPABILITIES_METADATA: CapabilityMetadata[] = [
   {
     value: "context",
     label: "Context (Upload as Text)",
-    description: "Enables 'Upload as Text' feature for processing uploaded files as plain text context.",
+    description: "⚠️ AGENT FUNCTIONALITY ONLY: Allows agents to process uploaded files as plain text. To fully disable Upload as Text, you MUST ALSO disable it in UI/Visibility tab → uncheck 'Upload as Text (UI Button)'. These are TWO SEPARATE settings: this one controls agent processing, the other controls UI visibility.",
     requiresConfig: false,
     settingsTab: "ui-visibility",
     settingsLabel: "UI/Visibility",

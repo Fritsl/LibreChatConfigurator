@@ -131,15 +131,25 @@ export const defaultConfiguration: Configuration = {
   
   // Cloud Provider Keys
   azureApiKey: "",
+  azureOpenaiApiInstanceName: "",
+  azureOpenaiApiDeploymentName: "",
+  azureOpenaiApiVersion: "",
+  azureOpenaiModels: "",
   awsAccessKeyId: "",
   awsSecretAccessKey: "",
   awsRegion: "",
+  awsBedrockRegion: "",
+  awsEndpointURL: "",
+  awsBucketName: "",
   firebaseApiKey: "",
   firebaseAuthDomain: "",
   firebaseProjectId: "",
   firebaseStorageBucket: "",
   firebaseMessagingSenderId: "",
   firebaseAppId: "",
+  azureStorageConnectionString: "",
+  azureContainerName: "",
+  fileUploadPath: "",
   
   // UI Customization
   appTitle: "",
@@ -151,12 +161,41 @@ export const defaultConfiguration: Configuration = {
   azureStoragePublicAccess: false,
   redisUseAlternativeDNSLookup: false,
   search: false,
+  meilisearchURL: "",
+  meilisearchMasterKey: "",
   meiliNoAnalytics: true,
   limitConcurrentMessages: false,
+  concurrentMessageMax: 3,
   banViolations: false,
+  banDuration: 7200000,
+  banInterval: 20,
+  loginViolationScore: 1,
+  registrationViolationScore: 1,
+  concurrentViolationScore: 1,
+  messageViolationScore: 1,
+  nonBrowserViolationScore: 20,
+  loginMax: 7,
+  loginWindow: 5,
+  ldapURL: "",
+  ldapBindDN: "",
+  ldapBindCredentials: "",
+  ldapSearchBase: "",
+  ldapSearchFilter: "",
+  turnstileSiteKey: "",
+  turnstileSecretKey: "",
   allowSharedLinks: false,
   allowSharedLinksPublic: false,
   summaryConvo: false,
+  staticCacheMaxAge: 31536000,
+  staticCacheSMaxAge: 31536000,
+  indexCacheControl: "no-cache",
+  indexPragma: "no-cache",
+  indexExpires: "0",
+  mcpOauthOnAuthError: "redirect",
+  mcpOauthDetectionTimeout: 30000,
+  uid: 1000,
+  gid: 1000,
+  cdnProvider: "",
   
   // Missing Server Fields
   nodeEnv: "production" as const,
@@ -171,13 +210,43 @@ export const defaultConfiguration: Configuration = {
   librechatCodeApiKey: "",
   e2bApiKey: "",
   e2bProxyEnabled: false,
+  e2bProxyPort: 3001,
+  e2bFileTTLDays: 30,
+  e2bMaxFileSize: 50,
+  e2bPerUserSandbox: false,
   
   // External Services
   googleSearchApiKey: "",
   googleCSEId: "",
   bingSearchApiKey: "",
   openweatherApiKey: "",
+  
+  // RAG API Configuration
+  ragApiURL: "",
   ragOpenaiApiKey: "",
+  ragPort: 8080,
+  ragHost: "",
+  collectionName: "",
+  chunkSize: 1000,
+  chunkOverlap: 200,
+  embeddingsProvider: "",
+  
+  // Image Generation (DALL-E)
+  dalleApiKey: "",
+  dalle3ApiKey: "",
+  dalle2ApiKey: "",
+  dalleReverseProxy: "",
+  dalle3BaseUrl: "",
+  dalle2BaseUrl: "",
+  dalle3SystemPrompt: "",
+  dalle2SystemPrompt: "",
+  
+  // LibreChat Code & Artifacts URLs
+  librechatCodeBaseUrl: "",
+  sandpackBundlerUrl: "",
+  
+  // E2B Code Interpreter URLs
+  e2bPublicBaseUrl: "",
   
   // Optional nested objects with schema-compliant defaults
   actions: {
@@ -206,6 +275,13 @@ export const defaultConfiguration: Configuration = {
     speed: 1.0,
     quality: "standard" as const,
     streaming: false
+  },
+  speech: {
+    preset: {
+      selected: "none" as const,
+      customLanguage: "",
+      customVoice: ""
+    }
   },
   mcpServers: {},
   endpoints: {},

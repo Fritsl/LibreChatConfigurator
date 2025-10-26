@@ -8,6 +8,12 @@ The UI consolidates settings like app title, welcome message, and interface visi
 
 # Recent Changes
 
+## October 26, 2025
+- **Model Specs Enforce/Prioritize Controls**: Added manual toggle controls for `modelSpecs.enforce` and `modelSpecs.prioritize` in the UI/Visibility tab. These settings are critical for default agent functionality - without them, LibreChat ignores configured agent IDs and shows the "last used agent" instead.
+- **Agent ID Warning System**: ModelSpecsPresetManager now displays a prominent warning when users set an `agent_id` without enabling both `enforce` and `prioritize` flags. The warning explains that the agent ID won't work as a default without these settings and provides clear instructions to fix it.
+- **MeiliSearch Configuration Fix**: Fixed MEILI_NO_ANALYTICS to only appear as an active setting when MEILISEARCH_URL is configured, preventing errors when MeiliSearch is not in use.
+- **Secret Caching System**: Implemented server-side caching for JWT_SECRET, JWT_REFRESH_SECRET, CREDS_KEY, and CREDS_IV to prevent regeneration across multiple preview requests, eliminating preview modal flickering issues.
+
 ## October 19, 2025
 - **Interface Schema Migration**: Removed deprecated `interface.endpointsMenu` field (deprecated in LibreChat v1.2.4) and migrated to `interface.modelSelect` throughout the codebase
 - **New RC4 Fields Added**: Integrated missing fields from LibreChat v1.2.4 documentation:

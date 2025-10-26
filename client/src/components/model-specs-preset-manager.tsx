@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2, Info } from "lucide-react";
+import { Plus, Trash2, Info, AlertTriangle } from "lucide-react";
 
 interface ModelSpecPreset {
   name: string;
@@ -22,6 +22,8 @@ interface ModelSpecPreset {
 interface ModelSpecsPresetManagerProps {
   presets: ModelSpecPreset[];
   onChange: (presets: ModelSpecPreset[]) => void;
+  enforce?: boolean;
+  prioritize?: boolean;
 }
 
 const ENDPOINT_OPTIONS = [
@@ -44,7 +46,7 @@ const ENDPOINT_OPTIONS = [
   { value: "gptPlugins", label: "GPT Plugins" },
 ];
 
-export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPresetManagerProps) {
+export function ModelSpecsPresetManager({ presets = [], onChange, enforce = false, prioritize = false }: ModelSpecsPresetManagerProps) {
   const addPreset = () => {
     const newPreset: ModelSpecPreset = {
       name: "Agents",
@@ -83,6 +85,10 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
     onChange(updated);
   };
 
+  // Check if any preset has agent_id set
+  const hasAgentId = presets.some(preset => preset.preset.agent_id && preset.preset.agent_id.trim() !== "");
+  const needsEnforcePrioritize = hasAgentId && (!enforce || !prioritize);
+
   return (
     <div className="space-y-4">
       <Alert data-testid="alert-modelspecs-info">
@@ -93,6 +99,18 @@ export function ModelSpecsPresetManager({ presets = [], onChange }: ModelSpecsPr
           Get agent IDs from your LibreChat MongoDB → agents collection. When <code>enforce: true</code> is set above, users must use these specs.
         </AlertDescription>
       </Alert>
+
+      {needsEnforcePrioritize && (
+        <Alert variant="destructive" data-testid="alert-agent-needs-flags">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>⚠️ Agent ID Set But Not Active:</strong> You've configured an agent ID below, but it won't work as your default agent! 
+            LibreChat will ignore it and show the "last used agent" instead. 
+            <strong> Solution:</strong> Scroll up and enable both <strong>"Enforce Model Specs Selection"</strong> and <strong>"Prioritize Model Specs in UI"</strong> checkboxes. 
+            Without these two settings, your agent_id is useless - the UI will drift to recently used agents.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {presets.map((preset, index) => (
         <Card key={index} data-testid={`card-preset-${index}`}>

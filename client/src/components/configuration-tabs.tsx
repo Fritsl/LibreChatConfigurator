@@ -214,7 +214,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["enabledEndpoints", "appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
+          settings: ["enabledEndpoints", "appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "modelSpecs.enforce", "modelSpecs.prioritize", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -1976,6 +1976,22 @@ paths:
         docSection: "Model Specs",
         technical: { yamlPath: "modelSpecs.addedEndpoints", configFile: "librechat.yaml" }
       },
+      "modelSpecs.enforce": {
+        type: "boolean",
+        description: "Force users to select from model specs list. When enabled, users MUST choose one of your configured presets - prevents them from seeing other endpoints. Critical for agent defaults: without this, LibreChat ignores your default agent and shows the last-used agent instead.",
+        label: "Enforce Model Specs Selection",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/model_specs",
+        docSection: "Model Specs",
+        technical: { yamlPath: "modelSpecs.enforce", configFile: "librechat.yaml" }
+      },
+      "modelSpecs.prioritize": {
+        type: "boolean",
+        description: "Make model specs the primary UI element and auto-select your default on load. Required for agent defaults: without this, the UI drifts to recently used agents. Combine with 'enforce' to ensure your default agent is always selected for new users/sessions.",
+        label: "Prioritize Model Specs in UI",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/model_specs",
+        docSection: "Model Specs",
+        technical: { yamlPath: "modelSpecs.prioritize", configFile: "librechat.yaml" }
+      },
       "interface.parameters": { type: "boolean", description: "Show parameters panel", label: "Parameters Panel", technical: { yamlPath: "interface.parameters", configFile: "librechat.yaml" } },
       "interface.sidePanel": { type: "boolean", description: "Show side panel", label: "Side Panel", technical: { yamlPath: "interface.sidePanel", configFile: "librechat.yaml" } },
       "interface.presets": { type: "boolean", description: "Show presets", label: "Presets", technical: { yamlPath: "interface.presets", configFile: "librechat.yaml" } },
@@ -2916,6 +2932,8 @@ paths:
                               onChange={(presets) => {
                                 onConfigurationChange(setNestedValue(configuration, "modelSpecs.list", presets.length > 0 ? presets : undefined));
                               }}
+                              enforce={getNestedValue(configuration, "modelSpecs.enforce")}
+                              prioritize={getNestedValue(configuration, "modelSpecs.prioritize")}
                             />
                           </CardContent>
                         </Card>

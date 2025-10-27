@@ -383,7 +383,7 @@ export default function Home() {
     const config: any = {};
     
     // Basic settings
-    if (yamlData.version) config.configVer = yamlData.version;
+    if (yamlData.version) config.version = yamlData.version;
     if (yamlData.cache !== undefined) config.cache = yamlData.cache;
     
     // MCP Servers

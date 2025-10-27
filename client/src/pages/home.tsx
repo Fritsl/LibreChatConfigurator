@@ -817,6 +817,58 @@ export default function Home() {
     input.click();
   };
 
+  // Validation function to detect unmapped YAML fields
+  const validateYamlFields = (yamlData: any): { valid: boolean; unmappedFields: string[] } => {
+    const unmappedFields: string[] = [];
+    
+    // Define all supported top-level YAML keys
+    const supportedKeys = new Set([
+      'version', 'cache', 'mcpServers', 'ui', 'agents', 'rateLimits', 'fileConfig',
+      'search', 'webSearch', 'memory', 'ocr', 'stt', 'tts', 'speech', 'actions',
+      'temporaryChats', 'interface', 'modelSpecs', 'filteredTools', 'includedTools', 'endpoints'
+    ]);
+    
+    // Check top-level keys
+    for (const key of Object.keys(yamlData)) {
+      if (!supportedKeys.has(key)) {
+        unmappedFields.push(key);
+      }
+    }
+    
+    // Check nested keys in specific sections
+    if (yamlData.ui) {
+      const supportedUIKeys = new Set(['modelSelect', 'parameters', 'sidePanel', 'presets', 'prompts', 'bookmarks', 'multiConvo', 'agents', 'webSearch', 'fileSearch', 'fileCitations', 'runCode']);
+      for (const key of Object.keys(yamlData.ui)) {
+        if (!supportedUIKeys.has(key)) {
+          unmappedFields.push(`ui.${key}`);
+        }
+      }
+    }
+    
+    if (yamlData.interface) {
+      const supportedInterfaceKeys = new Set(['customWelcome', 'customFooter', 'defaultPreset', 'uploadAsText', 'temporaryChatRetention', 'mcpServers', 'privacyPolicy', 'termsOfService']);
+      for (const key of Object.keys(yamlData.interface)) {
+        if (!supportedInterfaceKeys.has(key)) {
+          unmappedFields.push(`interface.${key}`);
+        }
+      }
+    }
+    
+    if (yamlData.endpoints) {
+      const supportedEndpoints = new Set(['agents', 'openAI', 'anthropic', 'google', 'azureOpenAI']);
+      for (const key of Object.keys(yamlData.endpoints)) {
+        if (!supportedEndpoints.has(key)) {
+          unmappedFields.push(`endpoints.${key}`);
+        }
+      }
+    }
+    
+    return {
+      valid: unmappedFields.length === 0,
+      unmappedFields
+    };
+  };
+
   const handleImportYaml = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -833,6 +885,30 @@ export default function Home() {
             
             console.log("   - Parsed YAML data:", yamlData);
             
+            // VALIDATION: Check for unmapped fields BEFORE importing
+            const validation = validateYamlFields(yamlData);
+            if (!validation.valid) {
+              console.error("❌ [YAML IMPORT] Unmapped fields detected:", validation.unmappedFields);
+              toast({
+                title: "❌ Import Blocked: Unsupported Fields Detected",
+                description: `Your YAML file contains ${validation.unmappedFields.length} field(s) not yet supported by this tool. Import has been rejected to prevent data loss.`,
+                variant: "destructive",
+              });
+              
+              // Show detailed list in console
+              console.log("\n🚫 IMPORT REJECTED - Unsupported YAML Fields:");
+              console.log("================================================");
+              validation.unmappedFields.forEach((field, index) => {
+                console.log(`${index + 1}. ${field}`);
+              });
+              console.log("\n💡 Next Steps:");
+              console.log("   1. Report these fields so they can be added to the tool");
+              console.log("   2. OR remove unsupported fields from your YAML file");
+              console.log("   3. Then retry the import\n");
+              
+              return; // BLOCK IMPORT
+            }
+            
             const configUpdates = mapYamlToConfiguration(yamlData);
             console.log("   - Mapped configuration:", configUpdates);
             console.log("   - MCP servers found:", configUpdates.mcpServers?.length || 0);
@@ -841,8 +917,8 @@ export default function Home() {
             updateConfiguration(configUpdates);
             
             toast({
-              title: "YAML Imported",
-              description: `LibreChat configuration from "${file.name}" imported successfully.`,
+              title: "✅ YAML Imported Successfully",
+              description: `LibreChat configuration from "${file.name}" imported with all fields preserved.`,
             });
           } catch (error) {
             console.error("YAML import error:", error);
@@ -857,6 +933,106 @@ export default function Home() {
       }
     };
     input.click();
+  };
+
+  // Validation function to detect unmapped environment variables
+  const validateEnvVars = (envVars: Record<string, string>): { valid: boolean; unmappedVars: string[] } => {
+    const unmappedVars: string[] = [];
+    
+    // Define all supported environment variable names (matching mapEnvToConfiguration)
+    const supportedEnvVars = new Set([
+      // App Configuration
+      'APP_TITLE', 'CUSTOM_WELCOME', 'CUSTOM_FOOTER', 'HELP_AND_FAQ_URL',
+      // Server Configuration
+      'HOST', 'PORT', 'ENDPOINTS', 'NODE_ENV', 'DOMAIN_CLIENT', 'DOMAIN_SERVER', 'NO_INDEX',
+      // Security Configuration
+      'JWT_SECRET', 'JWT_REFRESH_SECRET', 'CREDS_KEY', 'CREDS_IV', 'MIN_PASSWORD_LENGTH',
+      'EMAIL_VERIFICATION_REQUIRED', 'ALLOW_UNVERIFIED_EMAIL_LOGIN', 'SESSION_EXPIRY', 'REFRESH_TOKEN_EXPIRY',
+      // Database Configuration
+      'MONGO_URI', 'MONGO_ROOT_USERNAME', 'MONGO_ROOT_PASSWORD', 'MONGO_DB_NAME',
+      'REDIS_URI', 'REDIS_USERNAME', 'REDIS_PASSWORD', 'REDIS_KEY_PREFIX', 'REDIS_KEY_PREFIX_VAR',
+      'REDIS_MAX_LISTENERS', 'REDIS_PING_INTERVAL', 'REDIS_USE_ALTERNATIVE_DNS_LOOKUP',
+      // Authentication Configuration
+      'ALLOW_REGISTRATION', 'ALLOW_EMAIL_LOGIN', 'ALLOW_SOCIAL_LOGIN', 'ALLOW_SOCIAL_REGISTRATION', 'ALLOW_PASSWORD_RESET',
+      // Email Configuration
+      'EMAIL_SERVICE', 'EMAIL_USERNAME', 'EMAIL_PASSWORD', 'EMAIL_FROM', 'EMAIL_FROM_NAME',
+      'MAILGUN_API_KEY', 'MAILGUN_DOMAIN', 'MAILGUN_HOST',
+      // OAuth Providers
+      'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_CALLBACK_URL',
+      'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'GITHUB_CALLBACK_URL',
+      'DISCORD_CLIENT_ID', 'DISCORD_CLIENT_SECRET', 'DISCORD_CALLBACK_URL',
+      'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET', 'FACEBOOK_CALLBACK_URL',
+      'APPLE_CLIENT_ID', 'APPLE_PRIVATE_KEY', 'APPLE_KEY_ID', 'APPLE_TEAM_ID', 'APPLE_CALLBACK_URL',
+      'OPENID_URL', 'OPENID_CLIENT_ID', 'OPENID_CLIENT_SECRET', 'OPENID_CALLBACK_URL',
+      'OPENID_SCOPE', 'OPENID_SESSION_SECRET', 'OPENID_ISSUER', 'OPENID_BUTTON_LABEL', 'OPENID_IMAGE_URL',
+      // Core AI API Keys
+      'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY', 'GROQ_API_KEY', 'MISTRAL_API_KEY',
+      // Extended AI API Keys
+      'DEEPSEEK_API_KEY', 'PERPLEXITY_API_KEY', 'FIREWORKS_API_KEY', 'TOGETHERAI_API_KEY', 'HUGGINGFACE_TOKEN',
+      'XAI_API_KEY', 'NVIDIA_API_KEY', 'SAMBANOVA_API_KEY', 'HYPERBOLIC_API_KEY', 'KLUSTER_API_KEY',
+      'NANOGPT_API_KEY', 'GLHF_API_KEY', 'APIPIE_API_KEY', 'UNIFY_API_KEY', 'OPENROUTER_KEY',
+      // Azure OpenAI
+      'AZURE_API_KEY', 'AZURE_OPENAI_API_INSTANCE_NAME', 'AZURE_OPENAI_API_DEPLOYMENT_NAME',
+      'AZURE_OPENAI_API_VERSION', 'AZURE_OPENAI_MODELS',
+      // AWS Bedrock
+      'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_REGION', 'AWS_BEDROCK_REGION', 'AWS_ENDPOINT_URL', 'AWS_BUCKET_NAME',
+      // File Storage
+      'FILE_UPLOAD_PATH', 'FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID',
+      'FIREBASE_STORAGE_BUCKET', 'FIREBASE_MESSAGING_SENDER_ID', 'FIREBASE_APP_ID',
+      'AZURE_STORAGE_CONNECTION_STRING', 'AZURE_STORAGE_PUBLIC_ACCESS', 'AZURE_CONTAINER_NAME',
+      // Search & External APIs
+      'GOOGLE_SEARCH_API_KEY', 'GOOGLE_CSE_ID', 'BING_SEARCH_API_KEY', 'OPENWEATHER_API_KEY',
+      // DALL-E Image Generation
+      'DALLE_API_KEY', 'DALLE3_API_KEY', 'DALLE2_API_KEY', 'DALLE_REVERSE_PROXY',
+      'DALLE3_BASEURL', 'DALLE2_BASEURL', 'DALLE3_SYSTEM_PROMPT', 'DALLE2_SYSTEM_PROMPT',
+      // RAG API
+      'RAG_API_URL', 'RAG_OPENAI_API_KEY', 'RAG_PORT', 'RAG_HOST', 'COLLECTION_NAME',
+      'CHUNK_SIZE', 'CHUNK_OVERLAP', 'EMBEDDINGS_PROVIDER',
+      // MeiliSearch
+      'MEILISEARCH_URL', 'MEILISEARCH_MASTER_KEY', 'MEILI_NO_ANALYTICS',
+      // Rate Limiting & Security
+      'LIMIT_CONCURRENT_MESSAGES', 'CONCURRENT_MESSAGE_MAX', 'BAN_VIOLATIONS', 'BAN_DURATION', 'BAN_INTERVAL',
+      'LOGIN_VIOLATION_SCORE', 'REGISTRATION_VIOLATION_SCORE', 'CONCURRENT_VIOLATION_SCORE',
+      'MESSAGE_VIOLATION_SCORE', 'NON_BROWSER_VIOLATION_SCORE', 'LOGIN_MAX', 'LOGIN_WINDOW',
+      // LDAP
+      'LDAP_URL', 'LDAP_BIND_DN', 'LDAP_BIND_CREDENTIALS', 'LDAP_SEARCH_BASE', 'LDAP_SEARCH_FILTER',
+      // Turnstile
+      'TURNSTILE_SITE_KEY', 'TURNSTILE_SECRET_KEY',
+      // Features
+      'ALLOW_SHARED_LINKS', 'ALLOW_SHARED_LINKS_PUBLIC', 'TITLE_CONVO', 'SUMMARY_CONVO',
+      // Caching
+      'STATIC_CACHE_MAX_AGE', 'STATIC_CACHE_S_MAX_AGE', 'INDEX_CACHE_CONTROL', 'INDEX_PRAGMA', 'INDEX_EXPIRES',
+      // MCP OAuth
+      'MCP_OAUTH_ON_AUTH_ERROR', 'MCP_OAUTH_DETECTION_TIMEOUT',
+      // Code Execution
+      'LIBRECHAT_CODE_API_KEY', 'LIBRECHAT_CODE_BASEURL', 'E2B_API_KEY', 'E2B_PROXY_ENABLED',
+      'E2B_PROXY_PORT', 'E2B_PUBLIC_BASE_URL', 'E2B_FILE_TTL_DAYS', 'E2B_MAX_FILE_SIZE', 'E2B_PER_USER_SANDBOX',
+      // Artifacts
+      'SANDPACK_BUNDLER_URL',
+      // User Management
+      'UID', 'GID',
+      // Debug
+      'DEBUG_LOGGING', 'DEBUG_CONSOLE', 'CONSOLE_JSON',
+      // Miscellaneous
+      'CDN_PROVIDER', 'OCR_API_KEY', 'OCR_BASEURL', 'STT_API_KEY', 'TTS_API_KEY',
+      // Subdirectory Hosting
+      'BASE_PATH', 'APP_URL', 'PUBLIC_SUB_PATH'
+    ]);
+    
+    // Check each env var
+    for (const varName of Object.keys(envVars)) {
+      // Skip empty lines and comments
+      if (!varName || varName.startsWith('#')) continue;
+      
+      if (!supportedEnvVars.has(varName)) {
+        unmappedVars.push(varName);
+      }
+    }
+    
+    return {
+      valid: unmappedVars.length === 0,
+      unmappedVars
+    };
   };
 
   const handleImportEnv = () => {
@@ -875,6 +1051,30 @@ export default function Home() {
             
             console.log("   - Parsed ENV vars:", Object.keys(envVars));
             
+            // VALIDATION: Check for unmapped environment variables BEFORE importing
+            const validation = validateEnvVars(envVars);
+            if (!validation.valid) {
+              console.error("❌ [ENV IMPORT] Unmapped environment variables detected:", validation.unmappedVars);
+              toast({
+                title: "❌ Import Blocked: Unsupported Variables Detected",
+                description: `Your .env file contains ${validation.unmappedVars.length} environment variable(s) not yet supported by this tool. Import has been rejected to prevent data loss.`,
+                variant: "destructive",
+              });
+              
+              // Show detailed list in console
+              console.log("\n🚫 IMPORT REJECTED - Unsupported Environment Variables:");
+              console.log("=========================================================");
+              validation.unmappedVars.forEach((varName, index) => {
+                console.log(`${index + 1}. ${varName}`);
+              });
+              console.log("\n💡 Next Steps:");
+              console.log("   1. Report these variables so they can be added to the tool");
+              console.log("   2. OR remove unsupported variables from your .env file");
+              console.log("   3. Then retry the import\n");
+              
+              return; // BLOCK IMPORT
+            }
+            
             const configUpdates = mapEnvToConfiguration(envVars);
             console.log("   - Mapped configuration:", configUpdates);
             
@@ -882,8 +1082,8 @@ export default function Home() {
             updateConfiguration(configUpdates);
             
             toast({
-              title: "Environment File Imported",
-              description: `Settings from "${file.name}" imported successfully.`,
+              title: "✅ Environment File Imported Successfully",
+              description: `All settings from "${file.name}" imported with complete data preservation.`,
             });
           } catch (error) {
             console.error("ENV import error:", error);

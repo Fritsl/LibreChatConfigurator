@@ -818,11 +818,12 @@ export default function Home() {
   };
 
   // Validation function to detect unmapped YAML fields
+  // This must mirror EXACTLY what mapYamlToConfiguration supports
   const validateYamlFields = (yamlData: any): { valid: boolean; unmappedFields: string[] } => {
     const unmappedFields: string[] = [];
     
-    // Define all supported top-level YAML keys
-    const supportedKeys = new Set([
+    // Define all supported top-level YAML keys (matching mapYamlToConfiguration)
+    const supportedTopLevelKeys = new Set([
       'version', 'cache', 'mcpServers', 'ui', 'agents', 'rateLimits', 'fileConfig',
       'search', 'webSearch', 'memory', 'ocr', 'stt', 'tts', 'speech', 'actions',
       'temporaryChats', 'interface', 'modelSpecs', 'filteredTools', 'includedTools', 'endpoints'
@@ -830,12 +831,14 @@ export default function Home() {
     
     // Check top-level keys
     for (const key of Object.keys(yamlData)) {
-      if (!supportedKeys.has(key)) {
+      if (!supportedTopLevelKeys.has(key)) {
         unmappedFields.push(key);
       }
     }
     
-    // Check nested keys in specific sections
+    // Validate nested sections (matching mapYamlToConfiguration structure)
+    
+    // 1. UI section
     if (yamlData.ui) {
       const supportedUIKeys = new Set(['modelSelect', 'parameters', 'sidePanel', 'presets', 'prompts', 'bookmarks', 'multiConvo', 'agents', 'webSearch', 'fileSearch', 'fileCitations', 'runCode']);
       for (const key of Object.keys(yamlData.ui)) {
@@ -845,6 +848,7 @@ export default function Home() {
       }
     }
     
+    // 2. Interface section
     if (yamlData.interface) {
       const supportedInterfaceKeys = new Set(['customWelcome', 'customFooter', 'defaultPreset', 'uploadAsText', 'temporaryChatRetention', 'mcpServers', 'privacyPolicy', 'termsOfService']);
       for (const key of Object.keys(yamlData.interface)) {
@@ -854,11 +858,149 @@ export default function Home() {
       }
     }
     
+    // 3. WebSearch section (complete nested object)
+    if (yamlData.webSearch) {
+      const supportedWebSearchKeys = new Set([
+        'searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 'searxngInstanceUrl',
+        'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey', 'googleSearchApiKey',
+        'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl', 'jinaApiKey',
+        'jinaApiUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'
+      ]);
+      for (const key of Object.keys(yamlData.webSearch)) {
+        if (!supportedWebSearchKeys.has(key)) {
+          unmappedFields.push(`webSearch.${key}`);
+        }
+      }
+    }
+    
+    // 4. Memory section
+    if (yamlData.memory) {
+      const supportedMemoryKeys = new Set(['validKeys', 'tokenLimit', 'agent']);
+      for (const key of Object.keys(yamlData.memory)) {
+        if (!supportedMemoryKeys.has(key)) {
+          unmappedFields.push(`memory.${key}`);
+        }
+      }
+      // Memory.agent nested object
+      if (yamlData.memory.agent) {
+        const supportedAgentKeys = new Set(['model', 'temperature', 'top_p', 'frequency_penalty', 'presence_penalty']);
+        for (const key of Object.keys(yamlData.memory.agent)) {
+          if (!supportedAgentKeys.has(key)) {
+            unmappedFields.push(`memory.agent.${key}`);
+          }
+        }
+      }
+    }
+    
+    // 5. OCR section
+    if (yamlData.ocr) {
+      const supportedOCRKeys = new Set(['apiKey', 'baseURL', 'model', 'type']);
+      for (const key of Object.keys(yamlData.ocr)) {
+        if (!supportedOCRKeys.has(key)) {
+          unmappedFields.push(`ocr.${key}`);
+        }
+      }
+    }
+    
+    // 6. STT section
+    if (yamlData.stt) {
+      const supportedSTTKeys = new Set(['apiKey', 'baseURL', 'model', 'type', 'language']);
+      for (const key of Object.keys(yamlData.stt)) {
+        if (!supportedSTTKeys.has(key)) {
+          unmappedFields.push(`stt.${key}`);
+        }
+      }
+    }
+    
+    // 7. TTS section
+    if (yamlData.tts) {
+      const supportedTTSKeys = new Set(['apiKey', 'baseURL', 'model', 'type', 'voice', 'backend', 'voices']);
+      for (const key of Object.keys(yamlData.tts)) {
+        if (!supportedTTSKeys.has(key)) {
+          unmappedFields.push(`tts.${key}`);
+        }
+      }
+    }
+    
+    // 8. Speech section
+    if (yamlData.speech) {
+      const supportedSpeechKeys = new Set(['speechTab']);
+      for (const key of Object.keys(yamlData.speech)) {
+        if (!supportedSpeechKeys.has(key)) {
+          unmappedFields.push(`speech.${key}`);
+        }
+      }
+      // Speech.speechTab nested object (complete STT/TTS configuration)
+      if (yamlData.speech.speechTab) {
+        const supportedSpeechTabKeys = new Set(['stt', 'tts']);
+        for (const key of Object.keys(yamlData.speech.speechTab)) {
+          if (!supportedSpeechTabKeys.has(key)) {
+            unmappedFields.push(`speech.speechTab.${key}`);
+          }
+        }
+      }
+    }
+    
+    // 9. ModelSpecs section
+    if (yamlData.modelSpecs) {
+      const supportedModelSpecsKeys = new Set(['enforce', 'prioritize', 'list', 'addedEndpoints']);
+      for (const key of Object.keys(yamlData.modelSpecs)) {
+        if (!supportedModelSpecsKeys.has(key)) {
+          unmappedFields.push(`modelSpecs.${key}`);
+        }
+      }
+    }
+    
+    // 10. FileConfig section (can contain multiple endpoints)
+    if (yamlData.fileConfig) {
+      // FileConfig can have any endpoint name as key, so we validate the structure not the keys
+      for (const [endpoint, config] of Object.entries(yamlData.fileConfig)) {
+        if (typeof config === 'object' && config !== null) {
+          const supportedFileConfigKeys = new Set(['disabled', 'fileLimit', 'fileSizeLimit', 'totalSizeLimit', 'supportedMimeTypes']);
+          for (const key of Object.keys(config as any)) {
+            if (!supportedFileConfigKeys.has(key)) {
+              unmappedFields.push(`fileConfig.${endpoint}.${key}`);
+            }
+          }
+        }
+      }
+    }
+    
+    // 11. Endpoints section
     if (yamlData.endpoints) {
       const supportedEndpoints = new Set(['agents', 'openAI', 'anthropic', 'google', 'azureOpenAI']);
       for (const key of Object.keys(yamlData.endpoints)) {
         if (!supportedEndpoints.has(key)) {
           unmappedFields.push(`endpoints.${key}`);
+        }
+      }
+      
+      // Validate agents endpoint configuration
+      if (yamlData.endpoints.agents) {
+        const supportedAgentsKeys = new Set(['disableBuilder', 'recursionLimit', 'maxRecursionLimit', 'capabilities']);
+        for (const key of Object.keys(yamlData.endpoints.agents)) {
+          if (!supportedAgentsKeys.has(key)) {
+            unmappedFields.push(`endpoints.agents.${key}`);
+          }
+        }
+        // Agents capabilities
+        if (yamlData.endpoints.agents.capabilities) {
+          const supportedCapKeys = new Set(['codeInterpreter', 'actions', 'fileSearch', 'uploadAsText']);
+          for (const key of Object.keys(yamlData.endpoints.agents.capabilities)) {
+            if (!supportedCapKeys.has(key)) {
+              unmappedFields.push(`endpoints.agents.capabilities.${key}`);
+            }
+          }
+        }
+      }
+      
+      // Validate openAI endpoint configuration
+      if (yamlData.endpoints.openAI) {
+        const supportedOpenAIKeys = new Set(['titleConvo', 'titleModel', 'models']);
+        for (const key of Object.keys(yamlData.endpoints.openAI)) {
+          if (!supportedOpenAIKeys.has(key)) {
+            unmappedFields.push(`endpoints.openAI.${key}`);
+          }
         }
       }
     }

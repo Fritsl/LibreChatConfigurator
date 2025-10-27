@@ -124,28 +124,257 @@ export default function Home() {
   const mapEnvToConfiguration = (envVars: Record<string, string>) => {
     const config: any = {};
     
-    // Map environment variables to configuration
+    // App Configuration
+    if (envVars.APP_TITLE) config.appTitle = envVars.APP_TITLE;
+    if (envVars.CUSTOM_WELCOME) config.customWelcome = envVars.CUSTOM_WELCOME;
+    if (envVars.CUSTOM_FOOTER) config.customFooter = envVars.CUSTOM_FOOTER;
+    if (envVars.HELP_AND_FAQ_URL) config.helpAndFAQURL = envVars.HELP_AND_FAQ_URL;
+    
+    // Server Configuration
     if (envVars.HOST) config.host = envVars.HOST;
     if (envVars.PORT) config.port = parseInt(envVars.PORT) || 3080;
-    if (envVars.ALLOW_REGISTRATION) config.enableRegistration = envVars.ALLOW_REGISTRATION === 'true';
-    if (envVars.DEBUG_LOGGING) config.debugLogging = envVars.DEBUG_LOGGING === 'true';
-    if (envVars.SESSION_EXPIRY) config.sessionExpiry = parseInt(envVars.SESSION_EXPIRY) || 900000;
-    if (envVars.REFRESH_TOKEN_EXPIRY) config.refreshTokenExpiry = parseInt(envVars.REFRESH_TOKEN_EXPIRY) || 604800000;
+    if (envVars.ENDPOINTS) config.enabledEndpoints = envVars.ENDPOINTS.split(',');
+    if (envVars.NODE_ENV) config.nodeEnv = envVars.NODE_ENV;
+    if (envVars.DOMAIN_CLIENT) config.domainClient = envVars.DOMAIN_CLIENT;
+    if (envVars.DOMAIN_SERVER) config.domainServer = envVars.DOMAIN_SERVER;
+    if (envVars.NO_INDEX !== undefined) config.noIndex = envVars.NO_INDEX === 'true';
     
-    // Security settings
+    // Security Configuration
     if (envVars.JWT_SECRET) config.jwtSecret = envVars.JWT_SECRET;
     if (envVars.JWT_REFRESH_SECRET) config.jwtRefreshSecret = envVars.JWT_REFRESH_SECRET;
     if (envVars.CREDS_KEY) config.credsKey = envVars.CREDS_KEY;
     if (envVars.CREDS_IV) config.credsIV = envVars.CREDS_IV;
+    if (envVars.MIN_PASSWORD_LENGTH) config.minPasswordLength = parseInt(envVars.MIN_PASSWORD_LENGTH) || 8;
+    if (envVars.EMAIL_VERIFICATION_REQUIRED !== undefined) config.emailVerificationRequired = envVars.EMAIL_VERIFICATION_REQUIRED === 'true';
+    if (envVars.ALLOW_UNVERIFIED_EMAIL_LOGIN !== undefined) config.allowUnverifiedEmailLogin = envVars.ALLOW_UNVERIFIED_EMAIL_LOGIN === 'true';
+    if (envVars.SESSION_EXPIRY) config.sessionExpiry = parseInt(envVars.SESSION_EXPIRY) || 900000;
+    if (envVars.REFRESH_TOKEN_EXPIRY) config.refreshTokenExpiry = parseInt(envVars.REFRESH_TOKEN_EXPIRY) || 604800000;
     
-    // Database settings
+    // Database Configuration
+    if (envVars.MONGO_URI) config.mongoUri = envVars.MONGO_URI;
     if (envVars.MONGO_ROOT_USERNAME) config.mongoRootUsername = envVars.MONGO_ROOT_USERNAME;
     if (envVars.MONGO_ROOT_PASSWORD) config.mongoRootPassword = envVars.MONGO_ROOT_PASSWORD;
     if (envVars.MONGO_DB_NAME) config.mongoDbName = envVars.MONGO_DB_NAME;
+    if (envVars.REDIS_URI) config.redisUri = envVars.REDIS_URI;
+    if (envVars.REDIS_USERNAME) config.redisUsername = envVars.REDIS_USERNAME;
+    if (envVars.REDIS_PASSWORD) config.redisPassword = envVars.REDIS_PASSWORD;
+    if (envVars.REDIS_KEY_PREFIX) config.redisKeyPrefix = envVars.REDIS_KEY_PREFIX;
+    if (envVars.REDIS_KEY_PREFIX_VAR) config.redisKeyPrefixVar = envVars.REDIS_KEY_PREFIX_VAR;
+    if (envVars.REDIS_MAX_LISTENERS) config.redisMaxListeners = parseInt(envVars.REDIS_MAX_LISTENERS) || 10;
+    if (envVars.REDIS_PING_INTERVAL) config.redisPingInterval = parseInt(envVars.REDIS_PING_INTERVAL) || 30000;
+    if (envVars.REDIS_USE_ALTERNATIVE_DNS_LOOKUP !== undefined) config.redisUseAlternativeDNSLookup = envVars.REDIS_USE_ALTERNATIVE_DNS_LOOKUP === 'true';
     
-    // API Keys
+    // Authentication Configuration
+    if (envVars.ALLOW_REGISTRATION !== undefined) config.allowRegistration = envVars.ALLOW_REGISTRATION === 'true';
+    if (envVars.ALLOW_EMAIL_LOGIN !== undefined) config.allowEmailLogin = envVars.ALLOW_EMAIL_LOGIN === 'true';
+    if (envVars.ALLOW_SOCIAL_LOGIN !== undefined) config.allowSocialLogin = envVars.ALLOW_SOCIAL_LOGIN === 'true';
+    if (envVars.ALLOW_SOCIAL_REGISTRATION !== undefined) config.allowSocialRegistration = envVars.ALLOW_SOCIAL_REGISTRATION === 'true';
+    if (envVars.ALLOW_PASSWORD_RESET !== undefined) config.allowPasswordReset = envVars.ALLOW_PASSWORD_RESET === 'true';
+    
+    // Email Configuration
+    if (envVars.EMAIL_SERVICE) config.emailService = envVars.EMAIL_SERVICE;
+    if (envVars.EMAIL_USERNAME) config.emailUsername = envVars.EMAIL_USERNAME;
+    if (envVars.EMAIL_PASSWORD) config.emailPassword = envVars.EMAIL_PASSWORD;
+    if (envVars.EMAIL_FROM) config.emailFrom = envVars.EMAIL_FROM;
+    if (envVars.EMAIL_FROM_NAME) config.emailFromName = envVars.EMAIL_FROM_NAME;
+    if (envVars.MAILGUN_API_KEY) config.mailgunApiKey = envVars.MAILGUN_API_KEY;
+    if (envVars.MAILGUN_DOMAIN) config.mailgunDomain = envVars.MAILGUN_DOMAIN;
+    if (envVars.MAILGUN_HOST) config.mailgunHost = envVars.MAILGUN_HOST;
+    
+    // OAuth Providers
+    if (envVars.GOOGLE_CLIENT_ID) config.googleClientId = envVars.GOOGLE_CLIENT_ID;
+    if (envVars.GOOGLE_CLIENT_SECRET) config.googleClientSecret = envVars.GOOGLE_CLIENT_SECRET;
+    if (envVars.GOOGLE_CALLBACK_URL) config.googleCallbackURL = envVars.GOOGLE_CALLBACK_URL;
+    if (envVars.GITHUB_CLIENT_ID) config.githubClientId = envVars.GITHUB_CLIENT_ID;
+    if (envVars.GITHUB_CLIENT_SECRET) config.githubClientSecret = envVars.GITHUB_CLIENT_SECRET;
+    if (envVars.GITHUB_CALLBACK_URL) config.githubCallbackURL = envVars.GITHUB_CALLBACK_URL;
+    if (envVars.DISCORD_CLIENT_ID) config.discordClientId = envVars.DISCORD_CLIENT_ID;
+    if (envVars.DISCORD_CLIENT_SECRET) config.discordClientSecret = envVars.DISCORD_CLIENT_SECRET;
+    if (envVars.DISCORD_CALLBACK_URL) config.discordCallbackURL = envVars.DISCORD_CALLBACK_URL;
+    if (envVars.FACEBOOK_CLIENT_ID) config.facebookClientId = envVars.FACEBOOK_CLIENT_ID;
+    if (envVars.FACEBOOK_CLIENT_SECRET) config.facebookClientSecret = envVars.FACEBOOK_CLIENT_SECRET;
+    if (envVars.FACEBOOK_CALLBACK_URL) config.facebookCallbackURL = envVars.FACEBOOK_CALLBACK_URL;
+    if (envVars.APPLE_CLIENT_ID) config.appleClientId = envVars.APPLE_CLIENT_ID;
+    if (envVars.APPLE_PRIVATE_KEY) config.applePrivateKey = envVars.APPLE_PRIVATE_KEY;
+    if (envVars.APPLE_KEY_ID) config.appleKeyId = envVars.APPLE_KEY_ID;
+    if (envVars.APPLE_TEAM_ID) config.appleTeamId = envVars.APPLE_TEAM_ID;
+    if (envVars.APPLE_CALLBACK_URL) config.appleCallbackURL = envVars.APPLE_CALLBACK_URL;
+    if (envVars.OPENID_URL) config.openidURL = envVars.OPENID_URL;
+    if (envVars.OPENID_CLIENT_ID) config.openidClientId = envVars.OPENID_CLIENT_ID;
+    if (envVars.OPENID_CLIENT_SECRET) config.openidClientSecret = envVars.OPENID_CLIENT_SECRET;
+    if (envVars.OPENID_CALLBACK_URL) config.openidCallbackURL = envVars.OPENID_CALLBACK_URL;
+    if (envVars.OPENID_SCOPE) config.openidScope = envVars.OPENID_SCOPE;
+    if (envVars.OPENID_SESSION_SECRET) config.openidSessionSecret = envVars.OPENID_SESSION_SECRET;
+    if (envVars.OPENID_ISSUER) config.openidIssuer = envVars.OPENID_ISSUER;
+    if (envVars.OPENID_BUTTON_LABEL) config.openidButtonLabel = envVars.OPENID_BUTTON_LABEL;
+    if (envVars.OPENID_IMAGE_URL) config.openidImageURL = envVars.OPENID_IMAGE_URL;
+    
+    // Core AI API Keys
     if (envVars.OPENAI_API_KEY) config.openaiApiKey = envVars.OPENAI_API_KEY;
+    if (envVars.ANTHROPIC_API_KEY) config.anthropicApiKey = envVars.ANTHROPIC_API_KEY;
+    if (envVars.GOOGLE_API_KEY) config.googleApiKey = envVars.GOOGLE_API_KEY;
+    if (envVars.GROQ_API_KEY) config.groqApiKey = envVars.GROQ_API_KEY;
+    if (envVars.MISTRAL_API_KEY) config.mistralApiKey = envVars.MISTRAL_API_KEY;
+    
+    // Extended AI API Keys
+    if (envVars.DEEPSEEK_API_KEY) config.deepseekApiKey = envVars.DEEPSEEK_API_KEY;
+    if (envVars.PERPLEXITY_API_KEY) config.perplexityApiKey = envVars.PERPLEXITY_API_KEY;
+    if (envVars.FIREWORKS_API_KEY) config.fireworksApiKey = envVars.FIREWORKS_API_KEY;
+    if (envVars.TOGETHERAI_API_KEY) config.togetheraiApiKey = envVars.TOGETHERAI_API_KEY;
+    if (envVars.HUGGINGFACE_TOKEN) config.huggingfaceToken = envVars.HUGGINGFACE_TOKEN;
+    if (envVars.XAI_API_KEY) config.xaiApiKey = envVars.XAI_API_KEY;
+    if (envVars.NVIDIA_API_KEY) config.nvidiaApiKey = envVars.NVIDIA_API_KEY;
+    if (envVars.SAMBANOVA_API_KEY) config.sambaNovaApiKey = envVars.SAMBANOVA_API_KEY;
+    if (envVars.HYPERBOLIC_API_KEY) config.hyperbolicApiKey = envVars.HYPERBOLIC_API_KEY;
+    if (envVars.KLUSTER_API_KEY) config.klusterApiKey = envVars.KLUSTER_API_KEY;
+    if (envVars.NANOGPT_API_KEY) config.nanogptApiKey = envVars.NANOGPT_API_KEY;
+    if (envVars.GLHF_API_KEY) config.glhfApiKey = envVars.GLHF_API_KEY;
+    if (envVars.APIPIE_API_KEY) config.apipieApiKey = envVars.APIPIE_API_KEY;
+    if (envVars.UNIFY_API_KEY) config.unifyApiKey = envVars.UNIFY_API_KEY;
+    if (envVars.OPENROUTER_KEY) config.openrouterKey = envVars.OPENROUTER_KEY;
+    
+    // Azure OpenAI
+    if (envVars.AZURE_API_KEY) config.azureApiKey = envVars.AZURE_API_KEY;
+    if (envVars.AZURE_OPENAI_API_INSTANCE_NAME) config.azureOpenaiApiInstanceName = envVars.AZURE_OPENAI_API_INSTANCE_NAME;
+    if (envVars.AZURE_OPENAI_API_DEPLOYMENT_NAME) config.azureOpenaiApiDeploymentName = envVars.AZURE_OPENAI_API_DEPLOYMENT_NAME;
+    if (envVars.AZURE_OPENAI_API_VERSION) config.azureOpenaiApiVersion = envVars.AZURE_OPENAI_API_VERSION;
+    if (envVars.AZURE_OPENAI_MODELS) config.azureOpenaiModels = envVars.AZURE_OPENAI_MODELS;
+    
+    // AWS Bedrock
+    if (envVars.AWS_ACCESS_KEY_ID) config.awsAccessKeyId = envVars.AWS_ACCESS_KEY_ID;
+    if (envVars.AWS_SECRET_ACCESS_KEY) config.awsSecretAccessKey = envVars.AWS_SECRET_ACCESS_KEY;
+    if (envVars.AWS_REGION) config.awsRegion = envVars.AWS_REGION;
+    if (envVars.AWS_BEDROCK_REGION) config.awsBedrockRegion = envVars.AWS_BEDROCK_REGION;
+    if (envVars.AWS_ENDPOINT_URL) config.awsEndpointURL = envVars.AWS_ENDPOINT_URL;
+    if (envVars.AWS_BUCKET_NAME) config.awsBucketName = envVars.AWS_BUCKET_NAME;
+    
+    // File Storage
+    if (envVars.FILE_UPLOAD_PATH) config.fileUploadPath = envVars.FILE_UPLOAD_PATH;
+    if (envVars.FIREBASE_API_KEY) config.firebaseApiKey = envVars.FIREBASE_API_KEY;
+    if (envVars.FIREBASE_AUTH_DOMAIN) config.firebaseAuthDomain = envVars.FIREBASE_AUTH_DOMAIN;
+    if (envVars.FIREBASE_PROJECT_ID) config.firebaseProjectId = envVars.FIREBASE_PROJECT_ID;
+    if (envVars.FIREBASE_STORAGE_BUCKET) config.firebaseStorageBucket = envVars.FIREBASE_STORAGE_BUCKET;
+    if (envVars.FIREBASE_MESSAGING_SENDER_ID) config.firebaseMessagingSenderId = envVars.FIREBASE_MESSAGING_SENDER_ID;
+    if (envVars.FIREBASE_APP_ID) config.firebaseAppId = envVars.FIREBASE_APP_ID;
+    if (envVars.AZURE_STORAGE_CONNECTION_STRING) config.azureStorageConnectionString = envVars.AZURE_STORAGE_CONNECTION_STRING;
+    if (envVars.AZURE_STORAGE_PUBLIC_ACCESS !== undefined) config.azureStoragePublicAccess = envVars.AZURE_STORAGE_PUBLIC_ACCESS === 'true';
+    if (envVars.AZURE_CONTAINER_NAME) config.azureContainerName = envVars.AZURE_CONTAINER_NAME;
+    
+    // Search & External APIs
+    if (envVars.GOOGLE_SEARCH_API_KEY) config.googleSearchApiKey = envVars.GOOGLE_SEARCH_API_KEY;
+    if (envVars.GOOGLE_CSE_ID) config.googleCSEId = envVars.GOOGLE_CSE_ID;
+    if (envVars.BING_SEARCH_API_KEY) config.bingSearchApiKey = envVars.BING_SEARCH_API_KEY;
+    if (envVars.OPENWEATHER_API_KEY) config.openweatherApiKey = envVars.OPENWEATHER_API_KEY;
+    
+    // DALL-E Image Generation
+    if (envVars.DALLE_API_KEY) config.dalleApiKey = envVars.DALLE_API_KEY;
+    if (envVars.DALLE3_API_KEY) config.dalle3ApiKey = envVars.DALLE3_API_KEY;
+    if (envVars.DALLE2_API_KEY) config.dalle2ApiKey = envVars.DALLE2_API_KEY;
+    if (envVars.DALLE_REVERSE_PROXY) config.dalleReverseProxy = envVars.DALLE_REVERSE_PROXY;
+    if (envVars.DALLE3_BASEURL) config.dalle3BaseUrl = envVars.DALLE3_BASEURL;
+    if (envVars.DALLE2_BASEURL) config.dalle2BaseUrl = envVars.DALLE2_BASEURL;
+    if (envVars.DALLE3_SYSTEM_PROMPT) config.dalle3SystemPrompt = envVars.DALLE3_SYSTEM_PROMPT;
+    if (envVars.DALLE2_SYSTEM_PROMPT) config.dalle2SystemPrompt = envVars.DALLE2_SYSTEM_PROMPT;
+    
+    // RAG API
+    if (envVars.RAG_API_URL) config.ragApiURL = envVars.RAG_API_URL;
+    if (envVars.RAG_OPENAI_API_KEY) config.ragOpenaiApiKey = envVars.RAG_OPENAI_API_KEY;
+    if (envVars.RAG_PORT) config.ragPort = parseInt(envVars.RAG_PORT);
+    if (envVars.RAG_HOST) config.ragHost = envVars.RAG_HOST;
+    if (envVars.COLLECTION_NAME) config.collectionName = envVars.COLLECTION_NAME;
+    if (envVars.CHUNK_SIZE) config.chunkSize = parseInt(envVars.CHUNK_SIZE);
+    if (envVars.CHUNK_OVERLAP) config.chunkOverlap = parseInt(envVars.CHUNK_OVERLAP);
+    if (envVars.EMBEDDINGS_PROVIDER) config.embeddingsProvider = envVars.EMBEDDINGS_PROVIDER;
+    
+    // MeiliSearch
+    if (envVars.MEILISEARCH_URL) config.meilisearchURL = envVars.MEILISEARCH_URL;
+    if (envVars.MEILISEARCH_MASTER_KEY) config.meilisearchMasterKey = envVars.MEILISEARCH_MASTER_KEY;
+    if (envVars.MEILI_NO_ANALYTICS !== undefined) config.meiliNoAnalytics = envVars.MEILI_NO_ANALYTICS === 'true';
+    
+    // Rate Limiting & Security
+    if (envVars.LIMIT_CONCURRENT_MESSAGES !== undefined) config.limitConcurrentMessages = envVars.LIMIT_CONCURRENT_MESSAGES === 'true';
+    if (envVars.CONCURRENT_MESSAGE_MAX) config.concurrentMessageMax = parseInt(envVars.CONCURRENT_MESSAGE_MAX);
+    if (envVars.BAN_VIOLATIONS !== undefined) config.banViolations = envVars.BAN_VIOLATIONS === 'true';
+    if (envVars.BAN_DURATION) config.banDuration = parseInt(envVars.BAN_DURATION);
+    if (envVars.BAN_INTERVAL) config.banInterval = parseInt(envVars.BAN_INTERVAL);
+    if (envVars.LOGIN_VIOLATION_SCORE) config.loginViolationScore = parseInt(envVars.LOGIN_VIOLATION_SCORE);
+    if (envVars.REGISTRATION_VIOLATION_SCORE) config.registrationViolationScore = parseInt(envVars.REGISTRATION_VIOLATION_SCORE);
+    if (envVars.CONCURRENT_VIOLATION_SCORE) config.concurrentViolationScore = parseInt(envVars.CONCURRENT_VIOLATION_SCORE);
+    if (envVars.MESSAGE_VIOLATION_SCORE) config.messageViolationScore = parseInt(envVars.MESSAGE_VIOLATION_SCORE);
+    if (envVars.NON_BROWSER_VIOLATION_SCORE) config.nonBrowserViolationScore = parseInt(envVars.NON_BROWSER_VIOLATION_SCORE);
+    if (envVars.LOGIN_MAX) config.loginMax = parseInt(envVars.LOGIN_MAX);
+    if (envVars.LOGIN_WINDOW) config.loginWindow = parseInt(envVars.LOGIN_WINDOW);
+    
+    // LDAP
+    if (envVars.LDAP_URL) config.ldapURL = envVars.LDAP_URL;
+    if (envVars.LDAP_BIND_DN) config.ldapBindDN = envVars.LDAP_BIND_DN;
+    if (envVars.LDAP_BIND_CREDENTIALS) config.ldapBindCredentials = envVars.LDAP_BIND_CREDENTIALS;
+    if (envVars.LDAP_SEARCH_BASE) config.ldapSearchBase = envVars.LDAP_SEARCH_BASE;
+    if (envVars.LDAP_SEARCH_FILTER) config.ldapSearchFilter = envVars.LDAP_SEARCH_FILTER;
+    
+    // Turnstile
+    if (envVars.TURNSTILE_SITE_KEY) config.turnstileSiteKey = envVars.TURNSTILE_SITE_KEY;
+    if (envVars.TURNSTILE_SECRET_KEY) config.turnstileSecretKey = envVars.TURNSTILE_SECRET_KEY;
+    
+    // Features
+    if (envVars.ALLOW_SHARED_LINKS !== undefined) config.allowSharedLinks = envVars.ALLOW_SHARED_LINKS === 'true';
+    if (envVars.ALLOW_SHARED_LINKS_PUBLIC !== undefined) config.allowSharedLinksPublic = envVars.ALLOW_SHARED_LINKS_PUBLIC === 'true';
+    if (envVars.TITLE_CONVO !== undefined) config.titleConvo = envVars.TITLE_CONVO === 'true';
+    if (envVars.SUMMARY_CONVO !== undefined) config.summaryConvo = envVars.SUMMARY_CONVO === 'true';
+    
+    // Caching
+    if (envVars.STATIC_CACHE_MAX_AGE) config.staticCacheMaxAge = envVars.STATIC_CACHE_MAX_AGE;
+    if (envVars.STATIC_CACHE_S_MAX_AGE) config.staticCacheSMaxAge = envVars.STATIC_CACHE_S_MAX_AGE;
+    if (envVars.INDEX_CACHE_CONTROL) config.indexCacheControl = envVars.INDEX_CACHE_CONTROL;
+    if (envVars.INDEX_PRAGMA) config.indexPragma = envVars.INDEX_PRAGMA;
+    if (envVars.INDEX_EXPIRES) config.indexExpires = envVars.INDEX_EXPIRES;
+    
+    // MCP OAuth
+    if (envVars.MCP_OAUTH_ON_AUTH_ERROR) config.mcpOauthOnAuthError = envVars.MCP_OAUTH_ON_AUTH_ERROR;
+    if (envVars.MCP_OAUTH_DETECTION_TIMEOUT) config.mcpOauthDetectionTimeout = parseInt(envVars.MCP_OAUTH_DETECTION_TIMEOUT);
+    
+    // Code Execution
+    if (envVars.LIBRECHAT_CODE_API_KEY) config.librechatCodeApiKey = envVars.LIBRECHAT_CODE_API_KEY;
+    if (envVars.LIBRECHAT_CODE_BASEURL) config.librechatCodeBaseUrl = envVars.LIBRECHAT_CODE_BASEURL;
+    if (envVars.E2B_API_KEY) config.e2bApiKey = envVars.E2B_API_KEY;
+    if (envVars.E2B_PROXY_ENABLED !== undefined) config.e2bProxyEnabled = envVars.E2B_PROXY_ENABLED === 'true';
+    if (envVars.E2B_PROXY_PORT) config.e2bProxyPort = parseInt(envVars.E2B_PROXY_PORT);
+    if (envVars.E2B_PUBLIC_BASE_URL) config.e2bPublicBaseUrl = envVars.E2B_PUBLIC_BASE_URL;
+    if (envVars.E2B_FILE_TTL_DAYS) config.e2bFileTTLDays = parseInt(envVars.E2B_FILE_TTL_DAYS);
+    if (envVars.E2B_MAX_FILE_SIZE) config.e2bMaxFileSize = parseInt(envVars.E2B_MAX_FILE_SIZE);
+    if (envVars.E2B_PER_USER_SANDBOX !== undefined) config.e2bPerUserSandbox = envVars.E2B_PER_USER_SANDBOX === 'true';
+    
+    // Artifacts
+    if (envVars.SANDPACK_BUNDLER_URL) config.sandpackBundlerUrl = envVars.SANDPACK_BUNDLER_URL;
+    
+    // User Management
+    if (envVars.UID) config.uid = parseInt(envVars.UID);
+    if (envVars.GID) config.gid = parseInt(envVars.GID);
+    
+    // Debug
+    if (envVars.DEBUG_LOGGING !== undefined) config.debugLogging = envVars.DEBUG_LOGGING === 'true';
+    if (envVars.DEBUG_CONSOLE !== undefined) config.debugConsole = envVars.DEBUG_CONSOLE === 'true';
+    if (envVars.CONSOLE_JSON !== undefined) config.consoleJSON = envVars.CONSOLE_JSON === 'true';
+    
+    // Miscellaneous
     if (envVars.CDN_PROVIDER) config.cdnProvider = envVars.CDN_PROVIDER;
+    if (envVars.OCR_API_KEY) config.ocrApiKey = envVars.OCR_API_KEY;
+    if (envVars.OCR_BASEURL) config.ocrApiBase = envVars.OCR_BASEURL;
+    
+    // STT/TTS nested objects
+    if (envVars.STT_API_KEY) {
+      config.stt = config.stt || {};
+      config.stt.apiKey = envVars.STT_API_KEY;
+    }
+    if (envVars.TTS_API_KEY) {
+      config.tts = config.tts || {};
+      config.tts.apiKey = envVars.TTS_API_KEY;
+    }
+    
+    // Subdirectory Hosting
+    if (envVars.BASE_PATH) config.basePath = envVars.BASE_PATH;
+    if (envVars.APP_URL) config.appUrl = envVars.APP_URL;
+    if (envVars.PUBLIC_SUB_PATH) config.publicSubPath = envVars.PUBLIC_SUB_PATH;
     
     return config;
   };

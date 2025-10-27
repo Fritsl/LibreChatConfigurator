@@ -966,9 +966,10 @@ export default function Home() {
       }
     }
     
-    // 11. Endpoints section
+    // 11. Endpoints section (ONLY allow what mapYamlToConfiguration actually handles)
     if (yamlData.endpoints) {
-      const supportedEndpoints = new Set(['agents', 'openAI', 'anthropic', 'google', 'azureOpenAI']);
+      // Only agents and openAI are actively mapped - reject all others to prevent silent data loss
+      const supportedEndpoints = new Set(['agents', 'openAI']);
       for (const key of Object.keys(yamlData.endpoints)) {
         if (!supportedEndpoints.has(key)) {
           unmappedFields.push(`endpoints.${key}`);
@@ -994,12 +995,21 @@ export default function Home() {
         }
       }
       
-      // Validate openAI endpoint configuration
+      // Validate openAI endpoint configuration (matching mapYamlToConfiguration exactly)
       if (yamlData.endpoints.openAI) {
         const supportedOpenAIKeys = new Set(['titleConvo', 'titleModel', 'models']);
         for (const key of Object.keys(yamlData.endpoints.openAI)) {
           if (!supportedOpenAIKeys.has(key)) {
             unmappedFields.push(`endpoints.openAI.${key}`);
+          }
+        }
+        // Validate models nested structure
+        if (yamlData.endpoints.openAI.models) {
+          const supportedModelsKeys = new Set(['default', 'fetch', 'userIdQuery']);
+          for (const key of Object.keys(yamlData.endpoints.openAI.models)) {
+            if (!supportedModelsKeys.has(key)) {
+              unmappedFields.push(`endpoints.openAI.models.${key}`);
+            }
           }
         }
       }

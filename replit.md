@@ -8,6 +8,9 @@ The UI consolidates settings like app title, welcome message, and interface visi
 
 # Recent Changes
 
+## October 27, 2025
+- **Configuration Name Update Bug**: Fixed issue where configuration name wasn't being updated in the configuration object when loading from Package History. The name was being set in React state and localStorage, but not in the configuration object itself, causing exports and saves to retain the old name. Now properly updates all three locations.
+
 ## October 26, 2025  
 - **100% Configuration Field Coverage**: Fixed critical persistence issue where 68+ fields were missing from defaultConfiguration, causing data loss across localStorage save/load and JSON export/import. Added all missing fields including:
   - **Top-level fields (50+)**: filteredTools, includedTools, DALL-E (8 fields), RAG API (7 fields), E2B extended (4 fields), Azure OpenAI (4 fields), AWS extended (3 fields), Azure Storage (2 fields), MeiliSearch (2 fields), Rate limiting/security (10 fields), LDAP (5 fields), Turnstile (2 fields), Caching (5 fields), MCP OAuth (2 fields), System (3 fields), and various URLs/API keys

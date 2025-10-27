@@ -923,10 +923,14 @@ export default function Home() {
               {/* Configuration History */}
               <ConfigurationHistory onConfigurationLoad={(loadedData) => {
                 // Full replacement of configuration and name
+                const configToLoad = loadedData.configuration || loadedData;
                 if (loadedData.packageName) {
                   setConfigurationName(loadedData.packageName);
+                  // Also update the configurationName field in the configuration object
+                  updateConfiguration({ ...configToLoad, configurationName: loadedData.packageName }, true);
+                } else {
+                  updateConfiguration(configToLoad, true);
                 }
-                updateConfiguration(loadedData.configuration || loadedData, true);
               }} />
               
               {/* Package Generation Dropdown */}

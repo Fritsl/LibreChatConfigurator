@@ -36,6 +36,8 @@ export default function Home() {
   const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [showMergeResults, setShowMergeResults] = useState(false);
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
+  const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
+  const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
@@ -1122,11 +1124,6 @@ export default function Home() {
             const validation = validateYamlFields(yamlData);
             if (!validation.valid) {
               console.error("❌ [YAML IMPORT] Unmapped fields detected:", validation.unmappedFields);
-              toast({
-                title: "❌ Import Blocked: Unsupported Fields Detected",
-                description: `Your YAML file contains ${validation.unmappedFields.length} field(s) not yet supported by this tool. Import has been rejected to prevent data loss.`,
-                variant: "destructive",
-              });
               
               // Show detailed list in console
               console.log("\n🚫 IMPORT REJECTED - Unsupported YAML Fields:");
@@ -1138,6 +1135,13 @@ export default function Home() {
               console.log("   1. Report these fields so they can be added to the tool");
               console.log("   2. OR remove unsupported fields from your YAML file");
               console.log("   3. Then retry the import\n");
+              
+              // Show permanent dialog with unsupported fields
+              setUnsupportedFieldsData({
+                type: 'yaml',
+                fields: validation.unmappedFields
+              });
+              setShowUnsupportedFieldsDialog(true);
               
               return; // BLOCK IMPORT
             }
@@ -1288,11 +1292,6 @@ export default function Home() {
             const validation = validateEnvVars(envVars);
             if (!validation.valid) {
               console.error("❌ [ENV IMPORT] Unmapped environment variables detected:", validation.unmappedVars);
-              toast({
-                title: "❌ Import Blocked: Unsupported Variables Detected",
-                description: `Your .env file contains ${validation.unmappedVars.length} environment variable(s) not yet supported by this tool. Import has been rejected to prevent data loss.`,
-                variant: "destructive",
-              });
               
               // Show detailed list in console
               console.log("\n🚫 IMPORT REJECTED - Unsupported Environment Variables:");
@@ -1304,6 +1303,13 @@ export default function Home() {
               console.log("   1. Report these variables so they can be added to the tool");
               console.log("   2. OR remove unsupported variables from your .env file");
               console.log("   3. Then retry the import\n");
+              
+              // Show permanent dialog with unsupported fields
+              setUnsupportedFieldsData({
+                type: 'env',
+                fields: validation.unmappedVars
+              });
+              setShowUnsupportedFieldsDialog(true);
               
               return; // BLOCK IMPORT
             }
@@ -2055,6 +2061,87 @@ export default function Home() {
 
             <div className="flex justify-end">
               <Button onClick={() => setShowMergeResults(false)} data-testid="button-close-merge-results">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unsupported Fields Dialog */}
+      <Dialog open={showUnsupportedFieldsDialog} onOpenChange={setShowUnsupportedFieldsDialog}>
+        <DialogContent className="max-w-3xl" data-testid="dialog-unsupported-fields">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Import Blocked: Unsupported Fields Detected
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4" data-testid="unsupported-fields-warning">
+              <p className="text-sm text-destructive" data-testid="text-unsupported-count">
+                Your {unsupportedFieldsData?.type === 'yaml' ? 'YAML' : '.env'} file contains <span className="font-semibold">{unsupportedFieldsData?.fields.length || 0}</span> field{(unsupportedFieldsData?.fields.length || 0) > 1 ? 's' : ''} not yet supported by this tool.
+              </p>
+              <p className="text-sm text-destructive/80 mt-2">
+                The import has been rejected to prevent data loss. These fields need to be added to the tool before your file can be imported.
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-sm" data-testid="text-unsupported-fields-title">
+                  Unsupported {unsupportedFieldsData?.type === 'yaml' ? 'YAML Fields' : 'Environment Variables'} ({unsupportedFieldsData?.fields.length || 0}):
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const fieldsList = unsupportedFieldsData?.fields.join('\n') || '';
+                    navigator.clipboard.writeText(fieldsList);
+                    toast({
+                      title: "Copied to Clipboard",
+                      description: `${unsupportedFieldsData?.fields.length} field names copied.`,
+                    });
+                  }}
+                  data-testid="button-copy-unsupported-fields"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Copy List
+                </Button>
+              </div>
+              
+              <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto" data-testid="list-unsupported-fields">
+                <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap select-all">
+                  {unsupportedFieldsData?.fields.map((field, index) => `${index + 1}. ${field}`).join('\n')}
+                </pre>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="space-y-2 text-sm">
+                  <p className="font-medium text-blue-800 dark:text-blue-200">
+                    Next Steps
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1 text-blue-700 dark:text-blue-300 ml-2">
+                    <li>Click "Copy List" to copy all unsupported field names</li>
+                    <li>Report these fields so they can be added to the tool</li>
+                    <li className="text-xs mt-1 ml-6 text-blue-600 dark:text-blue-400">
+                      Alternatively, remove these fields from your {unsupportedFieldsData?.type === 'yaml' ? 'YAML' : '.env'} file and retry the import
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowUnsupportedFieldsDialog(false)}
+                data-testid="button-close-unsupported-dialog"
+              >
                 Close
               </Button>
             </div>

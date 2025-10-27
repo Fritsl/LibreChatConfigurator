@@ -438,15 +438,33 @@ export default function Home() {
       if (yamlData.rateLimits.stt) config.rateLimitsSTT = yamlData.rateLimits.stt;
     }
     
-    // File Configuration
-    if (yamlData.fileConfig?.endpoints?.openAI) {
-      const fileConfig = yamlData.fileConfig.endpoints.openAI;
-      if (fileConfig.fileLimit) config.filesMaxFilesPerRequest = fileConfig.fileLimit;
-      if (fileConfig.fileSizeLimit) config.filesMaxSizeMB = fileConfig.fileSizeLimit;
-      if (fileConfig.supportedMimeTypes) config.filesAllowedMimeTypes = fileConfig.supportedMimeTypes;
+    // File Configuration (complete mapping for all endpoints)
+    if (yamlData.fileConfig) {
+      config.fileConfig = { endpoints: {} };
+      if (yamlData.fileConfig.endpoints) {
+        // Map all endpoint file configs
+        Object.entries(yamlData.fileConfig.endpoints).forEach(([endpointName, limits]: [string, any]) => {
+          config.fileConfig.endpoints[endpointName] = {
+            disabled: limits.disabled,
+            fileLimit: limits.fileLimit,
+            fileSizeLimit: limits.fileSizeLimit,
+            totalSizeLimit: limits.totalSizeLimit,
+            supportedMimeTypes: limits.supportedMimeTypes
+          };
+        });
+      }
+      // Also map legacy fields for backward compatibility
+      if (yamlData.fileConfig.endpoints?.openAI) {
+        const fileConfig = yamlData.fileConfig.endpoints.openAI;
+        if (fileConfig.fileLimit) config.filesMaxFilesPerRequest = fileConfig.fileLimit;
+        if (fileConfig.fileSizeLimit) config.filesMaxSizeMB = fileConfig.fileSizeLimit;
+        if (fileConfig.supportedMimeTypes) config.filesAllowedMimeTypes = fileConfig.supportedMimeTypes;
+      }
+      if (yamlData.fileConfig.serverFileSizeLimit) config.filesServerMaxSize = yamlData.fileConfig.serverFileSizeLimit;
+      if (yamlData.fileConfig.avatarSizeLimit) config.filesAvatarSize = yamlData.fileConfig.avatarSizeLimit;
     }
     
-    // Search Configuration
+    // Search Configuration (legacy - kept for backward compatibility)
     if (yamlData.search) {
       if (yamlData.search.provider) config.searchProvider = yamlData.search.provider;
       if (yamlData.search.scraper) config.searchScraper = yamlData.search.scraper;
@@ -455,21 +473,87 @@ export default function Home() {
       if (yamlData.search.timeout) config.searchTimeout = yamlData.search.timeout;
     }
     
+    // Web Search Configuration (NEW - RC4 nested structure)
+    if (yamlData.webSearch) {
+      config.webSearch = {};
+      if (yamlData.webSearch.searchProvider) config.webSearch.searchProvider = yamlData.webSearch.searchProvider;
+      if (yamlData.webSearch.scraperType) config.webSearch.scraperType = yamlData.webSearch.scraperType;
+      if (yamlData.webSearch.rerankerType) config.webSearch.rerankerType = yamlData.webSearch.rerankerType;
+      if (yamlData.webSearch.serperApiKey) config.webSearch.serperApiKey = yamlData.webSearch.serperApiKey;
+      if (yamlData.webSearch.searxngInstanceUrl) config.webSearch.searxngInstanceUrl = yamlData.webSearch.searxngInstanceUrl;
+      if (yamlData.webSearch.searxngApiKey) config.webSearch.searxngApiKey = yamlData.webSearch.searxngApiKey;
+      if (yamlData.webSearch.braveApiKey) config.webSearch.braveApiKey = yamlData.webSearch.braveApiKey;
+      if (yamlData.webSearch.tavilyApiKey) config.webSearch.tavilyApiKey = yamlData.webSearch.tavilyApiKey;
+      if (yamlData.webSearch.perplexityApiKey) config.webSearch.perplexityApiKey = yamlData.webSearch.perplexityApiKey;
+      if (yamlData.webSearch.googleSearchApiKey) config.webSearch.googleSearchApiKey = yamlData.webSearch.googleSearchApiKey;
+      if (yamlData.webSearch.googleCSEId) config.webSearch.googleCSEId = yamlData.webSearch.googleCSEId;
+      if (yamlData.webSearch.bingSearchApiKey) config.webSearch.bingSearchApiKey = yamlData.webSearch.bingSearchApiKey;
+      if (yamlData.webSearch.firecrawlApiKey) config.webSearch.firecrawlApiKey = yamlData.webSearch.firecrawlApiKey;
+      if (yamlData.webSearch.firecrawlApiUrl) config.webSearch.firecrawlApiUrl = yamlData.webSearch.firecrawlApiUrl;
+      if (yamlData.webSearch.jinaApiKey) config.webSearch.jinaApiKey = yamlData.webSearch.jinaApiKey;
+      if (yamlData.webSearch.jinaApiUrl) config.webSearch.jinaApiUrl = yamlData.webSearch.jinaApiUrl;
+      if (yamlData.webSearch.cohereApiKey) config.webSearch.cohereApiKey = yamlData.webSearch.cohereApiKey;
+      if (yamlData.webSearch.scraperTimeout) config.webSearch.scraperTimeout = yamlData.webSearch.scraperTimeout;
+      if (yamlData.webSearch.safeSearch !== undefined) config.webSearch.safeSearch = yamlData.webSearch.safeSearch;
+    }
+    
     // Memory Configuration
     if (yamlData.memory) {
-      if (yamlData.memory.enabled !== undefined) config.memoryEnabled = yamlData.memory.enabled;
-      if (yamlData.memory.personalization !== undefined) config.memoryPersonalization = yamlData.memory.personalization;
-      if (yamlData.memory.windowSize) config.memoryWindowSize = yamlData.memory.windowSize;
-      if (yamlData.memory.maxTokens) config.memoryMaxTokens = yamlData.memory.maxTokens;
-      if (yamlData.memory.agent) config.memoryAgent = yamlData.memory.agent;
+      config.memory = {};
+      if (yamlData.memory.enabled !== undefined) config.memory.enabled = yamlData.memory.enabled;
+      if (yamlData.memory.personalization !== undefined) config.memory.personalization = yamlData.memory.personalization;
+      if (yamlData.memory.windowSize) config.memory.windowSize = yamlData.memory.windowSize;
+      if (yamlData.memory.tokenLimit) config.memory.tokenLimit = yamlData.memory.tokenLimit;
+      if (yamlData.memory.validKeys) config.memory.validKeys = yamlData.memory.validKeys;
+      if (yamlData.memory.agent) config.memory.agent = yamlData.memory.agent;
     }
     
     // OCR Configuration
     if (yamlData.ocr) {
-      if (yamlData.ocr.provider) config.ocrProvider = yamlData.ocr.provider;
-      if (yamlData.ocr.model) config.ocrModel = yamlData.ocr.model;
+      config.ocr = {};
+      if (yamlData.ocr.provider) config.ocr.provider = yamlData.ocr.provider;
+      if (yamlData.ocr.model) config.ocr.model = yamlData.ocr.model;
+      if (yamlData.ocr.baseURL) config.ocr.baseURL = yamlData.ocr.baseURL;
+      if (yamlData.ocr.apiKey) config.ocr.apiKey = yamlData.ocr.apiKey;
+      // Legacy fields
       if (yamlData.ocr.apiBase) config.ocrApiBase = yamlData.ocr.apiBase;
-      if (yamlData.ocr.apiKey) config.ocrApiKey = yamlData.ocr.apiKey;
+    }
+    
+    // STT Configuration
+    if (yamlData.stt) {
+      config.stt = {};
+      if (yamlData.stt.provider) config.stt.provider = yamlData.stt.provider;
+      if (yamlData.stt.model) config.stt.model = yamlData.stt.model;
+      if (yamlData.stt.baseURL) config.stt.baseURL = yamlData.stt.baseURL;
+      if (yamlData.stt.apiKey) config.stt.apiKey = yamlData.stt.apiKey;
+      if (yamlData.stt.language) config.stt.language = yamlData.stt.language;
+    }
+    
+    // TTS Configuration
+    if (yamlData.tts) {
+      config.tts = {};
+      if (yamlData.tts.provider) config.tts.provider = yamlData.tts.provider;
+      if (yamlData.tts.model) config.tts.model = yamlData.tts.model;
+      if (yamlData.tts.baseURL) config.tts.baseURL = yamlData.tts.baseURL;
+      if (yamlData.tts.apiKey) config.tts.apiKey = yamlData.tts.apiKey;
+      if (yamlData.tts.voice) config.tts.voice = yamlData.tts.voice;
+      if (yamlData.tts.speed) config.tts.speed = yamlData.tts.speed;
+      if (yamlData.tts.quality) config.tts.quality = yamlData.tts.quality;
+      if (yamlData.tts.streaming !== undefined) config.tts.streaming = yamlData.tts.streaming;
+    }
+    
+    // Speech (UI-level) Configuration
+    if (yamlData.speech?.speechTab) {
+      config.speech = { speechTab: {} };
+      const speechTab = yamlData.speech.speechTab;
+      if (speechTab.conversationMode !== undefined) config.speech.speechTab.conversationMode = speechTab.conversationMode;
+      if (speechTab.advancedMode !== undefined) config.speech.speechTab.advancedMode = speechTab.advancedMode;
+      if (speechTab.speechToText) {
+        config.speech.speechTab.speechToText = speechTab.speechToText;
+      }
+      if (speechTab.textToSpeech) {
+        config.speech.speechTab.textToSpeech = speechTab.textToSpeech;
+      }
     }
     
     // Actions Configuration
@@ -483,21 +567,58 @@ export default function Home() {
     }
     
     // Interface settings
-    if (yamlData.interface?.customWelcome) {
-      config.customWelcome = yamlData.interface.customWelcome;
+    if (yamlData.interface) {
+      if (yamlData.interface.customWelcome) config.customWelcome = yamlData.interface.customWelcome;
+      if (yamlData.interface.customFooter) config.customFooter = yamlData.interface.customFooter;
+      if (yamlData.interface.defaultPreset) config.interfaceDefaultPreset = yamlData.interface.defaultPreset;
+      if (yamlData.interface.uploadAsText !== undefined) config.uploadAsTextUI = yamlData.interface.uploadAsText;
+      if (yamlData.interface.temporaryChatRetention) config.temporaryChatRetentionHours = yamlData.interface.temporaryChatRetention;
     }
     
-    // Endpoint defaults
-    if (yamlData.endpoints?.openAI) {
-      const openAIConfig = yamlData.endpoints.openAI;
-      if (openAIConfig.titleConvo !== undefined) {
-        config.endpointDefaults = { ...config.endpointDefaults, titling: openAIConfig.titleConvo };
+    // Model Specs Configuration
+    if (yamlData.modelSpecs) {
+      config.modelSpecs = {};
+      if (yamlData.modelSpecs.enforce !== undefined) config.modelSpecs.enforce = yamlData.modelSpecs.enforce;
+      if (yamlData.modelSpecs.prioritize !== undefined) config.modelSpecs.prioritize = yamlData.modelSpecs.prioritize;
+      if (yamlData.modelSpecs.list) config.modelSpecs.list = yamlData.modelSpecs.list;
+      // Handle addedEndpoints from list[0].addedEndpoints structure
+      if (yamlData.modelSpecs.list?.[0]?.addedEndpoints) {
+        config.modelSpecs.addedEndpoints = yamlData.modelSpecs.list[0].addedEndpoints;
       }
-      if (openAIConfig.titleModel) {
-        config.endpointDefaults = { ...config.endpointDefaults, titleModel: openAIConfig.titleModel };
+    }
+    
+    // Filtered and Included Tools
+    if (yamlData.filteredTools) config.filteredTools = yamlData.filteredTools;
+    if (yamlData.includedTools) config.includedTools = yamlData.includedTools;
+    
+    // Endpoints Configuration
+    if (yamlData.endpoints) {
+      // Agents endpoint
+      if (yamlData.endpoints.agents) {
+        const agents = yamlData.endpoints.agents;
+        if (agents.disableBuilder !== undefined) config.agentBuilderDisabled = agents.disableBuilder;
+        if (agents.recursionLimit) config.agentDefaultRecursionLimit = agents.recursionLimit;
+        if (agents.maxRecursionLimit) config.agentMaxRecursionLimit = agents.maxRecursionLimit;
+        if (agents.capabilities) {
+          if (agents.capabilities.codeInterpreter !== undefined) config.codeInterpreterEnabled = agents.capabilities.codeInterpreter;
+          if (agents.capabilities.actions !== undefined) config.actionsEnabled = agents.capabilities.actions;
+          if (agents.capabilities.fileSearch !== undefined) config.fileSearchEnabled = agents.capabilities.fileSearch;
+          if (agents.capabilities.uploadAsText !== undefined) config.uploadAsTextAgent = agents.capabilities.uploadAsText;
+        }
       }
-      if (openAIConfig.models?.default?.[0]) {
-        config.defaultModel = openAIConfig.models.default[0];
+      
+      // OpenAI endpoint
+      if (yamlData.endpoints.openAI) {
+        const openAIConfig = yamlData.endpoints.openAI;
+        if (openAIConfig.titleConvo !== undefined) {
+          config.endpointDefaults = { ...config.endpointDefaults, titling: openAIConfig.titleConvo };
+        }
+        if (openAIConfig.titleModel) {
+          config.endpointDefaults = { ...config.endpointDefaults, titleModel: openAIConfig.titleModel };
+        }
+        if (openAIConfig.models?.default?.[0]) {
+          config.defaultModel = openAIConfig.models.default[0];
+        }
       }
     }
     

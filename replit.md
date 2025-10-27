@@ -9,6 +9,11 @@ The UI consolidates settings like app title, welcome message, and interface visi
 # Recent Changes
 
 ## October 27, 2025
+- **Comprehensive Import Mapper Expansion**: Fixed critical data loss issue where YAML and .env imports were dropping 60-90+ fields due to incomplete mapping functions. Expanded both mappers to achieve complete field coverage:
+  - **.env Import**: Expanded from 10 fields to 100+ fields, now symmetrically mapping all exported environment variables including app config, security, database, all OAuth providers, 15+ AI API keys, Azure OpenAI (5 fields), AWS Bedrock (6 fields), Firebase storage, DALL-E (8 fields), RAG API (8 fields), MeiliSearch, LDAP, Turnstile, rate limiting, caching, MCP OAuth, E2B code execution (7 fields), STT/TTS nested objects, and subdirectory hosting
+  - **YAML Import**: Expanded from ~30 fields to 90+ fields, now handling complete nested objects for webSearch (15+ fields), memory (6 fields), OCR (4 fields), STT (5 fields), TTS (8 fields), speech.speechTab, complete fileConfig for all endpoints (not just openAI), modelSpecs (enforce, prioritize, list, addedEndpoints), filteredTools, includedTools, interface settings (defaultPreset, uploadAsText), and endpoints.agents capabilities
+  - **Critical Bug Fix**: Fixed YAML version field mapping (was `config.configVer`, now correctly `config.version`) to preserve configuration version metadata during import
+  - **Impact**: Importing YAML or .env files now preserves complete configuration data without silent field loss, enabling true data mirroring for backup/restore workflows
 - **Configuration Name Update Bug**: Fixed issue where configuration name wasn't being updated in the configuration object when loading from Package History. The name was being set in React state and localStorage, but not in the configuration object itself, causing exports and saves to retain the old name. Now properly updates all three locations.
 
 ## October 26, 2025  

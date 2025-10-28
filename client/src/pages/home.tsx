@@ -268,6 +268,21 @@ export default function Home() {
     if (envVars.BING_SEARCH_API_KEY) config.bingSearchApiKey = envVars.BING_SEARCH_API_KEY;
     if (envVars.OPENWEATHER_API_KEY) config.openweatherApiKey = envVars.OPENWEATHER_API_KEY;
     
+    // Web Search (LibreChat webSearch section) - nested object
+    if (envVars.SERPER_API_KEY || envVars.SEARXNG_INSTANCE_URL || envVars.SEARXNG_API_KEY ||
+        envVars.FIRECRAWL_API_KEY || envVars.FIRECRAWL_API_URL ||
+        envVars.JINA_API_KEY || envVars.JINA_API_URL || envVars.COHERE_API_KEY) {
+      config.webSearch = config.webSearch || {};
+      if (envVars.SERPER_API_KEY) config.webSearch.serperApiKey = envVars.SERPER_API_KEY;
+      if (envVars.SEARXNG_INSTANCE_URL) config.webSearch.searxngInstanceUrl = envVars.SEARXNG_INSTANCE_URL;
+      if (envVars.SEARXNG_API_KEY) config.webSearch.searxngApiKey = envVars.SEARXNG_API_KEY;
+      if (envVars.FIRECRAWL_API_KEY) config.webSearch.firecrawlApiKey = envVars.FIRECRAWL_API_KEY;
+      if (envVars.FIRECRAWL_API_URL) config.webSearch.firecrawlApiUrl = envVars.FIRECRAWL_API_URL;
+      if (envVars.JINA_API_KEY) config.webSearch.jinaApiKey = envVars.JINA_API_KEY;
+      if (envVars.JINA_API_URL) config.webSearch.jinaApiUrl = envVars.JINA_API_URL;
+      if (envVars.COHERE_API_KEY) config.webSearch.cohereApiKey = envVars.COHERE_API_KEY;
+    }
+    
     // DALL-E Image Generation
     if (envVars.DALLE_API_KEY) config.dalleApiKey = envVars.DALLE_API_KEY;
     if (envVars.DALLE3_API_KEY) config.dalle3ApiKey = envVars.DALLE3_API_KEY;

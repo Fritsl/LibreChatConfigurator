@@ -8,6 +8,13 @@ The UI consolidates settings like app title, welcome message, and interface visi
 
 # Recent Changes
 
+## October 28, 2025
+- **Web Search .env Import Support**: Added 8 missing web search-related environment variables to .env validation whitelist and import mapper, completing the web search configuration import support:
+  - **Added Variables**: SERPER_API_KEY, SEARXNG_INSTANCE_URL, SEARXNG_API_KEY, FIRECRAWL_API_KEY, FIRECRAWL_API_URL, JINA_API_KEY, JINA_API_URL, COHERE_API_KEY
+  - **Mapping Pattern**: Uses nested object pattern matching STT/TTS, correctly maps to config.webSearch.* fields
+  - **Validation Coverage**: All 8 variables now in validation whitelist, preventing false rejection of valid .env files
+  - **Import Behavior**: Correctly preserves web search credentials when importing .env files, maintaining parity with YAML import capabilities
+
 ## October 27, 2025
 - **Strict Import Validation System**: Implemented comprehensive pre-import validation that prevents data loss by rejecting imports containing unmapped fields:
   - **YAML Validation**: Validates 18 major sections with complete nested structure checking (mcpServers.*, agents.*, rateLimits.*, fileConfig.*, search.*, webSearch.*, memory.*, ocr.*, stt.*, tts.*, speech.*, actions.*, temporaryChats.*, interface.*, modelSpecs.*, endpoints.agents.*, endpoints.openAI.*)

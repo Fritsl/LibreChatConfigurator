@@ -32,12 +32,25 @@ function extractEnvVars(): string[] {
   const routesPath = path.join(projectRoot, 'server/routes.ts');
   const content = fs.readFileSync(routesPath, 'utf-8');
   
-  // Extract all patterns like: VARIABLE_NAME= or VARIABLE_NAME:
-  const envVarPattern = /\b([A-Z_][A-Z0-9_]+)=/g;
+  // Find the generateEnvFile function
+  const generateEnvFileStart = content.indexOf('function generateEnvFile(');
+  const generateEnvFileEnd = content.indexOf('function generateYamlFile(', generateEnvFileStart);
+  
+  if (generateEnvFileStart === -1 || generateEnvFileEnd === -1) {
+    console.error('❌ Could not find generateEnvFile function');
+    return [];
+  }
+  
+  // Only analyze the generateEnvFile function content
+  const generateEnvFileContent = content.substring(generateEnvFileStart, generateEnvFileEnd);
+  
+  // Extract all patterns like: VARIABLE_NAME= (but not inside shell script variables like $VARIABLE)
+  // Look for patterns in template literals: `${config...} ? `VAR=` or `VAR=${...}`
+  const envVarPattern = /`([A-Z_][A-Z0-9_]+)=/g;
   const matches = new Set<string>();
   
   let match;
-  while ((match = envVarPattern.exec(content)) !== null) {
+  while ((match = envVarPattern.exec(generateEnvFileContent)) !== null) {
     const varName = match[1];
     // Filter out common false positives
     if (!['TRUE', 'FALSE', 'NULL', 'UNDEFINED'].includes(varName)) {

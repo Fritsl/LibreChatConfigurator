@@ -290,11 +290,15 @@ class ConfigFieldAuditor {
   }
 }
 
-// CLI Interface
-const args = process.argv.slice(2);
+// Export classes and types
+export { ConfigFieldAuditor, AuditResult };
 
-if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
-  console.log(`
+// CLI Interface - only run if this file is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+
+  if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+    console.log(`
 Configuration Field Audit Utility
 
 Usage:
@@ -309,18 +313,17 @@ Options:
   --type=env|yaml    Specify field type (auto-detected if omitted)
   --help, -h         Show this help message
 `);
-  process.exit(0);
+    process.exit(0);
+  }
+
+  const fieldName = args[0];
+  const typeArg = args.find(arg => arg.startsWith('--type='));
+  const type = typeArg ? typeArg.split('=')[1] as 'env' | 'yaml' : undefined;
+
+  const auditor = new ConfigFieldAuditor();
+  const result = auditor.audit(fieldName, type);
+  auditor.printResults(result);
+
+  // Exit with error code if issues found
+  process.exit(result.issues.length > 0 ? 1 : 0);
 }
-
-const fieldName = args[0];
-const typeArg = args.find(arg => arg.startsWith('--type='));
-const type = typeArg ? typeArg.split('=')[1] as 'env' | 'yaml' : undefined;
-
-const auditor = new ConfigFieldAuditor();
-const result = auditor.audit(fieldName, type);
-auditor.printResults(result);
-
-// Exit with error code if issues found
-process.exit(result.issues.length > 0 ? 1 : 0);
-
-export { ConfigFieldAuditor, AuditResult };

@@ -1,5 +1,38 @@
 {
-  "envVars": [
+  "timestamp": "2025-10-29T13:22:39.783Z",
+  "totalFields": 369,
+  "envVarsAudited": 198,
+  "yamlFieldsAudited": 171,
+  "fieldsWithIssues": 2,
+  "fieldsPerfect": 367,
+  "criticalIssues": [
+    {
+      "field": "CODE_EXECUTION_ENABLED",
+      "type": "env",
+      "issues": [
+        "❌ Field is EXPORTED but NOT in validation whitelist - imports will be rejected",
+        "❌ Field is EXPORTED but NOT in import mapper - data will be lost on import"
+      ],
+      "recommendations": [
+        "Add 'CODE_EXECUTION_ENABLED' to supportedEnvVars Set in client/src/pages/home.tsx",
+        "Add mapping in mapEnvToConfiguration() in client/src/pages/home.tsx"
+      ]
+    },
+    {
+      "field": "E2B_PROXY_URL",
+      "type": "env",
+      "issues": [
+        "❌ Field is EXPORTED but NOT in validation whitelist - imports will be rejected",
+        "❌ Field is EXPORTED but NOT in import mapper - data will be lost on import"
+      ],
+      "recommendations": [
+        "Add 'E2B_PROXY_URL' to supportedEnvVars Set in client/src/pages/home.tsx",
+        "Add mapping in mapEnvToConfiguration() in client/src/pages/home.tsx"
+      ]
+    }
+  ],
+  "warningIssues": [],
+  "perfectFields": [
     "ALLOW_EMAIL_LOGIN",
     "ALLOW_PASSWORD_RESET",
     "ALLOW_REGISTRATION",
@@ -39,7 +72,6 @@
     "CDN_PROVIDER",
     "CHUNK_OVERLAP",
     "CHUNK_SIZE",
-    "CODE_EXECUTION_ENABLED",
     "COHERE_API_KEY",
     "COLLECTION_NAME",
     "CONCURRENT_MESSAGE_MAX",
@@ -71,7 +103,6 @@
     "E2B_PER_USER_SANDBOX",
     "E2B_PROXY_ENABLED",
     "E2B_PROXY_PORT",
-    "E2B_PROXY_URL",
     "E2B_PUBLIC_BASE_URL",
     "EMAIL_FROM",
     "EMAIL_FROM_NAME",
@@ -197,13 +228,10 @@
     "TURNSTILE_SITE_KEY",
     "UID",
     "UNIFY_API_KEY",
-    "XAI_API_KEY"
-  ],
-  "yamlFields": [
+    "XAI_API_KEY",
     "actions.allowedDomains",
     "actions.e2b_code_execution",
     "cache",
-    "endpoints.*",
     "endpoints.agents.capabilities",
     "endpoints.agents.disableBuilder",
     "endpoints.agents.maxCitations",
@@ -225,7 +253,6 @@
     "fileConfig.clientImageResize.maxWidth",
     "fileConfig.clientImageResize.quality",
     "fileConfig.endpoints",
-    "fileConfig.endpoints.*",
     "fileConfig.serverFileSizeLimit",
     "fileStrategy",
     "filteredTools",
@@ -266,7 +293,6 @@
     "interface.termsOfService.openNewTab",
     "interface.uploadAsText",
     "interface.webSearch",
-    "mcpServers.*",
     "memory.agent",
     "memory.agent.id",
     "memory.agent.instructions",
@@ -375,9 +401,10 @@
     "webSearch.searxngInstanceUrl",
     "webSearch.serperApiKey"
   ],
-  "metadata": {
-    "generatedAt": "2025-10-29T13:22:38.586Z",
-    "totalEnvVars": 198,
-    "totalYamlFields": 174
+  "summary": {
+    "exportedButNotValidated": 2,
+    "exportedButNotImported": 2,
+    "importedButNotExported": 0,
+    "validatedButNotMapped": 0
   }
 }

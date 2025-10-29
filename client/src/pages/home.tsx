@@ -38,6 +38,16 @@ export default function Home() {
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
   const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
   const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
+  const [showImportSummary, setShowImportSummary] = useState(false);
+  const [importSummaryData, setImportSummaryData] = useState<{ 
+    type: 'yaml' | 'env'; 
+    fileName: string;
+    totalFields: number;
+    newFields: number;
+    updatedFields: number;
+    unchangedFields: number;
+    fieldDetails: { name: string; status: 'new' | 'updated' | 'unchanged' }[];
+  } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
@@ -121,6 +131,56 @@ export default function Home() {
       }
     }
     return envVars;
+  };
+
+  // Helper function to analyze configuration changes
+  const analyzeConfigurationChanges = (oldConfig: any, newUpdates: any) => {
+    const fieldDetails: { name: string; status: 'new' | 'updated' | 'unchanged' }[] = [];
+    let newFields = 0;
+    let updatedFields = 0;
+    let unchangedFields = 0;
+
+    const processObject = (oldObj: any, newObj: any, prefix = '') => {
+      Object.keys(newObj).forEach(key => {
+        const fullPath = prefix ? `${prefix}.${key}` : key;
+        const newValue = newObj[key];
+        const oldValue = oldObj?.[key];
+
+        // Skip null/undefined values
+        if (newValue === null || newValue === undefined) return;
+
+        // Handle nested objects (but not arrays)
+        if (typeof newValue === 'object' && !Array.isArray(newValue) && newValue !== null) {
+          processObject(oldValue || {}, newValue, fullPath);
+          return;
+        }
+
+        // Compare values
+        const oldValueStr = JSON.stringify(oldValue);
+        const newValueStr = JSON.stringify(newValue);
+
+        if (oldValue === undefined || oldValue === null || oldValue === '') {
+          fieldDetails.push({ name: fullPath, status: 'new' });
+          newFields++;
+        } else if (oldValueStr !== newValueStr) {
+          fieldDetails.push({ name: fullPath, status: 'updated' });
+          updatedFields++;
+        } else {
+          fieldDetails.push({ name: fullPath, status: 'unchanged' });
+          unchangedFields++;
+        }
+      });
+    };
+
+    processObject(oldConfig, newUpdates);
+
+    return {
+      totalFields: fieldDetails.length,
+      newFields,
+      updatedFields,
+      unchangedFields,
+      fieldDetails
+    };
   };
 
   const mapEnvToConfiguration = (envVars: Record<string, string>) => {
@@ -1165,13 +1225,19 @@ export default function Home() {
             console.log("   - Mapped configuration:", configUpdates);
             console.log("   - MCP servers found:", configUpdates.mcpServers?.length || 0);
             
+            // Analyze what changed
+            const analysis = analyzeConfigurationChanges(configuration, configUpdates);
+            
             // Update configuration with parsed data
             updateConfiguration(configUpdates);
             
-            toast({
-              title: "✅ YAML Imported Successfully",
-              description: `LibreChat configuration from "${file.name}" imported with all fields preserved.`,
+            // Show detailed import summary
+            setImportSummaryData({
+              type: 'yaml',
+              fileName: file.name,
+              ...analysis
             });
+            setShowImportSummary(true);
           } catch (error) {
             console.error("YAML import error:", error);
             toast({
@@ -1335,13 +1401,19 @@ export default function Home() {
             const configUpdates = mapEnvToConfiguration(envVars);
             console.log("   - Mapped configuration:", configUpdates);
             
+            // Analyze what changed
+            const analysis = analyzeConfigurationChanges(configuration, configUpdates);
+            
             // Update configuration with parsed data
             updateConfiguration(configUpdates);
             
-            toast({
-              title: "✅ Environment File Imported Successfully",
-              description: `All settings from "${file.name}" imported with complete data preservation.`,
+            // Show detailed import summary
+            setImportSummaryData({
+              type: 'env',
+              fileName: file.name,
+              ...analysis
             });
+            setShowImportSummary(true);
           } catch (error) {
             console.error("ENV import error:", error);
             toast({
@@ -2161,6 +2233,106 @@ export default function Home() {
                 data-testid="button-close-unsupported-dialog"
               >
                 Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import Summary Dialog */}
+      <Dialog open={showImportSummary} onOpenChange={setShowImportSummary}>
+        <DialogContent className="max-w-2xl" data-testid="dialog-import-summary">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              Import Successful
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Summary Header */}
+            <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4" data-testid="import-summary-header">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                Successfully imported <span className="font-semibold">{importSummaryData?.fileName}</span>
+              </p>
+              <p className="text-xs text-green-700 dark:text-green-300 mt-1">
+                {importSummaryData?.type === 'yaml' ? 'LibreChat YAML Configuration' : 'Environment Variables'} • {importSummaryData?.totalFields} fields processed
+              </p>
+            </div>
+
+            {/* Statistics Cards */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3" data-testid="card-new-fields">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {importSummaryData?.newFields || 0}
+                </div>
+                <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                  New Fields
+                </div>
+              </div>
+              
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3" data-testid="card-updated-fields">
+                <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                  {importSummaryData?.updatedFields || 0}
+                </div>
+                <div className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                  Updated Fields
+                </div>
+              </div>
+              
+              <div className="bg-slate-50 dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg p-3" data-testid="card-unchanged-fields">
+                <div className="text-2xl font-bold text-slate-600 dark:text-slate-400">
+                  {importSummaryData?.unchangedFields || 0}
+                </div>
+                <div className="text-xs text-slate-700 dark:text-slate-300 mt-1">
+                  Unchanged
+                </div>
+              </div>
+            </div>
+
+            {/* Field Details */}
+            {(importSummaryData?.newFields || 0) > 0 || (importSummaryData?.updatedFields || 0) > 0 ? (
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm" data-testid="text-changes-title">
+                  Changes Made:
+                </h3>
+                
+                <div className="bg-muted rounded-lg p-4 max-h-80 overflow-y-auto" data-testid="list-field-changes">
+                  <div className="space-y-1">
+                    {importSummaryData?.fieldDetails
+                      .filter(field => field.status !== 'unchanged')
+                      .map((field, index) => (
+                        <div 
+                          key={index} 
+                          className="flex items-center gap-2 text-xs font-mono py-1"
+                          data-testid={`field-change-${index}`}
+                        >
+                          {field.status === 'new' ? (
+                            <span className="text-blue-600 dark:text-blue-400 font-semibold">NEW</span>
+                          ) : (
+                            <span className="text-amber-600 dark:text-amber-400 font-semibold">UPD</span>
+                          )}
+                          <span className="text-muted-foreground">{field.name}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-muted rounded-lg p-4 text-center" data-testid="no-changes-message">
+                <p className="text-sm text-muted-foreground">
+                  All {importSummaryData?.totalFields} fields match your current configuration.
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() => setShowImportSummary(false)}
+                data-testid="button-close-import-summary"
+              >
+                Done
               </Button>
             </div>
           </div>

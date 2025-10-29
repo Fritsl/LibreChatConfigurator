@@ -128,7 +128,8 @@ class ConfigFieldAuditor {
     );
     
     // Check .env export generator
-    const envExportPattern = new RegExp(`${fieldName}=|\\$\\{config\\.[^}]+\\}.*${fieldName}`);
+    // Use word boundaries to avoid matching substrings (e.g., "SEARCH" shouldn't match "GOOGLE_SEARCH_API_KEY")
+    const envExportPattern = new RegExp(`\\b${fieldName}=|\\b${fieldName}\\s*:`);
     result.touchpoints.envExportGenerator = this.fileContains(
       'server/routes.ts',
       envExportPattern

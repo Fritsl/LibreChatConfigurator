@@ -39,7 +39,6 @@
     "CDN_PROVIDER",
     "CHUNK_OVERLAP",
     "CHUNK_SIZE",
-    "CODE_EXECUTION_ENABLED",
     "COHERE_API_KEY",
     "COLLECTION_NAME",
     "CONCURRENT_MESSAGE_MAX",
@@ -71,7 +70,6 @@
     "E2B_PER_USER_SANDBOX",
     "E2B_PROXY_ENABLED",
     "E2B_PROXY_PORT",
-    "E2B_PROXY_URL",
     "E2B_PUBLIC_BASE_URL",
     "EMAIL_FROM",
     "EMAIL_FROM_NAME",
@@ -376,8 +374,8 @@
     "webSearch.serperApiKey"
   ],
   "metadata": {
-    "generatedAt": "2025-10-29T13:22:38.586Z",
-    "totalEnvVars": 198,
+    "generatedAt": "2025-10-29T13:26:09.624Z",
+    "totalEnvVars": 196,
     "totalYamlFields": 174
   }
 }

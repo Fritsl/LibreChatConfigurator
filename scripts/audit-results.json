@@ -1,36 +1,11 @@
 {
-  "timestamp": "2025-10-29T13:22:39.783Z",
-  "totalFields": 369,
-  "envVarsAudited": 198,
+  "timestamp": "2025-10-29T13:26:10.475Z",
+  "totalFields": 367,
+  "envVarsAudited": 196,
   "yamlFieldsAudited": 171,
-  "fieldsWithIssues": 2,
+  "fieldsWithIssues": 0,
   "fieldsPerfect": 367,
-  "criticalIssues": [
-    {
-      "field": "CODE_EXECUTION_ENABLED",
-      "type": "env",
-      "issues": [
-        "❌ Field is EXPORTED but NOT in validation whitelist - imports will be rejected",
-        "❌ Field is EXPORTED but NOT in import mapper - data will be lost on import"
-      ],
-      "recommendations": [
-        "Add 'CODE_EXECUTION_ENABLED' to supportedEnvVars Set in client/src/pages/home.tsx",
-        "Add mapping in mapEnvToConfiguration() in client/src/pages/home.tsx"
-      ]
-    },
-    {
-      "field": "E2B_PROXY_URL",
-      "type": "env",
-      "issues": [
-        "❌ Field is EXPORTED but NOT in validation whitelist - imports will be rejected",
-        "❌ Field is EXPORTED but NOT in import mapper - data will be lost on import"
-      ],
-      "recommendations": [
-        "Add 'E2B_PROXY_URL' to supportedEnvVars Set in client/src/pages/home.tsx",
-        "Add mapping in mapEnvToConfiguration() in client/src/pages/home.tsx"
-      ]
-    }
-  ],
+  "criticalIssues": [],
   "warningIssues": [],
   "perfectFields": [
     "ALLOW_EMAIL_LOGIN",
@@ -402,8 +377,8 @@
     "webSearch.serperApiKey"
   ],
   "summary": {
-    "exportedButNotValidated": 2,
-    "exportedButNotImported": 2,
+    "exportedButNotValidated": 0,
+    "exportedButNotImported": 0,
     "importedButNotExported": 0,
     "validatedButNotMapped": 0
   }

@@ -758,10 +758,8 @@ ${config.librechatCodeApiKey ? `LIBRECHAT_CODE_API_KEY=${config.librechatCodeApi
 ${config.librechatCodeBaseUrl ? `LIBRECHAT_CODE_BASEURL=${config.librechatCodeBaseUrl}` : '# LIBRECHAT_CODE_BASEURL='}
 
 # E2B Code Interpreter (Self-Hosted Proxy for Python/JavaScript)
-${config.e2bProxyEnabled ? `CODE_EXECUTION_ENABLED=true` : '# CODE_EXECUTION_ENABLED=true'}
 ${config.e2bApiKey ? `E2B_API_KEY=${config.e2bApiKey}` : '# E2B_API_KEY='}
 ${config.e2bProxyEnabled !== undefined ? `E2B_PROXY_ENABLED=${config.e2bProxyEnabled}` : '# E2B_PROXY_ENABLED=true'}
-${config.e2bProxyEnabled ? `E2B_PROXY_URL=http://e2b-proxy:${config.e2bProxyPort || '3001'}` : '# E2B_PROXY_URL=http://e2b-proxy:3001'}
 ${config.e2bProxyPort ? `E2B_PROXY_PORT=${config.e2bProxyPort}` : '# E2B_PROXY_PORT=3001'}
 ${config.e2bPublicBaseUrl ? `E2B_PUBLIC_BASE_URL=${config.e2bPublicBaseUrl}` : '# E2B_PUBLIC_BASE_URL=http://localhost:3001'}
 ${config.e2bFileTTLDays ? `E2B_FILE_TTL_DAYS=${config.e2bFileTTLDays}` : '# E2B_FILE_TTL_DAYS=30'}
@@ -1569,10 +1567,8 @@ ${config.mcpOAuthDetectionTimeout ? `      MCP_OAUTH_DETECTION_TIMEOUT: \${MCP_O
       # =============================================================================
 ${config.librechatCodeApiKey ? `      LIBRECHAT_CODE_API_KEY: \${LIBRECHAT_CODE_API_KEY}` : '      # LIBRECHAT_CODE_API_KEY: ${LIBRECHAT_CODE_API_KEY}'}
 ${config.librechatCodeBaseUrl ? `      LIBRECHAT_CODE_BASEURL: \${LIBRECHAT_CODE_BASEURL}` : '      # LIBRECHAT_CODE_BASEURL: ${LIBRECHAT_CODE_BASEURL}'}
-${config.e2bProxyEnabled ? `      CODE_EXECUTION_ENABLED: \${CODE_EXECUTION_ENABLED}` : '      # CODE_EXECUTION_ENABLED: ${CODE_EXECUTION_ENABLED}'}
 ${config.e2bApiKey ? `      E2B_API_KEY: \${E2B_API_KEY}` : '      # E2B_API_KEY: ${E2B_API_KEY}'}
 ${config.e2bProxyEnabled !== undefined ? `      E2B_PROXY_ENABLED: \${E2B_PROXY_ENABLED}` : '      # E2B_PROXY_ENABLED: ${E2B_PROXY_ENABLED}'}
-${config.e2bProxyEnabled ? `      E2B_PROXY_URL: \${E2B_PROXY_URL}` : '      # E2B_PROXY_URL: ${E2B_PROXY_URL}'}
 ${config.e2bProxyPort ? `      E2B_PROXY_PORT: \${E2B_PROXY_PORT}` : '      # E2B_PROXY_PORT: ${E2B_PROXY_PORT}'}
 ${config.e2bPublicBaseUrl ? `      E2B_PUBLIC_BASE_URL: \${E2B_PUBLIC_BASE_URL}` : '      # E2B_PUBLIC_BASE_URL: ${E2B_PUBLIC_BASE_URL}'}
 ${config.e2bFileTTLDays ? `      E2B_FILE_TTL_DAYS: \${E2B_FILE_TTL_DAYS}` : '      # E2B_FILE_TTL_DAYS: ${E2B_FILE_TTL_DAYS}'}

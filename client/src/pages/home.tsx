@@ -509,8 +509,12 @@ export default function Home() {
     if (yamlData.rateLimits) {
       if (yamlData.rateLimits.perUser) config.rateLimitsPerUser = yamlData.rateLimits.perUser;
       if (yamlData.rateLimits.perIP) config.rateLimitsPerIP = yamlData.rateLimits.perIP;
+      // Handle both 'uploads' and 'fileUploads' (LibreChat RC4 alias)
       if (yamlData.rateLimits.uploads) config.rateLimitsUploads = yamlData.rateLimits.uploads;
+      if (yamlData.rateLimits.fileUploads) config.rateLimitsUploads = yamlData.rateLimits.fileUploads;
+      // Handle both 'imports' and 'conversationsImport' (LibreChat RC4 alias)
       if (yamlData.rateLimits.imports) config.rateLimitsImports = yamlData.rateLimits.imports;
+      if (yamlData.rateLimits.conversationsImport) config.rateLimitsImports = yamlData.rateLimits.conversationsImport;
       if (yamlData.rateLimits.tts) config.rateLimitsTTS = yamlData.rateLimits.tts;
       if (yamlData.rateLimits.stt) config.rateLimitsSTT = yamlData.rateLimits.stt;
     }
@@ -539,6 +543,8 @@ export default function Home() {
       }
       if (yamlData.fileConfig.serverFileSizeLimit) config.filesServerMaxSize = yamlData.fileConfig.serverFileSizeLimit;
       if (yamlData.fileConfig.avatarSizeLimit) config.filesAvatarSize = yamlData.fileConfig.avatarSizeLimit;
+      // LibreChat RC4 clientImageResize field
+      if (yamlData.fileConfig.clientImageResize !== undefined) config.filesClientImageResize = yamlData.fileConfig.clientImageResize;
     }
     
     // Search Configuration (legacy - kept for backward compatibility)
@@ -567,6 +573,7 @@ export default function Home() {
       if (yamlData.webSearch.bingSearchApiKey) config.webSearch.bingSearchApiKey = yamlData.webSearch.bingSearchApiKey;
       if (yamlData.webSearch.firecrawlApiKey) config.webSearch.firecrawlApiKey = yamlData.webSearch.firecrawlApiKey;
       if (yamlData.webSearch.firecrawlApiUrl) config.webSearch.firecrawlApiUrl = yamlData.webSearch.firecrawlApiUrl;
+      if (yamlData.webSearch.firecrawlOptions) config.webSearch.firecrawlOptions = yamlData.webSearch.firecrawlOptions;
       if (yamlData.webSearch.jinaApiKey) config.webSearch.jinaApiKey = yamlData.webSearch.jinaApiKey;
       if (yamlData.webSearch.jinaApiUrl) config.webSearch.jinaApiUrl = yamlData.webSearch.jinaApiUrl;
       if (yamlData.webSearch.cohereApiKey) config.webSearch.cohereApiKey = yamlData.webSearch.cohereApiKey;
@@ -577,9 +584,15 @@ export default function Home() {
     // Memory Configuration
     if (yamlData.memory) {
       config.memory = {};
+      // Handle both 'enabled' and 'disabled' (disabled is inverse of enabled)
       if (yamlData.memory.enabled !== undefined) config.memory.enabled = yamlData.memory.enabled;
+      if (yamlData.memory.disabled !== undefined) config.memory.enabled = !yamlData.memory.disabled;
+      // Handle both 'personalization' and 'personalize'
       if (yamlData.memory.personalization !== undefined) config.memory.personalization = yamlData.memory.personalization;
+      if (yamlData.memory.personalize !== undefined) config.memory.personalization = yamlData.memory.personalize;
+      // Handle both 'windowSize' and 'messageWindowSize'
       if (yamlData.memory.windowSize) config.memory.windowSize = yamlData.memory.windowSize;
+      if (yamlData.memory.messageWindowSize) config.memory.windowSize = yamlData.memory.messageWindowSize;
       if (yamlData.memory.tokenLimit) config.memory.tokenLimit = yamlData.memory.tokenLimit;
       if (yamlData.memory.validKeys) config.memory.validKeys = yamlData.memory.validKeys;
       if (yamlData.memory.agent) config.memory.agent = yamlData.memory.agent;
@@ -620,16 +633,29 @@ export default function Home() {
     }
     
     // Speech (UI-level) Configuration
-    if (yamlData.speech?.speechTab) {
-      config.speech = { speechTab: {} };
-      const speechTab = yamlData.speech.speechTab;
-      if (speechTab.conversationMode !== undefined) config.speech.speechTab.conversationMode = speechTab.conversationMode;
-      if (speechTab.advancedMode !== undefined) config.speech.speechTab.advancedMode = speechTab.advancedMode;
-      if (speechTab.speechToText) {
-        config.speech.speechTab.speechToText = speechTab.speechToText;
+    if (yamlData.speech) {
+      config.speech = {};
+      // speech.speechTab for UI settings
+      if (yamlData.speech.speechTab) {
+        config.speech.speechTab = {};
+        const speechTab = yamlData.speech.speechTab;
+        if (speechTab.conversationMode !== undefined) config.speech.speechTab.conversationMode = speechTab.conversationMode;
+        if (speechTab.advancedMode !== undefined) config.speech.speechTab.advancedMode = speechTab.advancedMode;
+        if (speechTab.speechToText) {
+          config.speech.speechTab.speechToText = speechTab.speechToText;
+        }
+        if (speechTab.textToSpeech) {
+          config.speech.speechTab.textToSpeech = speechTab.textToSpeech;
+        }
       }
-      if (speechTab.textToSpeech) {
-        config.speech.speechTab.textToSpeech = speechTab.textToSpeech;
+      // speech.stt and speech.tts (alternative location for STT/TTS config)
+      if (yamlData.speech.stt) {
+        config.stt = config.stt || {};
+        Object.assign(config.stt, yamlData.speech.stt);
+      }
+      if (yamlData.speech.tts) {
+        config.tts = config.tts || {};
+        Object.assign(config.tts, yamlData.speech.tts);
       }
     }
     
@@ -650,6 +676,20 @@ export default function Home() {
       if (yamlData.interface.defaultPreset) config.interfaceDefaultPreset = yamlData.interface.defaultPreset;
       if (yamlData.interface.uploadAsText !== undefined) config.uploadAsTextUI = yamlData.interface.uploadAsText;
       if (yamlData.interface.temporaryChatRetention) config.temporaryChatRetentionHours = yamlData.interface.temporaryChatRetention;
+      // LibreChat RC4 UI toggle fields (these map to UI visibility settings)
+      if (yamlData.interface.agents !== undefined) config.interfaceShowAgents = yamlData.interface.agents;
+      if (yamlData.interface.modelSelect !== undefined) config.interfaceShowModelSelect = yamlData.interface.modelSelect;
+      if (yamlData.interface.parameters !== undefined) config.interfaceShowParameters = yamlData.interface.parameters;
+      if (yamlData.interface.sidePanel !== undefined) config.interfaceShowSidePanel = yamlData.interface.sidePanel;
+      if (yamlData.interface.presets !== undefined) config.interfaceShowPresets = yamlData.interface.presets;
+      if (yamlData.interface.prompts !== undefined) config.interfaceShowPrompts = yamlData.interface.prompts;
+      if (yamlData.interface.bookmarks !== undefined) config.interfaceShowBookmarks = yamlData.interface.bookmarks;
+      if (yamlData.interface.multiConvo !== undefined) config.interfaceShowMultiConvo = yamlData.interface.multiConvo;
+      if (yamlData.interface.webSearch !== undefined) config.interfaceShowWebSearch = yamlData.interface.webSearch;
+      if (yamlData.interface.fileSearch !== undefined) config.interfaceShowFileSearch = yamlData.interface.fileSearch;
+      if (yamlData.interface.fileCitations !== undefined) config.interfaceShowFileCitations = yamlData.interface.fileCitations;
+      if (yamlData.interface.runCode !== undefined) config.interfaceShowRunCode = yamlData.interface.runCode;
+      if (yamlData.interface.artifacts !== undefined) config.interfaceShowArtifacts = yamlData.interface.artifacts;
     }
     
     // Model Specs Configuration
@@ -676,11 +716,22 @@ export default function Home() {
         if (agents.disableBuilder !== undefined) config.agentBuilderDisabled = agents.disableBuilder;
         if (agents.recursionLimit) config.agentDefaultRecursionLimit = agents.recursionLimit;
         if (agents.maxRecursionLimit) config.agentMaxRecursionLimit = agents.maxRecursionLimit;
+        // LibreChat RC4 citation settings
+        if (agents.maxCitations) config.agentMaxCitations = agents.maxCitations;
+        if (agents.maxCitationsPerFile) config.agentMaxCitationsPerFile = agents.maxCitationsPerFile;
+        if (agents.minRelevanceScore !== undefined) config.agentMinRelevanceScore = agents.minRelevanceScore;
+        // Capabilities can be object or array
         if (agents.capabilities) {
-          if (agents.capabilities.codeInterpreter !== undefined) config.codeInterpreterEnabled = agents.capabilities.codeInterpreter;
-          if (agents.capabilities.actions !== undefined) config.actionsEnabled = agents.capabilities.actions;
-          if (agents.capabilities.fileSearch !== undefined) config.fileSearchEnabled = agents.capabilities.fileSearch;
-          if (agents.capabilities.uploadAsText !== undefined) config.uploadAsTextAgent = agents.capabilities.uploadAsText;
+          if (Array.isArray(agents.capabilities)) {
+            // Array format: capabilities as array of strings - store as-is
+            config.agentCapabilitiesArray = agents.capabilities;
+          } else if (typeof agents.capabilities === 'object') {
+            // Object format: capabilities as key-value pairs
+            if (agents.capabilities.codeInterpreter !== undefined) config.codeInterpreterEnabled = agents.capabilities.codeInterpreter;
+            if (agents.capabilities.actions !== undefined) config.actionsEnabled = agents.capabilities.actions;
+            if (agents.capabilities.fileSearch !== undefined) config.fileSearchEnabled = agents.capabilities.fileSearch;
+            if (agents.capabilities.uploadAsText !== undefined) config.uploadAsTextAgent = agents.capabilities.uploadAsText;
+          }
         }
       }
       
@@ -696,6 +747,17 @@ export default function Home() {
         if (openAIConfig.models?.default?.[0]) {
           config.defaultModel = openAIConfig.models.default[0];
         }
+        // LibreChat RC4 additional fields
+        if (openAIConfig.title) config.endpointOpenAITitle = openAIConfig.title;
+        if (openAIConfig.apiKey) config.endpointOpenAIApiKey = openAIConfig.apiKey;
+        if (openAIConfig.baseURL) config.endpointOpenAIBaseURL = openAIConfig.baseURL;
+        if (openAIConfig.dropParams) config.endpointOpenAIDropParams = openAIConfig.dropParams;
+        if (openAIConfig.summaryModel) config.endpointOpenAISummaryModel = openAIConfig.summaryModel;
+      }
+      
+      // Custom endpoints (array of endpoint configurations)
+      if (yamlData.endpoints.custom) {
+        config.customEndpoints = yamlData.endpoints.custom;
       }
     }
     
@@ -960,7 +1022,7 @@ export default function Home() {
     
     // 4. Rate Limits section
     if (yamlData.rateLimits) {
-      const supportedRateLimitsKeys = new Set(['perUser', 'perIP', 'uploads', 'imports', 'tts', 'stt']);
+      const supportedRateLimitsKeys = new Set(['perUser', 'perIP', 'uploads', 'fileUploads', 'imports', 'conversationsImport', 'tts', 'stt']);
       for (const key of Object.keys(yamlData.rateLimits)) {
         if (!supportedRateLimitsKeys.has(key)) {
           unmappedFields.push(`rateLimits.${key}`);
@@ -970,7 +1032,7 @@ export default function Home() {
     
     // 5. FileConfig section - note structure change!
     if (yamlData.fileConfig) {
-      const supportedFileConfigTopKeys = new Set(['endpoints', 'serverFileSizeLimit', 'avatarSizeLimit']);
+      const supportedFileConfigTopKeys = new Set(['endpoints', 'serverFileSizeLimit', 'avatarSizeLimit', 'clientImageResize']);
       for (const key of Object.keys(yamlData.fileConfig)) {
         if (!supportedFileConfigTopKeys.has(key)) {
           unmappedFields.push(`fileConfig.${key}`);
@@ -1003,7 +1065,13 @@ export default function Home() {
     
     // 14. Interface section
     if (yamlData.interface) {
-      const supportedInterfaceKeys = new Set(['customWelcome', 'customFooter', 'defaultPreset', 'uploadAsText', 'temporaryChatRetention', 'mcpServers', 'privacyPolicy', 'termsOfService']);
+      const supportedInterfaceKeys = new Set([
+        'customWelcome', 'customFooter', 'defaultPreset', 'uploadAsText', 'temporaryChatRetention', 
+        'mcpServers', 'privacyPolicy', 'termsOfService',
+        // LibreChat RC4 UI toggle fields
+        'agents', 'modelSelect', 'parameters', 'sidePanel', 'presets', 'prompts', 'bookmarks', 
+        'multiConvo', 'webSearch', 'fileSearch', 'fileCitations', 'runCode', 'artifacts'
+      ]);
       for (const key of Object.keys(yamlData.interface)) {
         if (!supportedInterfaceKeys.has(key)) {
           unmappedFields.push(`interface.${key}`);
@@ -1016,8 +1084,8 @@ export default function Home() {
       const supportedWebSearchKeys = new Set([
         'searchProvider', 'scraperType', 'rerankerType', 'serperApiKey', 'searxngInstanceUrl',
         'searxngApiKey', 'braveApiKey', 'tavilyApiKey', 'perplexityApiKey', 'googleSearchApiKey',
-        'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl', 'jinaApiKey',
-        'jinaApiUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'
+        'googleCSEId', 'bingSearchApiKey', 'firecrawlApiKey', 'firecrawlApiUrl', 'firecrawlOptions',
+        'jinaApiKey', 'jinaApiUrl', 'cohereApiKey', 'scraperTimeout', 'safeSearch'
       ]);
       for (const key of Object.keys(yamlData.webSearch)) {
         if (!supportedWebSearchKeys.has(key)) {
@@ -1028,7 +1096,12 @@ export default function Home() {
     
     // 7. Memory section
     if (yamlData.memory) {
-      const supportedMemoryKeys = new Set(['enabled', 'personalization', 'windowSize', 'tokenLimit', 'validKeys', 'agent']);
+      const supportedMemoryKeys = new Set([
+        'enabled', 'disabled', // disabled is alias for !enabled
+        'personalization', 'personalize', // personalize is alias for personalization
+        'windowSize', 'messageWindowSize', // messageWindowSize is alias for windowSize
+        'tokenLimit', 'validKeys', 'agent'
+      ]);
       for (const key of Object.keys(yamlData.memory)) {
         if (!supportedMemoryKeys.has(key)) {
           unmappedFields.push(`memory.${key}`);
@@ -1070,7 +1143,7 @@ export default function Home() {
     
     // 11. Speech section
     if (yamlData.speech) {
-      const supportedSpeechKeys = new Set(['speechTab']);
+      const supportedSpeechKeys = new Set(['speechTab', 'stt', 'tts']); // stt and tts can be under speech
       for (const key of Object.keys(yamlData.speech)) {
         if (!supportedSpeechKeys.has(key)) {
           unmappedFields.push(`speech.${key}`);
@@ -1087,6 +1160,8 @@ export default function Home() {
         // speechToText and textToSpeech are complex nested objects - accepted as-is per mapYamlToConfiguration
         // Lines 551-556: Direct assignment without deep validation
       }
+      // speech.stt and speech.tts are validated same as top-level stt/tts but won't validate deeply here
+      // They're accepted as-is if present
     }
     
     // 12. Actions section
@@ -1124,10 +1199,10 @@ export default function Home() {
     // 17. FilteredTools and IncludedTools (arrays accepted as-is)
     // These are validated at top level - no nested validation needed
     
-    // 18. Endpoints section (ONLY allow what mapYamlToConfiguration actually handles)
+    // 18. Endpoints section
     if (yamlData.endpoints) {
-      // Only agents and openAI are actively mapped - reject all others to prevent silent data loss
-      const supportedEndpoints = new Set(['agents', 'openAI']);
+      // Support agents, openAI, and custom endpoints
+      const supportedEndpoints = new Set(['agents', 'openAI', 'custom']);
       for (const key of Object.keys(yamlData.endpoints)) {
         if (!supportedEndpoints.has(key)) {
           unmappedFields.push(`endpoints.${key}`);
@@ -1136,26 +1211,40 @@ export default function Home() {
       
       // Validate agents endpoint configuration
       if (yamlData.endpoints.agents) {
-        const supportedAgentsKeys = new Set(['disableBuilder', 'recursionLimit', 'maxRecursionLimit', 'capabilities']);
+        const supportedAgentsKeys = new Set([
+          'disableBuilder', 'recursionLimit', 'maxRecursionLimit', 'capabilities',
+          // Citation settings
+          'maxCitations', 'maxCitationsPerFile', 'minRelevanceScore'
+        ]);
         for (const key of Object.keys(yamlData.endpoints.agents)) {
           if (!supportedAgentsKeys.has(key)) {
             unmappedFields.push(`endpoints.agents.${key}`);
           }
         }
-        // Agents capabilities
+        // Agents capabilities - can be object OR array
         if (yamlData.endpoints.agents.capabilities) {
-          const supportedCapKeys = new Set(['codeInterpreter', 'actions', 'fileSearch', 'uploadAsText']);
-          for (const key of Object.keys(yamlData.endpoints.agents.capabilities)) {
-            if (!supportedCapKeys.has(key)) {
-              unmappedFields.push(`endpoints.agents.capabilities.${key}`);
+          if (Array.isArray(yamlData.endpoints.agents.capabilities)) {
+            // Array format: capabilities as array of strings - accepted as-is
+            // No deep validation for array elements
+          } else if (typeof yamlData.endpoints.agents.capabilities === 'object') {
+            // Object format: capabilities as key-value pairs
+            const supportedCapKeys = new Set(['codeInterpreter', 'actions', 'fileSearch', 'uploadAsText']);
+            for (const key of Object.keys(yamlData.endpoints.agents.capabilities)) {
+              if (!supportedCapKeys.has(key)) {
+                unmappedFields.push(`endpoints.agents.capabilities.${key}`);
+              }
             }
           }
         }
       }
       
-      // Validate openAI endpoint configuration (matching mapYamlToConfiguration exactly)
+      // Validate openAI endpoint configuration
       if (yamlData.endpoints.openAI) {
-        const supportedOpenAIKeys = new Set(['titleConvo', 'titleModel', 'models']);
+        const supportedOpenAIKeys = new Set([
+          'titleConvo', 'titleModel', 'models',
+          // Additional LibreChat RC4 fields
+          'title', 'apiKey', 'baseURL', 'dropParams', 'summaryModel'
+        ]);
         for (const key of Object.keys(yamlData.endpoints.openAI)) {
           if (!supportedOpenAIKeys.has(key)) {
             unmappedFields.push(`endpoints.openAI.${key}`);
@@ -1171,6 +1260,8 @@ export default function Home() {
           }
         }
       }
+      
+      // custom endpoints are arrays - accepted as-is without deep validation
     }
     
     return {

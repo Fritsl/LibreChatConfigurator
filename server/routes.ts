@@ -680,8 +680,6 @@ ${config.embeddingsProvider ? `EMBEDDINGS_PROVIDER=${config.embeddingsProvider}`
 # =============================================================================
 # Web Search Configuration
 # =============================================================================
-${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH=true` : '# SEARCH=true'}
-${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `SEARCH_PROVIDER=${config.webSearch.searchProvider}` : '# SEARCH_PROVIDER='}
 ${config.webSearch?.serperApiKey || config.webSearch?.searchProvider === 'serper' ? `SERPER_API_KEY=${config.webSearch.serperApiKey || ''}` : '# SERPER_API_KEY='}
 ${config.webSearch?.searxngInstanceUrl && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_INSTANCE_URL=${config.webSearch.searxngInstanceUrl}` : '# SEARXNG_INSTANCE_URL='}
 ${config.webSearch?.searxngApiKey && config.webSearch?.searchProvider === 'searxng' ? `SEARXNG_API_KEY=${config.webSearch.searxngApiKey}` : '# SEARXNG_API_KEY='}
@@ -1495,7 +1493,6 @@ ${config.embeddingsProvider ? `      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER
       # =============================================================================
       # Web Search Configuration
       # =============================================================================
-${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `      SEARCH: \${SEARCH}` : '      # SEARCH: ${SEARCH}'}
 ${config.webSearch?.serperApiKey ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
 ${config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
 ${config.webSearch?.searxngApiKey ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}

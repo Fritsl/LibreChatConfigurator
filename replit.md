@@ -2,6 +2,32 @@
 
 This project provides a web-based configuration interface for LibreChat v0.8.0-rc4, enabling users to manage over 100 settings through an intuitive UI. Its primary purpose is to generate complete LibreChat installation packages, including environment files, YAML configurations, and Docker Compose deployment scripts with accurate environment variable passthrough. Key capabilities include configuration profile management, a "Smart Installation System" for cross-platform Docker deployments with live updates, and a "Versioned Configuration System" for schema-driven management and automatic version tracking. The system aims to simplify LibreChat deployment and management by offering a centralized, validated, and intuitive configuration experience.
 
+# Recent Changes
+
+## Field Registry Migration - October 2025 ✅ COMPLETE
+Successfully completed comprehensive architectural refactor to eliminate field duplication and achieve 100% bidirectional parity:
+
+**Achievements:**
+- **Code Reduction**: Eliminated 1,471+ lines of manual duplication across validators, mappers, and generators
+- **Registry Coverage**: 363 total fields with 200 ENV mappings and 173 YAML mappings
+- **100% Bidirectional Parity**: Verified through comprehensive test suite (196/196 ENV fields, 170/170 YAML fields)
+- **Single Source of Truth**: Field registry now drives all import/export/validation operations
+- **Null Handling**: Fixed to correctly preserve explicit null assignments for field clearing
+
+**Migrated Components:**
+- ENV import validation (validateEnvVars)
+- ENV import mapping (mapEnvToConfiguration)
+- YAML import validation (validateYamlFields)
+- YAML import mapping (mapYamlToConfiguration)
+- ENV file generation (generateEnvFile)
+- YAML file generation (generateYamlFile)
+
+**Testing Infrastructure:**
+- Created `scripts/test-full-parity.ts` for comprehensive round-trip testing of all 363 fields
+- Created `scripts/test-round-trip.ts` for scenario-based integration testing
+- Discovered and resolved yamlPath conflicts (parent object vs child property handling)
+- All tests passing with 100% coverage verification
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

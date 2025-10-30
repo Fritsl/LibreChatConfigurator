@@ -186,7 +186,7 @@ export function generateEnvFile(config: Record<string, any>): string {
   }
   
   // Generate ENV file with category headers
-  for (const [category, fields] of byCategory) {
+  for (const [category, fields] of Array.from(byCategory)) {
     lines.push('');
     lines.push(`# ${category.toUpperCase().replace(/-/g, ' ')}`);
     lines.push('');

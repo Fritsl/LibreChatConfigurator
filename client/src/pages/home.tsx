@@ -134,6 +134,7 @@ export default function Home() {
   };
 
   // Helper function to analyze configuration changes
+  // IMPORTANT: Only compares fields present in newUpdates to avoid cross-contamination between .env and YAML imports
   const analyzeConfigurationChanges = (oldConfig: any, newUpdates: any) => {
     const fieldDetails: { name: string; status: 'new' | 'updated' | 'unchanged' }[] = [];
     let newFields = 0;
@@ -155,10 +156,11 @@ export default function Home() {
           return;
         }
 
-        // Compare values
+        // Compare values using deep equality
         const oldValueStr = JSON.stringify(oldValue);
         const newValueStr = JSON.stringify(newValue);
 
+        // Determine status based on old value state
         if (oldValue === undefined || oldValue === null || oldValue === '') {
           fieldDetails.push({ name: fullPath, status: 'new' });
           newFields++;

@@ -1132,13 +1132,32 @@ rateLimits:${config.rateLimits.fileUploads ? `
     userWindowInMinutes: ${config.rateLimits.tts.userWindowInMinutes}` : ''}` : ''}
 ` : '# Rate limits not configured'}
 
-# Memory Configuration
-${config.memory && (config.memory.disabled !== undefined || config.memory.personalize !== undefined || config.memory.validKeys || config.memory.tokenLimit || config.memory.messageWindowSize || config.memory.agent) ? `memory:${config.memory.disabled !== undefined ? `
-  disabled: ${config.memory.disabled}` : ''}${config.memory.personalize !== undefined ? `
-  personalize: ${config.memory.personalize}` : ''}${config.memory.validKeys && config.memory.validKeys.length > 0 ? `
+${(() => {
+  // Only export memory section if user actually configured memory settings
+  const hasMemoryConfig = config.memory && (
+    config.memory.enabled !== undefined ||
+    config.memory.disabled !== undefined || 
+    config.memory.personalize !== undefined || 
+    config.memory.personalization !== undefined ||
+    config.memory.windowSize !== undefined ||
+    config.memory.messageWindowSize !== undefined ||
+    (config.memory.validKeys && config.memory.validKeys.length > 0) || 
+    config.memory.tokenLimit !== undefined || 
+    config.memory.agent
+  );
+  
+  if (!hasMemoryConfig) return '';
+  
+  return `# Memory Configuration
+memory:${config.memory.disabled !== undefined ? `
+  disabled: ${config.memory.disabled}` : ''}${config.memory.enabled !== undefined && config.memory.disabled === undefined ? `
+  enabled: ${config.memory.enabled}` : ''}${config.memory.personalize !== undefined ? `
+  personalize: ${config.memory.personalize}` : ''}${config.memory.personalization !== undefined && config.memory.personalize === undefined ? `
+  personalization: ${config.memory.personalization}` : ''}${config.memory.validKeys && config.memory.validKeys.length > 0 ? `
   validKeys:
-${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : ''}${config.memory.tokenLimit ? `
-  tokenLimit: ${config.memory.tokenLimit}` : ''}${config.memory.messageWindowSize ? `
+${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : ''}${config.memory.tokenLimit !== undefined ? `
+  tokenLimit: ${config.memory.tokenLimit}` : ''}${config.memory.windowSize !== undefined ? `
+  windowSize: ${config.memory.windowSize}` : ''}${config.memory.messageWindowSize !== undefined && config.memory.windowSize === undefined ? `
   messageWindowSize: ${config.memory.messageWindowSize}` : ''}${config.memory.agent ? `
   agent:${config.memory.agent.id ? `
     id: "${config.memory.agent.id}"` : ''}${config.memory.agent.provider ? `
@@ -1151,7 +1170,8 @@ ${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : 
       max_tokens: ${config.memory.agent.model_parameters.max_tokens}` : ''}${config.memory.agent.model_parameters.top_p !== undefined ? `
       top_p: ${config.memory.agent.model_parameters.top_p}` : ''}${config.memory.agent.model_parameters.frequency_penalty !== undefined ? `
       frequency_penalty: ${config.memory.agent.model_parameters.frequency_penalty}` : ''}` : ''}` : ''}
-` : '# Memory system is not configured'}
+`;
+})()}
 
 # Web Search Configuration
 ${config.webSearch?.searchProvider && config.webSearch.searchProvider !== 'none' ? `webSearch:

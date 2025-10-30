@@ -421,6 +421,10 @@ export function useConfiguration() {
       const response = await apiRequest("POST", "/api/package/generate", request);
       return response.json();
     },
+    onSuccess: () => {
+      // Invalidate package history cache so UI shows the new package
+      queryClient.invalidateQueries({ queryKey: ["/api/configuration/history"] });
+    },
   });
 
   // Validate configuration

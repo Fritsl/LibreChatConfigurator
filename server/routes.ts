@@ -189,11 +189,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save configuration to history for future reference
       await storage.saveConfigurationToHistory(rawConfiguration, packageName);
       
-      
-      // Normalize configuration by merging with defaults to ensure YAML structure compatibility
-      // This fixes the round-trip issue where exported YAML fails to re-import
-      const configuration = deepMerge<Configuration>(getConfigurationDefaults(), rawConfiguration);
-      
+      // Use raw configuration directly - DO NOT merge with defaults
+      // The file generation functions use ?? operators to handle missing fields
+      // Merging defaults here causes round-trip issues (defaults appear as "new" fields on re-import)
+      const configuration = rawConfiguration;
       
       const packageFiles: { [key: string]: string } = {};
 

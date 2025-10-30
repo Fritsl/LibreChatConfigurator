@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { defaultConfiguration } from "@/lib/configuration-defaults";
 import { createResetConfiguration } from "@/lib/librechat-defaults";
 import { deepMerge } from "@/lib/merge-utils";
-import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info } from "lucide-react";
+import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info, RefreshCw } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"; 
@@ -1553,6 +1553,129 @@ export default function Home() {
     setShowSelfTestConfirmation(true);
   };
 
+  const handleRoundTripTest = async () => {
+    console.log("🔄 [ROUND-TRIP TEST] Starting comprehensive import/export parity test...");
+    
+    const errors: string[] = [];
+    let testsPassed = 0;
+    let totalTests = 3; // .env, .yaml, .json
+    
+    // Save baseline configuration
+    const baselineConfig = JSON.parse(JSON.stringify(configuration));
+    console.log("📸 [BASELINE] Saved current configuration with", Object.keys(baselineConfig).length, "fields");
+    
+    try {
+      // Generate package
+      const packageResult = await generatePackage({
+        packageName: "ROUND_TRIP_TEST",
+        includeFiles: ["env", "yaml"]
+      });
+      
+      // Test 1: .env round-trip
+      console.log("\n=== TEST 1: .env Round-Trip ===");
+      try {
+        const envContent = packageResult.files[".env"];
+        if (!envContent) {
+          errors.push(".env file not generated");
+        } else {
+          const envVars = parseEnvFile(envContent);
+          const configFromEnv = mapEnvToConfiguration(envVars);
+          const analysis = analyzeConfigurationChanges(baselineConfig, configFromEnv);
+          
+          console.log(`📊 .env Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
+          
+          if (analysis.newFields === 0 && analysis.updatedFields === 0) {
+            testsPassed++;
+            console.log("✅ .env round-trip PASSED");
+          } else {
+            errors.push(`.env: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
+            console.log("❌ .env round-trip FAILED");
+            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
+            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
+          }
+        }
+      } catch (error) {
+        errors.push(`.env test error: ${error}`);
+      }
+      
+      // Test 2: YAML round-trip
+      console.log("\n=== TEST 2: YAML Round-Trip ===");
+      try {
+        const yamlContent = packageResult.files["librechat.yaml"];
+        if (!yamlContent) {
+          errors.push("YAML file not generated");
+        } else {
+          const yamlData = yaml.load(yamlContent) as any;
+          const configFromYaml = mapYamlToConfiguration(yamlData);
+          const analysis = analyzeConfigurationChanges(baselineConfig, configFromYaml);
+          
+          console.log(`📊 YAML Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
+          
+          if (analysis.newFields === 0 && analysis.updatedFields === 0) {
+            testsPassed++;
+            console.log("✅ YAML round-trip PASSED");
+          } else {
+            errors.push(`YAML: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
+            console.log("❌ YAML round-trip FAILED");
+            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
+            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
+          }
+        }
+      } catch (error) {
+        errors.push(`YAML test error: ${error}`);
+      }
+      
+      // Test 3: JSON round-trip
+      console.log("\n=== TEST 3: JSON Round-Trip ===");
+      try {
+        const jsonContent = packageResult.files["LibreChatConfigSettings.json"];
+        if (!jsonContent) {
+          errors.push("JSON file not generated");
+        } else {
+          const jsonData = JSON.parse(jsonContent);
+          const configFromJson = jsonData.configuration;
+          const analysis = analyzeConfigurationChanges(baselineConfig, configFromJson);
+          
+          console.log(`📊 JSON Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
+          
+          if (analysis.newFields === 0 && analysis.updatedFields === 0) {
+            testsPassed++;
+            console.log("✅ JSON round-trip PASSED");
+          } else {
+            errors.push(`JSON: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
+            console.log("❌ JSON round-trip FAILED");
+            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
+            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
+          }
+        }
+      } catch (error) {
+        errors.push(`JSON test error: ${error}`);
+      }
+      
+      console.log(`\n🎯 ROUND-TRIP TEST RESULTS: ${testsPassed}/${totalTests} passed`);
+      
+      if (testsPassed === totalTests) {
+        toast({
+          title: "✅ Round-Trip Test PASSED",
+          description: `All ${totalTests} formats maintain perfect parity!`,
+        });
+      } else {
+        toast({
+          title: "❌ Round-Trip Test FAILED",
+          description: `${testsPassed}/${totalTests} passed. Errors: ${errors.join('; ')}`,
+          variant: "destructive",
+        });
+      }
+      
+    } catch (error) {
+      toast({
+        title: "Test Error",
+        description: `${error}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   const confirmRunSelfTest = async () => {
     setShowSelfTestConfirmation(false);
     try {
@@ -1866,6 +1989,10 @@ export default function Home() {
                   <DropdownMenuItem onClick={handleRunSelfTest} data-testid="menu-self-test">
                     <TestTube className="h-4 w-4 mr-2" />
                     Run Comprehensive Self-Test
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleRoundTripTest} data-testid="menu-roundtrip-test">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Test Round-Trip Parity
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleImportProfile} data-testid="menu-import-profile">

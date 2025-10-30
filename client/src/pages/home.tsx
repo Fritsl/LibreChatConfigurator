@@ -490,24 +490,40 @@ export default function Home() {
       }
     }
     
-    // Rate Limits
+    // Rate Limits (preserve nested structure to match schema)
     if (yamlData.rateLimits) {
+      config.rateLimits = config.rateLimits || {};
+      
+      // Legacy flat fields (deprecated but kept for backward compatibility)
       if (yamlData.rateLimits.perUser) config.rateLimitsPerUser = yamlData.rateLimits.perUser;
       if (yamlData.rateLimits.perIP) config.rateLimitsPerIP = yamlData.rateLimits.perIP;
-      // Handle both 'uploads' and 'fileUploads' (LibreChat RC4 alias)
-      if (yamlData.rateLimits.uploads) config.rateLimitsUploads = yamlData.rateLimits.uploads;
-      if (yamlData.rateLimits.fileUploads) config.rateLimitsUploads = yamlData.rateLimits.fileUploads;
-      // Handle both 'imports' and 'conversationsImport' (LibreChat RC4 alias)
-      if (yamlData.rateLimits.imports) config.rateLimitsImports = yamlData.rateLimits.imports;
-      if (yamlData.rateLimits.conversationsImport) config.rateLimitsImports = yamlData.rateLimits.conversationsImport;
-      if (yamlData.rateLimits.tts) config.rateLimitsTTS = yamlData.rateLimits.tts;
-      if (yamlData.rateLimits.stt) config.rateLimitsSTT = yamlData.rateLimits.stt;
+      
+      // Nested structures (correct schema format)
+      // Handle both 'uploads' and 'fileUploads' (LibreChat RC4 aliases)
+      if (yamlData.rateLimits.uploads || yamlData.rateLimits.fileUploads) {
+        config.rateLimits.fileUploads = yamlData.rateLimits.fileUploads || yamlData.rateLimits.uploads;
+      }
+      
+      // Handle both 'imports' and 'conversationsImport' (LibreChat RC4 aliases)
+      if (yamlData.rateLimits.imports || yamlData.rateLimits.conversationsImport) {
+        config.rateLimits.conversationsImport = yamlData.rateLimits.conversationsImport || yamlData.rateLimits.imports;
+      }
+      
+      if (yamlData.rateLimits.tts) {
+        config.rateLimits.tts = yamlData.rateLimits.tts;
+      }
+      
+      if (yamlData.rateLimits.stt) {
+        config.rateLimits.stt = yamlData.rateLimits.stt;
+      }
     }
     
-    // File Configuration (complete mapping for all endpoints)
+    // File Configuration (preserve nested structure to match schema)
     if (yamlData.fileConfig) {
-      config.fileConfig = { endpoints: {} };
+      config.fileConfig = config.fileConfig || {};
+      
       if (yamlData.fileConfig.endpoints) {
+        config.fileConfig.endpoints = config.fileConfig.endpoints || {};
         // Map all endpoint file configs
         Object.entries(yamlData.fileConfig.endpoints).forEach(([endpointName, limits]: [string, any]) => {
           config.fileConfig.endpoints[endpointName] = {
@@ -519,17 +535,18 @@ export default function Home() {
           };
         });
       }
-      // Also map legacy fields for backward compatibility
-      if (yamlData.fileConfig.endpoints?.openAI) {
-        const fileConfig = yamlData.fileConfig.endpoints.openAI;
-        if (fileConfig.fileLimit) config.filesMaxFilesPerRequest = fileConfig.fileLimit;
-        if (fileConfig.fileSizeLimit) config.filesMaxSizeMB = fileConfig.fileSizeLimit;
-        if (fileConfig.supportedMimeTypes) config.filesAllowedMimeTypes = fileConfig.supportedMimeTypes;
+      
+      if (yamlData.fileConfig.serverFileSizeLimit !== undefined) {
+        config.fileConfig.serverFileSizeLimit = yamlData.fileConfig.serverFileSizeLimit;
       }
-      if (yamlData.fileConfig.serverFileSizeLimit) config.filesServerMaxSize = yamlData.fileConfig.serverFileSizeLimit;
-      if (yamlData.fileConfig.avatarSizeLimit) config.filesAvatarSize = yamlData.fileConfig.avatarSizeLimit;
-      // LibreChat RC4 clientImageResize field
-      if (yamlData.fileConfig.clientImageResize !== undefined) config.filesClientImageResize = yamlData.fileConfig.clientImageResize;
+      
+      if (yamlData.fileConfig.avatarSizeLimit !== undefined) {
+        config.fileConfig.avatarSizeLimit = yamlData.fileConfig.avatarSizeLimit;
+      }
+      
+      if (yamlData.fileConfig.clientImageResize !== undefined) {
+        config.fileConfig.clientImageResize = yamlData.fileConfig.clientImageResize;
+      }
     }
     
     // Search Configuration (legacy - kept for backward compatibility)

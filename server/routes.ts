@@ -2719,6 +2719,37 @@ If you encounter issues:
 `;
 }
 
+// Helper function to remove empty, null, or undefined values from configuration
+// This ensures round-trip parity: only export fields that have actual values
+function stripEmptyValues(obj: any): any {
+  if (obj === null || obj === undefined) return undefined;
+  if (typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    const filtered = obj.filter(item => item !== null && item !== undefined && item !== '');
+    return filtered.length > 0 ? filtered.map(stripEmptyValues) : undefined;
+  }
+  
+  const result: any = {};
+  for (const key in obj) {
+    const value = obj[key];
+    
+    // Skip empty strings, null, undefined
+    if (value === '' || value === null || value === undefined) continue;
+    
+    // Recursively process objects and arrays
+    if (typeof value === 'object') {
+      const stripped = stripEmptyValues(value);
+      if (stripped !== undefined && Object.keys(stripped).length > 0) {
+        result[key] = stripped;
+      }
+    } else {
+      result[key] = value;
+    }
+  }
+  
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
 function generateProfileFile(config: any): string {
   const configName = config.configurationName || 'LibreChat Configuration';
   
@@ -2726,11 +2757,15 @@ function generateProfileFile(config: any): string {
   const metadata = createExportMetadata(configName);
   const versionInfo = getVersionInfo();
   
+  // Strip empty/null/undefined values to ensure round-trip parity
+  // Only export fields that have actual meaningful values
+  const cleanedConfig = stripEmptyValues(config) || {};
+  
   // Match client-side export structure exactly for 1:1 parity
   const profile = {
     name: configName, // ✅ Same as client: use configurationName directly
     description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
-    configuration: config, // ✅ Complete configuration already merged by client
+    configuration: cleanedConfig, // ✅ Cleaned configuration (no empty values)
     metadata: metadata, // ✨ Structured version metadata for migration support
     // Legacy fields for backward compatibility
     toolVersion: versionInfo.toolVersion,

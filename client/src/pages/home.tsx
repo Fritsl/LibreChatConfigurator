@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { ConfigurationHistory } from "@/components/ConfigurationHistory";
 import { getToolVersion, getVersionInfo } from "@shared/version";
 import yaml from "js-yaml";
+import { getAllEnvKeys } from '@/../../shared/config/field-registry';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -1374,45 +1375,26 @@ export default function Home() {
 
   // Validation function to detect unmapped environment variables
   const validateEnvVars = (envVars: Record<string, string>): { valid: boolean; unmappedVars: string[] } => {
+    // REGISTRY-DRIVEN VALIDATION
+    // Use centralized field registry for automatic validation
+    const registryEnvKeys = getAllEnvKeys();
+    
     const unmappedVars: string[] = [];
     
-    // Define all supported environment variable names (matching mapEnvToConfiguration)
+    // EXPANDED SUPPORT: Registry + additional ENV vars not yet in registry
     const supportedEnvVars = new Set([
-      // App Configuration
-      'APP_TITLE', 'CUSTOM_WELCOME', 'CUSTOM_FOOTER', 'HELP_AND_FAQ_URL',
-      // Server Configuration
-      'HOST', 'PORT', 'ENDPOINTS', 'NODE_ENV', 'DOMAIN_CLIENT', 'DOMAIN_SERVER', 'NO_INDEX',
-      // Security Configuration
-      'JWT_SECRET', 'JWT_REFRESH_SECRET', 'CREDS_KEY', 'CREDS_IV', 'MIN_PASSWORD_LENGTH',
-      'EMAIL_VERIFICATION_REQUIRED', 'ALLOW_UNVERIFIED_EMAIL_LOGIN', 'SESSION_EXPIRY', 'REFRESH_TOKEN_EXPIRY',
-      // Database Configuration
-      'MONGO_URI', 'MONGO_ROOT_USERNAME', 'MONGO_ROOT_PASSWORD', 'MONGO_DB_NAME',
-      'REDIS_URI', 'REDIS_USERNAME', 'REDIS_PASSWORD', 'REDIS_KEY_PREFIX', 'REDIS_KEY_PREFIX_VAR',
-      'REDIS_MAX_LISTENERS', 'REDIS_PING_INTERVAL', 'REDIS_USE_ALTERNATIVE_DNS_LOOKUP',
-      // Authentication Configuration
-      'ALLOW_REGISTRATION', 'ALLOW_EMAIL_LOGIN', 'ALLOW_SOCIAL_LOGIN', 'ALLOW_SOCIAL_REGISTRATION', 'ALLOW_PASSWORD_RESET',
-      // Email Configuration
-      'EMAIL_SERVICE', 'EMAIL_USERNAME', 'EMAIL_PASSWORD', 'EMAIL_FROM', 'EMAIL_FROM_NAME',
-      'MAILGUN_API_KEY', 'MAILGUN_DOMAIN', 'MAILGUN_HOST',
-      // OAuth Providers
-      'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_CALLBACK_URL',
-      'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'GITHUB_CALLBACK_URL',
-      'DISCORD_CLIENT_ID', 'DISCORD_CLIENT_SECRET', 'DISCORD_CALLBACK_URL',
-      'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET', 'FACEBOOK_CALLBACK_URL',
-      'APPLE_CLIENT_ID', 'APPLE_PRIVATE_KEY', 'APPLE_KEY_ID', 'APPLE_TEAM_ID', 'APPLE_CALLBACK_URL',
-      'OPENID_URL', 'OPENID_CLIENT_ID', 'OPENID_CLIENT_SECRET', 'OPENID_CALLBACK_URL',
-      'OPENID_SCOPE', 'OPENID_SESSION_SECRET', 'OPENID_ISSUER', 'OPENID_BUTTON_LABEL', 'OPENID_IMAGE_URL',
-      // Core AI API Keys
-      'OPENAI_API_KEY', 'OPENAI_API_BASE', 'OPENAI_REVERSE_PROXY', 'OPENAI_MODERATION_REVERSE_PROXY',
-      'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY', 'GROQ_API_KEY', 'MISTRAL_API_KEY',
-      // Extended AI API Keys
-      'DEEPSEEK_API_KEY', 'PERPLEXITY_API_KEY', 'FIREWORKS_API_KEY', 'TOGETHERAI_API_KEY', 'HUGGINGFACE_TOKEN',
-      'XAI_API_KEY', 'NVIDIA_API_KEY', 'SAMBANOVA_API_KEY', 'HYPERBOLIC_API_KEY', 'KLUSTER_API_KEY',
-      'NANOGPT_API_KEY', 'GLHF_API_KEY', 'APIPIE_API_KEY', 'UNIFY_API_KEY', 'OPENROUTER_KEY',
-      // Azure OpenAI
-      'AZURE_API_KEY', 'AZURE_OPENAI_API_INSTANCE_NAME', 'AZURE_OPENAI_API_DEPLOYMENT_NAME',
-      'AZURE_OPENAI_API_VERSION', 'AZURE_OPENAI_MODELS',
-      // AWS Bedrock
+      ...registryEnvKeys,
+      // TODO: Add remaining ENV vars to registry
+      // App Configuration (registry ✓)
+      // Server Configuration (registry ✓)
+      // Security Configuration (registry ✓)
+      // Database Configuration (registry ✓)
+      // Authentication Configuration (registry ✓)
+      // Email Configuration (registry ✓)
+      // OAuth Providers (registry ✓)
+      // Core/Extended AI Providers (registry ✓)
+      // Web Search (registry ✓)
+      // AWS Bedrock (partial in registry)
       'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_REGION', 'AWS_BEDROCK_REGION', 'AWS_ENDPOINT_URL', 'AWS_BUCKET_NAME',
       // File Storage
       'FILE_UPLOAD_PATH', 'FIREBASE_API_KEY', 'FIREBASE_AUTH_DOMAIN', 'FIREBASE_PROJECT_ID',
@@ -1420,9 +1402,6 @@ export default function Home() {
       'AZURE_STORAGE_CONNECTION_STRING', 'AZURE_STORAGE_PUBLIC_ACCESS', 'AZURE_CONTAINER_NAME',
       // Search & External APIs
       'GOOGLE_SEARCH_API_KEY', 'GOOGLE_CSE_ID', 'BING_SEARCH_API_KEY', 'OPENWEATHER_API_KEY',
-      // Web Search (LibreChat webSearch section)
-      'SERPER_API_KEY', 'SEARXNG_INSTANCE_URL', 'SEARXNG_API_KEY',
-      'FIRECRAWL_API_KEY', 'FIRECRAWL_API_URL', 'JINA_API_KEY', 'JINA_API_URL', 'COHERE_API_KEY',
       // DALL-E Image Generation
       'DALLE_API_KEY', 'DALLE3_API_KEY', 'DALLE2_API_KEY', 'DALLE_REVERSE_PROXY',
       'DALLE3_BASEURL', 'DALLE2_BASEURL', 'DALLE3_SYSTEM_PROMPT', 'DALLE2_SYSTEM_PROMPT',
@@ -1459,6 +1438,8 @@ export default function Home() {
       // Subdirectory Hosting
       'BASE_PATH', 'APP_URL', 'PUBLIC_SUB_PATH'
     ]);
+    
+    console.log(`📊 [ENV VALIDATION] Registry provides ${registryEnvKeys.size} ENV keys, total supported: ${supportedEnvVars.size}`);
     
     // Check each env var
     for (const varName of Object.keys(envVars)) {

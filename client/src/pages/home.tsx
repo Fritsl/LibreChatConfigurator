@@ -461,6 +461,12 @@ export default function Home() {
   const mapYamlToConfiguration = (yamlData: any) => {
     const config: any = {};
     
+    // Helper: Check if a value is an env var placeholder like "${OPENAI_API_KEY}"
+    // These should be skipped during import since they're just references
+    const isEnvPlaceholder = (value: any): boolean => {
+      return typeof value === 'string' && value.startsWith('${') && value.endsWith('}');
+    };
+    
     // Basic settings
     if (yamlData.version) config.version = yamlData.version;
     if (yamlData.cache !== undefined) config.cache = yamlData.cache;
@@ -564,21 +570,21 @@ export default function Home() {
       if (yamlData.webSearch.searchProvider) config.webSearch.searchProvider = yamlData.webSearch.searchProvider;
       if (yamlData.webSearch.scraperType) config.webSearch.scraperType = yamlData.webSearch.scraperType;
       if (yamlData.webSearch.rerankerType) config.webSearch.rerankerType = yamlData.webSearch.rerankerType;
-      if (yamlData.webSearch.serperApiKey) config.webSearch.serperApiKey = yamlData.webSearch.serperApiKey;
-      if (yamlData.webSearch.searxngInstanceUrl) config.webSearch.searxngInstanceUrl = yamlData.webSearch.searxngInstanceUrl;
-      if (yamlData.webSearch.searxngApiKey) config.webSearch.searxngApiKey = yamlData.webSearch.searxngApiKey;
-      if (yamlData.webSearch.braveApiKey) config.webSearch.braveApiKey = yamlData.webSearch.braveApiKey;
-      if (yamlData.webSearch.tavilyApiKey) config.webSearch.tavilyApiKey = yamlData.webSearch.tavilyApiKey;
-      if (yamlData.webSearch.perplexityApiKey) config.webSearch.perplexityApiKey = yamlData.webSearch.perplexityApiKey;
-      if (yamlData.webSearch.googleSearchApiKey) config.webSearch.googleSearchApiKey = yamlData.webSearch.googleSearchApiKey;
-      if (yamlData.webSearch.googleCSEId) config.webSearch.googleCSEId = yamlData.webSearch.googleCSEId;
-      if (yamlData.webSearch.bingSearchApiKey) config.webSearch.bingSearchApiKey = yamlData.webSearch.bingSearchApiKey;
-      if (yamlData.webSearch.firecrawlApiKey) config.webSearch.firecrawlApiKey = yamlData.webSearch.firecrawlApiKey;
-      if (yamlData.webSearch.firecrawlApiUrl) config.webSearch.firecrawlApiUrl = yamlData.webSearch.firecrawlApiUrl;
+      if (yamlData.webSearch.serperApiKey && !isEnvPlaceholder(yamlData.webSearch.serperApiKey)) config.webSearch.serperApiKey = yamlData.webSearch.serperApiKey;
+      if (yamlData.webSearch.searxngInstanceUrl && !isEnvPlaceholder(yamlData.webSearch.searxngInstanceUrl)) config.webSearch.searxngInstanceUrl = yamlData.webSearch.searxngInstanceUrl;
+      if (yamlData.webSearch.searxngApiKey && !isEnvPlaceholder(yamlData.webSearch.searxngApiKey)) config.webSearch.searxngApiKey = yamlData.webSearch.searxngApiKey;
+      if (yamlData.webSearch.braveApiKey && !isEnvPlaceholder(yamlData.webSearch.braveApiKey)) config.webSearch.braveApiKey = yamlData.webSearch.braveApiKey;
+      if (yamlData.webSearch.tavilyApiKey && !isEnvPlaceholder(yamlData.webSearch.tavilyApiKey)) config.webSearch.tavilyApiKey = yamlData.webSearch.tavilyApiKey;
+      if (yamlData.webSearch.perplexityApiKey && !isEnvPlaceholder(yamlData.webSearch.perplexityApiKey)) config.webSearch.perplexityApiKey = yamlData.webSearch.perplexityApiKey;
+      if (yamlData.webSearch.googleSearchApiKey && !isEnvPlaceholder(yamlData.webSearch.googleSearchApiKey)) config.webSearch.googleSearchApiKey = yamlData.webSearch.googleSearchApiKey;
+      if (yamlData.webSearch.googleCSEId && !isEnvPlaceholder(yamlData.webSearch.googleCSEId)) config.webSearch.googleCSEId = yamlData.webSearch.googleCSEId;
+      if (yamlData.webSearch.bingSearchApiKey && !isEnvPlaceholder(yamlData.webSearch.bingSearchApiKey)) config.webSearch.bingSearchApiKey = yamlData.webSearch.bingSearchApiKey;
+      if (yamlData.webSearch.firecrawlApiKey && !isEnvPlaceholder(yamlData.webSearch.firecrawlApiKey)) config.webSearch.firecrawlApiKey = yamlData.webSearch.firecrawlApiKey;
+      if (yamlData.webSearch.firecrawlApiUrl && !isEnvPlaceholder(yamlData.webSearch.firecrawlApiUrl)) config.webSearch.firecrawlApiUrl = yamlData.webSearch.firecrawlApiUrl;
       if (yamlData.webSearch.firecrawlOptions) config.webSearch.firecrawlOptions = yamlData.webSearch.firecrawlOptions;
-      if (yamlData.webSearch.jinaApiKey) config.webSearch.jinaApiKey = yamlData.webSearch.jinaApiKey;
-      if (yamlData.webSearch.jinaApiUrl) config.webSearch.jinaApiUrl = yamlData.webSearch.jinaApiUrl;
-      if (yamlData.webSearch.cohereApiKey) config.webSearch.cohereApiKey = yamlData.webSearch.cohereApiKey;
+      if (yamlData.webSearch.jinaApiKey && !isEnvPlaceholder(yamlData.webSearch.jinaApiKey)) config.webSearch.jinaApiKey = yamlData.webSearch.jinaApiKey;
+      if (yamlData.webSearch.jinaApiUrl && !isEnvPlaceholder(yamlData.webSearch.jinaApiUrl)) config.webSearch.jinaApiUrl = yamlData.webSearch.jinaApiUrl;
+      if (yamlData.webSearch.cohereApiKey && !isEnvPlaceholder(yamlData.webSearch.cohereApiKey)) config.webSearch.cohereApiKey = yamlData.webSearch.cohereApiKey;
       if (yamlData.webSearch.scraperTimeout) config.webSearch.scraperTimeout = yamlData.webSearch.scraperTimeout;
       if (yamlData.webSearch.safeSearch !== undefined) config.webSearch.safeSearch = yamlData.webSearch.safeSearch;
     }
@@ -606,7 +612,7 @@ export default function Home() {
       if (yamlData.ocr.provider) config.ocr.provider = yamlData.ocr.provider;
       if (yamlData.ocr.model) config.ocr.model = yamlData.ocr.model;
       if (yamlData.ocr.baseURL) config.ocr.baseURL = yamlData.ocr.baseURL;
-      if (yamlData.ocr.apiKey) config.ocr.apiKey = yamlData.ocr.apiKey;
+      if (yamlData.ocr.apiKey && !isEnvPlaceholder(yamlData.ocr.apiKey)) config.ocr.apiKey = yamlData.ocr.apiKey;
       // Legacy fields
       if (yamlData.ocr.apiBase) config.ocrApiBase = yamlData.ocr.apiBase;
     }
@@ -617,7 +623,7 @@ export default function Home() {
       if (yamlData.stt.provider) config.stt.provider = yamlData.stt.provider;
       if (yamlData.stt.model) config.stt.model = yamlData.stt.model;
       if (yamlData.stt.baseURL) config.stt.baseURL = yamlData.stt.baseURL;
-      if (yamlData.stt.apiKey) config.stt.apiKey = yamlData.stt.apiKey;
+      if (yamlData.stt.apiKey && !isEnvPlaceholder(yamlData.stt.apiKey)) config.stt.apiKey = yamlData.stt.apiKey;
       if (yamlData.stt.language) config.stt.language = yamlData.stt.language;
     }
     
@@ -627,7 +633,7 @@ export default function Home() {
       if (yamlData.tts.provider) config.tts.provider = yamlData.tts.provider;
       if (yamlData.tts.model) config.tts.model = yamlData.tts.model;
       if (yamlData.tts.baseURL) config.tts.baseURL = yamlData.tts.baseURL;
-      if (yamlData.tts.apiKey) config.tts.apiKey = yamlData.tts.apiKey;
+      if (yamlData.tts.apiKey && !isEnvPlaceholder(yamlData.tts.apiKey)) config.tts.apiKey = yamlData.tts.apiKey;
       if (yamlData.tts.voice) config.tts.voice = yamlData.tts.voice;
       if (yamlData.tts.speed) config.tts.speed = yamlData.tts.speed;
       if (yamlData.tts.quality) config.tts.quality = yamlData.tts.quality;
@@ -751,7 +757,7 @@ export default function Home() {
         }
         // LibreChat RC4 additional fields
         if (openAIConfig.title) config.endpointOpenAITitle = openAIConfig.title;
-        if (openAIConfig.apiKey) config.endpointOpenAIApiKey = openAIConfig.apiKey;
+        if (openAIConfig.apiKey && !isEnvPlaceholder(openAIConfig.apiKey)) config.endpointOpenAIApiKey = openAIConfig.apiKey;
         if (openAIConfig.baseURL) config.endpointOpenAIBaseURL = openAIConfig.baseURL;
         if (openAIConfig.dropParams) config.endpointOpenAIDropParams = openAIConfig.dropParams;
         if (openAIConfig.summaryModel) config.endpointOpenAISummaryModel = openAIConfig.summaryModel;
@@ -759,7 +765,14 @@ export default function Home() {
       
       // Custom endpoints (array of endpoint configurations)
       if (yamlData.endpoints.custom) {
-        config.customEndpoints = yamlData.endpoints.custom;
+        // Deep clone and strip env placeholders from apiKey fields
+        config.customEndpoints = yamlData.endpoints.custom.map((endpoint: any) => {
+          const cleaned = { ...endpoint };
+          if (cleaned.apiKey && isEnvPlaceholder(cleaned.apiKey)) {
+            delete cleaned.apiKey;  // Remove env placeholder apiKey
+          }
+          return cleaned;
+        });
       }
     }
     

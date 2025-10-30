@@ -234,8 +234,16 @@ export function mapYamlToConfiguration(yamlData: any): Record<string, any> {
       configValue = yamlValue;
     }
     
-    // Store in config object using field ID
-    config[field.id] = configValue;
+    // Store in config object
+    // If configPath is defined, use it to store at the correct nested location
+    // This handles structural mismatches between YAML and internal schema
+    // (e.g., LibreChat's speech.stt.openai.url → our stt.baseURL)
+    if (field.configPath) {
+      setNestedValue(config, field.configPath, configValue);
+    } else {
+      // Default: store using field ID
+      config[field.id] = configValue;
+    }
   }
   
   return config;
@@ -254,6 +262,28 @@ function getNestedValue(obj: any, path: string): any {
   }
   
   return current;
+}
+
+/**
+ * Set nested value in object using dot notation path
+ * Creates intermediate objects as needed
+ */
+function setNestedValue(obj: any, path: string, value: any): void {
+  const parts = path.split('.');
+  let current = obj;
+  
+  // Navigate to the parent of the final property
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    if (!(part in current) || typeof current[part] !== 'object' || current[part] === null) {
+      current[part] = {};
+    }
+    current = current[part];
+  }
+  
+  // Set the final property
+  const finalPart = parts[parts.length - 1];
+  current[finalPart] = value;
 }
 
 // =============================================================================
@@ -545,15 +575,7 @@ export function generateYamlFile(config: Record<string, any>): string {
   const ocrSection = generateOcrSection(config);
   lines.push(ocrSection, '');
   
-  // STT Configuration
-  const sttSection = generateSttSection(config);
-  lines.push(sttSection, '');
-  
-  // TTS Configuration
-  const ttsSection = generateTtsSection(config);
-  lines.push(ttsSection, '');
-  
-  // Speech Configuration
+  // Speech Configuration (includes STT, TTS, and UI speech settings)
   const speechSection = generateSpeechSection(config);
   lines.push(speechSection, '');
   
@@ -1273,130 +1295,131 @@ function generateOcrSection(config: any): string {
 }
 
 /**
- * Generate STT section
- */
-function generateSttSection(config: any): string {
-  if (!config.stt) return '# STT is not configured';
-  
-  const lines = ['# Speech-to-Text (STT) Configuration', 'stt:'];
-  
-  if (config.stt.provider) {
-    lines.push(`  provider: "${config.stt.provider}"`);
-  }
-  if (config.stt.model) {
-    lines.push(`  model: "${config.stt.model}"`);
-  }
-  if (config.stt.apiKey) {
-    lines.push(`  apiKey: "\${STT_API_KEY}"`);
-  }
-  if (config.stt.baseURL) {
-    lines.push(`  baseURL: "${config.stt.baseURL}"`);
-  }
-  if (config.stt.language) {
-    lines.push(`  language: "${config.stt.language}"`);
-  }
-  if (config.stt.streaming !== undefined) {
-    lines.push(`  streaming: ${config.stt.streaming}`);
-  }
-  if (config.stt.punctuation !== undefined) {
-    lines.push(`  punctuation: ${config.stt.punctuation}`);
-  }
-  if (config.stt.profanityFilter !== undefined) {
-    lines.push(`  profanityFilter: ${config.stt.profanityFilter}`);
-  }
-  
-  return lines.join('\n');
-}
-
-/**
- * Generate TTS section
- */
-function generateTtsSection(config: any): string {
-  if (!config.tts) return '# TTS is not configured';
-  
-  const lines = ['# Text-to-Speech (TTS) Configuration', 'tts:'];
-  
-  if (config.tts.provider) {
-    lines.push(`  provider: "${config.tts.provider}"`);
-  }
-  if (config.tts.model) {
-    lines.push(`  model: "${config.tts.model}"`);
-  }
-  if (config.tts.voice) {
-    lines.push(`  voice: "${config.tts.voice}"`);
-  }
-  if (config.tts.apiKey) {
-    lines.push(`  apiKey: "\${TTS_API_KEY}"`);
-  }
-  if (config.tts.baseURL) {
-    lines.push(`  baseURL: "${config.tts.baseURL}"`);
-  }
-  if (config.tts.speed !== undefined) {
-    lines.push(`  speed: ${config.tts.speed}`);
-  }
-  if (config.tts.quality) {
-    lines.push(`  quality: "${config.tts.quality}"`);
-  }
-  if (config.tts.streaming !== undefined) {
-    lines.push(`  streaming: ${config.tts.streaming}`);
-  }
-  
-  return lines.join('\n');
-}
-
-/**
- * Generate Speech section
+ * Generate unified Speech section in LibreChat-compatible format
+ * Merges STT, TTS, and UI speech configuration under a single speech: section
+ * with provider-specific nesting (speech.stt.openai.*, speech.tts.openai.*)
  */
 function generateSpeechSection(config: any): string {
-  if (!config.speech?.speechTab) return '# Speech UI configuration is not configured';
+  const hasStt = config.stt && config.stt.provider;
+  const hasTts = config.tts && config.tts.provider;
+  const hasSpeechTab = config.speech?.speechTab;
   
-  const lines = ['# Speech Experience (UI-Level) Configuration', 'speech:', '  speechTab:'];
-  
-  if (config.speech.speechTab.conversationMode !== undefined) {
-    lines.push(`    conversationMode: ${config.speech.speechTab.conversationMode}`);
-  }
-  if (config.speech.speechTab.advancedMode !== undefined) {
-    lines.push(`    advancedMode: ${config.speech.speechTab.advancedMode}`);
+  if (!hasStt && !hasTts && !hasSpeechTab) {
+    return '# Speech configuration is not configured';
   }
   
-  if (config.speech.speechTab.speechToText) {
-    lines.push(`    speechToText:`);
-    if (config.speech.speechTab.speechToText.engineSTT) {
-      lines.push(`      engineSTT: "${config.speech.speechTab.speechToText.engineSTT}"`);
+  const lines = ['# Speech Configuration (STT, TTS, and UI)', 'speech:'];
+  
+  // Generate STT section nested under provider
+  if (hasStt) {
+    const provider = config.stt.provider || 'openai';
+    lines.push('  stt:');
+    lines.push(`    ${provider}:`);
+    
+    // Note: LibreChat uses 'url' instead of 'baseURL'
+    if (config.stt.baseURL) {
+      lines.push(`      url: "${config.stt.baseURL}"`);
     }
-    if (config.speech.speechTab.speechToText.languageSTT) {
-      lines.push(`      languageSTT: "${config.speech.speechTab.speechToText.languageSTT}"`);
+    if (config.stt.apiKey) {
+      lines.push(`      apiKey: "\${STT_API_KEY}"`);
     }
-    if (config.speech.speechTab.speechToText.autoTranscribeAudio !== undefined) {
-      lines.push(`      autoTranscribeAudio: ${config.speech.speechTab.speechToText.autoTranscribeAudio}`);
+    if (config.stt.model) {
+      lines.push(`      model: "${config.stt.model}"`);
     }
-    if (config.speech.speechTab.speechToText.decibelValue !== undefined) {
-      lines.push(`      decibelValue: ${config.speech.speechTab.speechToText.decibelValue}`);
+    if (config.stt.language) {
+      lines.push(`      language: "${config.stt.language}"`);
     }
-    if (config.speech.speechTab.speechToText.autoSendText !== undefined) {
-      lines.push(`      autoSendText: ${config.speech.speechTab.speechToText.autoSendText}`);
+    if (config.stt.streaming !== undefined) {
+      lines.push(`      streaming: ${config.stt.streaming}`);
+    }
+    if (config.stt.punctuation !== undefined) {
+      lines.push(`      punctuation: ${config.stt.punctuation}`);
+    }
+    if (config.stt.profanityFilter !== undefined) {
+      lines.push(`      profanityFilter: ${config.stt.profanityFilter}`);
     }
   }
   
-  if (config.speech.speechTab.textToSpeech) {
-    lines.push(`    textToSpeech:`);
-    if (config.speech.speechTab.textToSpeech.engineTTS) {
-      lines.push(`      engineTTS: "${config.speech.speechTab.textToSpeech.engineTTS}"`);
+  // Generate TTS section nested under provider
+  if (hasTts) {
+    const provider = config.tts.provider || 'openai';
+    lines.push('  tts:');
+    lines.push(`    ${provider}:`);
+    
+    // Note: LibreChat uses 'url' instead of 'baseURL'
+    if (config.tts.baseURL) {
+      lines.push(`      url: "${config.tts.baseURL}"`);
     }
-    if (config.speech.speechTab.textToSpeech.voice) {
-      lines.push(`      voice: "${config.speech.speechTab.textToSpeech.voice}"`);
+    if (config.tts.apiKey) {
+      lines.push(`      apiKey: "\${TTS_API_KEY}"`);
     }
-    if (config.speech.speechTab.textToSpeech.languageTTS) {
-      lines.push(`      languageTTS: "${config.speech.speechTab.textToSpeech.languageTTS}"`);
+    if (config.tts.model) {
+      lines.push(`      model: "${config.tts.model}"`);
     }
-    if (config.speech.speechTab.textToSpeech.automaticPlayback !== undefined) {
-      lines.push(`      automaticPlayback: ${config.speech.speechTab.textToSpeech.automaticPlayback}`);
+    if (config.tts.voice) {
+      lines.push(`      voice: "${config.tts.voice}"`);
     }
-    if (config.speech.speechTab.textToSpeech.playbackRate !== undefined) {
-      lines.push(`      playbackRate: ${config.speech.speechTab.textToSpeech.playbackRate}`);
+    if (config.tts.speed !== undefined) {
+      lines.push(`      speed: ${config.tts.speed}`);
     }
-    if (config.speech.speechTab.textToSpeech.cacheTTS !== undefined) {
-      lines.push(`      cacheTTS: ${config.speech.speechTab.textToSpeech.cacheTTS}`);
+    if (config.tts.quality) {
+      lines.push(`      quality: "${config.tts.quality}"`);
+    }
+    if (config.tts.streaming !== undefined) {
+      lines.push(`      streaming: ${config.tts.streaming}`);
+    }
+  }
+  
+  // Generate speechTab section (UI-level configuration)
+  if (hasSpeechTab) {
+    lines.push('  speechTab:');
+    
+    if (config.speech.speechTab.conversationMode !== undefined) {
+      lines.push(`    conversationMode: ${config.speech.speechTab.conversationMode}`);
+    }
+    if (config.speech.speechTab.advancedMode !== undefined) {
+      lines.push(`    advancedMode: ${config.speech.speechTab.advancedMode}`);
+    }
+    
+    if (config.speech.speechTab.speechToText) {
+      lines.push(`    speechToText:`);
+      if (config.speech.speechTab.speechToText.engineSTT) {
+        lines.push(`      engineSTT: "${config.speech.speechTab.speechToText.engineSTT}"`);
+      }
+      if (config.speech.speechTab.speechToText.languageSTT) {
+        lines.push(`      languageSTT: "${config.speech.speechTab.speechToText.languageSTT}"`);
+      }
+      if (config.speech.speechTab.speechToText.autoTranscribeAudio !== undefined) {
+        lines.push(`      autoTranscribeAudio: ${config.speech.speechTab.speechToText.autoTranscribeAudio}`);
+      }
+      if (config.speech.speechTab.speechToText.decibelValue !== undefined) {
+        lines.push(`      decibelValue: ${config.speech.speechTab.speechToText.decibelValue}`);
+      }
+      if (config.speech.speechTab.speechToText.autoSendText !== undefined) {
+        lines.push(`      autoSendText: ${config.speech.speechTab.speechToText.autoSendText}`);
+      }
+    }
+    
+    if (config.speech.speechTab.textToSpeech) {
+      lines.push(`    textToSpeech:`);
+      if (config.speech.speechTab.textToSpeech.engineTTS) {
+        lines.push(`      engineTTS: "${config.speech.speechTab.textToSpeech.engineTTS}"`);
+      }
+      if (config.speech.speechTab.textToSpeech.voice) {
+        lines.push(`      voice: "${config.speech.speechTab.textToSpeech.voice}"`);
+      }
+      if (config.speech.speechTab.textToSpeech.languageTTS) {
+        lines.push(`      languageTTS: "${config.speech.speechTab.textToSpeech.languageTTS}"`);
+      }
+      if (config.speech.speechTab.textToSpeech.automaticPlayback !== undefined) {
+        lines.push(`      automaticPlayback: ${config.speech.speechTab.textToSpeech.automaticPlayback}`);
+      }
+      if (config.speech.speechTab.textToSpeech.playbackRate !== undefined) {
+        lines.push(`      playbackRate: ${config.speech.speechTab.textToSpeech.playbackRate}`);
+      }
+      if (config.speech.speechTab.textToSpeech.cacheTTS !== undefined) {
+        lines.push(`      cacheTTS: ${config.speech.speechTab.textToSpeech.cacheTTS}`);
+      }
     }
   }
   

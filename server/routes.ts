@@ -936,16 +936,16 @@ mcpServers: ${
 }
 
 # Endpoints Configuration
-endpoints:
-  agents:
-    disableBuilder: ${config.endpoints?.agents?.disableBuilder ?? false}
-    recursionLimit: ${config.endpoints?.agents?.recursionLimit ?? 50}
-    maxRecursionLimit: ${config.endpoints?.agents?.maxRecursionLimit ?? 100}
+endpoints:${config.endpoints?.agents ? `
+  agents:${config.endpoints.agents.disableBuilder !== undefined ? `
+    disableBuilder: ${config.endpoints.agents.disableBuilder}` : ''}${config.endpoints.agents.recursionLimit !== undefined ? `
+    recursionLimit: ${config.endpoints.agents.recursionLimit}` : ''}${config.endpoints.agents.maxRecursionLimit !== undefined ? `
+    maxRecursionLimit: ${config.endpoints.agents.maxRecursionLimit}` : ''}${config.endpoints.agents.capabilities ? `
     capabilities:
-${(config.endpoints?.agents?.capabilities ?? ["execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"]).map((cap: string) => `      - ${cap}`).join('\n')}
-    maxCitations: ${config.endpoints?.agents?.maxCitations ?? 30}
-    maxCitationsPerFile: ${config.endpoints?.agents?.maxCitationsPerFile ?? 7}
-    minRelevanceScore: ${config.endpoints?.agents?.minRelevanceScore ?? 0.45}
+${(Array.isArray(config.endpoints.agents.capabilities) ? config.endpoints.agents.capabilities : Object.keys(config.endpoints.agents.capabilities).filter((k: string) => config.endpoints.agents.capabilities[k])).map((cap: string) => `      - ${cap}`).join('\n')}` : ''}${config.endpoints.agents.maxCitations !== undefined ? `
+    maxCitations: ${config.endpoints.agents.maxCitations}` : ''}${config.endpoints.agents.maxCitationsPerFile !== undefined ? `
+    maxCitationsPerFile: ${config.endpoints.agents.maxCitationsPerFile}` : ''}${config.endpoints.agents.minRelevanceScore !== undefined ? `
+    minRelevanceScore: ${config.endpoints.agents.minRelevanceScore}` : ''}` : ''}
   openAI:
     title: "OpenAI"
     apiKey: "\${OPENAI_API_KEY}"
@@ -1035,8 +1035,14 @@ ${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlSt
         - 'frequency_penalty'
         - 'presence_penalty'` : ''}` : ''}
 
-${config.interface || config.temporaryChatRetention || config.customWelcome || config.customFooter ? `
-# Interface Configuration
+${(() => {
+  // Only export interface section if there are actual configured values
+  const hasInterfaceValues = config.interface && Object.keys(config.interface).some(key => config.interface[key] !== undefined && config.interface[key] !== null && config.interface[key] !== '');
+  const hasOtherInterfaceFields = config.temporaryChatRetention !== undefined || config.customWelcome || config.customFooter;
+  
+  if (!hasInterfaceValues && !hasOtherInterfaceFields) return '';
+  
+  return `# Interface Configuration
 interface:${config.interface?.agents !== undefined ? `
   agents: ${config.interface.agents}` : ''}${config.interface?.modelSelect !== undefined ? `
   modelSelect: ${config.interface.modelSelect}` : ''}${config.interface?.parameters !== undefined ? `
@@ -1055,7 +1061,8 @@ interface:${config.interface?.agents !== undefined ? `
   defaultPreset: "${escapeYamlDoubleQuoted(config.interface.defaultPreset)}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
   customWelcome: "${escapeYamlDoubleQuoted(config.interface?.customWelcome || config.customWelcome)}"` : ''}${config.interface?.customFooter || config.customFooter ? `
   customFooter: "${escapeYamlDoubleQuoted(config.interface?.customFooter || config.customFooter)}"` : ''}
-` : '# Interface not configured'}
+`;
+})()}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration

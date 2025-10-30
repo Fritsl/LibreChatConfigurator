@@ -275,6 +275,7 @@ export default function Home() {
     
     // Core AI API Keys
     if (envVars.OPENAI_API_KEY) config.openaiApiKey = envVars.OPENAI_API_KEY;
+    if (envVars.OPENAI_API_BASE) config.openaiApiBase = envVars.OPENAI_API_BASE;
     if (envVars.ANTHROPIC_API_KEY) config.anthropicApiKey = envVars.ANTHROPIC_API_KEY;
     if (envVars.GOOGLE_API_KEY) config.googleApiKey = envVars.GOOGLE_API_KEY;
     if (envVars.GROQ_API_KEY) config.groqApiKey = envVars.GROQ_API_KEY;
@@ -1390,7 +1391,7 @@ export default function Home() {
       'OPENID_URL', 'OPENID_CLIENT_ID', 'OPENID_CLIENT_SECRET', 'OPENID_CALLBACK_URL',
       'OPENID_SCOPE', 'OPENID_SESSION_SECRET', 'OPENID_ISSUER', 'OPENID_BUTTON_LABEL', 'OPENID_IMAGE_URL',
       // Core AI API Keys
-      'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY', 'GROQ_API_KEY', 'MISTRAL_API_KEY',
+      'OPENAI_API_KEY', 'OPENAI_API_BASE', 'ANTHROPIC_API_KEY', 'GOOGLE_API_KEY', 'GROQ_API_KEY', 'MISTRAL_API_KEY',
       // Extended AI API Keys
       'DEEPSEEK_API_KEY', 'PERPLEXITY_API_KEY', 'FIREWORKS_API_KEY', 'TOGETHERAI_API_KEY', 'HUGGINGFACE_TOKEN',
       'XAI_API_KEY', 'NVIDIA_API_KEY', 'SAMBANOVA_API_KEY', 'HYPERBOLIC_API_KEY', 'KLUSTER_API_KEY',

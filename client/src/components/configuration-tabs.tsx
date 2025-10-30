@@ -1023,6 +1023,7 @@ paths:
       
       // Core AI APIs
       openaiApiKey: { type: "password", description: "OpenAI API key", label: "OpenAI API Key", technical: { envVar: "OPENAI_API_KEY", configFile: ".env" } },
+      openaiApiBase: { type: "text", description: "Custom OpenAI API base URL (optional, for OpenAI-compatible endpoints)", label: "OpenAI API Base URL", technical: { envVar: "OPENAI_API_BASE", configFile: ".env" } },
       anthropicApiKey: { type: "password", description: "Anthropic API key", label: "Anthropic API Key", technical: { envVar: "ANTHROPIC_API_KEY", configFile: ".env" } },
       googleApiKey: { type: "password", description: "Google AI API key", label: "Google AI API Key", technical: { envVar: "GOOGLE_API_KEY", configFile: ".env" } },
       groqApiKey: { type: "password", description: "Groq API key", label: "Groq API Key", technical: { envVar: "GROQ_API_KEY", configFile: ".env" } },

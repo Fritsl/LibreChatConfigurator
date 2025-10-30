@@ -557,6 +557,7 @@ export const configurationSchema = z.object({
   
   // API Keys - Core Providers
   openaiApiKey: z.string().optional(), // OPENAI_API_KEY
+  openaiApiBase: z.string().optional(), // OPENAI_API_BASE
   anthropicApiKey: z.string().optional(), // ANTHROPIC_API_KEY
   googleApiKey: z.string().optional(), // GOOGLE_KEY
   groqApiKey: z.string().optional(), // GROQ_API_KEY

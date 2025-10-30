@@ -588,6 +588,7 @@ ${config.openidImageURL ? `OPENID_IMAGE_URL=${config.openidImageURL}` : '# OPENI
 # Core AI API Keys
 # =============================================================================
 ${config.openaiApiKey ? `OPENAI_API_KEY=${config.openaiApiKey}` : '# OPENAI_API_KEY='}
+${config.openaiApiBase ? `OPENAI_API_BASE=${config.openaiApiBase}` : '# OPENAI_API_BASE='}
 ${config.anthropicApiKey ? `ANTHROPIC_API_KEY=${config.anthropicApiKey}` : '# ANTHROPIC_API_KEY='}
 ${config.googleApiKey ? `GOOGLE_API_KEY=${config.googleApiKey}` : '# GOOGLE_API_KEY='}
 ${config.groqApiKey ? `GROQ_API_KEY=${config.groqApiKey}` : '# GROQ_API_KEY='}
@@ -1356,6 +1357,7 @@ ${config.allowPasswordReset !== undefined ? `      ALLOW_PASSWORD_RESET: \${ALLO
       # Core AI Provider API Keys
       # =============================================================================
 ${config.openaiApiKey ? `      OPENAI_API_KEY: \${OPENAI_API_KEY}` : '      # OPENAI_API_KEY: ${OPENAI_API_KEY}'}
+${config.openaiApiBase ? `      OPENAI_API_BASE: \${OPENAI_API_BASE}` : '      # OPENAI_API_BASE: ${OPENAI_API_BASE}'}
 ${config.anthropicApiKey ? `      ANTHROPIC_API_KEY: \${ANTHROPIC_API_KEY}` : '      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}'}
 ${config.googleApiKey ? `      GOOGLE_API_KEY: \${GOOGLE_API_KEY}` : '      # GOOGLE_API_KEY: ${GOOGLE_API_KEY}'}
 ${config.groqApiKey ? `      GROQ_API_KEY: \${GROQ_API_KEY}` : '      # GROQ_API_KEY: ${GROQ_API_KEY}'}

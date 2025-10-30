@@ -109,6 +109,7 @@ export const defaultConfiguration: Configuration = {
   
   // API Keys - Core Providers (empty for security) 
   openaiApiKey: "",
+  openaiApiBase: "",
   anthropicApiKey: "",
   googleApiKey: "",
   groqApiKey: "",

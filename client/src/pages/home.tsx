@@ -683,25 +683,30 @@ export default function Home() {
     
     // Interface settings
     if (yamlData.interface) {
+      // Initialize nested interface object
+      config.interface = config.interface || {};
+      
       if (yamlData.interface.customWelcome) config.customWelcome = yamlData.interface.customWelcome;
       if (yamlData.interface.customFooter) config.customFooter = yamlData.interface.customFooter;
-      if (yamlData.interface.defaultPreset) config.interfaceDefaultPreset = yamlData.interface.defaultPreset;
-      if (yamlData.interface.uploadAsText !== undefined) config.uploadAsTextUI = yamlData.interface.uploadAsText;
-      if (yamlData.interface.temporaryChatRetention) config.temporaryChatRetentionHours = yamlData.interface.temporaryChatRetention;
-      // LibreChat RC4 UI toggle fields (these map to UI visibility settings)
-      if (yamlData.interface.agents !== undefined) config.interfaceShowAgents = yamlData.interface.agents;
-      if (yamlData.interface.modelSelect !== undefined) config.interfaceShowModelSelect = yamlData.interface.modelSelect;
-      if (yamlData.interface.parameters !== undefined) config.interfaceShowParameters = yamlData.interface.parameters;
-      if (yamlData.interface.sidePanel !== undefined) config.interfaceShowSidePanel = yamlData.interface.sidePanel;
-      if (yamlData.interface.presets !== undefined) config.interfaceShowPresets = yamlData.interface.presets;
-      if (yamlData.interface.prompts !== undefined) config.interfaceShowPrompts = yamlData.interface.prompts;
-      if (yamlData.interface.bookmarks !== undefined) config.interfaceShowBookmarks = yamlData.interface.bookmarks;
-      if (yamlData.interface.multiConvo !== undefined) config.interfaceShowMultiConvo = yamlData.interface.multiConvo;
-      if (yamlData.interface.webSearch !== undefined) config.interfaceShowWebSearch = yamlData.interface.webSearch;
-      if (yamlData.interface.fileSearch !== undefined) config.interfaceShowFileSearch = yamlData.interface.fileSearch;
-      if (yamlData.interface.fileCitations !== undefined) config.interfaceShowFileCitations = yamlData.interface.fileCitations;
-      if (yamlData.interface.runCode !== undefined) config.interfaceShowRunCode = yamlData.interface.runCode;
-      if (yamlData.interface.artifacts !== undefined) config.interfaceShowArtifacts = yamlData.interface.artifacts;
+      if (yamlData.interface.defaultPreset) config.interface.defaultPreset = yamlData.interface.defaultPreset;
+      if (yamlData.interface.uploadAsText !== undefined) config.interface.uploadAsText = yamlData.interface.uploadAsText;
+      if (yamlData.interface.temporaryChatRetention) config.temporaryChatRetention = yamlData.interface.temporaryChatRetention;
+      
+      // LibreChat RC4 UI toggle fields - store in nested interface structure
+      if (yamlData.interface.agents !== undefined) config.interface.agents = yamlData.interface.agents;
+      if (yamlData.interface.modelSelect !== undefined) config.interface.modelSelect = yamlData.interface.modelSelect;
+      if (yamlData.interface.parameters !== undefined) config.interface.parameters = yamlData.interface.parameters;
+      if (yamlData.interface.sidePanel !== undefined) config.interface.sidePanel = yamlData.interface.sidePanel;
+      if (yamlData.interface.presets !== undefined) config.interface.presets = yamlData.interface.presets;
+      if (yamlData.interface.prompts !== undefined) config.interface.prompts = yamlData.interface.prompts;
+      if (yamlData.interface.bookmarks !== undefined) config.interface.bookmarks = yamlData.interface.bookmarks;
+      if (yamlData.interface.multiConvo !== undefined) config.interface.multiConvo = yamlData.interface.multiConvo;
+      if (yamlData.interface.webSearch !== undefined) config.interface.webSearch = yamlData.interface.webSearch;
+      if (yamlData.interface.fileSearch !== undefined) config.interface.fileSearch = yamlData.interface.fileSearch;
+      if (yamlData.interface.fileCitations !== undefined) config.interface.fileCitations = yamlData.interface.fileCitations;
+      if (yamlData.interface.runCode !== undefined) config.interface.runCode = yamlData.interface.runCode;
+      if (yamlData.interface.artifacts !== undefined) config.interface.artifacts = yamlData.interface.artifacts;
+      if (yamlData.interface.endpointsMenu !== undefined) config.interface.endpointsMenu = yamlData.interface.endpointsMenu;
     }
     
     // Model Specs Configuration

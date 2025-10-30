@@ -955,9 +955,9 @@ ${(Array.isArray(config.endpoints.agents.capabilities) ? config.endpoints.agents
       - "frequency_penalty"
       - "presence_penalty"
       - "stop"
-      - "user"
-    titleConvo: ${config.endpoints?.openAI?.titleConvo ?? true}
-    titleModel: "${config.endpoints?.openAI?.titleModel ?? 'gpt-3.5-turbo'}"${config.anthropicApiKey ? `
+      - "user"${config.endpoints?.openAI?.titleConvo !== undefined ? `
+    titleConvo: ${config.endpoints.openAI.titleConvo}` : ''}${config.endpoints?.openAI?.titleModel ? `
+    titleModel: "${escapeYamlDoubleQuoted(config.endpoints.openAI.titleModel)}"` : ''}${config.anthropicApiKey ? `
   anthropic:
     title: "Anthropic"
     apiKey: "\${ANTHROPIC_API_KEY}"

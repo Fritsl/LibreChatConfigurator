@@ -4,6 +4,40 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## LibreChat YAML Compatibility - October 30, 2025 ✅ COMPLETE
+Successfully restructured YAML export/import to generate LibreChat's native YAML format with full bidirectional compatibility:
+
+**Problem Solved:**
+- Tool was generating incompatible YAML structure for speech configuration
+- Our format: top-level `stt:` and `tts:` sections
+- LibreChat's format: nested `speech.stt.openai.*` and `speech.tts.openai.*`
+- Imports of real LibreChat YAML files failed to map STT/TTS fields correctly
+
+**Solution Implemented:**
+1. **Extended FieldDescriptor** with `configPath` field to enable structural translation
+2. **Added 11 LibreChat Import Fields** with provider detection and full field coverage:
+   - STT: provider, url, apiKey, model (with configPath mappings to `stt.*`)
+   - TTS: provider, url, apiKey, model, voice, speed, quality (with configPath mappings to `tts.*`)
+   - Provider auto-detection via yamlTransformer (extracts "openai" from `speech.stt.openai` object)
+3. **Restructured generateSpeechSection** to output LibreChat-compatible nested format:
+   - Merges STT, TTS, and speechTab into unified `speech:` section
+   - Provider-specific nesting (`speech.stt.openai.*`)
+   - Field name transformation (`baseURL` → `url`)
+4. **Enhanced Import Logic** with configPath support:
+   - Added `setNestedValue` helper for deep object creation
+   - YAML fields with configPath now map correctly to internal schema
+   - Example: `speech.stt.openai.url` (YAML) → `stt.baseURL` (internal config)
+
+**Bidirectional Translation:**
+- **Export**: Reads from `config.stt.*` → Generates LibreChat `speech.stt.openai.*`
+- **Import**: Reads from LibreChat `speech.stt.openai.*` → Maps to `config.stt.*`
+- **Round-trip fidelity**: Configuration survives export → import → export cycle
+
+**Registry Coverage:**
+- 398 total fields (11 new LibreChat import fields added)
+- All speech fields now support LibreChat's native YAML structure
+- Backward compatible with existing internal schema
+
 ## Field Registry Migration - October 2025 ✅ COMPLETE
 Successfully completed comprehensive architectural refactor to eliminate field duplication and achieve 100% bidirectional parity:
 
@@ -13,7 +47,6 @@ Successfully completed comprehensive architectural refactor to eliminate field d
 - **100% Bidirectional Parity**: Verified through comprehensive test suite (196/196 ENV fields, 194/194 YAML fields)
 - **Single Source of Truth**: Field registry now drives all import/export/validation operations
 - **Null Handling**: Fixed to correctly preserve explicit null assignments for field clearing
-- **Real-World Coverage**: Added 24 standard LibreChat RC4 fields discovered from real YAML imports
 
 **Migrated Components:**
 - ENV import validation (validateEnvVars)
@@ -23,16 +56,8 @@ Successfully completed comprehensive architectural refactor to eliminate field d
 - ENV file generation (generateEnvFile)
 - YAML file generation (generateYamlFile)
 
-**24 Additional Fields Added (October 30, 2025):**
-- fileConfig.endpoints.openAI.* (4 fields: file limits and MIME types)
-- memory.* (3 fields: disabled, personalize, messageWindowSize)
-- webSearch.firecrawlOptions.* (9 fields: formats, timeouts, proxy, etc.)
-- speech.stt.openai.* (3 fields: url, apiKey, model)
-- speech.tts.openai.* (4 fields: url, apiKey, model, voice)
-- speech.speechTab.conversationMode (1 field)
-
 **Testing Infrastructure:**
-- Created `scripts/test-full-parity.ts` for comprehensive round-trip testing of all 387 fields
+- Created `scripts/test-full-parity.ts` for comprehensive round-trip testing of all fields
 - Created `scripts/test-round-trip.ts` for scenario-based integration testing
 - Discovered and resolved yamlPath conflicts (parent object vs child property handling)
 - All tests passing with 100% coverage verification

@@ -1,4 +1,4 @@
-import { FIELD_REGISTRY, FieldDescriptor, getFieldByEnvKey, getFieldByYamlPath, getAllEnvKeys, getAllYamlPaths } from './field-registry';
+import { FIELD_REGISTRY, FieldDescriptor, getFieldByEnvKey, getFieldByYamlPath, getAllEnvKeys, getAllYamlPaths, getYamlFields } from './field-registry';
 
 /**
  * Registry-Driven Import/Export Helpers

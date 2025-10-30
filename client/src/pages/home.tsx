@@ -250,6 +250,8 @@ export default function Home() {
     // Core AI API Keys
     if (envVars.OPENAI_API_KEY) config.openaiApiKey = envVars.OPENAI_API_KEY;
     if (envVars.OPENAI_API_BASE) config.openaiApiBase = envVars.OPENAI_API_BASE;
+    if (envVars.OPENAI_REVERSE_PROXY) config.openaiReverseProxy = envVars.OPENAI_REVERSE_PROXY;
+    if (envVars.OPENAI_MODERATION_REVERSE_PROXY) config.openaiModerationReverseProxy = envVars.OPENAI_MODERATION_REVERSE_PROXY;
     if (envVars.ANTHROPIC_API_KEY) config.anthropicApiKey = envVars.ANTHROPIC_API_KEY;
     if (envVars.GOOGLE_API_KEY) config.googleApiKey = envVars.GOOGLE_API_KEY;
     if (envVars.GROQ_API_KEY) config.groqApiKey = envVars.GROQ_API_KEY;

@@ -589,6 +589,8 @@ ${config.openidImageURL ? `OPENID_IMAGE_URL=${config.openidImageURL}` : '# OPENI
 # =============================================================================
 ${config.openaiApiKey ? `OPENAI_API_KEY=${config.openaiApiKey}` : '# OPENAI_API_KEY='}
 ${config.openaiApiBase ? `OPENAI_API_BASE=${config.openaiApiBase}` : '# OPENAI_API_BASE='}
+${config.openaiReverseProxy ? `OPENAI_REVERSE_PROXY=${config.openaiReverseProxy}` : '# OPENAI_REVERSE_PROXY='}
+${config.openaiModerationReverseProxy ? `OPENAI_MODERATION_REVERSE_PROXY=${config.openaiModerationReverseProxy}` : '# OPENAI_MODERATION_REVERSE_PROXY='}
 ${config.anthropicApiKey ? `ANTHROPIC_API_KEY=${config.anthropicApiKey}` : '# ANTHROPIC_API_KEY='}
 ${config.googleApiKey ? `GOOGLE_API_KEY=${config.googleApiKey}` : '# GOOGLE_API_KEY='}
 ${config.groqApiKey ? `GROQ_API_KEY=${config.groqApiKey}` : '# GROQ_API_KEY='}
@@ -1358,6 +1360,8 @@ ${config.allowPasswordReset !== undefined ? `      ALLOW_PASSWORD_RESET: \${ALLO
       # =============================================================================
 ${config.openaiApiKey ? `      OPENAI_API_KEY: \${OPENAI_API_KEY}` : '      # OPENAI_API_KEY: ${OPENAI_API_KEY}'}
 ${config.openaiApiBase ? `      OPENAI_API_BASE: \${OPENAI_API_BASE}` : '      # OPENAI_API_BASE: ${OPENAI_API_BASE}'}
+${config.openaiReverseProxy ? `      OPENAI_REVERSE_PROXY: \${OPENAI_REVERSE_PROXY}` : '      # OPENAI_REVERSE_PROXY: ${OPENAI_REVERSE_PROXY}'}
+${config.openaiModerationReverseProxy ? `      OPENAI_MODERATION_REVERSE_PROXY: \${OPENAI_MODERATION_REVERSE_PROXY}` : '      # OPENAI_MODERATION_REVERSE_PROXY: ${OPENAI_MODERATION_REVERSE_PROXY}'}
 ${config.anthropicApiKey ? `      ANTHROPIC_API_KEY: \${ANTHROPIC_API_KEY}` : '      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}'}
 ${config.googleApiKey ? `      GOOGLE_API_KEY: \${GOOGLE_API_KEY}` : '      # GOOGLE_API_KEY: ${GOOGLE_API_KEY}'}
 ${config.groqApiKey ? `      GROQ_API_KEY: \${GROQ_API_KEY}` : '      # GROQ_API_KEY: ${GROQ_API_KEY}'}

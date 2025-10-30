@@ -558,6 +558,8 @@ export const configurationSchema = z.object({
   // API Keys - Core Providers
   openaiApiKey: z.string().optional(), // OPENAI_API_KEY
   openaiApiBase: z.string().optional(), // OPENAI_API_BASE
+  openaiReverseProxy: z.string().optional(), // OPENAI_REVERSE_PROXY (deprecated, use custom endpoints in YAML)
+  openaiModerationReverseProxy: z.string().optional(), // OPENAI_MODERATION_REVERSE_PROXY
   anthropicApiKey: z.string().optional(), // ANTHROPIC_API_KEY
   googleApiKey: z.string().optional(), // GOOGLE_KEY
   groqApiKey: z.string().optional(), // GROQ_API_KEY

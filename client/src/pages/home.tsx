@@ -1314,11 +1314,12 @@ export default function Home() {
             console.log("   - Mapped configuration:", configUpdates);
             console.log("   - MCP servers found:", configUpdates.mcpServers?.length || 0);
             
-            // Analyze what changed
+            // Analyze what changed BEFORE import (compare existing config vs YAML)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // Update configuration with parsed data
-            updateConfiguration(configUpdates);
+            // REPLACE configuration with YAML data (don't merge - ensures round-trip parity)
+            // This ensures fields not in YAML are cleared, not retained from existing config
+            updateConfiguration(configUpdates, true);
             
             // Show detailed import summary
             setImportSummaryData({
@@ -1490,11 +1491,12 @@ export default function Home() {
             const configUpdates = mapEnvToConfiguration(envVars);
             console.log("   - Mapped configuration:", configUpdates);
             
-            // Analyze what changed
+            // Analyze what changed BEFORE import (compare existing config vs .env)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // Update configuration with parsed data
-            updateConfiguration(configUpdates);
+            // REPLACE configuration with .env data (don't merge - ensures round-trip parity)
+            // This ensures fields not in .env are cleared, not retained from existing config
+            updateConfiguration(configUpdates, true);
             
             // Show detailed import summary
             setImportSummaryData({

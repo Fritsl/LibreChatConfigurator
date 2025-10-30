@@ -1035,25 +1035,27 @@ ${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlSt
         - 'frequency_penalty'
         - 'presence_penalty'` : ''}` : ''}
 
+${config.interface || config.temporaryChatRetention || config.customWelcome || config.customFooter ? `
 # Interface Configuration
-interface:
-  agents: ${config.interface?.agents ?? true}
-  modelSelect: ${config.interface?.modelSelect ?? true}
-  parameters: ${config.interface?.parameters ?? true}
-  sidePanel: ${config.interface?.sidePanel ?? true}
-  presets: ${config.interface?.presets ?? true}
-  prompts: ${config.interface?.prompts ?? true}
-  bookmarks: ${config.interface?.bookmarks ?? true}
-  multiConvo: ${config.interface?.multiConvo ?? false}
-  webSearch: ${config.interface?.webSearch ?? true}
-  fileSearch: ${config.interface?.fileSearch ?? true}
-  fileCitations: ${config.interface?.fileCitations ?? true}
-  runCode: ${config.interface?.runCode ?? false}
-  artifacts: ${config.interface?.artifacts ?? true}
-  temporaryChatRetention: ${config.temporaryChatRetention ?? 720}${config.interface?.defaultPreset ? `
+interface:${config.interface?.agents !== undefined ? `
+  agents: ${config.interface.agents}` : ''}${config.interface?.modelSelect !== undefined ? `
+  modelSelect: ${config.interface.modelSelect}` : ''}${config.interface?.parameters !== undefined ? `
+  parameters: ${config.interface.parameters}` : ''}${config.interface?.sidePanel !== undefined ? `
+  sidePanel: ${config.interface.sidePanel}` : ''}${config.interface?.presets !== undefined ? `
+  presets: ${config.interface.presets}` : ''}${config.interface?.prompts !== undefined ? `
+  prompts: ${config.interface.prompts}` : ''}${config.interface?.bookmarks !== undefined ? `
+  bookmarks: ${config.interface.bookmarks}` : ''}${config.interface?.multiConvo !== undefined ? `
+  multiConvo: ${config.interface.multiConvo}` : ''}${config.interface?.webSearch !== undefined ? `
+  webSearch: ${config.interface.webSearch}` : ''}${config.interface?.fileSearch !== undefined ? `
+  fileSearch: ${config.interface.fileSearch}` : ''}${config.interface?.fileCitations !== undefined ? `
+  fileCitations: ${config.interface.fileCitations}` : ''}${config.interface?.runCode !== undefined ? `
+  runCode: ${config.interface.runCode}` : ''}${config.interface?.artifacts !== undefined ? `
+  artifacts: ${config.interface.artifacts}` : ''}${config.temporaryChatRetention !== undefined ? `
+  temporaryChatRetention: ${config.temporaryChatRetention}` : ''}${config.interface?.defaultPreset ? `
   defaultPreset: "${escapeYamlDoubleQuoted(config.interface.defaultPreset)}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
   customWelcome: "${escapeYamlDoubleQuoted(config.interface?.customWelcome || config.customWelcome)}"` : ''}${config.interface?.customFooter || config.customFooter ? `
   customFooter: "${escapeYamlDoubleQuoted(config.interface?.customFooter || config.customFooter)}"` : ''}
+` : '# Interface not configured'}
 
 ${config.modelSpecs?.addedEndpoints && config.modelSpecs.addedEndpoints.length > 0 ? `
 # Model Specs Configuration
@@ -1098,28 +1100,30 @@ ${limits.supportedMimeTypes.map((type: string) => `        - "${type}"`).join('\
     compressFormat: "${config.fileConfig.clientImageResize.compressFormat}"` : ''}` : ''}
 ` : ''}
 
+${config.rateLimits ? `
 # Rate Limits
-rateLimits:
-  fileUploads:
-    ipMax: ${config.rateLimits?.fileUploads?.ipMax ?? 100}
-    ipWindowInMinutes: 60
-    userMax: ${config.rateLimits?.fileUploads?.userMax ?? 50}
-    userWindowInMinutes: 60
-  conversationsImport:
-    ipMax: ${config.rateLimits?.conversationsImport?.ipMax ?? 100}
-    ipWindowInMinutes: 60
-    userMax: ${config.rateLimits?.conversationsImport?.userMax ?? 50}
-    userWindowInMinutes: 60
-  stt:
-    ipMax: ${config.rateLimits?.stt?.ipMax ?? 100}
-    ipWindowInMinutes: 1
-    userMax: ${config.rateLimits?.stt?.userMax ?? 50}
-    userWindowInMinutes: 1
-  tts:
-    ipMax: ${config.rateLimits?.tts?.ipMax ?? 100}
-    ipWindowInMinutes: 1
-    userMax: ${config.rateLimits?.tts?.userMax ?? 50}
-    userWindowInMinutes: 1
+rateLimits:${config.rateLimits.fileUploads ? `
+  fileUploads:${config.rateLimits.fileUploads.ipMax !== undefined ? `
+    ipMax: ${config.rateLimits.fileUploads.ipMax}` : ''}${config.rateLimits.fileUploads.ipWindowInMinutes !== undefined ? `
+    ipWindowInMinutes: ${config.rateLimits.fileUploads.ipWindowInMinutes}` : ''}${config.rateLimits.fileUploads.userMax !== undefined ? `
+    userMax: ${config.rateLimits.fileUploads.userMax}` : ''}${config.rateLimits.fileUploads.userWindowInMinutes !== undefined ? `
+    userWindowInMinutes: ${config.rateLimits.fileUploads.userWindowInMinutes}` : ''}` : ''}${config.rateLimits.conversationsImport ? `
+  conversationsImport:${config.rateLimits.conversationsImport.ipMax !== undefined ? `
+    ipMax: ${config.rateLimits.conversationsImport.ipMax}` : ''}${config.rateLimits.conversationsImport.ipWindowInMinutes !== undefined ? `
+    ipWindowInMinutes: ${config.rateLimits.conversationsImport.ipWindowInMinutes}` : ''}${config.rateLimits.conversationsImport.userMax !== undefined ? `
+    userMax: ${config.rateLimits.conversationsImport.userMax}` : ''}${config.rateLimits.conversationsImport.userWindowInMinutes !== undefined ? `
+    userWindowInMinutes: ${config.rateLimits.conversationsImport.userWindowInMinutes}` : ''}` : ''}${config.rateLimits.stt ? `
+  stt:${config.rateLimits.stt.ipMax !== undefined ? `
+    ipMax: ${config.rateLimits.stt.ipMax}` : ''}${config.rateLimits.stt.ipWindowInMinutes !== undefined ? `
+    ipWindowInMinutes: ${config.rateLimits.stt.ipWindowInMinutes}` : ''}${config.rateLimits.stt.userMax !== undefined ? `
+    userMax: ${config.rateLimits.stt.userMax}` : ''}${config.rateLimits.stt.userWindowInMinutes !== undefined ? `
+    userWindowInMinutes: ${config.rateLimits.stt.userWindowInMinutes}` : ''}` : ''}${config.rateLimits.tts ? `
+  tts:${config.rateLimits.tts.ipMax !== undefined ? `
+    ipMax: ${config.rateLimits.tts.ipMax}` : ''}${config.rateLimits.tts.ipWindowInMinutes !== undefined ? `
+    ipWindowInMinutes: ${config.rateLimits.tts.ipWindowInMinutes}` : ''}${config.rateLimits.tts.userMax !== undefined ? `
+    userMax: ${config.rateLimits.tts.userMax}` : ''}${config.rateLimits.tts.userWindowInMinutes !== undefined ? `
+    userWindowInMinutes: ${config.rateLimits.tts.userWindowInMinutes}` : ''}` : ''}
+` : '# Rate limits not configured'}
 
 # Memory Configuration
 ${config.memory && (config.memory.disabled !== undefined || config.memory.personalize !== undefined || config.memory.validKeys || config.memory.tokenLimit || config.memory.messageWindowSize || config.memory.agent) ? `memory:${config.memory.disabled !== undefined ? `

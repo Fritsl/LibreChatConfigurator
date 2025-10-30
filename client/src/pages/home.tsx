@@ -1554,120 +1554,149 @@ export default function Home() {
   };
 
   const handleRoundTripTest = async () => {
-    console.log("🔄 [ROUND-TRIP TEST] Starting comprehensive import/export parity test...");
+    console.log("🔄 [ROUND-TRIP TEST] Starting REAL WORKFLOW import/export parity test...");
+    console.log("   This test simulates the exact user workflow: Export → Import → Compare");
     
     const errors: string[] = [];
     let testsPassed = 0;
-    let totalTests = 3; // .env, .yaml, .json
+    let totalTests = 2; // .yaml, .json (.env intentionally excluded as it's partial)
     
-    // Save baseline configuration
+    // Save EXACT baseline configuration (this is what we'll try to recover)
     const baselineConfig = JSON.parse(JSON.stringify(configuration));
-    console.log("📸 [BASELINE] Saved current configuration with", Object.keys(baselineConfig).length, "fields");
+    console.log("📸 [BASELINE] Saved current configuration with", Object.keys(baselineConfig).length, "top-level fields");
     
     try {
-      // Generate package
+      // Generate package (EXACTLY as user does)
+      console.log("📦 [EXPORT] Generating package...");
       const packageResult = await generatePackage({
         packageName: "ROUND_TRIP_TEST",
         includeFiles: ["env", "yaml"]
       });
       
-      // Test 1: .env round-trip
-      console.log("\n=== TEST 1: .env Round-Trip ===");
-      try {
-        const envContent = packageResult.files[".env"];
-        if (!envContent) {
-          errors.push(".env file not generated");
-        } else {
-          const envVars = parseEnvFile(envContent);
-          const configFromEnv = mapEnvToConfiguration(envVars);
-          const analysis = analyzeConfigurationChanges(baselineConfig, configFromEnv);
-          
-          console.log(`📊 .env Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
-          
-          if (analysis.newFields === 0 && analysis.updatedFields === 0) {
-            testsPassed++;
-            console.log("✅ .env round-trip PASSED");
-          } else {
-            errors.push(`.env: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
-            console.log("❌ .env round-trip FAILED");
-            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
-            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
-          }
-        }
-      } catch (error) {
-        errors.push(`.env test error: ${error}`);
-      }
-      
-      // Test 2: YAML round-trip
-      console.log("\n=== TEST 2: YAML Round-Trip ===");
+      // Test 1: YAML round-trip (SIMULATE REAL USER WORKFLOW)
+      console.log("\n=== TEST 1: YAML Round-Trip (Real User Workflow) ===");
       try {
         const yamlContent = packageResult.files["librechat.yaml"];
         if (!yamlContent) {
           errors.push("YAML file not generated");
         } else {
+          console.log("   1. User exports YAML");
+          console.log("   2. User imports YAML through UI");
+          
+          // Parse YAML (what the import handler does)
           const yamlData = yaml.load(yamlContent) as any;
+          console.log("   3. YAML parsed successfully");
+          
+          // Map YAML to configuration (WITH placeholder stripping - this is the key!)
           const configFromYaml = mapYamlToConfiguration(yamlData);
+          console.log("   4. YAML mapped to configuration (placeholders stripped)");
+          
+          // THIS IS THE CRITICAL COMPARISON:
+          // We're comparing the ORIGINAL config (baseline) against the RE-IMPORTED config
+          // If placeholders were exported but stripped on import, this will show differences
           const analysis = analyzeConfigurationChanges(baselineConfig, configFromYaml);
           
           console.log(`📊 YAML Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
           
           if (analysis.newFields === 0 && analysis.updatedFields === 0) {
             testsPassed++;
-            console.log("✅ YAML round-trip PASSED");
+            console.log("✅ YAML round-trip PASSED - Perfect parity!");
           } else {
             errors.push(`YAML: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
-            console.log("❌ YAML round-trip FAILED");
-            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
-            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
+            console.log("❌ YAML round-trip FAILED - Field differences detected!");
+            
+            // Show detailed breakdown
+            const newFields = analysis.fieldDetails.filter(f => f.status === 'new');
+            const updatedFields = analysis.fieldDetails.filter(f => f.status === 'updated');
+            
+            if (newFields.length > 0) {
+              console.log("\n🆕 NEW FIELDS (present in import but missing in baseline):");
+              newFields.slice(0, 20).forEach(f => {
+                console.log(`   - ${f.name}`);
+              });
+              if (newFields.length > 20) console.log(`   ... and ${newFields.length - 20} more`);
+            }
+            
+            if (updatedFields.length > 0) {
+              console.log("\n🔄 UPDATED FIELDS (value changed during round-trip):");
+              updatedFields.slice(0, 20).forEach(f => {
+                console.log(`   - ${f.name}`);
+              });
+              if (updatedFields.length > 20) console.log(`   ... and ${updatedFields.length - 20} more`);
+            }
           }
         }
       } catch (error) {
-        errors.push(`YAML test error: ${error}`);
+        errors.push(`.yaml test error: ${error}`);
+        console.error("YAML test error:", error);
       }
       
-      // Test 3: JSON round-trip
-      console.log("\n=== TEST 3: JSON Round-Trip ===");
+      // Test 2: JSON round-trip
+      console.log("\n=== TEST 2: JSON Round-Trip (Real User Workflow) ===");
       try {
         const jsonContent = packageResult.files["LibreChatConfigSettings.json"];
         if (!jsonContent) {
           errors.push("JSON file not generated");
         } else {
+          console.log("   1. User exports JSON");
+          console.log("   2. User imports JSON through UI");
+          
           const jsonData = JSON.parse(jsonContent);
           const configFromJson = jsonData.configuration;
+          console.log("   3. JSON parsed and configuration extracted");
+          
           const analysis = analyzeConfigurationChanges(baselineConfig, configFromJson);
           
           console.log(`📊 JSON Results: ${analysis.newFields} new, ${analysis.updatedFields} updated, ${analysis.unchangedFields} unchanged`);
           
           if (analysis.newFields === 0 && analysis.updatedFields === 0) {
             testsPassed++;
-            console.log("✅ JSON round-trip PASSED");
+            console.log("✅ JSON round-trip PASSED - Perfect parity!");
           } else {
             errors.push(`JSON: ${analysis.newFields} new, ${analysis.updatedFields} updated`);
-            console.log("❌ JSON round-trip FAILED");
-            console.log("New:", analysis.fieldDetails.filter(f => f.status === 'new').map(f => f.name).slice(0, 10));
-            console.log("Updated:", analysis.fieldDetails.filter(f => f.status === 'updated').map(f => f.name).slice(0, 10));
+            console.log("❌ JSON round-trip FAILED - Field differences detected!");
+            
+            const newFields = analysis.fieldDetails.filter(f => f.status === 'new');
+            const updatedFields = analysis.fieldDetails.filter(f => f.status === 'updated');
+            
+            if (newFields.length > 0) {
+              console.log("\n🆕 NEW FIELDS:");
+              newFields.slice(0, 20).forEach(f => {
+                console.log(`   - ${f.name}`);
+              });
+            }
+            
+            if (updatedFields.length > 0) {
+              console.log("\n🔄 UPDATED FIELDS:");
+              updatedFields.slice(0, 20).forEach(f => {
+                console.log(`   - ${f.name}`);
+              });
+            }
           }
         }
       } catch (error) {
         errors.push(`JSON test error: ${error}`);
+        console.error("JSON test error:", error);
       }
       
       console.log(`\n🎯 ROUND-TRIP TEST RESULTS: ${testsPassed}/${totalTests} passed`);
+      console.log("================================================\n");
       
       if (testsPassed === totalTests) {
         toast({
           title: "✅ Round-Trip Test PASSED",
-          description: `All ${totalTests} formats maintain perfect parity!`,
+          description: `All ${totalTests} formats maintain perfect bidirectional parity!`,
         });
       } else {
         toast({
           title: "❌ Round-Trip Test FAILED",
-          description: `${testsPassed}/${totalTests} passed. Errors: ${errors.join('; ')}`,
+          description: `${testsPassed}/${totalTests} passed. Check console for detailed field differences.`,
           variant: "destructive",
         });
       }
       
     } catch (error) {
+      console.error("Round-trip test critical error:", error);
       toast({
         title: "Test Error",
         description: `${error}`,

@@ -938,7 +938,7 @@ mcpServers: ${
 ${(() => {
   // Only export endpoints section if there are configured endpoints
   const hasAgents = config.endpoints?.agents;
-  const hasOpenAI = config.enabledEndpoints?.includes('openAI') && config.openaiApiKey;
+  const hasOpenAI = config.enabledEndpoints?.includes('openAI') && config.openaiApiKey && (config.endpoints?.openAI?.titleConvo !== undefined || config.endpoints?.openAI?.titleModel);
   const hasAnthropic = config.enabledEndpoints?.includes('anthropic') && config.anthropicApiKey;
   const hasGoogle = config.enabledEndpoints?.includes('google') && config.googleApiKey;
   const hasCustom = config.endpoints?.custom && config.endpoints.custom.length > 0;
@@ -1148,31 +1148,31 @@ rateLimits:${config.rateLimits.fileUploads ? `
 ` : '# Rate limits not configured'}
 
 ${(() => {
-  // Only export memory section if user actually configured memory settings
+  // Only export memory section if user actually configured non-default memory settings
   const hasMemoryConfig = config.memory && (
-    config.memory.enabled !== undefined ||
-    config.memory.disabled !== undefined || 
-    config.memory.personalize !== undefined || 
-    config.memory.personalization !== undefined ||
-    config.memory.windowSize !== undefined ||
-    config.memory.messageWindowSize !== undefined ||
+    (config.memory.disabled !== undefined && config.memory.disabled !== true) ||
+    (config.memory.enabled !== undefined && config.memory.enabled !== false) ||
+    (config.memory.personalize !== undefined && config.memory.personalize !== false) || 
+    (config.memory.personalization !== undefined && config.memory.personalization !== true) ||
+    (config.memory.windowSize !== undefined && config.memory.windowSize !== 5) ||
+    (config.memory.messageWindowSize !== undefined && config.memory.messageWindowSize !== 5) ||
     (config.memory.validKeys && config.memory.validKeys.length > 0) || 
-    config.memory.tokenLimit !== undefined || 
+    (config.memory.tokenLimit !== undefined && config.memory.tokenLimit !== 1000) || 
     config.memory.agent
   );
   
   if (!hasMemoryConfig) return '';
   
   return `# Memory Configuration
-memory:${config.memory.disabled !== undefined ? `
-  disabled: ${config.memory.disabled}` : ''}${config.memory.enabled !== undefined && config.memory.disabled === undefined ? `
-  enabled: ${config.memory.enabled}` : ''}${config.memory.personalize !== undefined ? `
-  personalize: ${config.memory.personalize}` : ''}${config.memory.personalization !== undefined && config.memory.personalize === undefined ? `
+memory:${config.memory.disabled !== undefined && config.memory.disabled !== true ? `
+  disabled: ${config.memory.disabled}` : ''}${config.memory.enabled !== undefined && config.memory.disabled === undefined && config.memory.enabled !== false ? `
+  enabled: ${config.memory.enabled}` : ''}${config.memory.personalize !== undefined && config.memory.personalize !== false ? `
+  personalize: ${config.memory.personalize}` : ''}${config.memory.personalization !== undefined && config.memory.personalize === undefined && config.memory.personalization !== true ? `
   personalization: ${config.memory.personalization}` : ''}${config.memory.validKeys && config.memory.validKeys.length > 0 ? `
   validKeys:
-${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : ''}${config.memory.tokenLimit !== undefined ? `
-  tokenLimit: ${config.memory.tokenLimit}` : ''}${config.memory.windowSize !== undefined ? `
-  windowSize: ${config.memory.windowSize}` : ''}${config.memory.messageWindowSize !== undefined && config.memory.windowSize === undefined ? `
+${config.memory.validKeys.map((key: string) => `    - "${key}"`).join('\n')}` : ''}${config.memory.tokenLimit !== undefined && config.memory.tokenLimit !== 1000 ? `
+  tokenLimit: ${config.memory.tokenLimit}` : ''}${config.memory.windowSize !== undefined && config.memory.windowSize !== 5 ? `
+  windowSize: ${config.memory.windowSize}` : ''}${config.memory.messageWindowSize !== undefined && config.memory.windowSize === undefined && config.memory.messageWindowSize !== 5 ? `
   messageWindowSize: ${config.memory.messageWindowSize}` : ''}${config.memory.agent ? `
   agent:${config.memory.agent.id ? `
     id: "${config.memory.agent.id}"` : ''}${config.memory.agent.provider ? `

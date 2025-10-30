@@ -686,8 +686,15 @@ export default function Home() {
       // Initialize nested interface object
       config.interface = config.interface || {};
       
-      if (yamlData.interface.customWelcome) config.customWelcome = yamlData.interface.customWelcome;
-      if (yamlData.interface.customFooter) config.customFooter = yamlData.interface.customFooter;
+      // Store customWelcome/customFooter in BOTH nested AND top-level for backward compatibility
+      if (yamlData.interface.customWelcome) {
+        config.interface.customWelcome = yamlData.interface.customWelcome;
+        config.customWelcome = yamlData.interface.customWelcome;
+      }
+      if (yamlData.interface.customFooter) {
+        config.interface.customFooter = yamlData.interface.customFooter;
+        config.customFooter = yamlData.interface.customFooter;
+      }
       if (yamlData.interface.defaultPreset) config.interface.defaultPreset = yamlData.interface.defaultPreset;
       if (yamlData.interface.uploadAsText !== undefined) config.interface.uploadAsText = yamlData.interface.uploadAsText;
       if (yamlData.interface.temporaryChatRetention) config.temporaryChatRetention = yamlData.interface.temporaryChatRetention;

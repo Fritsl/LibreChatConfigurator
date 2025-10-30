@@ -1038,9 +1038,10 @@ ${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlSt
 ${(() => {
   // Only export interface section if there are actual configured values
   const hasInterfaceValues = config.interface && Object.keys(config.interface).some(key => config.interface[key] !== undefined && config.interface[key] !== null && config.interface[key] !== '');
-  const hasOtherInterfaceFields = config.temporaryChatRetention !== undefined || config.customWelcome || config.customFooter;
+  const hasTemporaryChatRetention = config.temporaryChatRetention !== undefined;
+  const hasTopLevelInterfaceFields = config.customWelcome || config.customFooter;
   
-  if (!hasInterfaceValues && !hasOtherInterfaceFields) return '';
+  if (!hasInterfaceValues && !hasTemporaryChatRetention && !hasTopLevelInterfaceFields) return '';
   
   return `# Interface Configuration
 interface:${config.interface?.agents !== undefined ? `
@@ -1056,7 +1057,8 @@ interface:${config.interface?.agents !== undefined ? `
   fileSearch: ${config.interface.fileSearch}` : ''}${config.interface?.fileCitations !== undefined ? `
   fileCitations: ${config.interface.fileCitations}` : ''}${config.interface?.runCode !== undefined ? `
   runCode: ${config.interface.runCode}` : ''}${config.interface?.artifacts !== undefined ? `
-  artifacts: ${config.interface.artifacts}` : ''}${config.temporaryChatRetention !== undefined ? `
+  artifacts: ${config.interface.artifacts}` : ''}${config.interface?.endpointsMenu !== undefined ? `
+  endpointsMenu: ${config.interface.endpointsMenu}` : ''}${config.temporaryChatRetention !== undefined ? `
   temporaryChatRetention: ${config.temporaryChatRetention}` : ''}${config.interface?.defaultPreset ? `
   defaultPreset: "${escapeYamlDoubleQuoted(config.interface.defaultPreset)}"` : ''}${config.interface?.customWelcome || config.customWelcome ? `
   customWelcome: "${escapeYamlDoubleQuoted(config.interface?.customWelcome || config.customWelcome)}"` : ''}${config.interface?.customFooter || config.customFooter ? `

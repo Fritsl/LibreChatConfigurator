@@ -560,7 +560,7 @@ export default function Home() {
     
     // Web Search Configuration (NEW - RC4 nested structure)
     if (yamlData.webSearch) {
-      config.webSearch = {};
+      config.webSearch = config.webSearch || {};
       if (yamlData.webSearch.searchProvider) config.webSearch.searchProvider = yamlData.webSearch.searchProvider;
       if (yamlData.webSearch.scraperType) config.webSearch.scraperType = yamlData.webSearch.scraperType;
       if (yamlData.webSearch.rerankerType) config.webSearch.rerankerType = yamlData.webSearch.rerankerType;
@@ -585,7 +585,7 @@ export default function Home() {
     
     // Memory Configuration
     if (yamlData.memory) {
-      config.memory = {};
+      config.memory = config.memory || {};
       // Handle both 'enabled' and 'disabled' (disabled is inverse of enabled)
       if (yamlData.memory.enabled !== undefined) config.memory.enabled = yamlData.memory.enabled;
       if (yamlData.memory.disabled !== undefined) config.memory.enabled = !yamlData.memory.disabled;
@@ -602,7 +602,7 @@ export default function Home() {
     
     // OCR Configuration
     if (yamlData.ocr) {
-      config.ocr = {};
+      config.ocr = config.ocr || {};
       if (yamlData.ocr.provider) config.ocr.provider = yamlData.ocr.provider;
       if (yamlData.ocr.model) config.ocr.model = yamlData.ocr.model;
       if (yamlData.ocr.baseURL) config.ocr.baseURL = yamlData.ocr.baseURL;
@@ -613,7 +613,7 @@ export default function Home() {
     
     // STT Configuration
     if (yamlData.stt) {
-      config.stt = {};
+      config.stt = config.stt || {};
       if (yamlData.stt.provider) config.stt.provider = yamlData.stt.provider;
       if (yamlData.stt.model) config.stt.model = yamlData.stt.model;
       if (yamlData.stt.baseURL) config.stt.baseURL = yamlData.stt.baseURL;
@@ -623,7 +623,7 @@ export default function Home() {
     
     // TTS Configuration
     if (yamlData.tts) {
-      config.tts = {};
+      config.tts = config.tts || {};
       if (yamlData.tts.provider) config.tts.provider = yamlData.tts.provider;
       if (yamlData.tts.model) config.tts.model = yamlData.tts.model;
       if (yamlData.tts.baseURL) config.tts.baseURL = yamlData.tts.baseURL;
@@ -636,7 +636,7 @@ export default function Home() {
     
     // Speech (UI-level) Configuration
     if (yamlData.speech) {
-      config.speech = {};
+      config.speech = config.speech || {};
       // speech.speechTab for UI settings
       if (yamlData.speech.speechTab) {
         config.speech.speechTab = {};
@@ -696,7 +696,7 @@ export default function Home() {
     
     // Model Specs Configuration
     if (yamlData.modelSpecs) {
-      config.modelSpecs = {};
+      config.modelSpecs = config.modelSpecs || {};
       if (yamlData.modelSpecs.enforce !== undefined) config.modelSpecs.enforce = yamlData.modelSpecs.enforce;
       if (yamlData.modelSpecs.prioritize !== undefined) config.modelSpecs.prioritize = yamlData.modelSpecs.prioritize;
       if (yamlData.modelSpecs.list) config.modelSpecs.list = yamlData.modelSpecs.list;

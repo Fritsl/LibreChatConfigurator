@@ -1374,20 +1374,9 @@ export default function Home() {
 
   // Validation function to detect unmapped environment variables
   const validateEnvVars = (envVars: Record<string, string>): { valid: boolean; unmappedVars: string[] } => {
-    // REGISTRY-DRIVEN VALIDATION
-    // Import the field registry and use it for automatic validation
-    // This eliminates the need to manually maintain the supported vars list
-    const { validateEnvVars: registryValidate } = require('@/../../shared/config/registry-helpers');
-    
-    try {
-      return registryValidate(envVars);
-    } catch (error) {
-      console.error('[ENV VALIDATION] Registry validation failed, falling back to manual list:', error);
-    }
-    
-    // FALLBACK: Manual validation list (temporary during migration)
     const unmappedVars: string[] = [];
     
+    // Define all supported environment variable names (matching mapEnvToConfiguration)
     const supportedEnvVars = new Set([
       // App Configuration
       'APP_TITLE', 'CUSTOM_WELCOME', 'CUSTOM_FOOTER', 'HELP_AND_FAQ_URL',

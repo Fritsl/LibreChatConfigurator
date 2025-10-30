@@ -216,7 +216,7 @@ export function generateConfigurationDefaults(): Configuration {
 /**
  * Deep merge utility for combining defaults
  */
-function deepMerge<T>(target: any, source: any): T {
+export function deepMerge<T>(target: any, source: any): T {
   const result = { ...target };
   
   for (const key in source) {

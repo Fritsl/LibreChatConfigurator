@@ -1,13 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { configurationSchema, insertConfigurationProfileSchema, packageGenerationSchema, insertDeploymentSchema, updateDeploymentSchema, deploymentRequestSchema } from "@shared/schema";
+import { configurationSchema, insertConfigurationProfileSchema, packageGenerationSchema, insertDeploymentSchema, updateDeploymentSchema, deploymentRequestSchema, type Configuration } from "@shared/schema";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import JSZip from "jszip";
 import * as e2bGenerators from "./e2b-generators";
 import crypto from "crypto";
 import { TOOL_VERSION, createExportMetadata, getVersionInfo } from "@shared/version";
+import { getConfigurationDefaults, deepMerge } from "@shared/schema-defaults";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -189,8 +190,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.saveConfigurationToHistory(rawConfiguration, packageName);
       
       
-      // Use raw configuration directly - SINGLE SOURCE OF TRUTH  
-      const configuration = rawConfiguration;
+      // Normalize configuration by merging with defaults to ensure YAML structure compatibility
+      // This fixes the round-trip issue where exported YAML fails to re-import
+      const configuration = deepMerge<Configuration>(getConfigurationDefaults(), rawConfiguration);
       
       
       const packageFiles: { [key: string]: string } = {};

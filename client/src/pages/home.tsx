@@ -18,19 +18,9 @@ import { ConfigurationHistory } from "@/components/ConfigurationHistory";
 import { getToolVersion, getVersionInfo } from "@shared/version";
 import yaml from "js-yaml";
 
-const CONFIG_NAME_STORAGE_KEY = "librechat_configurator_name";
-
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-  const [configurationName, setConfigurationName] = useState(() => {
-    try {
-      const saved = localStorage.getItem(CONFIG_NAME_STORAGE_KEY);
-      return saved || "My LibreChat Configuration";
-    } catch {
-      return "My LibreChat Configuration";
-    }
-  });
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
   const [showSelfTestConfirmation, setShowSelfTestConfirmation] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
@@ -52,22 +42,6 @@ export default function Home() {
   const { isBackendAvailable, isDemo } = useBackendAvailability();
   const { toast } = useToast();
 
-  // Sync configuration name from configuration object to state (one-way: config → state)
-  useEffect(() => {
-    if (configuration.configurationName && configuration.configurationName !== configurationName) {
-      setConfigurationName(configuration.configurationName);
-    }
-  }, [configuration.configurationName, configurationName]);
-  
-  // Auto-save configuration name to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(CONFIG_NAME_STORAGE_KEY, configurationName);
-    } catch {
-      // Fail silently on localStorage errors
-    }
-  }, [configurationName]);
-
   const handleSaveProfile = async () => {
     try {
       // ⚠️ REMINDER: Always update version in shared/version.ts when making changes!
@@ -79,12 +53,12 @@ export default function Home() {
       
       // Create versioned export metadata
       const { createExportMetadata } = await import("@shared/version");
-      const metadata = createExportMetadata(configurationName);
+      const metadata = createExportMetadata(configuration.configurationName);
       
       // Create profile data with configuration and versioned metadata
       const versionInfo = getVersionInfo();
       const profileData = {
-        name: configurationName,
+        name: configuration.configurationName,
         description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
         configuration: completeConfiguration,
         metadata: metadata, // ✨ NEW: Structured version metadata for migration support
@@ -99,13 +73,13 @@ export default function Home() {
 
       // Download as JSON file with Save As dialog
       const { downloadJSON } = await import("@/lib/download-utils");
-      const filename = `${configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-')}-LibreChatConfigSettings.json`;
+      const filename = `${configuration.configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-')}-LibreChatConfigSettings.json`;
       const success = await downloadJSON(profileData, filename);
 
       if (success) {
         toast({
           title: "Configuration Saved",
-          description: `Configuration "${configurationName}" downloaded successfully.`,
+          description: `Configuration "${configuration.configurationName}" downloaded successfully.`,
         });
       }
     } catch (error) {
@@ -842,10 +816,8 @@ export default function Home() {
             }
             
             // Apply the configuration and name
-            updateConfiguration(profileData.configuration);
-            // Always try to restore the configuration name, with fallback
             const importedName = profileData.name || `Imported ${new Date().toLocaleDateString()}`;
-            setConfigurationName(importedName);
+            updateConfiguration({ ...profileData.configuration, configurationName: importedName });
             
             toast({
               title: "Configuration Imported", 
@@ -943,13 +915,11 @@ export default function Home() {
             }
             
             // Full import - replace entire configuration with incoming data
-            // Update configuration name from imported file
-            if (profileData.name) {
-              setConfigurationName(profileData.name);
-            }
-            
-            // Apply the incoming configuration as complete replacement
-            updateConfiguration(profileData.configuration, true);
+            // Apply the incoming configuration as complete replacement (including name)
+            const configWithName = profileData.name 
+              ? { ...profileData.configuration, configurationName: profileData.name }
+              : profileData.configuration;
+            updateConfiguration(configWithName, true);
             
             // Show detailed merge results
             setMergeDetails({
@@ -1759,7 +1729,7 @@ export default function Home() {
   const handleGeneratePackage = async () => {
     try {
       // Generate package name from configuration name (without .zip extension)
-      const packageName = configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-').replace(/\s+/g, '-');
+      const packageName = configuration.configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-').replace(/\s+/g, '-');
       
       const result = await generatePackage({
         includeFiles: ["env", "yaml", "docker-compose", "install-script", "mongo-backup", "readme"],
@@ -1779,7 +1749,7 @@ export default function Home() {
       // Generate ZIP file and download with Save As dialog
       const zipBlob = await zip.generateAsync({ type: "blob" });
       const { downloadZIP } = await import("@/lib/download-utils");
-      const filename = `${configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-')}.zip`;
+      const filename = `${configuration.configurationName.replace(/[^a-zA-Z0-9-_\s]/g, '-')}.zip`;
       const success = await downloadZIP(zipBlob, filename);
 
       if (success) {
@@ -1845,10 +1815,9 @@ export default function Home() {
                 </Label>
                 <Input
                   id="profile-name"
-                  value={configurationName}
+                  value={configuration.configurationName}
                   onChange={(e) => {
                     const newName = e.target.value;
-                    setConfigurationName(newName);
                     updateConfiguration({ configurationName: newName });
                   }}
                   className="text-lg font-medium w-72 border-border"
@@ -1911,8 +1880,6 @@ export default function Home() {
                 // Full replacement of configuration and name
                 const configToLoad = loadedData.configuration || loadedData;
                 if (loadedData.packageName) {
-                  setConfigurationName(loadedData.packageName);
-                  // Also update the configurationName field in the configuration object
                   updateConfiguration({ ...configToLoad, configurationName: loadedData.packageName }, true);
                 } else {
                   updateConfiguration(configToLoad, true);

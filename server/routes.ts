@@ -852,36 +852,37 @@ function generateYamlFile(config: any): string {
 # LibreChat Configuration for v0.8.0-RC4
 # =============================================================================
 
-version: 1.3.0
+version: ${config.version || "0.8.0-rc4"}
 cache: ${config.cache}
 
-# MCP Servers Configuration
-mcpServers: ${
-  (() => {
-    // Skip MCP servers if E2B proxy is enabled (HTTP proxy conflicts with MCP)
-    if (config.e2bProxyEnabled) return '{}';
-    
-    if (!config.mcpServers) return '{}';
-    
-    // Handle both array and object formats
-    let serversToProcess: [string, any][] = [];
-    
-    if (Array.isArray(config.mcpServers)) {
-      if (config.mcpServers.length === 0) return '{}';
-      // Convert array to entries format
-      serversToProcess = config.mcpServers.map((server: any) => [
-        server.name || 'unnamed-server',
-        server
-      ]);
-    } else if (typeof config.mcpServers === 'object') {
-      const keys = Object.keys(config.mcpServers);
-      if (keys.length === 0) return '{}';
-      serversToProcess = Object.entries(config.mcpServers);
-    } else {
-      return '{}';
-    }
-    
-    return `\n${serversToProcess.map(([serverName, server]: [string, any]) => {
+${(() => {
+  // Only export mcpServers if there are actual servers configured
+  // Skip MCP servers if E2B proxy is enabled (HTTP proxy conflicts with MCP)
+  if (config.e2bProxyEnabled) return '';
+  
+  if (!config.mcpServers) return '';
+  
+  // Handle both array and object formats
+  let serversToProcess: [string, any][] = [];
+  
+  if (Array.isArray(config.mcpServers)) {
+    if (config.mcpServers.length === 0) return '';
+    // Convert array to entries format
+    serversToProcess = config.mcpServers.map((server: any) => [
+      server.name || 'unnamed-server',
+      server
+    ]);
+  } else if (typeof config.mcpServers === 'object') {
+    const keys = Object.keys(config.mcpServers);
+    if (keys.length === 0) return '';
+    serversToProcess = Object.entries(config.mcpServers);
+  } else {
+    return '';
+  }
+  
+  return `# MCP Servers Configuration
+mcpServers: 
+${serversToProcess.map(([serverName, server]: [string, any]) => {
       // Use single quotes for server name (key) to prevent injection
       let serverConfig = `  '${escapeYamlString(serverName)}':\n    type: "${escapeYamlDoubleQuoted(server.type || 'streamable-http')}"`;
       

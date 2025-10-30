@@ -430,13 +430,33 @@ export function useConfiguration() {
     },
   });
 
+  const deepMerge = (target: any, source: any): any => {
+    const output = { ...target };
+    
+    for (const key in source) {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        // Deep merge nested objects
+        if (target[key] && typeof target[key] === 'object' && !Array.isArray(target[key])) {
+          output[key] = deepMerge(target[key], source[key]);
+        } else {
+          output[key] = source[key];
+        }
+      } else {
+        // Direct assignment for primitives and arrays
+        output[key] = source[key];
+      }
+    }
+    
+    return output;
+  };
+
   const updateConfiguration = (updates: Partial<Configuration>, replace: boolean = false) => {
     if (replace) {
       // Full replacement - use updates as the complete configuration
       setConfiguration(updates as Configuration);
     } else {
-      // Merge mode - update only specified fields
-      setConfiguration(prev => ({ ...prev, ...updates }));
+      // Deep merge mode - update specified fields while preserving nested object values
+      setConfiguration(prev => deepMerge(prev, updates));
     }
   };
 

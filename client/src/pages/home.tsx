@@ -185,9 +185,8 @@ export default function Home() {
     };
   };
 
-  const mapEnvToConfiguration = (envVars: Record<string, string>, existingConfig: any = {}) => {
-    // Start with existing configuration to preserve values not in ENV
-    const config: any = { ...existingConfig };
+  const mapEnvToConfiguration = (envVars: Record<string, string>) => {
+    const config: any = {};
     
     // App Configuration
     if (envVars.APP_TITLE) config.appTitle = envVars.APP_TITLE;
@@ -459,9 +458,8 @@ export default function Home() {
     return config;
   };
 
-  const mapYamlToConfiguration = (yamlData: any, existingConfig: any = {}) => {
-    // Start with existing configuration to preserve values not in YAML
-    const config: any = { ...existingConfig };
+  const mapYamlToConfiguration = (yamlData: any) => {
+    const config: any = {};
     
     // Helper: Check if a value is an env var placeholder like "${OPENAI_API_KEY}"
     // These should be skipped during import since they're just references
@@ -1329,7 +1327,7 @@ export default function Home() {
               return; // BLOCK IMPORT
             }
             
-            const configUpdates = mapYamlToConfiguration(yamlData, configuration);
+            const configUpdates = mapYamlToConfiguration(yamlData);
             console.log("   - Mapped configuration:", configUpdates);
             console.log("   - MCP servers found:", configUpdates.mcpServers?.length || 0);
             
@@ -1506,7 +1504,7 @@ export default function Home() {
               return; // BLOCK IMPORT
             }
             
-            const configUpdates = mapEnvToConfiguration(envVars, configuration);
+            const configUpdates = mapEnvToConfiguration(envVars);
             console.log("   - Mapped configuration:", configUpdates);
             
             // Analyze what changed

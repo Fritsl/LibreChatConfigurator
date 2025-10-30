@@ -738,8 +738,8 @@ ${config.summaryConvo !== undefined ? `SUMMARY_CONVO=${config.summaryConvo}` : '
 # =============================================================================
 # Caching Configuration
 # =============================================================================
-${config.staticCacheMaxAge ? `STATIC_CACHE_MAX_AGE=${config.staticCacheMaxAge}` : '# STATIC_CACHE_MAX_AGE='}
-${config.staticCacheSMaxAge ? `STATIC_CACHE_S_MAX_AGE=${config.staticCacheSMaxAge}` : '# STATIC_CACHE_S_MAX_AGE='}
+${config.staticCacheMaxAge !== undefined ? `STATIC_CACHE_MAX_AGE=${config.staticCacheMaxAge}` : '# STATIC_CACHE_MAX_AGE='}
+${config.staticCacheSMaxAge !== undefined ? `STATIC_CACHE_S_MAX_AGE=${config.staticCacheSMaxAge}` : '# STATIC_CACHE_S_MAX_AGE='}
 ${config.indexCacheControl ? `INDEX_CACHE_CONTROL=${config.indexCacheControl}` : '# INDEX_CACHE_CONTROL='}
 ${config.indexPragma ? `INDEX_PRAGMA=${config.indexPragma}` : '# INDEX_PRAGMA='}
 ${config.indexExpires ? `INDEX_EXPIRES=${config.indexExpires}` : '# INDEX_EXPIRES='}
@@ -1549,8 +1549,8 @@ ${config.summaryConvo !== undefined ? `      SUMMARY_CONVO: \${SUMMARY_CONVO}` :
       # =============================================================================
       # Caching Configuration
       # =============================================================================
-${config.staticCacheMaxAge ? `      STATIC_CACHE_MAX_AGE: \${STATIC_CACHE_MAX_AGE}` : '      # STATIC_CACHE_MAX_AGE: ${STATIC_CACHE_MAX_AGE}'}
-${config.staticCacheSMaxAge ? `      STATIC_CACHE_S_MAX_AGE: \${STATIC_CACHE_S_MAX_AGE}` : '      # STATIC_CACHE_S_MAX_AGE: ${STATIC_CACHE_S_MAX_AGE}'}
+${config.staticCacheMaxAge !== undefined ? `      STATIC_CACHE_MAX_AGE: \${STATIC_CACHE_MAX_AGE}` : '      # STATIC_CACHE_MAX_AGE: ${STATIC_CACHE_MAX_AGE}'}
+${config.staticCacheSMaxAge !== undefined ? `      STATIC_CACHE_S_MAX_AGE: \${STATIC_CACHE_S_MAX_AGE}` : '      # STATIC_CACHE_S_MAX_AGE: ${STATIC_CACHE_S_MAX_AGE}'}
 ${config.indexCacheControl ? `      INDEX_CACHE_CONTROL: \${INDEX_CACHE_CONTROL}` : '      # INDEX_CACHE_CONTROL: ${INDEX_CACHE_CONTROL}'}
 ${config.indexPragma ? `      INDEX_PRAGMA: \${INDEX_PRAGMA}` : '      # INDEX_PRAGMA: ${INDEX_PRAGMA}'}
 ${config.indexExpires ? `      INDEX_EXPIRES: \${INDEX_EXPIRES}` : '      # INDEX_EXPIRES: ${INDEX_EXPIRES}'}

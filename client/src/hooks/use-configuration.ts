@@ -30,6 +30,7 @@ export function useConfiguration() {
     // App Settings
     appTitle: "LibreChat Demo Instance", 
     helpAndFAQURL: "https://demo.librechat.ai/help",
+    enabledEndpoints: ["openAI", "anthropic", "google", "azureOpenAI", "agents"],
     
     // Server
     host: "0.0.0.0",
@@ -50,6 +51,8 @@ export function useConfiguration() {
     minPasswordLength: 12,
     sessionExpiry: 900000,
     refreshTokenExpiry: 604800000,
+    emailVerificationRequired: false,
+    allowUnverifiedEmailLogin: true,
     
     // Database
     mongoUri: "mongodb://demo:password@demo-mongo:27017/librechat_demo",
@@ -225,8 +228,6 @@ export function useConfiguration() {
     summaryConvo: true,
     
     // Caching
-    staticCacheMaxAge: 31536000,
-    staticCacheSMaxAge: 31536000,
     indexCacheControl: "no-cache",
     indexPragma: "no-cache",
     indexExpires: "0",

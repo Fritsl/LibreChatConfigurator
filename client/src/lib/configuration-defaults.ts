@@ -188,8 +188,6 @@ export const defaultConfiguration: Configuration = {
   allowSharedLinks: false,
   allowSharedLinksPublic: false,
   summaryConvo: false,
-  staticCacheMaxAge: 31536000,
-  staticCacheSMaxAge: 31536000,
   indexCacheControl: "no-cache",
   indexPragma: "no-cache",
   indexExpires: "0",

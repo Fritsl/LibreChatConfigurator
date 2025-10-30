@@ -1,0 +1,1477 @@
+{
+  "metadata": {
+    "generated": "2025-10-30",
+    "source": "field-manifest.json + git history analysis",
+    "totalPaths": 174,
+    "currentlyCovered": 10,
+    "missingAnnotations": 164,
+    "sourceCommits": [
+      "493c853",
+      "bc867a4",
+      "22086d5",
+      "8ce1322"
+    ]
+  },
+  "namespaces": {
+    "general": {
+      "description": "Top-level configuration",
+      "paths": [
+        {
+          "yamlPath": "version",
+          "configField": "version",
+          "type": "string",
+          "status": "DEFINED",
+          "defaultValue": "1.2.8",
+          "notes": "LibreChat version"
+        },
+        {
+          "yamlPath": "cache",
+          "configField": "cache",
+          "type": "boolean",
+          "status": "DEFINED",
+          "defaultValue": true,
+          "notes": "Enable caching"
+        },
+        {
+          "yamlPath": "fileStrategy",
+          "configField": "fileStrategy",
+          "type": "string",
+          "status": "MISSING",
+          "notes": "File handling strategy"
+        },
+        {
+          "yamlPath": "imageOutputType",
+          "configField": "imageOutputType",
+          "type": "string",
+          "status": "MISSING",
+          "notes": "Image output format"
+        },
+        {
+          "yamlPath": "secureImageLinks",
+          "configField": "secureImageLinks",
+          "type": "boolean",
+          "status": "MISSING",
+          "notes": "Secure image link flag"
+        },
+        {
+          "yamlPath": "temporaryChatRetention",
+          "configField": "temporaryChatRetention",
+          "type": "number",
+          "status": "MISSING",
+          "defaultValue": 720,
+          "notes": "Chat retention time in minutes"
+        }
+      ]
+    },
+    "mcpServers": {
+      "description": "Model Context Protocol server configurations",
+      "type": "dynamic_object",
+      "paths": [
+        {
+          "yamlPath": "mcpServers.*",
+          "configField": "mcpServers",
+          "type": "object",
+          "status": "MISSING",
+          "notes": "Dynamic object - each server is a key"
+        },
+        {
+          "yamlPath": "mcpServers.*.type",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "Server type (e.g., streamable-http)"
+        },
+        {
+          "yamlPath": "mcpServers.*.url",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "Server URL"
+        },
+        {
+          "yamlPath": "mcpServers.*.command",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "Command to run"
+        },
+        {
+          "yamlPath": "mcpServers.*.args",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of command arguments"
+        },
+        {
+          "yamlPath": "mcpServers.*.timeout",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "defaultValue": 30000,
+          "notes": "Timeout in milliseconds"
+        },
+        {
+          "yamlPath": "mcpServers.*.initTimeout",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "notes": "Initialization timeout"
+        }
+      ]
+    },
+    "endpoints": {
+      "description": "AI provider endpoint configurations",
+      "subnamespaces": {
+        "agents": {
+          "description": "Agent endpoint configuration",
+          "paths": [
+            {
+              "yamlPath": "endpoints.agents.disableBuilder",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING",
+              "defaultValue": false
+            },
+            {
+              "yamlPath": "endpoints.agents.recursionLimit",
+              "configField": null,
+              "type": "number",
+              "status": "MISSING",
+              "defaultValue": 50
+            },
+            {
+              "yamlPath": "endpoints.agents.maxRecursionLimit",
+              "configField": null,
+              "type": "number",
+              "status": "MISSING",
+              "defaultValue": 100
+            },
+            {
+              "yamlPath": "endpoints.agents.capabilities",
+              "configField": null,
+              "type": "array",
+              "status": "MISSING",
+              "defaultValue": [
+                "execute_code",
+                "file_search",
+                "actions",
+                "tools",
+                "artifacts",
+                "context",
+                "ocr",
+                "chain",
+                "web_search"
+              ],
+              "notes": "Array of capability strings"
+            },
+            {
+              "yamlPath": "endpoints.agents.maxCitations",
+              "configField": null,
+              "type": "number",
+              "status": "MISSING",
+              "defaultValue": 30
+            },
+            {
+              "yamlPath": "endpoints.agents.maxCitationsPerFile",
+              "configField": null,
+              "type": "number",
+              "status": "MISSING",
+              "defaultValue": 7
+            },
+            {
+              "yamlPath": "endpoints.agents.minRelevanceScore",
+              "configField": null,
+              "type": "number",
+              "status": "MISSING",
+              "defaultValue": 0.45
+            }
+          ]
+        },
+        "openAI": {
+          "description": "OpenAI endpoint configuration",
+          "paths": [
+            {
+              "yamlPath": "endpoints.openAI.title",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING",
+              "defaultValue": "OpenAI"
+            },
+            {
+              "yamlPath": "endpoints.openAI.apiKey",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING",
+              "notes": "Typically references ${OPENAI_API_KEY}"
+            },
+            {
+              "yamlPath": "endpoints.openAI.models",
+              "configField": null,
+              "type": "object",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.openAI.models.fetch",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING",
+              "defaultValue": true
+            },
+            {
+              "yamlPath": "endpoints.openAI.models.default",
+              "configField": null,
+              "type": "array",
+              "status": "MISSING",
+              "notes": "Array of model names"
+            },
+            {
+              "yamlPath": "endpoints.openAI.dropParams",
+              "configField": null,
+              "type": "array",
+              "status": "MISSING",
+              "defaultValue": [
+                "frequency_penalty",
+                "presence_penalty",
+                "stop",
+                "user"
+              ]
+            },
+            {
+              "yamlPath": "endpoints.openAI.titleConvo",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING",
+              "defaultValue": true
+            },
+            {
+              "yamlPath": "endpoints.openAI.titleModel",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING",
+              "defaultValue": "gpt-3.5-turbo"
+            }
+          ]
+        },
+        "custom": {
+          "description": "Custom endpoint configurations (array)",
+          "type": "array",
+          "paths": [
+            {
+              "yamlPath": "endpoints.custom",
+              "configField": "customEndpoints",
+              "type": "array",
+              "status": "MISSING",
+              "notes": "Array of custom endpoint objects"
+            },
+            {
+              "yamlPath": "endpoints.custom[].name",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING",
+              "notes": "Endpoint identifier"
+            },
+            {
+              "yamlPath": "endpoints.custom[].apiKey",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].baseURL",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].models",
+              "configField": null,
+              "type": "object",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].models.fetch",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].models.default",
+              "configField": null,
+              "type": "array",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].titleConvo",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].titleModel",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].titleMethod",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING",
+              "notes": "completion or chat"
+            },
+            {
+              "yamlPath": "endpoints.custom[].summarize",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].summaryModel",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].forcePrompt",
+              "configField": null,
+              "type": "boolean",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].modelDisplayLabel",
+              "configField": null,
+              "type": "string",
+              "status": "MISSING"
+            },
+            {
+              "yamlPath": "endpoints.custom[].dropParams",
+              "configField": null,
+              "type": "array",
+              "status": "MISSING"
+            }
+          ]
+        },
+        "wildcard": {
+          "description": "Wildcard for any endpoint",
+          "paths": [
+            {
+              "yamlPath": "endpoints.*",
+              "configField": null,
+              "type": "object",
+              "status": "MISSING",
+              "notes": "Supports anthropic, google, mistral, azureOpenAI, gptPlugins, etc."
+            }
+          ]
+        }
+      }
+    },
+    "interface": {
+      "description": "UI/Interface configuration",
+      "paths": [
+        {
+          "yamlPath": "interface.agents",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.modelSelect",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.parameters",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.sidePanel",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.presets",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.prompts",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.bookmarks",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.multiConvo",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.webSearch",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.fileSearch",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.fileCitations",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.runCode",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.artifacts",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.temporaryChatRetention",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.defaultPreset",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.customWelcome",
+          "configField": "customWelcome",
+          "type": "string",
+          "status": "DEFINED"
+        },
+        {
+          "yamlPath": "interface.customFooter",
+          "configField": "customFooter",
+          "type": "string",
+          "status": "DEFINED"
+        },
+        {
+          "yamlPath": "interface.uploadAsText",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.marketplace",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.marketplace.use",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.mcpServers",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.mcpServers.placeholder",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.privacyPolicy",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.privacyPolicy.externalUrl",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.privacyPolicy.openNewTab",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService.externalUrl",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService.openNewTab",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService.modalAcceptance",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService.modalTitle",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.termsOfService.modalContent",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.peoplePicker",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.peoplePicker.users",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.peoplePicker.groups",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "interface.peoplePicker.roles",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "modelSpecs": {
+      "description": "Model specification and preset configuration",
+      "paths": [
+        {
+          "yamlPath": "modelSpecs.enforce",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.prioritize",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.addedEndpoints",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of endpoint names"
+        },
+        {
+          "yamlPath": "modelSpecs.list",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of preset objects"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].name",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].label",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].description",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].default",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].preset",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].preset.endpoint",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].preset.model",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "modelSpecs.list[].preset.agent_id",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "fileConfig": {
+      "description": "File upload and storage configuration",
+      "paths": [
+        {
+          "yamlPath": "fileConfig.serverFileSizeLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "notes": "MB"
+        },
+        {
+          "yamlPath": "fileConfig.avatarSizeLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "notes": "MB"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING",
+          "notes": "Per-endpoint file configuration"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*.fileLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*.fileSizeLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*.totalSizeLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*.supportedMimeTypes",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of MIME type strings"
+        },
+        {
+          "yamlPath": "fileConfig.endpoints.*.disabled",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize.enabled",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize.maxWidth",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize.maxHeight",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize.quality",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "notes": "0-1"
+        },
+        {
+          "yamlPath": "fileConfig.clientImageResize.compressFormat",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "jpeg or webp"
+        }
+      ]
+    },
+    "rateLimits": {
+      "description": "Rate limiting configuration",
+      "paths": [
+        {
+          "yamlPath": "rateLimits.fileUploads",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.fileUploads.ipMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.fileUploads.ipWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.fileUploads.userMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.fileUploads.userWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.conversationsImport",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.conversationsImport.ipMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.conversationsImport.ipWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.conversationsImport.userMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.conversationsImport.userWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.stt",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.stt.ipMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.stt.ipWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.stt.userMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.stt.userWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.tts",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.tts.ipMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.tts.ipWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.tts.userMax",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "rateLimits.tts.userWindowInMinutes",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "memory": {
+      "description": "Memory and personalization configuration",
+      "paths": [
+        {
+          "yamlPath": "memory.disabled",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.personalize",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.messageWindowSize",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.tokenLimit",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.validKeys",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.id",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.provider",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.instructions",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model_parameters",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model_parameters.temperature",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model_parameters.top_p",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model_parameters.frequency_penalty",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "memory.agent.model_parameters.max_tokens",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "webSearch": {
+      "description": "Web search configuration",
+      "paths": [
+        {
+          "yamlPath": "webSearch.searchProvider",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "serper or searxng"
+        },
+        {
+          "yamlPath": "webSearch.serperApiKey",
+          "configField": "serperApiKey",
+          "type": "string",
+          "status": "PARTIAL",
+          "notes": "ENV key defined, YAML path missing"
+        },
+        {
+          "yamlPath": "webSearch.searxngInstanceUrl",
+          "configField": "searxngInstanceUrl",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.searxngApiKey",
+          "configField": "searxngApiKey",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.scraperType",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "firecrawl or jina"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlApiKey",
+          "configField": "firecrawlApiKey",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlApiUrl",
+          "configField": "firecrawlApiUrl",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.formats",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.onlyMainContent",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.timeout",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.waitFor",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.blockAds",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.removeBase64Images",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.mobile",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.maxAge",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.firecrawlOptions.proxy",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.rerankerType",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING",
+          "notes": "jina or cohere"
+        },
+        {
+          "yamlPath": "webSearch.jinaApiKey",
+          "configField": "jinaApiKey",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.jinaApiUrl",
+          "configField": "jinaApiUrl",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.cohereApiKey",
+          "configField": "cohereApiKey",
+          "type": "string",
+          "status": "PARTIAL"
+        },
+        {
+          "yamlPath": "webSearch.scraperTimeout",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "webSearch.safeSearch",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING",
+          "notes": "0-2"
+        }
+      ]
+    },
+    "ocr": {
+      "description": "Optical Character Recognition configuration",
+      "paths": [
+        {
+          "yamlPath": "ocr.apiKey",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "ocr.baseURL",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "ocr.strategy",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "ocr.mistralModel",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "stt": {
+      "description": "Speech-to-Text configuration",
+      "paths": [
+        {
+          "yamlPath": "stt.provider",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.model",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.apiKey",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.baseURL",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.language",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.streaming",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.punctuation",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "stt.profanityFilter",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "tts": {
+      "description": "Text-to-Speech configuration",
+      "paths": [
+        {
+          "yamlPath": "tts.provider",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.model",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.apiKey",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.baseURL",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.voice",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.speed",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.quality",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "tts.streaming",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "speech": {
+      "description": "Speech UI configuration (combines stt/tts in v1.3.0+)",
+      "paths": [
+        {
+          "yamlPath": "speech.preset",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.preset.selected",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.preset.customVoice",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.preset.customLanguage",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.advancedMode",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.conversationMode",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText.engineSTT",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText.languageSTT",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText.autoTranscribeAudio",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText.decibelValue",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.speechToText.autoSendText",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.engineTTS",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.voice",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.languageTTS",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.automaticPlayback",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.playbackRate",
+          "configField": null,
+          "type": "number",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.speechTab.textToSpeech.cacheTTS",
+          "configField": null,
+          "type": "boolean",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "speech.stt",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING",
+          "notes": "v1.3.0+ structure"
+        },
+        {
+          "yamlPath": "speech.tts",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING",
+          "notes": "v1.3.0+ structure"
+        }
+      ]
+    },
+    "actions": {
+      "description": "Actions and code execution configuration",
+      "paths": [
+        {
+          "yamlPath": "actions.allowedDomains",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "actions.e2b_code_execution",
+          "configField": null,
+          "type": "object",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "actions.e2b_code_execution.type",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "actions.e2b_code_execution.url",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "actions.e2b_code_execution.description",
+          "configField": null,
+          "type": "string",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "registration": {
+      "description": "User registration configuration",
+      "paths": [
+        {
+          "yamlPath": "registration.allowedDomains",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING"
+        },
+        {
+          "yamlPath": "registration.socialLogins",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING"
+        }
+      ]
+    },
+    "tools": {
+      "description": "Tool filtering configuration",
+      "paths": [
+        {
+          "yamlPath": "filteredTools",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of tool names to hide"
+        },
+        {
+          "yamlPath": "includedTools",
+          "configField": null,
+          "type": "array",
+          "status": "MISSING",
+          "notes": "Array of tool names to show"
+        }
+      ]
+    }
+  }
+}

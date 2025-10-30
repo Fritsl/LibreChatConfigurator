@@ -586,6 +586,13 @@ export default function Home() {
     // OCR Configuration
     if (yamlData.ocr) {
       config.ocr = config.ocr || {};
+      if (yamlData.ocr.strategy) {
+        // Map strategy back to provider (mistral_ocr -> mistral, custom_ocr -> custom)
+        if (yamlData.ocr.strategy === 'mistral_ocr') config.ocrProvider = 'mistral';
+        else if (yamlData.ocr.strategy === 'custom_ocr') config.ocrProvider = 'custom';
+        else config.ocrProvider = yamlData.ocr.strategy;
+      }
+      if (yamlData.ocr.mistralModel) config.ocrModel = yamlData.ocr.mistralModel;
       if (yamlData.ocr.provider) config.ocr.provider = yamlData.ocr.provider;
       if (yamlData.ocr.model) config.ocr.model = yamlData.ocr.model;
       if (yamlData.ocr.baseURL) config.ocr.baseURL = yamlData.ocr.baseURL;
@@ -602,6 +609,9 @@ export default function Home() {
       if (yamlData.stt.baseURL) config.stt.baseURL = yamlData.stt.baseURL;
       if (yamlData.stt.apiKey && !isEnvPlaceholder(yamlData.stt.apiKey)) config.stt.apiKey = yamlData.stt.apiKey;
       if (yamlData.stt.language) config.stt.language = yamlData.stt.language;
+      if (yamlData.stt.streaming !== undefined) config.stt.streaming = yamlData.stt.streaming;
+      if (yamlData.stt.punctuation !== undefined) config.stt.punctuation = yamlData.stt.punctuation;
+      if (yamlData.stt.profanityFilter !== undefined) config.stt.profanityFilter = yamlData.stt.profanityFilter;
     }
     
     // TTS Configuration
@@ -1101,7 +1111,7 @@ export default function Home() {
     
     // 8. OCR section
     if (yamlData.ocr) {
-      const supportedOCRKeys = new Set(['provider', 'model', 'baseURL', 'apiKey', 'apiBase']);
+      const supportedOCRKeys = new Set(['strategy', 'mistralModel', 'provider', 'model', 'baseURL', 'apiKey', 'apiBase']);
       for (const key of Object.keys(yamlData.ocr)) {
         if (!supportedOCRKeys.has(key)) {
           unmappedFields.push(`ocr.${key}`);
@@ -1111,7 +1121,7 @@ export default function Home() {
     
     // 9. STT section
     if (yamlData.stt) {
-      const supportedSTTKeys = new Set(['provider', 'model', 'baseURL', 'apiKey', 'language']);
+      const supportedSTTKeys = new Set(['provider', 'model', 'baseURL', 'apiKey', 'language', 'streaming', 'punctuation', 'profanityFilter']);
       for (const key of Object.keys(yamlData.stt)) {
         if (!supportedSTTKeys.has(key)) {
           unmappedFields.push(`stt.${key}`);
@@ -1154,7 +1164,7 @@ export default function Home() {
     
     // 12. Actions section
     if (yamlData.actions) {
-      const supportedActionsKeys = new Set(['allowedDomains']);
+      const supportedActionsKeys = new Set(['allowedDomains', 'e2b_code_execution']);
       for (const key of Object.keys(yamlData.actions)) {
         if (!supportedActionsKeys.has(key)) {
           unmappedFields.push(`actions.${key}`);

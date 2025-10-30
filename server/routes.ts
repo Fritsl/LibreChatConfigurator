@@ -935,7 +935,18 @@ mcpServers: ${
   })()
 }
 
-# Endpoints Configuration
+${(() => {
+  // Only export endpoints section if there are configured endpoints
+  const hasAgents = config.endpoints?.agents;
+  const hasOpenAI = config.enabledEndpoints?.includes('openAI') && config.openaiApiKey;
+  const hasAnthropic = config.enabledEndpoints?.includes('anthropic') && config.anthropicApiKey;
+  const hasGoogle = config.enabledEndpoints?.includes('google') && config.googleApiKey;
+  const hasCustom = config.endpoints?.custom && config.endpoints.custom.length > 0;
+  const hasGroqOrMistral = config.groqApiKey || config.mistralApiKey;
+  
+  if (!hasAgents && !hasOpenAI && !hasAnthropic && !hasGoogle && !hasCustom && !hasGroqOrMistral) return '';
+  
+  return `# Endpoints Configuration
 endpoints:${config.endpoints?.agents ? `
   agents:${config.endpoints.agents.disableBuilder !== undefined ? `
     disableBuilder: ${config.endpoints.agents.disableBuilder}` : ''}${config.endpoints.agents.recursionLimit !== undefined ? `
@@ -945,7 +956,7 @@ endpoints:${config.endpoints?.agents ? `
 ${(Array.isArray(config.endpoints.agents.capabilities) ? config.endpoints.agents.capabilities : Object.keys(config.endpoints.agents.capabilities).filter((k: string) => config.endpoints.agents.capabilities[k])).map((cap: string) => `      - ${cap}`).join('\n')}` : ''}${config.endpoints.agents.maxCitations !== undefined ? `
     maxCitations: ${config.endpoints.agents.maxCitations}` : ''}${config.endpoints.agents.maxCitationsPerFile !== undefined ? `
     maxCitationsPerFile: ${config.endpoints.agents.maxCitationsPerFile}` : ''}${config.endpoints.agents.minRelevanceScore !== undefined ? `
-    minRelevanceScore: ${config.endpoints.agents.minRelevanceScore}` : ''}` : ''}
+    minRelevanceScore: ${config.endpoints.agents.minRelevanceScore}` : ''}` : ''}${hasOpenAI ? `
   openAI:
     title: "OpenAI"
     apiKey: "\${OPENAI_API_KEY}"
@@ -957,7 +968,7 @@ ${(Array.isArray(config.endpoints.agents.capabilities) ? config.endpoints.agents
       - "stop"
       - "user"${config.endpoints?.openAI?.titleConvo !== undefined ? `
     titleConvo: ${config.endpoints.openAI.titleConvo}` : ''}${config.endpoints?.openAI?.titleModel ? `
-    titleModel: "${escapeYamlDoubleQuoted(config.endpoints.openAI.titleModel)}"` : ''}${config.anthropicApiKey ? `
+    titleModel: "${escapeYamlDoubleQuoted(config.endpoints.openAI.titleModel)}"` : ''}` : ''}${hasAnthropic ? `
   anthropic:
     title: "Anthropic"
     apiKey: "\${ANTHROPIC_API_KEY}"
@@ -967,7 +978,7 @@ ${(Array.isArray(config.endpoints.agents.capabilities) ? config.endpoints.agents
       - "frequency_penalty"
       - "presence_penalty"
     titleConvo: true
-    titleModel: "claude-3-haiku-20240307"` : ''}${config.googleApiKey ? `
+    titleModel: "claude-3-haiku-20240307"` : ''}${hasGoogle ? `
   google:
     title: "Google AI"
     apiKey: "\${GOOGLE_API_KEY}"
@@ -999,7 +1010,7 @@ ${Object.entries(endpoint.addParams).map(([key, value]) => `        ${key}: ${JS
       dropParams:
 ${endpoint.dropParams.map((param: string) => `        - '${escapeYamlString(param)}'`).join('\n')}` : ''}${endpoint.headers && Object.keys(endpoint.headers).length > 0 ? `
       headers:
-${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlString(key)}: '${escapeYamlString(value as string)}'`).join('\n')}` : ''}`).join('\n')}` : (config.groqApiKey || config.mistralApiKey) ? `
+${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlString(key)}: '${escapeYamlString(value as string)}'`).join('\n')}` : ''}`).join('\n')}` : hasGroqOrMistral ? `
   custom:${config.groqApiKey ? `
     - name: 'groq'
       apiKey: '\${GROQ_API_KEY}'
@@ -1034,6 +1045,8 @@ ${Object.entries(endpoint.headers).map(([key, value]) => `        ${escapeYamlSt
         - 'user'
         - 'frequency_penalty'
         - 'presence_penalty'` : ''}` : ''}
+`;
+})()}
 
 ${(() => {
   // Only export interface section if there are actual configured values

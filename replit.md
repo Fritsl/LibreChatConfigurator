@@ -9,10 +9,11 @@ Successfully completed comprehensive architectural refactor to eliminate field d
 
 **Achievements:**
 - **Code Reduction**: Eliminated 1,471+ lines of manual duplication across validators, mappers, and generators
-- **Registry Coverage**: 363 total fields with 200 ENV mappings and 173 YAML mappings
-- **100% Bidirectional Parity**: Verified through comprehensive test suite (196/196 ENV fields, 170/170 YAML fields)
+- **Registry Coverage**: 387 total fields with 200 ENV mappings and 197 YAML mappings
+- **100% Bidirectional Parity**: Verified through comprehensive test suite (196/196 ENV fields, 194/194 YAML fields)
 - **Single Source of Truth**: Field registry now drives all import/export/validation operations
 - **Null Handling**: Fixed to correctly preserve explicit null assignments for field clearing
+- **Real-World Coverage**: Added 24 standard LibreChat RC4 fields discovered from real YAML imports
 
 **Migrated Components:**
 - ENV import validation (validateEnvVars)
@@ -22,8 +23,16 @@ Successfully completed comprehensive architectural refactor to eliminate field d
 - ENV file generation (generateEnvFile)
 - YAML file generation (generateYamlFile)
 
+**24 Additional Fields Added (October 30, 2025):**
+- fileConfig.endpoints.openAI.* (4 fields: file limits and MIME types)
+- memory.* (3 fields: disabled, personalize, messageWindowSize)
+- webSearch.firecrawlOptions.* (9 fields: formats, timeouts, proxy, etc.)
+- speech.stt.openai.* (3 fields: url, apiKey, model)
+- speech.tts.openai.* (4 fields: url, apiKey, model, voice)
+- speech.speechTab.conversationMode (1 field)
+
 **Testing Infrastructure:**
-- Created `scripts/test-full-parity.ts` for comprehensive round-trip testing of all 363 fields
+- Created `scripts/test-full-parity.ts` for comprehensive round-trip testing of all 387 fields
 - Created `scripts/test-round-trip.ts` for scenario-based integration testing
 - Discovered and resolved yamlPath conflicts (parent object vs child property handling)
 - All tests passing with 100% coverage verification

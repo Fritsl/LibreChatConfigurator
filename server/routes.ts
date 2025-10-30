@@ -497,9 +497,9 @@ ${config.helpAndFAQURL ? `HELP_AND_FAQ_URL=${config.helpAndFAQURL}` : '# HELP_AN
 # =============================================================================
 # Server Configuration
 # =============================================================================
-${config.host ? `HOST=${config.host}` : 'HOST=0.0.0.0'}
-${config.port ? `PORT=${config.port}` : 'PORT=3080'}
-${config.enabledEndpoints && config.enabledEndpoints.length > 0 ? `ENDPOINTS=${config.enabledEndpoints.join(',')}` : 'ENDPOINTS=openAI,anthropic,google,azureOpenAI,agents'}
+${config.host ? `HOST=${config.host}` : '# HOST=0.0.0.0'}
+${config.port ? `PORT=${config.port}` : '# PORT=3080'}
+${config.enabledEndpoints && config.enabledEndpoints.length > 0 ? `ENDPOINTS=${config.enabledEndpoints.join(',')}` : '# ENDPOINTS=openAI,anthropic,google,azureOpenAI,agents'}
 ${config.nodeEnv ? `NODE_ENV=${config.nodeEnv}` : '# NODE_ENV=production'}
 ${config.domainClient ? `DOMAIN_CLIENT=${config.domainClient}` : '# DOMAIN_CLIENT='}
 ${config.domainServer ? `DOMAIN_SERVER=${config.domainServer}` : '# DOMAIN_SERVER='}
@@ -508,23 +508,23 @@ ${config.noIndex !== undefined ? `NO_INDEX=${config.noIndex}` : '# NO_INDEX=true
 # =============================================================================
 # Security Configuration
 # =============================================================================
-${config.jwtSecret ? `JWT_SECRET=${config.jwtSecret}` : `JWT_SECRET=${cachedSecrets.jwtSecret}`}
-${config.jwtRefreshSecret ? `JWT_REFRESH_SECRET=${config.jwtRefreshSecret}` : `JWT_REFRESH_SECRET=${cachedSecrets.jwtRefreshSecret}`}
-${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `CREDS_KEY=${cachedSecrets.credsKey}`}
-${config.credsIV ? `CREDS_IV=${config.credsIV}` : `CREDS_IV=${cachedSecrets.credsIV}`}
+${config.jwtSecret ? `JWT_SECRET=${config.jwtSecret}` : `# JWT_SECRET=${cachedSecrets.jwtSecret} (auto-generated - configure in Security settings to export)`}
+${config.jwtRefreshSecret ? `JWT_REFRESH_SECRET=${config.jwtRefreshSecret}` : `# JWT_REFRESH_SECRET=${cachedSecrets.jwtRefreshSecret} (auto-generated - configure in Security settings to export)`}
+${config.credsKey ? `CREDS_KEY=${config.credsKey}` : `# CREDS_KEY=${cachedSecrets.credsKey} (auto-generated - configure in Security settings to export)`}
+${config.credsIV ? `CREDS_IV=${config.credsIV}` : `# CREDS_IV=${cachedSecrets.credsIV} (auto-generated - configure in Security settings to export)`}
 ${config.minPasswordLength ? `MIN_PASSWORD_LENGTH=${config.minPasswordLength}` : '# MIN_PASSWORD_LENGTH=8'}
-${config.emailVerificationRequired !== undefined ? `EMAIL_VERIFICATION_REQUIRED=${config.emailVerificationRequired}` : 'EMAIL_VERIFICATION_REQUIRED=false'}
-${config.allowUnverifiedEmailLogin !== undefined ? `ALLOW_UNVERIFIED_EMAIL_LOGIN=${config.allowUnverifiedEmailLogin}` : 'ALLOW_UNVERIFIED_EMAIL_LOGIN=true'}
-${config.sessionExpiry ? `SESSION_EXPIRY=${config.sessionExpiry}` : 'SESSION_EXPIRY=1000 * 60 * 15'}
-${config.refreshTokenExpiry ? `REFRESH_TOKEN_EXPIRY=${config.refreshTokenExpiry}` : 'REFRESH_TOKEN_EXPIRY=1000 * 60 * 60 * 24 * 7'}
+${config.emailVerificationRequired !== undefined ? `EMAIL_VERIFICATION_REQUIRED=${config.emailVerificationRequired}` : '# EMAIL_VERIFICATION_REQUIRED=false'}
+${config.allowUnverifiedEmailLogin !== undefined ? `ALLOW_UNVERIFIED_EMAIL_LOGIN=${config.allowUnverifiedEmailLogin}` : '# ALLOW_UNVERIFIED_EMAIL_LOGIN=true'}
+${config.sessionExpiry !== undefined ? `SESSION_EXPIRY=${config.sessionExpiry}` : '# SESSION_EXPIRY=900000  # 15 minutes in milliseconds'}
+${config.refreshTokenExpiry !== undefined ? `REFRESH_TOKEN_EXPIRY=${config.refreshTokenExpiry}` : '# REFRESH_TOKEN_EXPIRY=604800000  # 7 days in milliseconds'}
 
 # =============================================================================
 # Database Configuration
 # =============================================================================
 ${config.mongoUri ? `MONGO_URI=${config.mongoUri}` : '# MONGO_URI=mongodb://127.0.0.1:27017/LibreChat'}
-${config.mongoRootUsername ? `MONGO_ROOT_USERNAME=${config.mongoRootUsername}` : 'MONGO_ROOT_USERNAME=librechat_admin'}
-${config.mongoRootPassword ? `MONGO_ROOT_PASSWORD=${config.mongoRootPassword}` : 'MONGO_ROOT_PASSWORD=librechat_password_change_this'}
-${config.mongoDbName ? `MONGO_DB_NAME=${config.mongoDbName}` : 'MONGO_DB_NAME=librechat'}
+${config.mongoRootUsername ? `MONGO_ROOT_USERNAME=${config.mongoRootUsername}` : '# MONGO_ROOT_USERNAME=librechat_admin'}
+${config.mongoRootPassword ? `MONGO_ROOT_PASSWORD=${config.mongoRootPassword}` : '# MONGO_ROOT_PASSWORD=librechat_password_change_this'}
+${config.mongoDbName ? `MONGO_DB_NAME=${config.mongoDbName}` : '# MONGO_DB_NAME=librechat'}
 ${config.redisUri ? `REDIS_URI=${config.redisUri}` : '# REDIS_URI=redis://localhost:6379'}
 ${config.redisUsername ? `REDIS_USERNAME=${config.redisUsername}` : '# REDIS_USERNAME='}
 ${config.redisPassword ? `REDIS_PASSWORD=${config.redisPassword}` : '# REDIS_PASSWORD='}
@@ -537,10 +537,10 @@ ${config.redisUseAlternativeDNSLookup !== undefined ? `REDIS_USE_ALTERNATIVE_DNS
 # =============================================================================
 # Authentication Configuration
 # =============================================================================
-${config.allowRegistration !== undefined ? `ALLOW_REGISTRATION=${config.allowRegistration}` : 'ALLOW_REGISTRATION=true'}
-${config.allowEmailLogin !== undefined ? `ALLOW_EMAIL_LOGIN=${config.allowEmailLogin}` : 'ALLOW_EMAIL_LOGIN=true'}
-${config.allowSocialLogin !== undefined ? `ALLOW_SOCIAL_LOGIN=${config.allowSocialLogin}` : 'ALLOW_SOCIAL_LOGIN=false'}
-${config.allowSocialRegistration !== undefined ? `ALLOW_SOCIAL_REGISTRATION=${config.allowSocialRegistration}` : 'ALLOW_SOCIAL_REGISTRATION=false'}
+${config.allowRegistration !== undefined ? `ALLOW_REGISTRATION=${config.allowRegistration}` : '# ALLOW_REGISTRATION=true'}
+${config.allowEmailLogin !== undefined ? `ALLOW_EMAIL_LOGIN=${config.allowEmailLogin}` : '# ALLOW_EMAIL_LOGIN=true'}
+${config.allowSocialLogin !== undefined ? `ALLOW_SOCIAL_LOGIN=${config.allowSocialLogin}` : '# ALLOW_SOCIAL_LOGIN=false'}
+${config.allowSocialRegistration !== undefined ? `ALLOW_SOCIAL_REGISTRATION=${config.allowSocialRegistration}` : '# ALLOW_SOCIAL_REGISTRATION=false'}
 ${config.allowPasswordReset !== undefined ? `ALLOW_PASSWORD_RESET=${config.allowPasswordReset}` : '# ALLOW_PASSWORD_RESET=false'}
 
 # =============================================================================

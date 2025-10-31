@@ -2,6 +2,31 @@
 
 This project provides a web-based configuration interface for LibreChat v0.8.0-rc4, enabling users to manage over 100 settings through an intuitive UI. Its primary purpose is to generate complete LibreChat installation packages, including environment files, YAML configurations, and Docker Compose deployment scripts with accurate environment variable passthrough. Key capabilities include configuration profile management, a "Smart Installation System" for cross-platform Docker deployments with live updates, and a "Versioned Configuration System" for schema-driven management and automatic version tracking. The system aims to simplify LibreChat deployment and management by offering a centralized, validated, and intuitive configuration experience.
 
+# Recent Changes
+
+## Version 2.1.3 - October 31, 2025 ✅ **UI METADATA FIX**
+🐛 **BUG FIX:** Corrected UI technical metadata display for YAML-only fields
+
+**What Changed:**
+- Tool Version: 2.1.2 → **2.1.3**
+- **Fixed Field Lookup:** Enhanced getFieldInfo() to handle both prefixed and unprefixed field names
+- **UI Accuracy:** All 196 YAML-only fields now correctly display "librechat.yaml" in technical info tooltips
+
+**The Problem:**
+- Some fields used prefixed names (e.g., "interface.customFooter") while registry used unprefixed IDs (e.g., "customFooter")
+- Registry lookup was failing for prefixed field names
+- Result: Fields like "Custom Footer" incorrectly showed "Sets CUSTOM_FOOTER in .env" instead of "librechat.yaml"
+
+**The Fix:**
+- Enhanced registry lookup to try exact match first, then strip prefix and retry
+- Example: "interface.customFooter" → tries "interface.customFooter" → then "customFooter" → finds match
+- All technical info tooltips now accurately reflect YAML-first policy
+
+**Impact:**
+- **Accurate UI Metadata:** Every field now shows the correct configuration file location
+- **User Clarity:** No confusion about where to set YAML-only fields
+- **Policy Consistency:** UI metadata aligns perfectly with export/import enforcement
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

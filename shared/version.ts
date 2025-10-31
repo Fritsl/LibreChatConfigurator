@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.3";
+export const TOOL_VERSION = "2.1.4";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "STRICT YAML-FIRST POLICY ENFORCEMENT: Fixed UI metadata display to correctly show 'librechat.yaml' for all 196 YAML-only fields. Enhanced field lookup to handle both prefixed (interface.customFooter) and unprefixed (customFooter) field names. All technical info tooltips now accurately reflect the strict YAML-first architectural policy."
+  changelog: "AUTO-MIGRATE FEATURE: Added intelligent one-click migration button for YAML-only fields detected in .env files. Users can now automatically transfer values to correct librechat.yaml paths instead of manual copying. Enhanced import validation dialog with recommended auto-migrate option and improved UX with blue color scheme highlighting the easy fix."
 } as const;
 
 // Helper function to get the tool's version string

@@ -31,7 +31,7 @@ export default function Home() {
   const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
   const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
   const [showYamlOnlyDialog, setShowYamlOnlyDialog] = useState(false);
-  const [yamlOnlyFieldsData, setYamlOnlyFieldsData] = useState<Array<{ envKey: string; yamlPath: string }> | null>(null);
+  const [yamlOnlyFieldsData, setYamlOnlyFieldsData] = useState<Array<{ envKey: string; yamlPath: string; value: string }> | null>(null);
   const [showImportSummary, setShowImportSummary] = useState(false);
   const [importSummaryData, setImportSummaryData] = useState<{ 
     type: 'yaml' | 'env'; 
@@ -483,8 +483,13 @@ export default function Home() {
                 console.log("   These fields MUST be configured in librechat.yaml, NOT .env");
                 console.log("   Please move them to your librechat.yaml file and retry.\n");
                 
-                // Show detailed dialog with YAML-only violations
-                setYamlOnlyFieldsData(validation.yamlOnlyVars);
+                // Show detailed dialog with YAML-only violations (include values for auto-migration)
+                const yamlOnlyWithValues = validation.yamlOnlyVars.map(({ envKey, yamlPath }) => ({
+                  envKey,
+                  yamlPath,
+                  value: envVars[envKey] || ''
+                }));
+                setYamlOnlyFieldsData(yamlOnlyWithValues);
                 setShowYamlOnlyDialog(true);
                 
                 return; // BLOCK IMPORT
@@ -1455,24 +1460,66 @@ export default function Home() {
                 <h3 className="font-semibold text-sm" data-testid="text-yaml-only-title">
                   Fields That Must Move to librechat.yaml ({yamlOnlyFieldsData?.length || 0}):
                 </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const mapping = yamlOnlyFieldsData?.map(({ envKey, yamlPath }) => 
-                      `${envKey} → ${yamlPath}`
-                    ).join('\n') || '';
-                    navigator.clipboard.writeText(mapping);
-                    toast({
-                      title: "Copied to Clipboard",
-                      description: `${yamlOnlyFieldsData?.length} field mappings copied.`,
-                    });
-                  }}
-                  data-testid="button-copy-yaml-mapping"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Copy Mapping
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const mapping = yamlOnlyFieldsData?.map(({ envKey, yamlPath }) => 
+                        `${envKey} → ${yamlPath}`
+                      ).join('\n') || '';
+                      navigator.clipboard.writeText(mapping);
+                      toast({
+                        title: "Copied to Clipboard",
+                        description: `${yamlOnlyFieldsData?.length} field mappings copied.`,
+                      });
+                    }}
+                    data-testid="button-copy-yaml-mapping"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Copy Mapping
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {
+                      if (!yamlOnlyFieldsData || yamlOnlyFieldsData.length === 0) return;
+                      
+                      const updates: any = {};
+                      let successCount = 0;
+                      
+                      yamlOnlyFieldsData.forEach(({ yamlPath, value }) => {
+                        const pathParts = yamlPath.split('.');
+                        let current = updates;
+                        
+                        for (let i = 0; i < pathParts.length - 1; i++) {
+                          const part = pathParts[i];
+                          if (!current[part]) {
+                            current[part] = {};
+                          }
+                          current = current[part];
+                        }
+                        
+                        const lastPart = pathParts[pathParts.length - 1];
+                        current[lastPart] = value;
+                        successCount++;
+                      });
+                      
+                      updateConfiguration(updates, false);
+                      
+                      toast({
+                        title: "✅ Migration Complete",
+                        description: `Successfully migrated ${successCount} field${successCount > 1 ? 's' : ''} to librechat.yaml configuration.`,
+                      });
+                      
+                      setShowYamlOnlyDialog(false);
+                    }}
+                    data-testid="button-auto-migrate-yaml"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Auto-Migrate to YAML
+                  </Button>
+                </div>
               </div>
               
               <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto" data-testid="list-yaml-only-fields">
@@ -1491,19 +1538,30 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="space-y-2 text-sm">
-                  <p className="font-medium text-yellow-800 dark:text-yellow-200">
+                  <p className="font-medium text-blue-800 dark:text-blue-200">
                     How to Fix
                   </p>
-                  <ol className="list-decimal list-inside space-y-1 text-yellow-700 dark:text-yellow-300 ml-2">
-                    <li>Remove these fields from your .env file</li>
-                    <li>Add them to your librechat.yaml file using the paths shown above (e.g., <code className="text-xs bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded">interface.customFooter</code>)</li>
-                    <li>Retry the import</li>
-                  </ol>
-                  <p className="text-xs mt-2 text-yellow-600 dark:text-yellow-400">
+                  <div className="space-y-3">
+                    <div className="bg-blue-100/50 dark:bg-blue-900/30 rounded p-2 border border-blue-300 dark:border-blue-700">
+                      <p className="font-semibold text-blue-900 dark:text-blue-100 mb-1">✨ Option 1: Auto-Migrate (Recommended)</p>
+                      <p className="text-blue-700 dark:text-blue-300 text-xs">
+                        Click the <strong>"Auto-Migrate to YAML"</strong> button above to automatically transfer all values to the correct librechat.yaml paths. Fast and error-free!
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-blue-900 dark:text-blue-100 mb-1">🔧 Option 2: Manual Fix</p>
+                      <ol className="list-decimal list-inside space-y-1 text-blue-700 dark:text-blue-300 ml-2 text-xs">
+                        <li>Remove these fields from your .env file</li>
+                        <li>Add them to your librechat.yaml file using the paths shown above (e.g., <code className="text-xs bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">interface.customFooter</code>)</li>
+                        <li>Retry the import</li>
+                      </ol>
+                    </div>
+                  </div>
+                  <p className="text-xs mt-2 text-blue-600 dark:text-blue-400">
                     <strong>Why?</strong> LibreChat RC4 uses librechat.yaml for UI and feature configuration. Keeping these fields in .env creates confusion and inconsistency.
                   </p>
                 </div>

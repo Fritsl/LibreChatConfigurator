@@ -4,6 +4,35 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.1.4 - October 31, 2025 ✨ **AUTO-MIGRATE FEATURE**
+🚀 **NEW FEATURE:** One-click automatic migration for YAML-only fields in .env files
+
+**What Changed:**
+- Tool Version: 2.1.3 → **2.1.4**
+- **Auto-Migrate Button:** Added intelligent migration button that transfers values automatically
+- **Enhanced State:** yamlOnlyFieldsData now includes field values for seamless migration
+- **Improved UX:** Updated validation dialog with blue color scheme and clear "Option 1: Auto-Migrate (Recommended)" guidance
+
+**The Problem:**
+- Users importing .env files with YAML-only fields saw error dialog
+- Manual fix required copying 7+ field values to correct YAML paths
+- Error-prone and time-consuming for users
+
+**The Solution:**
+- **"Auto-Migrate to YAML" Button:** One-click solution that:
+  - Reads all YAML-only field values from the rejected .env import
+  - Automatically applies them to correct librechat.yaml paths (e.g., CUSTOM_WELCOME → interface.customWelcome)
+  - Shows success toast with migration count
+  - Closes dialog automatically
+- **Smart Path Handling:** Correctly builds nested object structure from dot notation paths
+- **Zero Manual Work:** Eliminates manual copying and reduces user errors
+
+**Impact:**
+- **Instant Migration:** 7 fields migrated in 1 click vs manual editing
+- **Better UX:** Clear recommended path with highlighted auto-migrate option
+- **Error Prevention:** Automated transfer prevents typos and incorrect path mapping
+- **User Delight:** Transforms frustrating error into helpful feature
+
 ## Version 2.1.3 - October 31, 2025 ✅ **UI METADATA FIX**
 🐛 **BUG FIX:** Corrected UI technical metadata display for YAML-only fields
 

@@ -4046,13 +4046,20 @@ paths:
     const baseFieldInfo = fieldMap[fieldName] || { type: "text", description: `Configuration for ${fieldName}`, label: fieldName };
     
     // STRICT YAML-FIRST POLICY: Check registry and override configFile for YAML-only fields
-    const registryField = FIELD_REGISTRY.find(f => f.id === fieldName);
+    // Try exact match first, then try without prefix (e.g., "interface.customFooter" → "customFooter")
+    let registryField = FIELD_REGISTRY.find(f => f.id === fieldName);
+    if (!registryField && fieldName.includes('.')) {
+      const fieldNameWithoutPrefix = fieldName.split('.').pop() || fieldName;
+      registryField = FIELD_REGISTRY.find(f => f.id === fieldNameWithoutPrefix);
+    }
+    
     if (registryField && registryField.yamlPath) {
       // This field has yamlPath → it MUST go in librechat.yaml, NEVER .env
       return {
         ...baseFieldInfo,
         technical: {
           ...baseFieldInfo.technical,
+          envVar: registryField.envKey,
           yamlPath: registryField.yamlPath,
           configFile: "librechat.yaml" as const
         }

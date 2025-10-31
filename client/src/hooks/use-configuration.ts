@@ -347,8 +347,8 @@ export function useConfiguration() {
   });
   
   const LOCAL_STORAGE_KEY = "librechat_configurator_config";
-  const BACKEND_LOADED_FLAG = "backend_config_loaded";
   const [isInitialized, setIsInitialized] = useState(false);
+  const hasLoadedFromBackend = useRef(false);
 
   // Initialize with fallback - backend data will load via query
   const [configuration, setConfiguration] = useState<Configuration>(fallbackConfiguration);
@@ -361,18 +361,14 @@ export function useConfiguration() {
   // Apply backend configuration on first load ONLY
   // This ensures persistence across restarts while avoiding overwrite loops
   useEffect(() => {
-    const hasLoadedFromBackend = sessionStorage.getItem(BACKEND_LOADED_FLAG);
-    
-    if (backendConfiguration && !hasLoadedFromBackend) {
-      // Mark as loaded for this browser session to prevent re-applying
-      sessionStorage.setItem(BACKEND_LOADED_FLAG, "true");
+    if (backendConfiguration && !hasLoadedFromBackend.current) {
+      // Mark as loaded for this component lifecycle to prevent re-applying
+      hasLoadedFromBackend.current = true;
       
       // Apply backend configuration (which includes latest saved data)
       setConfiguration(backendConfiguration as Configuration);
-    }
-    
-    // Enable auto-save once backend data is available (even if already loaded this session)
-    if (backendConfiguration) {
+      
+      // Enable auto-save now that backend data is loaded
       setIsInitialized(true);
     }
   }, [backendConfiguration]);

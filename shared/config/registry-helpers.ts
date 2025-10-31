@@ -685,32 +685,88 @@ function generateEndpointsSection(config: any): string {
   const lines = ['# Endpoints Configuration', 'endpoints:'];
   
   // Agents endpoint
-  if (config.endpoints?.agents) {
+  const agentsConfig = config.endpoints?.agents || {};
+  const agentsDisableBuilder = agentsConfig.disableBuilder ?? config.endpointsAgentsDisableBuilder;
+  const agentsRecursionLimit = agentsConfig.recursionLimit ?? config.endpointsAgentsRecursionLimit;
+  const agentsMaxRecursionLimit = agentsConfig.maxRecursionLimit ?? config.endpointsAgentsMaxRecursionLimit;
+  const agentsCapabilities = agentsConfig.capabilities ?? config.endpointsAgentsCapabilities;
+  const agentsMaxCitations = agentsConfig.maxCitations ?? config.endpointsAgentsMaxCitations;
+  const agentsMaxCitationsPerFile = agentsConfig.maxCitationsPerFile ?? config.endpointsAgentsMaxCitationsPerFile;
+  const agentsMinRelevanceScore = agentsConfig.minRelevanceScore ?? config.endpointsAgentsMinRelevanceScore;
+  
+  if (config.endpoints?.agents || agentsDisableBuilder !== undefined || agentsRecursionLimit !== undefined || agentsMaxRecursionLimit !== undefined || agentsCapabilities || agentsMaxCitations !== undefined || agentsMaxCitationsPerFile !== undefined || agentsMinRelevanceScore !== undefined) {
     lines.push('  agents:');
-    if (config.endpoints.agents.disableBuilder !== undefined) {
-      lines.push(`    disableBuilder: ${config.endpoints.agents.disableBuilder}`);
+    if (agentsDisableBuilder !== undefined) {
+      lines.push(`    disableBuilder: ${agentsDisableBuilder}`);
     }
-    if (config.endpoints.agents.recursionLimit !== undefined) {
-      lines.push(`    recursionLimit: ${config.endpoints.agents.recursionLimit}`);
+    if (agentsRecursionLimit !== undefined) {
+      lines.push(`    recursionLimit: ${agentsRecursionLimit}`);
     }
-    if (config.endpoints.agents.maxRecursionLimit !== undefined) {
-      lines.push(`    maxRecursionLimit: ${config.endpoints.agents.maxRecursionLimit}`);
+    if (agentsMaxRecursionLimit !== undefined) {
+      lines.push(`    maxRecursionLimit: ${agentsMaxRecursionLimit}`);
     }
-    if (config.endpoints.agents.capabilities) {
+    if (agentsCapabilities) {
       lines.push(`    capabilities:`);
-      const caps = Array.isArray(config.endpoints.agents.capabilities) 
-        ? config.endpoints.agents.capabilities 
-        : Object.keys(config.endpoints.agents.capabilities).filter((k: string) => config.endpoints.agents.capabilities[k]);
+      const caps = Array.isArray(agentsCapabilities) 
+        ? agentsCapabilities 
+        : Object.keys(agentsCapabilities).filter((k: string) => agentsCapabilities[k]);
       caps.forEach((cap: string) => lines.push(`      - ${cap}`));
     }
-    if (config.endpoints.agents.maxCitations !== undefined) {
-      lines.push(`    maxCitations: ${config.endpoints.agents.maxCitations}`);
+    if (agentsMaxCitations !== undefined) {
+      lines.push(`    maxCitations: ${agentsMaxCitations}`);
     }
-    if (config.endpoints.agents.maxCitationsPerFile !== undefined) {
-      lines.push(`    maxCitationsPerFile: ${config.endpoints.agents.maxCitationsPerFile}`);
+    if (agentsMaxCitationsPerFile !== undefined) {
+      lines.push(`    maxCitationsPerFile: ${agentsMaxCitationsPerFile}`);
     }
-    if (config.endpoints.agents.minRelevanceScore !== undefined) {
-      lines.push(`    minRelevanceScore: ${config.endpoints.agents.minRelevanceScore}`);
+    if (agentsMinRelevanceScore !== undefined) {
+      lines.push(`    minRelevanceScore: ${agentsMinRelevanceScore}`);
+    }
+  }
+  
+  // Assistants endpoint
+  const assistantsConfig = config.endpoints?.assistants || {};
+  const hasAssistantsConfig = Object.keys(assistantsConfig).length > 0;
+  const assistantsCapabilities = assistantsConfig.capabilities ?? config.endpointsAssistantsCapabilities;
+  const assistantsDisableBuilder = assistantsConfig.disableBuilder ?? config.endpointsAssistantsDisableBuilder;
+  const assistantsSupportedIds = assistantsConfig.supportedIds ?? config.endpointsAssistantsSupportedIds;
+  const assistantsExcludedIds = assistantsConfig.excludedIds ?? config.endpointsAssistantsExcludedIds;
+  const assistantsPrivateAssistants = assistantsConfig.privateAssistants ?? config.endpointsAssistantsPrivateAssistants;
+  const assistantsRetrievalModels = assistantsConfig.retrievalModels ?? config.endpointsAssistantsRetrievalModels;
+  const assistantsPollIntervalMs = assistantsConfig.pollIntervalMs ?? config.endpointsAssistantsPollIntervalMs;
+  const assistantsTimeoutMs = assistantsConfig.timeoutMs ?? config.endpointsAssistantsTimeoutMs;
+  
+  if (hasAssistantsConfig || assistantsCapabilities || assistantsDisableBuilder !== undefined || assistantsSupportedIds || assistantsExcludedIds || assistantsPrivateAssistants !== undefined || assistantsRetrievalModels || assistantsPollIntervalMs !== undefined || assistantsTimeoutMs !== undefined) {
+    lines.push('  assistants:');
+    if (assistantsDisableBuilder !== undefined) {
+      lines.push(`    disableBuilder: ${assistantsDisableBuilder}`);
+    }
+    if (assistantsCapabilities) {
+      lines.push(`    capabilities:`);
+      const caps = Array.isArray(assistantsCapabilities) 
+        ? assistantsCapabilities 
+        : Object.keys(assistantsCapabilities).filter((k: string) => assistantsCapabilities[k]);
+      caps.forEach((cap: string) => lines.push(`      - ${cap}`));
+    }
+    if (assistantsSupportedIds && assistantsSupportedIds.length > 0) {
+      lines.push(`    supportedIds:`);
+      assistantsSupportedIds.forEach((id: string) => lines.push(`      - "${escapeYamlDoubleQuoted(id)}"`));
+    }
+    if (assistantsExcludedIds && assistantsExcludedIds.length > 0) {
+      lines.push(`    excludedIds:`);
+      assistantsExcludedIds.forEach((id: string) => lines.push(`      - "${escapeYamlDoubleQuoted(id)}"`));
+    }
+    if (assistantsPrivateAssistants !== undefined) {
+      lines.push(`    privateAssistants: ${assistantsPrivateAssistants}`);
+    }
+    if (assistantsRetrievalModels && assistantsRetrievalModels.length > 0) {
+      lines.push(`    retrievalModels:`);
+      assistantsRetrievalModels.forEach((model: string) => lines.push(`      - "${escapeYamlDoubleQuoted(model)}"`));
+    }
+    if (assistantsPollIntervalMs !== undefined) {
+      lines.push(`    pollIntervalMs: ${assistantsPollIntervalMs}`);
+    }
+    if (assistantsTimeoutMs !== undefined) {
+      lines.push(`    timeoutMs: ${assistantsTimeoutMs}`);
     }
   }
   
@@ -933,6 +989,67 @@ function generateInterfaceSection(config: any): string {
     lines.push(`  customFooter: "${escapeYamlDoubleQuoted(config.interface?.customFooter || config.customFooter)}"`);
   }
   
+  const termsModalAcceptance = config.interface?.termsOfService?.modalAcceptance ?? config.interfaceTermsOfServiceModalAcceptance;
+  const termsModalTitle = config.interface?.termsOfService?.modalTitle ?? config.interfaceTermsOfServiceModalTitle;
+  const termsModalSubmitText = config.interface?.termsOfService?.modalSubmitText ?? config.interfaceTermsOfServiceModalSubmitText;
+  const termsExternalUrl = config.interface?.termsOfService?.externalUrl ?? config.interfaceTermsOfServiceExternalUrl;
+  const termsOpenNewTab = config.interface?.termsOfService?.openNewTab ?? config.interfaceTermsOfServiceOpenNewTab;
+  
+  if (termsModalAcceptance !== undefined || termsModalTitle || termsModalSubmitText || termsExternalUrl || termsOpenNewTab !== undefined) {
+    lines.push('  termsOfService:');
+    if (termsModalAcceptance !== undefined) {
+      lines.push(`    modalAcceptance: ${termsModalAcceptance}`);
+    }
+    if (termsModalTitle) {
+      lines.push(`    modalTitle: "${escapeYamlDoubleQuoted(termsModalTitle)}"`);
+    }
+    if (termsModalSubmitText) {
+      lines.push(`    modalSubmitText: "${escapeYamlDoubleQuoted(termsModalSubmitText)}"`);
+    }
+    if (termsExternalUrl) {
+      lines.push(`    externalUrl: "${escapeYamlDoubleQuoted(termsExternalUrl)}"`);
+    }
+    if (termsOpenNewTab !== undefined) {
+      lines.push(`    openNewTab: ${termsOpenNewTab}`);
+    }
+  }
+  
+  const privacyExternalUrl = config.interface?.privacyPolicy?.externalUrl ?? config.interfacePrivacyPolicyExternalUrl;
+  const privacyOpenNewTab = config.interface?.privacyPolicy?.openNewTab ?? config.interfacePrivacyPolicyOpenNewTab;
+  
+  if (privacyExternalUrl || privacyOpenNewTab !== undefined) {
+    lines.push('  privacyPolicy:');
+    if (privacyExternalUrl) {
+      lines.push(`    externalUrl: "${escapeYamlDoubleQuoted(privacyExternalUrl)}"`);
+    }
+    if (privacyOpenNewTab !== undefined) {
+      lines.push(`    openNewTab: ${privacyOpenNewTab}`);
+    }
+  }
+  
+  const marketplaceUse = config.interface?.marketplace?.use ?? config.interfaceMarketplaceUse;
+  if (marketplaceUse !== undefined) {
+    lines.push('  marketplace:');
+    lines.push(`    use: ${marketplaceUse}`);
+  }
+  
+  const peoplePickerUsers = config.interface?.peoplePicker?.users ?? config.interfacePeoplePickerUsers;
+  const peoplePickerRoles = config.interface?.peoplePicker?.roles ?? config.interfacePeoplePickerRoles;
+  const peoplePickerGroups = config.interface?.peoplePicker?.groups ?? config.interfacePeoplePickerGroups;
+  
+  if (peoplePickerUsers !== undefined || peoplePickerRoles !== undefined || peoplePickerGroups !== undefined) {
+    lines.push('  peoplePicker:');
+    if (peoplePickerUsers !== undefined) {
+      lines.push(`    users: ${peoplePickerUsers}`);
+    }
+    if (peoplePickerRoles !== undefined) {
+      lines.push(`    roles: ${peoplePickerRoles}`);
+    }
+    if (peoplePickerGroups !== undefined) {
+      lines.push(`    groups: ${peoplePickerGroups}`);
+    }
+  }
+  
   return lines.join('\n');
 }
 
@@ -997,11 +1114,21 @@ function generateModelSpecsSection(config: any): string {
  * Generate File Configuration section
  */
 function generateFileConfigSection(config: any): string {
-  if (!config.fileConfig) return '';
+  const serverFileSizeLimit = config.fileConfig?.serverFileSizeLimit ?? config.fileConfigServerFileSizeLimit;
+  const avatarSizeLimit = config.fileConfig?.avatarSizeLimit ?? config.fileConfigAvatarSizeLimit;
+  const clientImageResizeEnabled = config.fileConfig?.clientImageResize?.enabled ?? config.fileConfigClientImageResizeEnabled;
+  const clientImageResizeMaxWidth = config.fileConfig?.clientImageResize?.maxWidth ?? config.fileConfigClientImageResizeMaxWidth;
+  const clientImageResizeMaxHeight = config.fileConfig?.clientImageResize?.maxHeight ?? config.fileConfigClientImageResizeMaxHeight;
+  const clientImageResizeQuality = config.fileConfig?.clientImageResize?.quality ?? config.fileConfigClientImageResizeQuality;
+  const clientImageResizeCompressFormat = config.fileConfig?.clientImageResize?.compressFormat ?? config.fileConfigClientImageResizeCompressFormat;
+  
+  const hasFileConfig = config.fileConfig || serverFileSizeLimit !== undefined || avatarSizeLimit !== undefined || clientImageResizeEnabled !== undefined || clientImageResizeMaxWidth !== undefined || clientImageResizeMaxHeight !== undefined || clientImageResizeQuality !== undefined || clientImageResizeCompressFormat;
+  
+  if (!hasFileConfig) return '';
   
   const lines = ['# File Configuration', 'fileConfig:'];
   
-  if (config.fileConfig.endpoints && Object.keys(config.fileConfig.endpoints).length > 0) {
+  if (config.fileConfig?.endpoints && Object.keys(config.fileConfig.endpoints).length > 0) {
     lines.push('  endpoints:');
     Object.entries(config.fileConfig.endpoints).forEach(([endpointName, limits]: [string, any]) => {
       lines.push(`    ${endpointName}:`);
@@ -1030,28 +1157,29 @@ function generateFileConfigSection(config: any): string {
     });
   }
   
-  if (config.fileConfig.serverFileSizeLimit !== undefined) {
-    lines.push(`  serverFileSizeLimit: ${config.fileConfig.serverFileSizeLimit}`);
+  if (serverFileSizeLimit !== undefined) {
+    lines.push(`  serverFileSizeLimit: ${serverFileSizeLimit}`);
   }
-  if (config.fileConfig.avatarSizeLimit !== undefined) {
-    lines.push(`  avatarSizeLimit: ${config.fileConfig.avatarSizeLimit}`);
+  if (avatarSizeLimit !== undefined) {
+    lines.push(`  avatarSizeLimit: ${avatarSizeLimit}`);
   }
-  if (config.fileConfig.clientImageResize) {
+  
+  if (clientImageResizeEnabled !== undefined || clientImageResizeMaxWidth !== undefined || clientImageResizeMaxHeight !== undefined || clientImageResizeQuality !== undefined || clientImageResizeCompressFormat) {
     lines.push(`  clientImageResize:`);
-    if (config.fileConfig.clientImageResize.enabled !== undefined) {
-      lines.push(`    enabled: ${config.fileConfig.clientImageResize.enabled}`);
+    if (clientImageResizeEnabled !== undefined) {
+      lines.push(`    enabled: ${clientImageResizeEnabled}`);
     }
-    if (config.fileConfig.clientImageResize.maxWidth !== undefined) {
-      lines.push(`    maxWidth: ${config.fileConfig.clientImageResize.maxWidth}`);
+    if (clientImageResizeMaxWidth !== undefined) {
+      lines.push(`    maxWidth: ${clientImageResizeMaxWidth}`);
     }
-    if (config.fileConfig.clientImageResize.maxHeight !== undefined) {
-      lines.push(`    maxHeight: ${config.fileConfig.clientImageResize.maxHeight}`);
+    if (clientImageResizeMaxHeight !== undefined) {
+      lines.push(`    maxHeight: ${clientImageResizeMaxHeight}`);
     }
-    if (config.fileConfig.clientImageResize.quality !== undefined) {
-      lines.push(`    quality: ${config.fileConfig.clientImageResize.quality}`);
+    if (clientImageResizeQuality !== undefined) {
+      lines.push(`    quality: ${clientImageResizeQuality}`);
     }
-    if (config.fileConfig.clientImageResize.compressFormat) {
-      lines.push(`    compressFormat: "${config.fileConfig.clientImageResize.compressFormat}"`);
+    if (clientImageResizeCompressFormat) {
+      lines.push(`    compressFormat: "${clientImageResizeCompressFormat}"`);
     }
   }
   
@@ -1137,48 +1265,35 @@ function generateRateLimitsSection(config: any): string {
  * Generate Memory section
  */
 function generateMemorySection(config: any): string {
-  const hasMemoryConfig = config.memory && (
-    (config.memory.disabled !== undefined && config.memory.disabled !== true) ||
-    (config.memory.enabled !== undefined && config.memory.enabled !== false) ||
-    (config.memory.personalize !== undefined && config.memory.personalize !== false) || 
-    (config.memory.personalization !== undefined && config.memory.personalization !== true) ||
-    (config.memory.windowSize !== undefined && config.memory.windowSize !== 5) ||
-    (config.memory.messageWindowSize !== undefined && config.memory.messageWindowSize !== 5) ||
-    (config.memory.validKeys && config.memory.validKeys.length > 0) || 
-    (config.memory.tokenLimit !== undefined && config.memory.tokenLimit !== 1000) || 
-    config.memory.agent
-  );
+  const memoryDisabled = config.memory?.disabled ?? config.memoryDisabled;
+  const memoryPersonalize = config.memory?.personalize ?? config.memoryPersonalize;
+  const memoryTokenLimit = config.memory?.tokenLimit ?? config.memoryTokenLimit;
+  const memoryValidKeys = config.memory?.validKeys ?? config.memoryValidKeys;
+  const memoryMessageWindowSize = config.memory?.messageWindowSize ?? config.memoryMessageWindowSize;
+  
+  const hasMemoryConfig = config.memory || memoryDisabled !== undefined || memoryPersonalize !== undefined || memoryTokenLimit !== undefined || (memoryValidKeys && memoryValidKeys.length > 0) || memoryMessageWindowSize !== undefined;
   
   if (!hasMemoryConfig) return '';
   
   const lines = ['# Memory Configuration', 'memory:'];
   
-  if (config.memory.disabled !== undefined && config.memory.disabled !== true) {
-    lines.push(`  disabled: ${config.memory.disabled}`);
+  if (memoryDisabled !== undefined && memoryDisabled !== true) {
+    lines.push(`  disabled: ${memoryDisabled}`);
   }
-  if (config.memory.enabled !== undefined && config.memory.disabled === undefined && config.memory.enabled !== false) {
-    lines.push(`  enabled: ${config.memory.enabled}`);
+  if (memoryPersonalize !== undefined && memoryPersonalize !== false) {
+    lines.push(`  personalize: ${memoryPersonalize}`);
   }
-  if (config.memory.personalize !== undefined && config.memory.personalize !== false) {
-    lines.push(`  personalize: ${config.memory.personalize}`);
-  }
-  if (config.memory.personalization !== undefined && config.memory.personalize === undefined && config.memory.personalization !== true) {
-    lines.push(`  personalization: ${config.memory.personalization}`);
-  }
-  if (config.memory.validKeys && config.memory.validKeys.length > 0) {
+  if (memoryValidKeys && memoryValidKeys.length > 0) {
     lines.push(`  validKeys:`);
-    config.memory.validKeys.forEach((key: string) => {
+    memoryValidKeys.forEach((key: string) => {
       lines.push(`    - "${key}"`);
     });
   }
-  if (config.memory.tokenLimit !== undefined && config.memory.tokenLimit !== 1000) {
-    lines.push(`  tokenLimit: ${config.memory.tokenLimit}`);
+  if (memoryTokenLimit !== undefined && memoryTokenLimit !== 1000) {
+    lines.push(`  tokenLimit: ${memoryTokenLimit}`);
   }
-  if (config.memory.windowSize !== undefined && config.memory.windowSize !== 5) {
-    lines.push(`  windowSize: ${config.memory.windowSize}`);
-  }
-  if (config.memory.messageWindowSize !== undefined && config.memory.windowSize === undefined && config.memory.messageWindowSize !== 5) {
-    lines.push(`  messageWindowSize: ${config.memory.messageWindowSize}`);
+  if (memoryMessageWindowSize !== undefined && memoryMessageWindowSize !== 5) {
+    lines.push(`  messageWindowSize: ${memoryMessageWindowSize}`);
   }
   
   if (config.memory.agent) {
@@ -1222,56 +1337,99 @@ function generateMemorySection(config: any): string {
  * Generate Web Search section
  */
 function generateWebSearchSection(config: any): string {
-  if (!config.webSearch?.searchProvider || config.webSearch.searchProvider === 'none') {
+  const searchProvider = config.webSearch?.searchProvider ?? config.webSearchProvider;
+  if (!searchProvider || searchProvider === 'none') {
     return '# Web search is not configured';
   }
   
   const lines = ['# Web Search Configuration', 'webSearch:'];
-  lines.push(`  searchProvider: "${config.webSearch.searchProvider}"`);
+  lines.push(`  searchProvider: "${searchProvider}"`);
   
-  if (config.webSearch.serperApiKey || config.webSearch.searchProvider === 'serper') {
+  const serperApiKey = config.webSearch?.serperApiKey ?? config.webSearchSerperApiKey;
+  const searxngInstanceUrl = config.webSearch?.searxngInstanceUrl ?? config.webSearchSearxngInstanceUrl;
+  const searxngApiKey = config.webSearch?.searxngApiKey ?? config.webSearchSearxngApiKey;
+  const scraperType = config.webSearch?.scraperType ?? config.webSearchScraperType;
+  const scraperTimeout = config.webSearch?.scraperTimeout ?? config.webSearchScraperTimeout;
+  const safeSearch = config.webSearch?.safeSearch ?? config.webSearchSafeSearch;
+  const rerankerType = config.webSearch?.rerankerType ?? config.webSearchRerankerType;
+  const jinaApiKey = config.webSearch?.jinaApiKey ?? config.webSearchJinaApiKey;
+  const jinaApiUrl = config.webSearch?.jinaApiUrl ?? config.webSearchJinaApiUrl;
+  const cohereApiKey = config.webSearch?.cohereApiKey ?? config.webSearchCohereApiKey;
+  const firecrawlApiKey = config.webSearch?.firecrawlApiKey ?? config.webSearchFirecrawlApiKey;
+  const firecrawlApiUrl = config.webSearch?.firecrawlApiUrl ?? config.webSearchFirecrawlApiUrl;
+  
+  if (serperApiKey || searchProvider === 'serper') {
     lines.push(`  serperApiKey: "\${SERPER_API_KEY}"`);
   }
-  if (config.webSearch.searxngInstanceUrl || config.webSearch.searchProvider === 'searxng') {
+  if (searxngInstanceUrl || searchProvider === 'searxng') {
     lines.push(`  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"`);
   }
-  if (config.webSearch.searchProvider === 'searxng') {
-    lines.push(`  searxngApiKey: "${config.webSearch.searxngApiKey || ''}"`);
+  if (searchProvider === 'searxng') {
+    lines.push(`  searxngApiKey: "${searxngApiKey || ''}"`);
   }
-  if (config.webSearch.scraperType && config.webSearch.scraperType !== 'none') {
-    lines.push(`  scraperType: "${config.webSearch.scraperType}"`);
+  if (scraperType && scraperType !== 'none') {
+    lines.push(`  scraperType: "${scraperType}"`);
   }
-  if (config.webSearch.firecrawlApiKey && config.webSearch.scraperType === 'firecrawl') {
+  if (firecrawlApiKey && scraperType === 'firecrawl') {
     lines.push(`  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"`);
-    lines.push(`  firecrawlApiUrl: "${config.webSearch.firecrawlApiUrl || 'https://api.firecrawl.dev'}"`);
-    if (config.webSearch.firecrawlOptions) {
+    lines.push(`  firecrawlApiUrl: "${firecrawlApiUrl || 'https://api.firecrawl.dev'}"`);
+    
+    const formats = config.webSearch?.firecrawlOptions?.formats ?? config.webSearchFirecrawlOptionsFormats;
+    const onlyMainContent = config.webSearch?.firecrawlOptions?.onlyMainContent ?? config.webSearchFirecrawlOptionsOnlyMainContent;
+    const timeout = config.webSearch?.firecrawlOptions?.timeout ?? config.webSearchFirecrawlOptionsTimeout;
+    const waitFor = config.webSearch?.firecrawlOptions?.waitFor ?? config.webSearchFirecrawlOptionsWaitFor;
+    const blockAds = config.webSearch?.firecrawlOptions?.blockAds ?? config.webSearchFirecrawlOptionsBlockAds;
+    const removeBase64Images = config.webSearch?.firecrawlOptions?.removeBase64Images ?? config.webSearchFirecrawlOptionsRemoveBase64Images;
+    const mobile = config.webSearch?.firecrawlOptions?.mobile ?? config.webSearchFirecrawlOptionsMobile;
+    const maxAge = config.webSearch?.firecrawlOptions?.maxAge ?? config.webSearchFirecrawlOptionsMaxAge;
+    const proxy = config.webSearch?.firecrawlOptions?.proxy ?? config.webSearchFirecrawlOptionsProxy;
+    
+    if (formats || onlyMainContent !== undefined || timeout !== undefined || waitFor !== undefined || blockAds !== undefined || removeBase64Images !== undefined || mobile !== undefined || maxAge !== undefined || proxy) {
       lines.push(`  firecrawlOptions:`);
-      lines.push(`    formats: [${config.webSearch.firecrawlOptions.formats?.map((f: string) => `"${f}"`).join(', ') || '"markdown", "links"'}]`);
-      lines.push(`    onlyMainContent: ${config.webSearch.firecrawlOptions.onlyMainContent ?? true}`);
-      lines.push(`    timeout: ${config.webSearch.firecrawlOptions.timeout ?? 20000}`);
-      lines.push(`    waitFor: ${config.webSearch.firecrawlOptions.waitFor ?? 1000}`);
-      lines.push(`    blockAds: ${config.webSearch.firecrawlOptions.blockAds ?? true}`);
-      lines.push(`    removeBase64Images: ${config.webSearch.firecrawlOptions.removeBase64Images ?? true}`);
-      lines.push(`    mobile: ${config.webSearch.firecrawlOptions.mobile ?? true}`);
-      lines.push(`    maxAge: ${config.webSearch.firecrawlOptions.maxAge ?? 0}`);
-      lines.push(`    proxy: "${config.webSearch.firecrawlOptions.proxy ?? 'auto'}"`);
+      if (formats) {
+        lines.push(`    formats: [${formats?.map((f: string) => `"${f}"`).join(', ') || '"markdown", "links"'}]`);
+      }
+      if (onlyMainContent !== undefined) {
+        lines.push(`    onlyMainContent: ${onlyMainContent ?? true}`);
+      }
+      if (timeout !== undefined) {
+        lines.push(`    timeout: ${timeout ?? 20000}`);
+      }
+      if (waitFor !== undefined) {
+        lines.push(`    waitFor: ${waitFor ?? 1000}`);
+      }
+      if (blockAds !== undefined) {
+        lines.push(`    blockAds: ${blockAds ?? true}`);
+      }
+      if (removeBase64Images !== undefined) {
+        lines.push(`    removeBase64Images: ${removeBase64Images ?? true}`);
+      }
+      if (mobile !== undefined) {
+        lines.push(`    mobile: ${mobile ?? true}`);
+      }
+      if (maxAge !== undefined) {
+        lines.push(`    maxAge: ${maxAge ?? 0}`);
+      }
+      if (proxy) {
+        lines.push(`    proxy: "${proxy ?? 'auto'}"`);
+      }
     }
   }
-  if (config.webSearch.rerankerType && config.webSearch.rerankerType !== 'none') {
-    lines.push(`  rerankerType: "${config.webSearch.rerankerType}"`);
+  if (rerankerType && rerankerType !== 'none') {
+    lines.push(`  rerankerType: "${rerankerType}"`);
   }
-  if (config.webSearch.jinaApiKey && config.webSearch.rerankerType === 'jina') {
+  if (jinaApiKey && rerankerType === 'jina') {
     lines.push(`  jinaApiKey: "\${JINA_API_KEY}"`);
-    lines.push(`  jinaApiUrl: "${config.webSearch.jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"`);
+    lines.push(`  jinaApiUrl: "${jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"`);
   }
-  if (config.webSearch.cohereApiKey && config.webSearch.rerankerType === 'cohere') {
+  if (cohereApiKey && rerankerType === 'cohere') {
     lines.push(`  cohereApiKey: "\${COHERE_API_KEY}"`);
   }
-  if (config.webSearch.scraperTimeout) {
-    lines.push(`  scraperTimeout: ${config.webSearch.scraperTimeout}`);
+  if (scraperTimeout) {
+    lines.push(`  scraperTimeout: ${scraperTimeout}`);
   }
-  if (config.webSearch.safeSearch !== undefined) {
-    lines.push(`  safeSearch: ${config.webSearch.safeSearch ? 1 : 0}`);
+  if (safeSearch !== undefined) {
+    lines.push(`  safeSearch: ${safeSearch ? 1 : 0}`);
   }
   
   return lines.join('\n');
@@ -1281,15 +1439,24 @@ function generateWebSearchSection(config: any): string {
  * Generate OCR section
  */
 function generateOcrSection(config: any): string {
-  if (!config.ocrProvider) return '# OCR is not configured';
+  const ocrProvider = config.ocr?.strategy ?? config.ocrProvider ?? config.ocrStrategy;
+  const ocrApiKey = config.ocr?.apiKey ?? config.ocrApiKey;
+  const ocrBaseUrl = config.ocr?.baseURL ?? config.ocrApiBase;
+  const ocrMistralModel = config.ocr?.mistralModel ?? config.ocrMistralModel;
+  
+  if (!ocrProvider) return '# OCR is not configured';
   
   const lines = ['# OCR Configuration', 'ocr:'];
-  lines.push(`  strategy: "${config.ocrProvider === 'mistral' ? 'mistral_ocr' : config.ocrProvider === 'custom' ? 'custom_ocr' : 'mistral_ocr'}"`);
-  if (config.ocrProvider === 'mistral') {
-    lines.push(`  mistralModel: "mistral-ocr-latest"`);
+  lines.push(`  strategy: "${ocrProvider === 'mistral' ? 'mistral_ocr' : ocrProvider === 'custom' ? 'custom_ocr' : 'mistral_ocr'}"`);
+  if (ocrProvider === 'mistral' || ocrMistralModel) {
+    lines.push(`  mistralModel: "${ocrMistralModel || 'mistral-ocr-latest'}"`);
   }
-  lines.push(`  apiKey: "\${OCR_API_KEY}"`);
-  lines.push(`  baseURL: "\${OCR_BASEURL}"`);
+  if (ocrApiKey) {
+    lines.push(`  apiKey: "\${OCR_API_KEY}"`);
+  }
+  if (ocrBaseUrl) {
+    lines.push(`  baseURL: "\${OCR_BASEURL}"`);
+  }
   
   return lines.join('\n');
 }
@@ -1430,14 +1597,15 @@ function generateSpeechSection(config: any): string {
  * Generate Actions section
  */
 function generateActionsSection(config: any): string {
-  const hasActions = config.e2bProxyEnabled || (config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0);
+  const allowedDomains = config.actions?.allowedDomains ?? config.actionsAllowedDomains;
+  const hasActions = config.e2bProxyEnabled || (allowedDomains && allowedDomains.length > 0);
   if (!hasActions) return '# Actions are not configured';
   
   const lines = ['# Actions Configuration', 'actions:'];
   
-  if (config.actionsAllowedDomains && config.actionsAllowedDomains.length > 0) {
+  if (allowedDomains && allowedDomains.length > 0) {
     lines.push('  allowedDomains:');
-    config.actionsAllowedDomains.forEach((domain: string) => {
+    allowedDomains.forEach((domain: string) => {
       lines.push(`    - "${domain}"`);
     });
   }

@@ -61,27 +61,37 @@ function generateHexSecret(byteLength: number): string {
 
 /**
  * Validate ENV variables against registry
- * Returns list of unsupported variables
+ * Returns list of unsupported variables and YAML-only field violations
  */
 export function validateEnvVars(envVars: Record<string, string>): {
   valid: boolean;
   unmappedVars: string[];
+  yamlOnlyVars: Array<{ envKey: string; yamlPath: string }>;
 } {
   const supportedKeys = getAllEnvKeys();
   const unmappedVars: string[] = [];
+  const yamlOnlyVars: Array<{ envKey: string; yamlPath: string }> = [];
   
   for (const varName of Object.keys(envVars)) {
     // Skip empty lines and comments
     if (!varName || varName.startsWith('#')) continue;
     
-    if (!supportedKeys.has(varName)) {
+    // Check if this field exists in registry
+    const field = getFieldByEnvKey(varName);
+    
+    if (field && field.yamlPath) {
+      // STRICT POLICY: This field has yamlPath, it MUST go in librechat.yaml
+      yamlOnlyVars.push({ envKey: varName, yamlPath: field.yamlPath });
+    } else if (!supportedKeys.has(varName)) {
+      // Field not found in registry at all
       unmappedVars.push(varName);
     }
   }
   
   return {
-    valid: unmappedVars.length === 0,
-    unmappedVars
+    valid: unmappedVars.length === 0 && yamlOnlyVars.length === 0,
+    unmappedVars,
+    yamlOnlyVars
   };
 }
 
@@ -313,7 +323,8 @@ export function generateEnvFile(config: Record<string, any>): string {
   // Group fields by category for organized output
   const byCategory = new Map<string, FieldDescriptor[]>();
   for (const field of FIELD_REGISTRY) {
-    if (!field.envKey || field.exportToEnv === false) continue;
+    // STRICT POLICY: Skip any field with yamlPath - those belong in librechat.yaml only
+    if (!field.envKey || field.exportToEnv === false || field.yamlPath) continue;
     if (!byCategory.has(field.category)) {
       byCategory.set(field.category, []);
     }

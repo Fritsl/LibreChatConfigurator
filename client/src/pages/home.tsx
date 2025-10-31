@@ -18,7 +18,7 @@ import { ConfigurationHistory } from "@/components/ConfigurationHistory";
 import { getToolVersion, getVersionInfo } from "@shared/version";
 import yaml from "js-yaml";
 import { getAllEnvKeys } from '@/../../shared/config/field-registry';
-import { mapEnvToConfiguration as registryMapEnvToConfig, mapYamlToConfiguration as registryMapYamlToConfig, validateYamlFields as registryValidateYamlFields } from '@/../../shared/config/registry-helpers';
+import { mapEnvToConfiguration as registryMapEnvToConfig, mapYamlToConfiguration as registryMapYamlToConfig, validateYamlFields as registryValidateYamlFields, validateEnvVars as registryValidateEnvVars } from '@/../../shared/config/registry-helpers';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -448,32 +448,6 @@ export default function Home() {
     input.click();
   };
 
-  // Validation function to detect unmapped environment variables
-  const validateEnvVars = (envVars: Record<string, string>): { valid: boolean; unmappedVars: string[] } => {
-    // REGISTRY-DRIVEN VALIDATION
-    // Use centralized field registry for automatic validation (100% coverage)
-    const supportedEnvVars = getAllEnvKeys();
-    
-    const unmappedVars: string[] = [];
-    
-    console.log(`📊 [ENV VALIDATION] Registry provides ${supportedEnvVars.size} ENV keys`);
-    
-    // Check each env var
-    for (const varName of Object.keys(envVars)) {
-      // Skip empty lines and comments
-      if (!varName || varName.startsWith('#')) continue;
-      
-      if (!supportedEnvVars.has(varName)) {
-        unmappedVars.push(varName);
-      }
-    }
-    
-    return {
-      valid: unmappedVars.length === 0,
-      unmappedVars
-    };
-  };
-
   const handleImportEnv = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -490,30 +464,57 @@ export default function Home() {
             
             console.log("   - Parsed ENV vars:", Object.keys(envVars));
             
-            // VALIDATION: Check for unmapped environment variables BEFORE importing
-            const validation = validateEnvVars(envVars);
+            // VALIDATION: Check for unmapped environment variables AND YAML-only violations BEFORE importing
+            const validation = registryValidateEnvVars(envVars);
             if (!validation.valid) {
-              console.error("❌ [ENV IMPORT] Unmapped environment variables detected:", validation.unmappedVars);
+              // Handle YAML-only field violations
+              if (validation.yamlOnlyVars && validation.yamlOnlyVars.length > 0) {
+                console.error("❌ [ENV IMPORT] YAML-only fields detected in .env file:", validation.yamlOnlyVars);
+                
+                // Show detailed list in console
+                console.log("\n🚫 IMPORT REJECTED - YAML-Only Fields Found in .env:");
+                console.log("=========================================================");
+                validation.yamlOnlyVars.forEach(({ envKey, yamlPath }, index) => {
+                  console.log(`${index + 1}. ${envKey} → Must be configured in librechat.yaml as '${yamlPath}'`);
+                });
+                console.log("\n💡 STRICT POLICY:");
+                console.log("   These fields MUST be configured in librechat.yaml, NOT .env");
+                console.log("   Please move them to your librechat.yaml file and retry.\n");
+                
+                // Show error dialog
+                toast({
+                  title: "Import Rejected - YAML-Only Fields",
+                  description: `${validation.yamlOnlyVars.length} field(s) must be configured in librechat.yaml, not .env. See console for details.`,
+                  variant: "destructive",
+                });
+                
+                return; // BLOCK IMPORT
+              }
               
-              // Show detailed list in console
-              console.log("\n🚫 IMPORT REJECTED - Unsupported Environment Variables:");
-              console.log("=========================================================");
-              validation.unmappedVars.forEach((varName, index) => {
-                console.log(`${index + 1}. ${varName}`);
-              });
-              console.log("\n💡 Next Steps:");
-              console.log("   1. Report these variables so they can be added to the tool");
-              console.log("   2. OR remove unsupported variables from your .env file");
-              console.log("   3. Then retry the import\n");
-              
-              // Show permanent dialog with unsupported fields
-              setUnsupportedFieldsData({
-                type: 'env',
-                fields: validation.unmappedVars
-              });
-              setShowUnsupportedFieldsDialog(true);
-              
-              return; // BLOCK IMPORT
+              // Handle unmapped variables
+              if (validation.unmappedVars && validation.unmappedVars.length > 0) {
+                console.error("❌ [ENV IMPORT] Unmapped environment variables detected:", validation.unmappedVars);
+                
+                // Show detailed list in console
+                console.log("\n🚫 IMPORT REJECTED - Unsupported Environment Variables:");
+                console.log("=========================================================");
+                validation.unmappedVars.forEach((varName, index) => {
+                  console.log(`${index + 1}. ${varName}`);
+                });
+                console.log("\n💡 Next Steps:");
+                console.log("   1. Report these variables so they can be added to the tool");
+                console.log("   2. OR remove unsupported variables from your .env file");
+                console.log("   3. Then retry the import\n");
+                
+                // Show permanent dialog with unsupported fields
+                setUnsupportedFieldsData({
+                  type: 'env',
+                  fields: validation.unmappedVars
+                });
+                setShowUnsupportedFieldsDialog(true);
+                
+                return; // BLOCK IMPORT
+              }
             }
             
             const configUpdates = mapEnvToConfiguration(envVars);

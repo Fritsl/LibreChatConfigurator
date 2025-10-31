@@ -16,14 +16,33 @@ import { generateEnvFile, generateYamlFile, getCachedSecrets } from "@shared/con
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Get default configuration
+  // Get default configuration (or latest saved configuration)
   app.get("/api/configuration/default", async (req, res) => {
     try {
-      const defaultConfig = await storage.getDefaultConfiguration();
-      res.json(defaultConfig);
+      // First try to get the latest saved configuration
+      const latestConfig = await storage.getLatestConfiguration();
+      if (latestConfig) {
+        res.json(latestConfig);
+      } else {
+        // Fall back to default if no saved configuration exists
+        const defaultConfig = await storage.getDefaultConfiguration();
+        res.json(defaultConfig);
+      }
     } catch (error) {
-      console.error("Error getting default configuration:", error);
-      res.status(500).json({ error: "Failed to get default configuration" });
+      console.error("Error getting configuration:", error);
+      res.status(500).json({ error: "Failed to get configuration" });
+    }
+  });
+  
+  // Save current working configuration
+  app.post("/api/configuration/save", async (req, res) => {
+    try {
+      const config = req.body;
+      await storage.saveConfigurationToHistory(config, config.configurationName || "Auto-saved");
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving configuration:", error);
+      res.status(500).json({ error: "Failed to save configuration" });
     }
   });
 

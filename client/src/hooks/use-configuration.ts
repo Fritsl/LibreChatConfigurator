@@ -389,12 +389,24 @@ export function useConfiguration() {
   // 3. Fallback configuration (only if localStorage is empty)
   // The backend default is for reference only, NOT for overwriting user data
 
-  // Auto-save configuration to localStorage on every change
+  // Auto-save configuration to BOTH localStorage AND backend for persistence
   useEffect(() => {
     try {
+      // Save to localStorage (for immediate client-side access)
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(configuration));
+      
+      // Debounce backend saves to avoid excessive API calls
+      const timeoutId = setTimeout(async () => {
+        try {
+          await apiRequest("POST", "/api/configuration/save", configuration);
+        } catch (error) {
+          console.error("Failed to save configuration to backend:", error);
+        }
+      }, 1000); // Wait 1 second before saving to backend
+      
+      return () => clearTimeout(timeoutId);
     } catch {
-      // Fail silently on localStorage errors
+      // Fail silently on storage errors
     }
   }, [configuration]);
 

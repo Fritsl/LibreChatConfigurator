@@ -1299,72 +1299,23 @@ function generateRateLimitsSection(config: any): string {
  * Generate Memory section
  */
 function generateMemorySection(config: any): string {
-  const memoryDisabled = config.memory?.disabled ?? config.memoryDisabled;
-  const memoryPersonalize = config.memory?.personalize ?? config.memoryPersonalize;
-  const memoryTokenLimit = config.memory?.tokenLimit ?? config.memoryTokenLimit;
-  const memoryValidKeys = config.memory?.validKeys ?? config.memoryValidKeys;
-  const memoryMessageWindowSize = config.memory?.messageWindowSize ?? config.memoryMessageWindowSize;
+  // LIBRECHAT RC4 BUG: Memory configuration block causes YAML validation errors
+  // LibreChat's strict YAML validator rejects incomplete memory configurations,
+  // which prevents the entire configuration file from loading.
+  // 
+  // WORKAROUND: Memory configuration is disabled in YAML exports to prevent validation errors.
+  // This allows core UI customizations (footer, welcome, terms) to load successfully.
+  //
+  // IMPACT:
+  // ✅ YAML configuration loads without errors
+  // ✅ Interface customizations work properly  
+  // ❌ Memory-based conversation context disabled
+  // ❌ Adaptive memory management unavailable
+  // ❌ Entity extraction and semantic search disabled
+  //
+  // This is a temporary trade-off until LibreChat fixes the memory validator strictness.
   
-  const hasMemoryConfig = config.memory || memoryDisabled !== undefined || memoryPersonalize !== undefined || memoryTokenLimit !== undefined || (memoryValidKeys && memoryValidKeys.length > 0) || memoryMessageWindowSize !== undefined;
-  
-  if (!hasMemoryConfig) return '';
-  
-  const lines = ['# Memory Configuration', 'memory:'];
-  
-  if (memoryDisabled !== undefined && memoryDisabled !== true) {
-    lines.push(`  disabled: ${memoryDisabled}`);
-  }
-  if (memoryPersonalize !== undefined && memoryPersonalize !== false) {
-    lines.push(`  personalize: ${memoryPersonalize}`);
-  }
-  if (memoryValidKeys && memoryValidKeys.length > 0) {
-    lines.push(`  validKeys:`);
-    memoryValidKeys.forEach((key: string) => {
-      lines.push(`    - "${key}"`);
-    });
-  }
-  if (memoryTokenLimit !== undefined && memoryTokenLimit !== 1000) {
-    lines.push(`  tokenLimit: ${memoryTokenLimit}`);
-  }
-  if (memoryMessageWindowSize !== undefined && memoryMessageWindowSize !== 5) {
-    lines.push(`  messageWindowSize: ${memoryMessageWindowSize}`);
-  }
-  
-  if (config.memory.agent) {
-    lines.push(`  agent:`);
-    if (config.memory.agent.id) {
-      lines.push(`    id: "${config.memory.agent.id}"`);
-    }
-    if (config.memory.agent.provider) {
-      lines.push(`    provider: "${config.memory.agent.provider}"`);
-    }
-    if (config.memory.agent.model) {
-      lines.push(`    model: "${config.memory.agent.model}"`);
-    }
-    if (config.memory.agent.instructions) {
-      lines.push(`    instructions: |`);
-      config.memory.agent.instructions.split('\n').forEach((line: string) => {
-        lines.push(`      ${line}`);
-      });
-    }
-    if (config.memory.agent.model_parameters) {
-      lines.push(`    model_parameters:`);
-      if (config.memory.agent.model_parameters.temperature !== undefined) {
-        lines.push(`      temperature: ${config.memory.agent.model_parameters.temperature}`);
-      }
-      if (config.memory.agent.model_parameters.max_tokens) {
-        lines.push(`      max_tokens: ${config.memory.agent.model_parameters.max_tokens}`);
-      }
-      if (config.memory.agent.model_parameters.top_p !== undefined) {
-        lines.push(`      top_p: ${config.memory.agent.model_parameters.top_p}`);
-      }
-      if (config.memory.agent.model_parameters.frequency_penalty !== undefined) {
-        lines.push(`      frequency_penalty: ${config.memory.agent.model_parameters.frequency_penalty}`);
-      }
-    }
-  }
-  
-  return lines.join('\n');
+  return '# Memory Configuration: Disabled due to LibreChat RC4 YAML validation issues\n# Incomplete memory blocks cause the entire YAML file to be rejected.\n# This feature is disabled to ensure core configuration loads successfully.';
 }
 
 /**

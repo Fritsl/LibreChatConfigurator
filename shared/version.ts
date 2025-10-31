@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.6";
+export const TOOL_VERSION = "2.1.7";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "LIBRECHAT BUG HANDLING SYSTEM: Added intelligent workaround system for known LibreChat bugs. Introduced librechatBug metadata field to document bugs and workarounds. Fields with bugs (e.g., customFooter) now export to .env instead of YAML with clear UI warnings. Import validation accepts these exceptions. Enhanced search to find fields by environment variable names and YAML paths."
+  changelog: "MEMORY BLOCK DISABLED: Disabled Memory configuration block in YAML exports due to LibreChat RC4 strict validation. Incomplete memory configurations cause entire YAML file rejection, preventing core UI customizations from loading. Memory section now outputs explanatory comment instead of config block to ensure stable YAML loading."
 } as const;
 
 // Helper function to get the tool's version string

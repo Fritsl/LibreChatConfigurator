@@ -137,7 +137,9 @@ export default function Home() {
         const newValueStr = JSON.stringify(newValue);
 
         // Determine status based on old value state
-        if (oldValue === undefined || oldValue === null || oldValue === '') {
+        // Only consider truly missing fields (undefined) as "new"
+        // Empty strings, null, or false are valid existing values
+        if (oldValue === undefined) {
           fieldDetails.push({ name: fullPath, status: 'new' });
           newFields++;
         } else if (oldValueStr !== newValueStr) {

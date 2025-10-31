@@ -214,7 +214,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["enabledEndpoints", "appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "modelSpecs.enforce", "modelSpecs.prioritize", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
+          settings: ["enabledEndpoints", "appTitle", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "modelSpecs.enforce", "modelSpecs.prioritize", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.endpointsMenu", "interface.defaultPreset", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -223,7 +223,7 @@ paths:
           icon: Server,
           description: "Host, Port, Environment",
           color: "from-green-500 to-green-600",
-          settings: ["host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex"],
+          settings: ["host", "port", "nodeEnv", "domainClient", "domainServer", "noIndex", "basePath", "appUrl", "publicSubPath"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -246,8 +246,26 @@ paths:
           icon: Database,
           description: "MongoDB, Redis",
           color: "from-purple-500 to-purple-600",
-          settings: ["mongoUri", "mongoRootUsername", "mongoRootPassword", "mongoDbName", "redisUri", "redisUsername", "redisPassword", "redisKeyPrefix", "redisKeyPrefixVar", "redisMaxListeners", "redisPingInterval", "redisUseAlternativeDNSLookup"],
+          settings: [
+            "mongoUri", "mongoRootUsername", "mongoRootPassword", "mongoDbName", 
+            "mongoConnectTimeoutMS", "mongoSocketTimeoutMS", "mongoMaxPoolSize", "mongoMinPoolSize", 
+            "mongoMaxIdleTimeMS", "mongoWaitQueueTimeoutMS", "mongoServerSelectionTimeoutMS", "mongoHeartbeatFrequencyMS",
+            "redisUri", "redisUsername", "redisPassword", "redisKeyPrefix", "redisKeyPrefixVar", "redisMaxListeners", "redisPingInterval", "redisUseAlternativeDNSLookup"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        },
+        {
+          id: "azure-ai-search",
+          label: "Azure AI Search",
+          icon: Search,
+          description: "Azure Cognitive Search Configuration",
+          color: "from-cyan-500 to-cyan-600",
+          settings: [
+            "azureAiSearchApiKey", "azureAiSearchServiceEndpoint", "azureAiSearchIndexName", 
+            "azureAiSearchEmbeddingDeploymentName", "azureAiSearchSemanticConfiguration", "azureAiSearchQueryType",
+            "azureAiSearchVectorFieldName", "azureAiSearchContentFieldName", "azureAiSearchTitleFieldName", "azureAiSearchUrlFieldName"
+          ],
+          docUrl: "https://www.librechat.ai/docs/configuration/azure",
         },
       ]
     },
@@ -260,7 +278,7 @@ paths:
           icon: Brain,
           description: "Primary AI Providers",
           color: "from-indigo-500 to-indigo-600",
-          settings: ["openaiApiKey", "openaiApiBase", "openaiReverseProxy", "openaiModeration", "openaiModerationApiKey", "openaiModerationReverseProxy", "anthropicApiKey", "googleApiKey", "groqApiKey", "mistralApiKey"],
+          settings: ["openaiApiKey", "assistantsApiKey", "openaiApiBase", "openaiReverseProxy", "openaiModeration", "openaiModerationApiKey", "openaiModerationReverseProxy", "anthropicApiKey", "googleApiKey", "groqApiKey", "mistralApiKey"],
           docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
         },
         {
@@ -292,7 +310,7 @@ paths:
           icon: Database,
           description: "AWS Configuration",
           color: "from-orange-500 to-orange-600",
-          settings: ["awsAccessKeyId", "awsSecretAccessKey", "awsRegion", "awsBedrockRegion", "awsEndpointURL", "awsBucketName"],
+          settings: ["awsAccessKeyId", "awsSecretAccessKey", "awsRegion", "awsBedrockRegion", "bedrockAccessKeyId", "bedrockSecretAccessKey", "bedrockRegion", "awsEndpointURL", "awsBucketName"],
           docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai/bedrock",
         },
         {
@@ -378,7 +396,7 @@ paths:
           icon: Shield,
           description: "Login & Registration",
           color: "from-yellow-500 to-yellow-600",
-          settings: ["allowRegistration", "allowEmailLogin", "allowSocialLogin", "allowSocialRegistration", "allowPasswordReset", "registration.socialLogins", "registration.allowedDomains"],
+          settings: ["allowRegistration", "registrationEnabled", "allowEmailLogin", "allowSocialLogin", "allowSocialRegistration", "allowPasswordReset", "registration.socialLogins", "registration.allowedDomains"],
           docUrl: "https://www.librechat.ai/docs/configuration/authentication",
         },
         {
@@ -432,7 +450,11 @@ paths:
           icon: FileText,
           description: "Email Configuration",
           color: "from-blue-400 to-blue-500",
-          settings: ["emailComposite"],
+          settings: [
+            "emailComposite", 
+            "mailgunApiKey", "mailgunDomain", "mailgunHost", "mailgunWebhookSigningKey", 
+            "emailReplyToAddress"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
         },
         {
@@ -441,7 +463,13 @@ paths:
           icon: FileText,
           description: "File Upload & Storage",
           color: "from-teal-500 to-teal-600",
-          settings: ["fileStorage", "fileConfig.endpoints", "fileConfig.serverFileSizeLimit", "fileConfig.avatarSizeLimit", "fileConfig.clientImageResize.enabled", "fileConfig.clientImageResize.maxWidth", "fileConfig.clientImageResize.maxHeight", "fileConfig.clientImageResize.quality", "fileConfig.clientImageResize.compressFormat"],
+          settings: [
+            "fileStorage", "fileConfig.endpoints", "fileConfig.serverFileSizeLimit", "fileConfig.avatarSizeLimit", 
+            "fileConfig.clientImageResize.enabled", "fileConfig.clientImageResize.maxWidth", "fileConfig.clientImageResize.maxHeight", 
+            "fileConfig.clientImageResize.quality", "fileConfig.clientImageResize.compressFormat",
+            "awsAccessKeyIdFileStorage", "awsSecretAccessKeyFileStorage", "awsRegionFileStorage", 
+            "azureStorageConnectionString", "firebaseServiceAccountKey"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
         },
         {
@@ -450,7 +478,12 @@ paths:
           icon: Search,
           description: "Web Search & External APIs",
           color: "from-violet-500 to-violet-600",
-          settings: ["webSearch", "openweatherApiKey"],
+          settings: [
+            "webSearch", "openweatherApiKey", 
+            "fluxApiKey", "tavilyApiKey", "wolframAppId", "youtubeApiKey", "zapierNlaApiKey", 
+            "sdWebuiUrl", "sdWebuiImageGenUrl", "sdWebuiImageEditUrl", 
+            "travelApiKey", "pollinations", "traversaalApiKey"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
         {
@@ -468,7 +501,7 @@ paths:
           icon: Search,
           description: "Search Engine Configuration",
           color: "from-gray-500 to-gray-600",
-          settings: ["meilisearchIntegration"],
+          settings: ["meilisearchIntegration", "meilisearchURL", "meilisearchMasterKey", "meiliNoAnalytics"],
           docUrl: "https://www.librechat.ai/docs/configuration/meilisearch",
         },
         {
@@ -507,7 +540,8 @@ paths:
             "rateLimits.fileUploads.ipMax", "rateLimits.fileUploads.ipWindowInMinutes", "rateLimits.fileUploads.userMax", "rateLimits.fileUploads.userWindowInMinutes",
             "rateLimits.conversationsImport.ipMax", "rateLimits.conversationsImport.ipWindowInMinutes", "rateLimits.conversationsImport.userMax", "rateLimits.conversationsImport.userWindowInMinutes",
             "rateLimits.stt.ipMax", "rateLimits.stt.ipWindowInMinutes", "rateLimits.stt.userMax", "rateLimits.stt.userWindowInMinutes",
-            "rateLimits.tts.ipMax", "rateLimits.tts.ipWindowInMinutes", "rateLimits.tts.userMax", "rateLimits.tts.userWindowInMinutes"
+            "rateLimits.tts.ipMax", "rateLimits.tts.ipWindowInMinutes", "rateLimits.tts.userMax", "rateLimits.tts.userWindowInMinutes",
+            "checkBalanceEnabled", "checkBalanceFrequency", "rateLimitsWarmup", "rateLimitsWarmupLimit", "rateLimitsWarmupPeriod", "rateLimitsWarmupSkipFirstPeriod"
           ],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
         },
@@ -650,7 +684,7 @@ paths:
           icon: Wrench,
           description: "Logging & Debug",
           color: "from-amber-500 to-amber-600",
-          settings: ["debugLogging", "debugConsole", "consoleJSON"],
+          settings: ["debugLogging", "debugConsole", "consoleJSON", "debugOpenai", "debugPlugins"],
           docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
         },
         {
@@ -686,7 +720,7 @@ paths:
       icon: Camera,
       description: "Optical Character Recognition",
       color: "from-purple-400 to-purple-500",
-      settings: ["ocr.apiKey", "ocr.baseURL", "ocr.strategy", "ocr.mistralModel"],
+      settings: ["ocr.apiKey", "ocr.baseURL", "ocr.strategy", "ocr.mistralModel", "ocrApiKey", "ocrApiBase"],
       docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/config",
     },
     {
@@ -888,6 +922,35 @@ paths:
         technical: { envVar: "NO_INDEX", configFile: ".env" }
       },
       
+      // Subdirectory Hosting Configuration
+      basePath: { 
+        type: "text", 
+        description: "Base path for subdirectory hosting (e.g., '/chat' if hosting at example.com/chat). Allows LibreChat to run in a subdirectory instead of root. Leave empty for root path hosting.", 
+        label: "Base Path",
+        placeholder: "/chat",
+        docUrl: "https://www.librechat.ai/docs/deployment/subdirectory",
+        docSection: "Subdirectory Hosting",
+        technical: { envVar: "BASE_PATH", configFile: ".env" }
+      },
+      appUrl: { 
+        type: "text", 
+        description: "Full application URL including subdirectory (e.g., https://example.com/chat). Used for generating links and redirects in subdirectory deployments. Must match your actual deployment URL.", 
+        label: "Application URL",
+        placeholder: "https://example.com/chat",
+        docUrl: "https://www.librechat.ai/docs/deployment/subdirectory",
+        docSection: "Subdirectory Hosting",
+        technical: { envVar: "APP_URL", configFile: ".env" }
+      },
+      publicSubPath: { 
+        type: "text", 
+        description: "Public-facing subdirectory path for static assets when using a reverse proxy. Typically matches BASE_PATH. Required for correct asset URLs in subdirectory hosting.", 
+        label: "Public Subdirectory Path",
+        placeholder: "/chat",
+        docUrl: "https://www.librechat.ai/docs/deployment/subdirectory",
+        docSection: "Subdirectory Hosting",
+        technical: { envVar: "PUBLIC_SUB_PATH", configFile: ".env" }
+      },
+      
       // Security
       jwtSecret: { 
         type: "password", 
@@ -1069,6 +1132,14 @@ paths:
         docSection: "Authentication",
         technical: { envVar: "ALLOW_REGISTRATION", configFile: ".env" }
       },
+      registrationEnabled: { 
+        type: "boolean", 
+        description: "Alternative field for enabling/disabling user registration. Mirrors ALLOW_REGISTRATION functionality. When false, prevents new user account creation (invite-only mode).", 
+        label: "Registration Enabled",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#authentication",
+        docSection: "Authentication",
+        technical: { envVar: "REGISTRATION_ENABLED", configFile: ".env" }
+      },
       allowEmailLogin: { 
         type: "boolean", 
         description: "Enables login with email and password. Core authentication method. Disable only if using social login exclusively.", 
@@ -1122,6 +1193,14 @@ paths:
       
       // Core AI APIs
       openaiApiKey: { type: "password", description: "OpenAI API key", label: "OpenAI API Key", technical: { envVar: "OPENAI_API_KEY", configFile: ".env" } },
+      assistantsApiKey: { 
+        type: "password", 
+        description: "Dedicated API key for OpenAI Assistants API. If not set, falls back to OPENAI_API_KEY. Use separate key for billing/usage isolation between chat and assistants features.", 
+        label: "Assistants API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#assistants-api",
+        docSection: "AI APIs",
+        technical: { envVar: "ASSISTANTS_API_KEY", configFile: ".env" }
+      },
       openaiApiBase: { type: "text", description: "Custom OpenAI API base URL (optional, for OpenAI-compatible endpoints)", label: "OpenAI API Base URL", technical: { envVar: "OPENAI_API_BASE", configFile: ".env" } },
       openaiReverseProxy: { type: "text", description: "OpenAI reverse proxy URL (deprecated - use custom endpoints in librechat.yaml instead). Full URL with /v1 path.", label: "OpenAI Reverse Proxy (Deprecated)", technical: { envVar: "OPENAI_REVERSE_PROXY", configFile: ".env" } },
       openaiModerationReverseProxy: { type: "text", description: "OpenAI moderation reverse proxy URL (limited compatibility with some proxies)", label: "OpenAI Moderation Reverse Proxy", technical: { envVar: "OPENAI_MODERATION_REVERSE_PROXY", configFile: ".env" } },
@@ -1161,6 +1240,31 @@ paths:
       awsBedrockRegion: { type: "text", description: "AWS Bedrock region", label: "AWS Bedrock Region", technical: { envVar: "AWS_BEDROCK_REGION", configFile: ".env" } },
       awsEndpointURL: { type: "text", description: "AWS endpoint URL", label: "AWS Endpoint URL", technical: { envVar: "AWS_ENDPOINT_URL", configFile: ".env" } },
       awsBucketName: { type: "text", description: "AWS S3 bucket name", label: "AWS Bucket Name", technical: { envVar: "AWS_BUCKET_NAME", configFile: ".env" } },
+      bedrockAccessKeyId: { 
+        type: "password", 
+        description: "AWS Bedrock-specific access key ID. Alternative to AWS_ACCESS_KEY_ID for isolated Bedrock credentials. Use when you want separate keys for Bedrock vs other AWS services.", 
+        label: "Bedrock Access Key ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/ai_endpoints/bedrock",
+        docSection: "AWS Bedrock",
+        technical: { envVar: "BEDROCK_ACCESS_KEY_ID", configFile: ".env" }
+      },
+      bedrockSecretAccessKey: { 
+        type: "password", 
+        description: "AWS Bedrock-specific secret access key. Pairs with BEDROCK_ACCESS_KEY_ID for dedicated Bedrock authentication. Recommended for security isolation between AWS services.", 
+        label: "Bedrock Secret Access Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/ai_endpoints/bedrock",
+        docSection: "AWS Bedrock",
+        technical: { envVar: "BEDROCK_SECRET_ACCESS_KEY", configFile: ".env" }
+      },
+      bedrockRegion: { 
+        type: "text", 
+        description: "AWS region for Bedrock service (e.g., us-east-1, us-west-2). Overrides AWS_REGION specifically for Bedrock requests. Ensure the region supports your desired Bedrock models.", 
+        label: "Bedrock Region",
+        placeholder: "us-east-1",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/ai_endpoints/bedrock",
+        docSection: "AWS Bedrock",
+        technical: { envVar: "BEDROCK_REGION", configFile: ".env" }
+      },
       
       // File Storage
       fileUploadPath: { type: "text", description: "Local file upload path", label: "File Upload Path", technical: { envVar: "FILE_UPLOAD_PATH", configFile: ".env" } },
@@ -1263,6 +1367,31 @@ paths:
         label: "MeiliSearch Integration",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/search",
         docSection: "Search Configuration"
+      },
+      meilisearchURL: { 
+        type: "text", 
+        description: "MeiliSearch server URL. Required for conversation search functionality. Example: http://localhost:7700 for local or https://your-meilisearch-instance.com for hosted.", 
+        label: "MeiliSearch URL",
+        placeholder: "http://localhost:7700",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/search",
+        docSection: "Search Configuration",
+        technical: { envVar: "MEILISEARCH_URL", configFile: ".env" }
+      },
+      meilisearchMasterKey: { 
+        type: "password", 
+        description: "MeiliSearch master key for authentication. This is the administrative API key for full access to your MeiliSearch instance. Keep this secure!", 
+        label: "MeiliSearch Master Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/search",
+        docSection: "Search Configuration",
+        technical: { envVar: "MEILISEARCH_MASTER_KEY", configFile: ".env" }
+      },
+      meiliNoAnalytics: { 
+        type: "boolean", 
+        description: "Disable MeiliSearch analytics and telemetry. When enabled, prevents MeiliSearch from sending anonymous usage data. Recommended for privacy-focused deployments.", 
+        label: "Disable MeiliSearch Analytics",
+        docUrl: "https://www.librechat.ai/docs/configuration/meilisearch",
+        docSection: "Search Configuration",
+        technical: { envVar: "MEILI_NO_ANALYTICS", configFile: ".env" }
       },
       
       // Rate & Security
@@ -1471,6 +1600,23 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/ocr",
         docSection: "OCR Configuration",
         technical: { yamlPath: "ocr.mistralModel", configFile: "librechat.yaml" }
+      },
+      ocrApiKey: { 
+        type: "password", 
+        description: "OCR API key (.env flat version). Alternative to ocr.apiKey for environment variable configuration. Use this when configuring OCR through .env instead of librechat.yaml.", 
+        label: "OCR API Key (.env)",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/ocr",
+        docSection: "OCR Configuration",
+        technical: { envVar: "OCR_API_KEY", configFile: ".env" }
+      },
+      ocrApiBase: { 
+        type: "text", 
+        description: "OCR API base URL (.env flat version). Alternative to ocr.baseURL for environment variable configuration. Use for custom OCR service endpoints.", 
+        label: "OCR API Base (.env)",
+        placeholder: "https://api.ocr-service.com/v1",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/ocr",
+        docSection: "OCR Configuration",
+        technical: { envVar: "OCR_API_BASE", configFile: ".env" }
       },
       
       // Core Settings
@@ -2089,6 +2235,62 @@ paths:
       rateLimitsTtsIpWindowInMinutes: { type: "number", description: "TTS IP window (minutes)", label: "TTS IP Window", technical: { yamlPath: "rateLimits.tts.ipWindowInMinutes", configFile: "librechat.yaml" } },
       rateLimitsTtsUserMax: { type: "number", description: "Max TTS requests per user", label: "TTS User Max", technical: { yamlPath: "rateLimits.tts.userMax", configFile: "librechat.yaml" } },
       rateLimitsTtsUserWindowInMinutes: { type: "number", description: "TTS user window (minutes)", label: "TTS User Window", technical: { yamlPath: "rateLimits.tts.userWindowInMinutes", configFile: "librechat.yaml" } },
+      
+      // Additional Web Search Fields (camelCase for field-registry compatibility)
+      searxngInstanceUrl: { type: "text", description: "SearXNG instance URL for web search", label: "SearXNG Instance URL", technical: { envVar: "SEARXNG_INSTANCE_URL", yamlPath: "webSearch.searxngInstanceUrl", configFile: ".env & librechat.yaml" } },
+      searxngApiKey: { type: "password", description: "SearXNG API key for authenticated requests", label: "SearXNG API Key", technical: { envVar: "SEARXNG_API_KEY", yamlPath: "webSearch.searxngApiKey", configFile: ".env & librechat.yaml" } },
+      firecrawlApiKey: { type: "password", description: "Firecrawl API key for advanced web scraping", label: "Firecrawl API Key", technical: { envVar: "FIRECRAWL_API_KEY", yamlPath: "webSearch.firecrawlApiKey", configFile: ".env & librechat.yaml" } },
+      firecrawlApiUrl: { type: "text", description: "Firecrawl API URL (custom or self-hosted instance)", label: "Firecrawl API URL", technical: { envVar: "FIRECRAWL_API_URL", yamlPath: "webSearch.firecrawlApiUrl", configFile: ".env & librechat.yaml" } },
+      webSearchFirecrawlOptionsFormats: { type: "array", description: "Firecrawl output formats (e.g., markdown, html, links)", label: "Firecrawl Formats", technical: { yamlPath: "webSearch.firecrawlOptions.formats", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsOnlyMainContent: { type: "boolean", description: "Extract only main content, excluding navigation and ads", label: "Only Main Content", technical: { yamlPath: "webSearch.firecrawlOptions.onlyMainContent", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsTimeout: { type: "number", description: "Firecrawl request timeout in milliseconds. Default: 30000", label: "Firecrawl Timeout (ms)", technical: { yamlPath: "webSearch.firecrawlOptions.timeout", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsWaitFor: { type: "number", description: "Wait time in milliseconds before scraping. Default: 0", label: "Wait For (ms)", technical: { yamlPath: "webSearch.firecrawlOptions.waitFor", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsBlockAds: { type: "boolean", description: "Block ads during scraping for cleaner content", label: "Block Ads", technical: { yamlPath: "webSearch.firecrawlOptions.blockAds", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsRemoveBase64Images: { type: "boolean", description: "Remove base64-encoded images to reduce response size", label: "Remove Base64 Images", technical: { yamlPath: "webSearch.firecrawlOptions.removeBase64Images", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsMobile: { type: "boolean", description: "Use mobile user agent for scraping", label: "Mobile Mode", technical: { yamlPath: "webSearch.firecrawlOptions.mobile", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsMaxAge: { type: "number", description: "Maximum cache age in seconds. Default: 0 (no cache)", label: "Max Cache Age (s)", technical: { yamlPath: "webSearch.firecrawlOptions.maxAge", configFile: "librechat.yaml" } },
+      webSearchFirecrawlOptionsProxy: { type: "text", description: "Proxy URL for Firecrawl requests", label: "Proxy URL", technical: { yamlPath: "webSearch.firecrawlOptions.proxy", configFile: "librechat.yaml" } },
+      jinaApiKey: { type: "password", description: "Jina AI API key for web scraping and reranking", label: "Jina API Key", technical: { envVar: "JINA_API_KEY", yamlPath: "webSearch.jinaApiKey", configFile: ".env & librechat.yaml" } },
+      jinaApiUrl: { type: "text", description: "Jina API URL (custom or self-hosted instance)", label: "Jina API URL", technical: { envVar: "JINA_API_URL", yamlPath: "webSearch.jinaApiUrl", configFile: ".env & librechat.yaml" } },
+      cohereApiKey: { type: "password", description: "Cohere API key for search result reranking", label: "Cohere API Key", technical: { envVar: "COHERE_API_KEY", yamlPath: "webSearch.cohereApiKey", configFile: ".env & librechat.yaml" } },
+      webSearchProvider: { type: "select", description: "Web search provider to use. Options: serper, searxng", label: "Search Provider", options: ["serper", "searxng"], technical: { yamlPath: "webSearch.searchProvider", configFile: "librechat.yaml" } },
+      webSearchScraperType: { type: "select", description: "Web scraper type. Options: firecrawl, jina", label: "Scraper Type", options: ["firecrawl", "jina"], technical: { yamlPath: "webSearch.scraperType", configFile: "librechat.yaml" } },
+      webSearchRerankerType: { type: "select", description: "Result reranker type. Options: jina, cohere", label: "Reranker Type", options: ["jina", "cohere"], technical: { yamlPath: "webSearch.rerankerType", configFile: "librechat.yaml" } },
+      webSearchScraperTimeout: { type: "number", description: "Web scraper timeout in milliseconds. Default: 30000", label: "Scraper Timeout (ms)", min: 1000, max: 120000, technical: { yamlPath: "webSearch.scraperTimeout", configFile: "librechat.yaml" } },
+      webSearchMaxLinks: { type: "number", description: "Maximum number of links to scrape from search results", label: "Max Links", min: 1, max: 20, technical: { yamlPath: "webSearch.maxLinks", configFile: "librechat.yaml" } },
+      
+      // Additional Rate Limiting Fields (camelCase for field-registry compatibility)
+      checkBalanceEnabled: { type: "boolean", description: "Enable balance checking for API usage monitoring", label: "Check Balance Enabled", technical: { yamlPath: "checkBalance.enabled", configFile: "librechat.yaml" } },
+      checkBalanceFrequency: { type: "number", description: "How often to check balance in hours. Default: 24", label: "Check Balance Frequency (hours)", min: 1, max: 168, technical: { yamlPath: "checkBalance.frequency", configFile: "librechat.yaml" } },
+      rateLimitsWarmup: { type: "boolean", description: "Enable warmup period for rate limiting (gradual increase)", label: "Rate Limit Warmup", technical: { yamlPath: "rateLimits.warmup", configFile: "librechat.yaml" } },
+      rateLimitsWarmupLimit: { type: "number", description: "Starting rate limit during warmup period", label: "Warmup Limit", technical: { yamlPath: "rateLimits.warmupLimit", configFile: "librechat.yaml" } },
+      rateLimitsWarmupPeriod: { type: "number", description: "Duration of warmup period in minutes", label: "Warmup Period (minutes)", technical: { yamlPath: "rateLimits.warmupPeriod", configFile: "librechat.yaml" } },
+      rateLimitsWarmupSkipFirstPeriod: { type: "boolean", description: "Skip rate limiting for the first warmup period", label: "Skip First Period", technical: { yamlPath: "rateLimits.warmupSkipFirstPeriod", configFile: "librechat.yaml" } },
+      
+      // Additional Interface Fields (camelCase for field-registry compatibility)
+      interfaceAgents: { type: "boolean", description: "Show agents in the interface", label: "Show Agents", technical: { yamlPath: "interface.agents", configFile: "librechat.yaml" } },
+      interfaceParameters: { type: "boolean", description: "Show parameters panel in the interface", label: "Show Parameters", technical: { yamlPath: "interface.parameters", configFile: "librechat.yaml" } },
+      interfaceEndpointsMenu: { type: "boolean", description: "Show endpoints menu in the interface", label: "Show Endpoints Menu", technical: { yamlPath: "interface.endpointsMenu", configFile: "librechat.yaml" } },
+      interfaceWebSearch: { type: "boolean", description: "Show web search button in the interface", label: "Show Web Search", technical: { yamlPath: "interface.webSearch", configFile: "librechat.yaml" } },
+      interfaceFileSearch: { type: "boolean", description: "Show file search in the interface", label: "Show File Search", technical: { yamlPath: "interface.fileSearch", configFile: "librechat.yaml" } },
+      interfaceFileCitations: { type: "boolean", description: "Show file citations in the interface", label: "Show File Citations", technical: { yamlPath: "interface.fileCitations", configFile: "librechat.yaml" } },
+      interfaceRunCode: { type: "boolean", description: "Show run code button in the interface", label: "Show Run Code", technical: { yamlPath: "interface.runCode", configFile: "librechat.yaml" } },
+      interfaceArtifacts: { type: "boolean", description: "Show artifacts UI in the interface", label: "Show Artifacts", technical: { yamlPath: "interface.artifacts", configFile: "librechat.yaml" } },
+      interfaceDefaultPreset: { type: "text", description: "Default preset ID to load on startup", label: "Default Preset ID", technical: { yamlPath: "interface.defaultPreset", configFile: "librechat.yaml" } },
+      interfaceUploadAsText: { type: "boolean", description: "Show upload as text button in the interface", label: "Show Upload as Text", technical: { yamlPath: "interface.uploadAsText", configFile: "librechat.yaml" } },
+      interfaceTemporaryChatRetention: { type: "number", description: "Temporary chat retention time in minutes", label: "Chat Retention (minutes)", min: 1, max: 43200, technical: { yamlPath: "interface.temporaryChatRetention", configFile: "librechat.yaml" } },
+      interfaceMarketplaceUse: { type: "boolean", description: "Enable marketplace usage", label: "Enable Marketplace", technical: { yamlPath: "interface.marketplace.use", configFile: "librechat.yaml" } },
+      interfaceMcpServersPlaceholder: { type: "text", description: "Placeholder text for MCP servers dropdown", label: "MCP Servers Placeholder", technical: { yamlPath: "interface.mcpServers.placeholder", configFile: "librechat.yaml" } },
+      interfacePrivacyPolicyExternalUrl: { type: "text", description: "External privacy policy URL", label: "Privacy Policy URL", technical: { yamlPath: "interface.privacyPolicy.externalUrl", configFile: "librechat.yaml" } },
+      interfacePrivacyPolicyOpenNewTab: { type: "boolean", description: "Open privacy policy in new tab", label: "Privacy Policy New Tab", technical: { yamlPath: "interface.privacyPolicy.openNewTab", configFile: "librechat.yaml" } },
+      interfaceTermsOfServiceExternalUrl: { type: "text", description: "External terms of service URL", label: "Terms of Service URL", technical: { yamlPath: "interface.termsOfService.externalUrl", configFile: "librechat.yaml" } },
+      interfaceTermsOfServiceOpenNewTab: { type: "boolean", description: "Open terms of service in new tab", label: "Terms New Tab", technical: { yamlPath: "interface.termsOfService.openNewTab", configFile: "librechat.yaml" } },
+      interfaceTermsOfServiceModalAcceptance: { type: "boolean", description: "Require modal acceptance of terms", label: "Terms Modal Acceptance", technical: { yamlPath: "interface.termsOfService.modalAcceptance", configFile: "librechat.yaml" } },
+      interfaceTermsOfServiceModalTitle: { type: "text", description: "Terms modal title text", label: "Terms Modal Title", technical: { yamlPath: "interface.termsOfService.modalTitle", configFile: "librechat.yaml" } },
+      interfaceTermsOfServiceModalContent: { type: "textarea", description: "Terms modal content text", label: "Terms Modal Content", technical: { yamlPath: "interface.termsOfService.modalContent", configFile: "librechat.yaml" } },
+      interfacePeoplePickerUsers: { type: "boolean", description: "Show users in people picker", label: "People Picker Users", technical: { yamlPath: "interface.peoplePicker.users", configFile: "librechat.yaml" } },
+      interfacePeoplePickerGroups: { type: "boolean", description: "Show groups in people picker", label: "People Picker Groups", technical: { yamlPath: "interface.peoplePicker.groups", configFile: "librechat.yaml" } },
+      interfacePeoplePickerRoles: { type: "boolean", description: "Show roles in people picker", label: "People Picker Roles", technical: { yamlPath: "interface.peoplePicker.roles", configFile: "librechat.yaml" } },
       
       // Interface Nested Object Fields (path-based)
       "interface.customWelcome": { 
@@ -2825,6 +3027,357 @@ paths:
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/custom_endpoint",
         docSection: "Custom Endpoints",
         technical: { yamlPath: "endpoints.custom", configFile: "librechat.yaml" }
+      },
+
+      // =============================================================================
+      // MongoDB Advanced Configuration
+      // =============================================================================
+      mongoConnectTimeoutMS: {
+        type: "number",
+        description: "The amount of time in milliseconds to wait before timing out the initial connection to MongoDB. Default: 30000ms (30 seconds).",
+        label: "Connect Timeout (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_CONNECT_TIMEOUT_MS", configFile: ".env" }
+      },
+      mongoSocketTimeoutMS: {
+        type: "number",
+        description: "The number of milliseconds to wait before timing out a socket when no data is received. 0 disables timeout. Default: 0.",
+        label: "Socket Timeout (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_SOCKET_TIMEOUT_MS", configFile: ".env" }
+      },
+      mongoMaxPoolSize: {
+        type: "number",
+        description: "The maximum number of connections in the connection pool. Adjust based on your application's concurrent operations.",
+        label: "Max Pool Size",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_MAX_POOL_SIZE", configFile: ".env" }
+      },
+      mongoMinPoolSize: {
+        type: "number",
+        description: "The minimum number of connections in the connection pool. Ensures a base level of available connections.",
+        label: "Min Pool Size",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_MIN_POOL_SIZE", configFile: ".env" }
+      },
+      mongoMaxIdleTimeMS: {
+        type: "number",
+        description: "The maximum number of milliseconds that a connection can remain idle in the pool before being removed and closed. 0 disables idle timeout.",
+        label: "Max Idle Time (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_MAX_IDLE_TIME_MS", configFile: ".env" }
+      },
+      mongoWaitQueueTimeoutMS: {
+        type: "number",
+        description: "The maximum time in milliseconds that a thread can wait for a connection to become available from the pool.",
+        label: "Wait Queue Timeout (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_WAIT_QUEUE_TIMEOUT_MS", configFile: ".env" }
+      },
+      mongoServerSelectionTimeoutMS: {
+        type: "number",
+        description: "The amount of time in milliseconds to wait for server selection to succeed before timing out. Default: 30000ms (30 seconds).",
+        label: "Server Selection Timeout (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_SERVER_SELECTION_TIMEOUT_MS", configFile: ".env" }
+      },
+      mongoHeartbeatFrequencyMS: {
+        type: "number",
+        description: "The interval in milliseconds for monitoring heartbeats to MongoDB servers. Controls how often to check server health. Default: 10000ms (10 seconds).",
+        label: "Heartbeat Frequency (ms)",
+        docUrl: "https://www.librechat.ai/docs/configuration/mongodb",
+        docSection: "MongoDB Advanced",
+        technical: { envVar: "MONGO_HEARTBEAT_FREQUENCY_MS", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // Azure AI Search Configuration
+      // =============================================================================
+      azureAiSearchApiKey: {
+        type: "password",
+        description: "Azure AI Search API key for authenticating requests to your Azure Cognitive Search service.",
+        label: "Azure AI Search API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_API_KEY", configFile: ".env" }
+      },
+      azureAiSearchServiceEndpoint: {
+        type: "text",
+        description: "The service endpoint URL for your Azure AI Search instance (e.g., https://your-service.search.windows.net).",
+        label: "Service Endpoint",
+        placeholder: "https://your-service.search.windows.net",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_SERVICE_ENDPOINT", configFile: ".env" }
+      },
+      azureAiSearchIndexName: {
+        type: "text",
+        description: "The name of the search index to query in your Azure AI Search service.",
+        label: "Index Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_INDEX_NAME", configFile: ".env" }
+      },
+      azureAiSearchEmbeddingDeploymentName: {
+        type: "text",
+        description: "The deployment name for the embedding model used with Azure AI Search vector search.",
+        label: "Embedding Deployment Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_EMBEDDING_DEPLOYMENT_NAME", configFile: ".env" }
+      },
+      azureAiSearchSemanticConfiguration: {
+        type: "text",
+        description: "The semantic configuration name for semantic search capabilities in Azure AI Search.",
+        label: "Semantic Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_SEMANTIC_CONFIGURATION", configFile: ".env" }
+      },
+      azureAiSearchQueryType: {
+        type: "select",
+        description: "The query type for Azure AI Search. Options: 'semantic' (AI-powered), 'vector' (embedding-based), or 'hybrid' (combines both).",
+        label: "Query Type",
+        options: ["semantic", "vector", "hybrid"],
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_QUERY_TYPE", configFile: ".env" }
+      },
+      azureAiSearchVectorFieldName: {
+        type: "text",
+        description: "The field name in the index that contains vector embeddings for vector search.",
+        label: "Vector Field Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_VECTOR_FIELD_NAME", configFile: ".env" }
+      },
+      azureAiSearchContentFieldName: {
+        type: "text",
+        description: "The field name in the index that contains the main content/text to be searched.",
+        label: "Content Field Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_CONTENT_FIELD_NAME", configFile: ".env" }
+      },
+      azureAiSearchTitleFieldName: {
+        type: "text",
+        description: "The field name in the index that contains document titles or headers.",
+        label: "Title Field Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_TITLE_FIELD_NAME", configFile: ".env" }
+      },
+      azureAiSearchUrlFieldName: {
+        type: "text",
+        description: "The field name in the index that contains URLs or document references.",
+        label: "URL Field Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure AI Search",
+        technical: { envVar: "AZURE_AI_SEARCH_URL_FIELD_NAME", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // File Storage Advanced Configuration
+      // =============================================================================
+      awsAccessKeyIdFileStorage: {
+        type: "password",
+        description: "AWS Access Key ID specifically for file storage operations (alternative to general AWS_ACCESS_KEY_ID).",
+        label: "AWS Access Key ID (File Storage)",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Storage",
+        technical: { envVar: "AWS_ACCESS_KEY_ID_FILE_STORAGE", configFile: ".env" }
+      },
+      awsSecretAccessKeyFileStorage: {
+        type: "password",
+        description: "AWS Secret Access Key specifically for file storage operations (alternative to general AWS_SECRET_ACCESS_KEY).",
+        label: "AWS Secret Key (File Storage)",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Storage",
+        technical: { envVar: "AWS_SECRET_ACCESS_KEY_FILE_STORAGE", configFile: ".env" }
+      },
+      awsRegionFileStorage: {
+        type: "text",
+        description: "AWS Region specifically for file storage operations (e.g., us-east-1). Alternative to general AWS_REGION.",
+        label: "AWS Region (File Storage)",
+        placeholder: "us-east-1",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Storage",
+        technical: { envVar: "AWS_REGION_FILE_STORAGE", configFile: ".env" }
+      },
+      firebaseServiceAccountKey: {
+        type: "textarea",
+        description: "Firebase service account key JSON for Firebase Storage authentication. Paste the entire JSON content from your Firebase service account key file.",
+        label: "Firebase Service Account Key (JSON)",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Storage",
+        technical: { envVar: "FIREBASE_SERVICE_ACCOUNT_KEY", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // Email Advanced Configuration
+      // =============================================================================
+      mailgunApiKey: {
+        type: "password",
+        description: "Mailgun API key for sending emails via Mailgun service.",
+        label: "Mailgun API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - Mailgun",
+        technical: { envVar: "MAILGUN_API_KEY", configFile: ".env" }
+      },
+      mailgunDomain: {
+        type: "text",
+        description: "Your verified Mailgun domain for sending emails (e.g., mail.example.com).",
+        label: "Mailgun Domain",
+        placeholder: "mail.example.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - Mailgun",
+        technical: { envVar: "MAILGUN_DOMAIN", configFile: ".env" }
+      },
+      mailgunHost: {
+        type: "text",
+        description: "Mailgun API host URL. Use 'api.mailgun.net' for US region or 'api.eu.mailgun.net' for EU region.",
+        label: "Mailgun Host",
+        placeholder: "api.mailgun.net",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - Mailgun",
+        technical: { envVar: "MAILGUN_HOST", configFile: ".env" }
+      },
+      mailgunWebhookSigningKey: {
+        type: "password",
+        description: "Mailgun webhook signing key for verifying webhook authenticity and securing webhook endpoints.",
+        label: "Mailgun Webhook Signing Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - Mailgun",
+        technical: { envVar: "MAILGUN_WEBHOOK_SIGNING_KEY", configFile: ".env" }
+      },
+      emailReplyToAddress: {
+        type: "text",
+        description: "Reply-to email address for outgoing emails. Users' replies will be directed to this address.",
+        label: "Reply-To Address",
+        placeholder: "support@example.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email Advanced",
+        technical: { envVar: "EMAIL_REPLY_TO_ADDRESS", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // Debug Configuration
+      // =============================================================================
+      debugOpenai: {
+        type: "boolean",
+        description: "Enable debug mode for OpenAI endpoint to log detailed request/response information. Useful for troubleshooting API issues.",
+        label: "Debug OpenAI",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Debug",
+        technical: { envVar: "DEBUG_OPENAI", configFile: ".env" }
+      },
+      debugPlugins: {
+        type: "boolean",
+        description: "Enable debug mode for plugins to log detailed plugin execution information. Set to false to disable plugin debugging.",
+        label: "Debug Plugins",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Debug",
+        technical: { envVar: "DEBUG_PLUGINS", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // External API Integrations
+      // =============================================================================
+      fluxApiKey: {
+        type: "password",
+        description: "Flux API key for image generation services using the Flux AI model.",
+        label: "Flux API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Image Generation",
+        technical: { envVar: "FLUX_API_KEY", configFile: ".env" }
+      },
+      tavilyApiKey: {
+        type: "password",
+        description: "Tavily API key for enhanced web search capabilities and content extraction.",
+        label: "Tavily API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Search",
+        technical: { envVar: "TAVILY_API_KEY", configFile: ".env" }
+      },
+      wolframAppId: {
+        type: "password",
+        description: "Wolfram Alpha App ID for computational knowledge and mathematical problem-solving capabilities.",
+        label: "Wolfram Alpha App ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Knowledge",
+        technical: { envVar: "WOLFRAM_APP_ID", configFile: ".env" }
+      },
+      youtubeApiKey: {
+        type: "password",
+        description: "YouTube Data API key for accessing YouTube content, video information, and metadata.",
+        label: "YouTube API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Media",
+        technical: { envVar: "YOUTUBE_API_KEY", configFile: ".env" }
+      },
+      zapierNlaApiKey: {
+        type: "password",
+        description: "Zapier NLA (Natural Language Actions) API key for integrating with Zapier automation workflows.",
+        label: "Zapier NLA API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Automation",
+        technical: { envVar: "ZAPIER_NLA_API_KEY", configFile: ".env" }
+      },
+      sdWebuiUrl: {
+        type: "text",
+        description: "Stable Diffusion WebUI base URL for image generation (e.g., http://localhost:7860).",
+        label: "SD WebUI URL",
+        placeholder: "http://localhost:7860",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "External APIs - Image Generation",
+        technical: { envVar: "SD_WEBUI_URL", configFile: ".env" }
+      },
+      sdWebuiImageGenUrl: {
+        type: "text",
+        description: "Stable Diffusion WebUI specific endpoint URL for text-to-image generation.",
+        label: "SD WebUI Image Gen URL",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "External APIs - Image Generation",
+        technical: { envVar: "SD_WEBUI_IMAGE_GEN_URL", configFile: ".env" }
+      },
+      sdWebuiImageEditUrl: {
+        type: "text",
+        description: "Stable Diffusion WebUI specific endpoint URL for image-to-image editing and modification.",
+        label: "SD WebUI Image Edit URL",
+        docUrl: "https://www.librechat.ai/docs/features/image_gen",
+        docSection: "External APIs - Image Generation",
+        technical: { envVar: "SD_WEBUI_IMAGE_EDIT_URL", configFile: ".env" }
+      },
+      travelApiKey: {
+        type: "password",
+        description: "Travel API key for accessing travel-related data and services.",
+        label: "Travel API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Travel",
+        technical: { envVar: "TRAVEL_API_KEY", configFile: ".env" }
+      },
+      pollinations: {
+        type: "text",
+        description: "Pollinations AI service configuration for image and content generation.",
+        label: "Pollinations Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - AI Services",
+        technical: { envVar: "POLLINATIONS", configFile: ".env" }
+      },
+      traversaalApiKey: {
+        type: "password",
+        description: "Traversaal API key for advanced web search and data extraction capabilities.",
+        label: "Traversaal API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
+        docSection: "External APIs - Search",
+        technical: { envVar: "TRAVERSAAL_API_KEY", configFile: ".env" }
       },
     };
     

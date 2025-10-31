@@ -4691,6 +4691,202 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     category: 'system',
     description: 'Specifies the number of hops.',
   },
+
+  // =============================================================================
+  // DATABASE: MongoDB Additional Timeout Fields (4 fields)
+  // =============================================================================
+  {
+    id: 'mongoConnectTimeoutMS',
+    envKey: 'MONGO_CONNECT_TIMEOUT_MS',
+    type: 'number',
+    defaultValue: 30000,
+    category: 'database',
+    description: 'The amount of time in milliseconds to wait before timing out the initial connection.',
+  },
+  {
+    id: 'mongoSocketTimeoutMS',
+    envKey: 'MONGO_SOCKET_TIMEOUT_MS',
+    type: 'number',
+    defaultValue: 0,
+    category: 'database',
+    description: 'The number of milliseconds to wait before timing out a socket when no data is received.',
+  },
+  {
+    id: 'mongoServerSelectionTimeoutMS',
+    envKey: 'MONGO_SERVER_SELECTION_TIMEOUT_MS',
+    type: 'number',
+    defaultValue: 30000,
+    category: 'database',
+    description: 'The amount of time in milliseconds to wait for server selection to succeed before timing out.',
+  },
+  {
+    id: 'mongoHeartbeatFrequencyMS',
+    envKey: 'MONGO_HEARTBEAT_FREQUENCY_MS',
+    type: 'number',
+    defaultValue: 10000,
+    category: 'database',
+    description: 'The interval in milliseconds for monitoring heartbeats to MongoDB servers.',
+  },
+
+  // =============================================================================
+  // SEARCH: Azure AI Search Additional Fields (7 fields)
+  // =============================================================================
+  {
+    id: 'azureAiSearchEmbeddingDeploymentName',
+    envKey: 'AZURE_AI_SEARCH_EMBEDDING_DEPLOYMENT_NAME',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The embedding deployment name for Azure AI Search.',
+  },
+  {
+    id: 'azureAiSearchSemanticConfiguration',
+    envKey: 'AZURE_AI_SEARCH_SEMANTIC_CONFIGURATION',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The semantic configuration for Azure AI Search.',
+  },
+  {
+    id: 'azureAiSearchQueryType',
+    envKey: 'AZURE_AI_SEARCH_QUERY_TYPE',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The query type for Azure AI Search (semantic, vector, hybrid).',
+  },
+  {
+    id: 'azureAiSearchVectorFieldName',
+    envKey: 'AZURE_AI_SEARCH_VECTOR_FIELD_NAME',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The vector field name for Azure AI Search.',
+  },
+  {
+    id: 'azureAiSearchContentFieldName',
+    envKey: 'AZURE_AI_SEARCH_CONTENT_FIELD_NAME',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The content field name for Azure AI Search.',
+  },
+  {
+    id: 'azureAiSearchTitleFieldName',
+    envKey: 'AZURE_AI_SEARCH_TITLE_FIELD_NAME',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The title field name for Azure AI Search.',
+  },
+  {
+    id: 'azureAiSearchUrlFieldName',
+    envKey: 'AZURE_AI_SEARCH_URL_FIELD_NAME',
+    type: 'string',
+    defaultValue: '',
+    category: 'search',
+    description: 'The URL field name for Azure AI Search.',
+  },
+
+  // =============================================================================
+  // FILE STORAGE: Additional Provider Fields (4 fields)
+  // =============================================================================
+  {
+    id: 'awsAccessKeyIdFileStorage',
+    envKey: 'AWS_ACCESS_KEY_ID_FILE_STORAGE',
+    type: 'string',
+    defaultValue: '',
+    category: 'file-storage',
+    description: 'AWS Access Key ID specifically for file storage (alternative to general AWS_ACCESS_KEY_ID).',
+  },
+  {
+    id: 'awsSecretAccessKeyFileStorage',
+    envKey: 'AWS_SECRET_ACCESS_KEY_FILE_STORAGE',
+    type: 'string',
+    defaultValue: '',
+    category: 'file-storage',
+    description: 'AWS Secret Access Key specifically for file storage (alternative to general AWS_SECRET_ACCESS_KEY).',
+  },
+  {
+    id: 'awsRegionFileStorage',
+    envKey: 'AWS_REGION_FILE_STORAGE',
+    type: 'string',
+    defaultValue: '',
+    category: 'file-storage',
+    description: 'AWS Region specifically for file storage (alternative to general AWS_REGION).',
+  },
+  {
+    id: 'firebaseServiceAccountKey',
+    envKey: 'FIREBASE_SERVICE_ACCOUNT_KEY',
+    type: 'string',
+    defaultValue: '',
+    category: 'file-storage',
+    description: 'Firebase service account key JSON for file storage authentication.',
+  },
+
+  // =============================================================================
+  // EMAIL: Additional Mailgun & Advanced Fields (2 fields)
+  // =============================================================================
+  {
+    id: 'mailgunWebhookSigningKey',
+    envKey: 'MAILGUN_WEBHOOK_SIGNING_KEY',
+    type: 'string',
+    defaultValue: '',
+    category: 'email',
+    description: 'Mailgun webhook signing key for webhook verification.',
+  },
+  {
+    id: 'emailReplyToAddress',
+    envKey: 'EMAIL_REPLY_TO_ADDRESS',
+    type: 'string',
+    defaultValue: '',
+    category: 'email',
+    description: 'Reply-to email address for outgoing emails.',
+  },
+
+  // =============================================================================
+  // EXTERNAL APIS: Additional Service Keys (5 fields)
+  // =============================================================================
+  {
+    id: 'fluxApiKey',
+    envKey: 'FLUX_API_KEY',
+    type: 'string',
+    defaultValue: '',
+    category: 'external-apis',
+    description: 'Flux API key for image generation.',
+  },
+  {
+    id: 'sdWebuiImageGenUrl',
+    envKey: 'SD_WEBUI_IMAGE_GEN_URL',
+    type: 'string',
+    defaultValue: '',
+    category: 'external-apis',
+    description: 'Stable Diffusion WebUI image generation URL.',
+  },
+  {
+    id: 'sdWebuiImageEditUrl',
+    envKey: 'SD_WEBUI_IMAGE_EDIT_URL',
+    type: 'string',
+    defaultValue: '',
+    category: 'external-apis',
+    description: 'Stable Diffusion WebUI image editing URL.',
+  },
+  {
+    id: 'travelApiKey',
+    envKey: 'TRAVEL_API_KEY',
+    type: 'string',
+    defaultValue: '',
+    category: 'external-apis',
+    description: 'Travel API key.',
+  },
+  {
+    id: 'pollinations',
+    envKey: 'POLLINATIONS',
+    type: 'string',
+    defaultValue: '',
+    category: 'external-apis',
+    description: 'Pollinations AI service configuration.',
+  },
 ];
 
 /**

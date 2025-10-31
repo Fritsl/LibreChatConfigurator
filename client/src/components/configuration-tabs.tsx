@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { type Configuration } from "@shared/schema";
+import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { 
   Server, 
   Shield, 
@@ -4041,7 +4042,24 @@ paths:
       },
     };
     
-    return fieldMap[fieldName] || { type: "text", description: `Configuration for ${fieldName}`, label: fieldName };
+    // Get base field info from fieldMap
+    const baseFieldInfo = fieldMap[fieldName] || { type: "text", description: `Configuration for ${fieldName}`, label: fieldName };
+    
+    // STRICT YAML-FIRST POLICY: Check registry and override configFile for YAML-only fields
+    const registryField = FIELD_REGISTRY.find(f => f.id === fieldName);
+    if (registryField && registryField.yamlPath) {
+      // This field has yamlPath → it MUST go in librechat.yaml, NEVER .env
+      return {
+        ...baseFieldInfo,
+        technical: {
+          ...baseFieldInfo.technical,
+          yamlPath: registryField.yamlPath,
+          configFile: "librechat.yaml" as const
+        }
+      };
+    }
+    
+    return baseFieldInfo;
   };
 
   return (

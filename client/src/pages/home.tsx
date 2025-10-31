@@ -422,9 +422,9 @@ export default function Home() {
             // Analyze what changed BEFORE import (compare existing config vs YAML)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // REPLACE configuration with YAML data (don't merge - ensures round-trip parity)
-            // This ensures fields not in YAML are cleared, not retained from existing config
-            updateConfiguration(configUpdates, true);
+            // MERGE configuration with YAML data (preserves ENV-only fields)
+            // This ensures YAML fields are updated while ENV-only fields remain intact
+            updateConfiguration(configUpdates, false);
             
             // Show detailed import summary
             setImportSummaryData({
@@ -522,9 +522,9 @@ export default function Home() {
             // Analyze what changed BEFORE import (compare existing config vs .env)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // REPLACE configuration with .env data (don't merge - ensures round-trip parity)
-            // This ensures fields not in .env are cleared, not retained from existing config
-            updateConfiguration(configUpdates, true);
+            // MERGE configuration with .env data (preserves YAML-only fields)
+            // This ensures ENV fields are updated while YAML-only fields remain intact
+            updateConfiguration(configUpdates, false);
             
             // Show detailed import summary
             setImportSummaryData({

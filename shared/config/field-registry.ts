@@ -65,6 +65,13 @@ export interface FieldDescriptor {
   // Whether this field should be exported to YAML (some .env-only fields shouldn't)
   exportToYaml?: boolean;
   
+  // Known LibreChat bugs affecting this field (used for UI warnings and workarounds)
+  librechatBug?: {
+    description: string;
+    workaround: string;
+    affectedVersions?: string;
+  };
+  
   // Custom transformer for env string -> typed value
   envTransformer?: (value: string) => any;
   
@@ -185,6 +192,11 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     defaultValue: '',
     category: 'app',
     description: 'Custom footer text',
+    librechatBug: {
+      description: 'LibreChat frontend missing TypeScript definition for customFooter in YAML config interface, causing value to be filtered out before reaching UI',
+      workaround: 'Use CUSTOM_FOOTER in .env file instead - environment variables bypass the type filtering issue',
+      affectedVersions: 'v0.8.0-rc4 and earlier'
+    }
   },
   {
     id: 'helpAndFAQURL',

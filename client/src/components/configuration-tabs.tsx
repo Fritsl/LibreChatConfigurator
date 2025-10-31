@@ -2347,7 +2347,7 @@ paths:
       },
       "interface.customFooter": { 
         type: "textarea", 
-        description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.", 
+        description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.\n\n⚠️ LIBRECHAT BUG: The customFooter field cannot be set in librechat.yaml due to a missing TypeScript definition in the frontend. The backend loads it correctly, but the frontend filters it out before displaying. WORKAROUND: Use CUSTOM_FOOTER in .env file instead - environment variables bypass this type filtering issue. (Affects v0.8.0-rc4 and earlier)", 
         label: "Footer Text",
         docUrl: "https://www.librechat.ai/docs/configuration/dotenv#application-domains",
         docSection: "App Settings",
@@ -4064,6 +4064,19 @@ paths:
     }
     
     if (registryField && registryField.yamlPath) {
+      // EXCEPTION: If field has a known LibreChat bug, use .env workaround instead of YAML
+      if (registryField.librechatBug) {
+        return {
+          ...baseFieldInfo,
+          technical: {
+            ...baseFieldInfo.technical,
+            envVar: registryField.envKey,
+            yamlPath: registryField.yamlPath,
+            configFile: ".env" as const  // Use .env workaround due to LibreChat bug
+          }
+        };
+      }
+      
       // This field has yamlPath → it MUST go in librechat.yaml, NEVER .env
       return {
         ...baseFieldInfo,

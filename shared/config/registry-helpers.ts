@@ -80,6 +80,13 @@ export function validateEnvVars(envVars: Record<string, string>): {
     const field = getFieldByEnvKey(varName);
     
     if (field && field.yamlPath) {
+      // EXCEPTION: If field has a known LibreChat bug, allow .env workaround
+      if (field.librechatBug) {
+        // This field has a LibreChat bug that prevents YAML from working
+        // Allow .env usage as workaround - do NOT add to yamlOnlyVars
+        continue;
+      }
+      
       // STRICT POLICY: This field has yamlPath, it MUST go in librechat.yaml
       yamlOnlyVars.push({ envKey: varName, yamlPath: field.yamlPath });
     } else if (!supportedKeys.has(varName)) {
@@ -323,8 +330,22 @@ export function generateEnvFile(config: Record<string, any>): string {
   // Group fields by category for organized output
   const byCategory = new Map<string, FieldDescriptor[]>();
   for (const field of FIELD_REGISTRY) {
-    // STRICT POLICY: Skip any field with yamlPath - those belong in librechat.yaml only
-    if (!field.envKey || field.exportToEnv === false || field.yamlPath) continue;
+    // Check if field should be exported to .env
+    let shouldExport = false;
+    
+    if (field.envKey && field.exportToEnv !== false) {
+      // EXCEPTION: If field has LibreChat bug, export to .env despite having yamlPath
+      if (field.librechatBug) {
+        shouldExport = true;
+      }
+      // STRICT POLICY: Skip fields with yamlPath (they belong in librechat.yaml only)
+      else if (!field.yamlPath) {
+        shouldExport = true;
+      }
+    }
+    
+    if (!shouldExport) continue;
+    
     if (!byCategory.has(field.category)) {
       byCategory.set(field.category, []);
     }
@@ -939,7 +960,8 @@ function generateEndpointsSection(config: any): string {
 function generateInterfaceSection(config: any): string {
   const hasInterfaceValues = config.interface && Object.keys(config.interface).some(key => config.interface[key] !== undefined && config.interface[key] !== null && config.interface[key] !== '');
   const hasTemporaryChatRetention = config.temporaryChatRetention !== undefined;
-  const hasTopLevelInterfaceFields = config.customWelcome || config.customFooter;
+  // Note: customFooter excluded from YAML due to LibreChat bug (use .env instead)
+  const hasTopLevelInterfaceFields = config.customWelcome;
   
   if (!hasInterfaceValues && !hasTemporaryChatRetention && !hasTopLevelInterfaceFields) return '';
   
@@ -996,9 +1018,10 @@ function generateInterfaceSection(config: any): string {
   if (config.interface?.customWelcome || config.customWelcome) {
     lines.push(`  customWelcome: "${escapeYamlDoubleQuoted(config.interface?.customWelcome || config.customWelcome)}"`);
   }
-  if (config.interface?.customFooter || config.customFooter) {
-    lines.push(`  customFooter: "${escapeYamlDoubleQuoted(config.interface?.customFooter || config.customFooter)}"`);
-  }
+  // NOTE: customFooter intentionally excluded from YAML due to LibreChat RC4 bug
+  // The frontend TypeScript interface is missing the customFooter field definition,
+  // causing it to be filtered out before reaching the UI. Use CUSTOM_FOOTER in .env instead.
+  // This is a temporary workaround until LibreChat fixes the TypeScript definitions.
   
   const termsModalAcceptance = config.interface?.termsOfService?.modalAcceptance ?? config.interfaceTermsOfServiceModalAcceptance;
   const termsModalTitle = config.interface?.termsOfService?.modalTitle ?? config.interfaceTermsOfServiceModalTitle;

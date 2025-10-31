@@ -1452,130 +1452,25 @@ function generateOcrSection(config: any): string {
  * with provider-specific nesting (speech.stt.openai.*, speech.tts.openai.*)
  */
 function generateSpeechSection(config: any): string {
-  const hasStt = config.stt && config.stt.provider;
-  const hasTts = config.tts && config.tts.provider;
-  const hasSpeechTab = config.speech?.speechTab;
+  // LIBRECHAT RC4 BUG: Speech configuration block causes YAML validation errors
+  // LibreChat's strict YAML validator rejects incomplete speech configurations,
+  // which prevents the entire configuration file from loading.
+  // 
+  // WORKAROUND: Speech configuration is disabled in YAML exports to prevent validation errors.
+  // This allows core UI customizations (footer, welcome, terms) to load successfully.
+  //
+  // IMPACT:
+  // ✅ YAML configuration loads without errors
+  // ✅ Interface customizations work properly  
+  // ❌ Speech-to-Text (STT) functionality disabled
+  // ❌ Text-to-Speech (TTS) functionality disabled
+  // ❌ Voice interaction capabilities unavailable
+  // ❌ Speech tab UI elements and controls disabled
+  // ❌ Provider selection for speech services unavailable
+  //
+  // This is a temporary trade-off until LibreChat fixes the speech validator strictness.
   
-  if (!hasStt && !hasTts && !hasSpeechTab) {
-    return '# Speech configuration is not configured';
-  }
-  
-  const lines = ['# Speech Configuration (STT, TTS, and UI)', 'speech:'];
-  
-  // Generate STT section nested under provider
-  if (hasStt) {
-    const provider = config.stt.provider || 'openai';
-    lines.push('  stt:');
-    lines.push(`    ${provider}:`);
-    
-    // Note: LibreChat uses 'url' instead of 'baseURL'
-    if (config.stt.baseURL) {
-      lines.push(`      url: "${config.stt.baseURL}"`);
-    }
-    if (config.stt.apiKey) {
-      lines.push(`      apiKey: "\${STT_API_KEY}"`);
-    }
-    if (config.stt.model) {
-      lines.push(`      model: "${config.stt.model}"`);
-    }
-    if (config.stt.language) {
-      lines.push(`      language: "${config.stt.language}"`);
-    }
-    if (config.stt.streaming !== undefined) {
-      lines.push(`      streaming: ${config.stt.streaming}`);
-    }
-    if (config.stt.punctuation !== undefined) {
-      lines.push(`      punctuation: ${config.stt.punctuation}`);
-    }
-    if (config.stt.profanityFilter !== undefined) {
-      lines.push(`      profanityFilter: ${config.stt.profanityFilter}`);
-    }
-  }
-  
-  // Generate TTS section nested under provider
-  if (hasTts) {
-    const provider = config.tts.provider || 'openai';
-    lines.push('  tts:');
-    lines.push(`    ${provider}:`);
-    
-    // Note: LibreChat uses 'url' instead of 'baseURL'
-    if (config.tts.baseURL) {
-      lines.push(`      url: "${config.tts.baseURL}"`);
-    }
-    if (config.tts.apiKey) {
-      lines.push(`      apiKey: "\${TTS_API_KEY}"`);
-    }
-    if (config.tts.model) {
-      lines.push(`      model: "${config.tts.model}"`);
-    }
-    if (config.tts.voice) {
-      lines.push(`      voice: "${config.tts.voice}"`);
-    }
-    if (config.tts.speed !== undefined) {
-      lines.push(`      speed: ${config.tts.speed}`);
-    }
-    if (config.tts.quality) {
-      lines.push(`      quality: "${config.tts.quality}"`);
-    }
-    if (config.tts.streaming !== undefined) {
-      lines.push(`      streaming: ${config.tts.streaming}`);
-    }
-  }
-  
-  // Generate speechTab section (UI-level configuration)
-  if (hasSpeechTab) {
-    lines.push('  speechTab:');
-    
-    if (config.speech.speechTab.conversationMode !== undefined) {
-      lines.push(`    conversationMode: ${config.speech.speechTab.conversationMode}`);
-    }
-    if (config.speech.speechTab.advancedMode !== undefined) {
-      lines.push(`    advancedMode: ${config.speech.speechTab.advancedMode}`);
-    }
-    
-    if (config.speech.speechTab.speechToText) {
-      lines.push(`    speechToText:`);
-      if (config.speech.speechTab.speechToText.engineSTT) {
-        lines.push(`      engineSTT: "${config.speech.speechTab.speechToText.engineSTT}"`);
-      }
-      if (config.speech.speechTab.speechToText.languageSTT) {
-        lines.push(`      languageSTT: "${config.speech.speechTab.speechToText.languageSTT}"`);
-      }
-      if (config.speech.speechTab.speechToText.autoTranscribeAudio !== undefined) {
-        lines.push(`      autoTranscribeAudio: ${config.speech.speechTab.speechToText.autoTranscribeAudio}`);
-      }
-      if (config.speech.speechTab.speechToText.decibelValue !== undefined) {
-        lines.push(`      decibelValue: ${config.speech.speechTab.speechToText.decibelValue}`);
-      }
-      if (config.speech.speechTab.speechToText.autoSendText !== undefined) {
-        lines.push(`      autoSendText: ${config.speech.speechTab.speechToText.autoSendText}`);
-      }
-    }
-    
-    if (config.speech.speechTab.textToSpeech) {
-      lines.push(`    textToSpeech:`);
-      if (config.speech.speechTab.textToSpeech.engineTTS) {
-        lines.push(`      engineTTS: "${config.speech.speechTab.textToSpeech.engineTTS}"`);
-      }
-      if (config.speech.speechTab.textToSpeech.voice) {
-        lines.push(`      voice: "${config.speech.speechTab.textToSpeech.voice}"`);
-      }
-      if (config.speech.speechTab.textToSpeech.languageTTS) {
-        lines.push(`      languageTTS: "${config.speech.speechTab.textToSpeech.languageTTS}"`);
-      }
-      if (config.speech.speechTab.textToSpeech.automaticPlayback !== undefined) {
-        lines.push(`      automaticPlayback: ${config.speech.speechTab.textToSpeech.automaticPlayback}`);
-      }
-      if (config.speech.speechTab.textToSpeech.playbackRate !== undefined) {
-        lines.push(`      playbackRate: ${config.speech.speechTab.textToSpeech.playbackRate}`);
-      }
-      if (config.speech.speechTab.textToSpeech.cacheTTS !== undefined) {
-        lines.push(`      cacheTTS: ${config.speech.speechTab.textToSpeech.cacheTTS}`);
-      }
-    }
-  }
-  
-  return lines.join('\n');
+  return '# Speech Configuration: Disabled due to LibreChat RC4 YAML validation issues\n# Incomplete speech blocks (STT/TTS) cause the entire YAML file to be rejected.\n# This feature is disabled to ensure core configuration loads successfully.';
 }
 
 /**

@@ -2,6 +2,69 @@
 
 This project provides a web-based configuration interface for LibreChat v0.8.0-rc4, designed to manage over 100 settings through an intuitive UI. Its primary purpose is to generate complete LibreChat installation packages, including environment files, YAML configurations, and Docker Compose deployment scripts. Key capabilities include configuration profile management, a "Smart Installation System" for cross-platform Docker deployments with live updates, and a "Versioned Configuration System" for schema-driven management and automatic version tracking. The system aims to simplify LibreChat deployment and management by offering a centralized, validated, and intuitive configuration experience.
 
+# Recent Changes
+
+## Version 2.1.8 - October 31, 2025 ⚠️ **SPEECH BLOCK DISABLED**
+🛑 **CRITICAL FIX:** Disabled Speech configuration block in YAML exports to prevent validation errors
+
+**What Changed:**
+- Tool Version: 2.1.7 → **2.1.8**
+- **Speech Block Removed:** generateSpeechSection now returns explanatory comment instead of configuration
+- **YAML Stability:** Prevents LibreChat's strict validator from rejecting entire configuration file
+- **Documentation Added:** Clear comments in exported YAML explain why speech is disabled
+
+**The Problem:**
+- LibreChat RC4's YAML validator enforces strict validation on all configuration blocks
+- Incomplete or improperly configured speech sections (STT/TTS) cause validation errors
+- The speech block requires specific fields for both Speech-to-Text and Text-to-Speech services
+- When validator encounters issues, it rejects the **entire** configuration file
+- This prevents critical UI customizations (footer, welcome, terms) from loading
+
+**The Solution:**
+- **Complete Removal:** Speech configuration block no longer exported to librechat.yaml
+- **Explanatory Comments:** YAML includes clear explanation of why speech is disabled
+- **Trade-off Documentation:** Comments list what works (✅) and what's lost (❌)
+
+**Impact:**
+- ✅ **YAML Configuration Loads:** No more validation errors blocking configuration
+- ✅ **UI Customizations Work:** Footer, welcome message, terms of service now apply properly
+- ❌ **Speech-to-Text Lost:** Voice input transcription functionality disabled
+- ❌ **Text-to-Speech Lost:** Audio response playback functionality disabled
+- ❌ **Voice Interactions Lost:** Speech tab UI elements and controls unavailable
+- ❌ **Provider Selection Lost:** Cannot configure different speech service providers
+
+**Why This Is Necessary:**
+LibreChat's beta software enforces strict YAML validation. Disabling the incomplete speech section ensures core configuration loads successfully, enabling essential UI customizations while temporarily sacrificing voice-related features that are non-critical for the text-based GDPRchat setup. This is a standard beta software trade-off.
+
+## Version 2.1.7 - October 31, 2025 ⚠️ **MEMORY BLOCK DISABLED**
+🛑 **CRITICAL FIX:** Disabled Memory configuration block in YAML exports to prevent validation errors
+
+**What Changed:**
+- Tool Version: 2.1.6 → **2.1.7**
+- **Memory Block Removed:** generateMemorySection now returns explanatory comment instead of configuration
+- **YAML Stability:** Prevents LibreChat's strict validator from rejecting entire configuration file
+- **Documentation Added:** Clear comments in exported YAML explain why memory is disabled
+
+**The Problem:**
+- LibreChat RC4's YAML validator enforces strict validation on all configuration blocks
+- Incomplete or improperly configured memory sections cause validation errors
+- When validator encounters issues, it rejects the **entire** configuration file
+- This prevents critical UI customizations (footer, welcome, terms) from loading
+
+**The Solution:**
+- **Complete Removal:** Memory configuration block no longer exported to librechat.yaml
+- **Explanatory Comments:** YAML includes clear explanation of why memory is disabled
+- **Trade-off Documentation:** Comments list what works (✅) and what's lost (❌)
+
+**Impact:**
+- ✅ **YAML Configuration Loads:** No more validation errors blocking configuration
+- ✅ **UI Customizations Work:** Footer, welcome message, terms of service now apply properly
+- ❌ **Memory Features Lost:** Conversation context, adaptive memory, entity extraction disabled
+- ❌ **Semantic Search Lost:** Memory-based semantic search unavailable
+
+**Why This Is Necessary:**
+LibreChat's beta software enforces strict YAML validation. Disabling the incomplete memory section ensures core configuration loads successfully, enabling essential UI customizations while temporarily sacrificing non-critical memory features. This is a standard beta software trade-off.
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

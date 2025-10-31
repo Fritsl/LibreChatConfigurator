@@ -348,9 +348,6 @@ export function useConfiguration() {
   
   const LOCAL_STORAGE_KEY = "librechat_configurator_config";
 
-  // Track whether localStorage had data at initialization (using ref to avoid hook order issues)
-  const hasCheckedInitialStorage = useRef(!!localStorage.getItem(LOCAL_STORAGE_KEY));
-
   // Initialize configuration from localStorage or fallback (MUST be before other hooks)
   const [configuration, setConfiguration] = useState<Configuration>(() => {
     try {
@@ -380,20 +377,17 @@ export function useConfiguration() {
     }
   });
 
-  // Get default configuration
+  // Get default configuration (used for schema reference, not for overwriting user data)
   const { data: defaultConfiguration, isLoading } = useQuery({
     queryKey: ["/api/configuration/default"],
   });
 
-  // Apply backend defaults for first-time users BEFORE auto-save
-  useEffect(() => {
-    if (defaultConfiguration && !hasCheckedInitialStorage.current) {
-      // First-time user: apply backend defaults (overwrite fallback)
-      setConfiguration(defaultConfiguration as Configuration);
-      // Mark as initialized so this only runs once
-      hasCheckedInitialStorage.current = true;
-    }
-  }, [defaultConfiguration]);
+  // REMOVED: The useEffect that applied backend defaults was causing data loss on restarts
+  // User configuration should ONLY come from:
+  // 1. localStorage (persisted user data)
+  // 2. Explicit imports (user action)
+  // 3. Fallback configuration (only if localStorage is empty)
+  // The backend default is for reference only, NOT for overwriting user data
 
   // Auto-save configuration to localStorage on every change
   useEffect(() => {

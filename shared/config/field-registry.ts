@@ -148,6 +148,18 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     exportToEnv: false,
     exportToYaml: true,
   },
+  
+  // Internal-only Configuration Metadata
+  {
+    id: 'configurationName',
+    type: 'string',
+    defaultValue: 'My LibreChat Configuration',
+    category: 'app',
+    description: 'User-defined name for this configuration (internal-only, not exported)',
+    exportToEnv: false,
+    exportToYaml: false,
+  },
+  
   {
     id: 'appTitle',
     envKey: 'APP_TITLE',

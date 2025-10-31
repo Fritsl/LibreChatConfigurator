@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, Users, Maximize2, Info, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface UXPreset {
   id: "agents-only" | "standard";
@@ -66,6 +66,20 @@ interface UserExperiencePresetsProps {
 export function UserExperiencePresets({ currentMode, configuration, onApplyPreset }: UserExperiencePresetsProps) {
   const [selectedPreset, setSelectedPreset] = useState<string>(currentMode || "");
   const [agentId, setAgentId] = useState<string>("");
+
+  // Sync local state with currentMode when it changes (e.g., after backend config loads)
+  useEffect(() => {
+    if (currentMode && currentMode !== selectedPreset) {
+      setSelectedPreset(currentMode);
+    }
+  }, [currentMode]);
+
+  // Extract agent ID from configuration when preset loads
+  useEffect(() => {
+    if (currentMode === "agents-only" && configuration?.modelSpecs?.list?.[0]?.preset?.agent_id) {
+      setAgentId(configuration.modelSpecs.list[0].preset.agent_id);
+    }
+  }, [currentMode, configuration]);
 
   const preset = PRESETS.find(p => p.id === selectedPreset);
   const isApplied = currentMode === selectedPreset;

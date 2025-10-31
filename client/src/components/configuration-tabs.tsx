@@ -3412,6 +3412,633 @@ paths:
         docSection: "External APIs - Search",
         technical: { envVar: "TRAVERSAAL_API_KEY", configFile: ".env" }
       },
+
+      // =============================================================================
+      // OpenAI Moderation
+      // =============================================================================
+      openaiModeration: {
+        type: "boolean",
+        description: "Enable OpenAI content moderation to automatically check user messages for harmful content before processing.",
+        label: "Enable OpenAI Moderation",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "AI Providers - Moderation",
+        technical: { envVar: "OPENAI_MODERATION", configFile: ".env" }
+      },
+      openaiModerationApiKey: {
+        type: "password",
+        description: "Dedicated API key for OpenAI Moderation service. If not set, falls back to OPENAI_API_KEY.",
+        label: "OpenAI Moderation API Key",
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "AI Providers - Moderation",
+        technical: { envVar: "OPENAI_MODERATION_API_KEY", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // OAuth Providers - Individual Fields
+      // =============================================================================
+      discordClientId: {
+        type: "text",
+        description: "Discord OAuth application client ID from Discord Developer Portal.",
+        label: "Discord Client ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Discord",
+        technical: { envVar: "DISCORD_CLIENT_ID", configFile: ".env" }
+      },
+      discordClientSecret: {
+        type: "password",
+        description: "Discord OAuth application client secret from Discord Developer Portal.",
+        label: "Discord Client Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Discord",
+        technical: { envVar: "DISCORD_CLIENT_SECRET", configFile: ".env" }
+      },
+      discordCallbackUrl: {
+        type: "text",
+        description: "Discord OAuth callback URL (e.g., https://your-domain.com/oauth/discord/callback). Must match exactly in Discord app settings.",
+        label: "Discord Callback URL",
+        placeholder: "https://your-domain.com/oauth/discord/callback",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Discord",
+        technical: { envVar: "DISCORD_CALLBACK_URL", configFile: ".env" }
+      },
+      facebookClientId: {
+        type: "text",
+        description: "Facebook OAuth app ID from Facebook for Developers.",
+        label: "Facebook Client ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Facebook",
+        technical: { envVar: "FACEBOOK_CLIENT_ID", configFile: ".env" }
+      },
+      facebookClientSecret: {
+        type: "password",
+        description: "Facebook OAuth app secret from Facebook for Developers.",
+        label: "Facebook Client Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Facebook",
+        technical: { envVar: "FACEBOOK_CLIENT_SECRET", configFile: ".env" }
+      },
+      facebookCallbackUrl: {
+        type: "text",
+        description: "Facebook OAuth callback URL (e.g., https://your-domain.com/oauth/facebook/callback). Must be configured in Facebook app.",
+        label: "Facebook Callback URL",
+        placeholder: "https://your-domain.com/oauth/facebook/callback",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Facebook",
+        technical: { envVar: "FACEBOOK_CALLBACK_URL", configFile: ".env" }
+      },
+      githubClientId: {
+        type: "text",
+        description: "GitHub OAuth app client ID from GitHub Developer Settings.",
+        label: "GitHub Client ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - GitHub",
+        technical: { envVar: "GITHUB_CLIENT_ID", configFile: ".env" }
+      },
+      githubClientSecret: {
+        type: "password",
+        description: "GitHub OAuth app client secret from GitHub Developer Settings.",
+        label: "GitHub Client Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - GitHub",
+        technical: { envVar: "GITHUB_CLIENT_SECRET", configFile: ".env" }
+      },
+      githubCallbackUrl: {
+        type: "text",
+        description: "GitHub OAuth callback URL (e.g., https://your-domain.com/oauth/github/callback). Must match GitHub app configuration.",
+        label: "GitHub Callback URL",
+        placeholder: "https://your-domain.com/oauth/github/callback",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - GitHub",
+        technical: { envVar: "GITHUB_CALLBACK_URL", configFile: ".env" }
+      },
+      googleClientId: {
+        type: "text",
+        description: "Google OAuth 2.0 client ID from Google Cloud Console.",
+        label: "Google Client ID",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Google",
+        technical: { envVar: "GOOGLE_CLIENT_ID", configFile: ".env" }
+      },
+      googleClientSecret: {
+        type: "password",
+        description: "Google OAuth 2.0 client secret from Google Cloud Console.",
+        label: "Google Client Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Google",
+        technical: { envVar: "GOOGLE_CLIENT_SECRET", configFile: ".env" }
+      },
+      googleCallbackUrl: {
+        type: "text",
+        description: "Google OAuth callback URL (e.g., https://your-domain.com/oauth/google/callback). Must be added to Google Cloud Console authorized redirect URIs.",
+        label: "Google Callback URL",
+        placeholder: "https://your-domain.com/oauth/google/callback",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OAuth - Google",
+        technical: { envVar: "GOOGLE_CALLBACK_URL", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // OpenID Connect Additional Fields
+      // =============================================================================
+      openidUrl: {
+        type: "text",
+        description: "OpenID Connect provider URL (base URL of your identity provider).",
+        label: "OpenID Provider URL",
+        placeholder: "https://accounts.example.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect",
+        technical: { envVar: "OPENID_URL", configFile: ".env" }
+      },
+      openidSessionSecret: {
+        type: "password",
+        description: "OpenID Connect session secret for encrypting session data. Generate a strong random string.",
+        label: "OpenID Session Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect",
+        technical: { envVar: "OPENID_SESSION_SECRET", configFile: ".env" }
+      },
+      openidAudience: {
+        type: "text",
+        description: "OpenID Connect audience claim - identifies the recipients the token is intended for.",
+        label: "OpenID Audience",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Advanced",
+        technical: { envVar: "OPENID_AUDIENCE", configFile: ".env" }
+      },
+      openidAutoRedirect: {
+        type: "boolean",
+        description: "Automatically redirect to OpenID provider login page instead of showing login form.",
+        label: "OpenID Auto Redirect",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Advanced",
+        technical: { envVar: "OPENID_AUTO_REDIRECT", configFile: ".env" }
+      },
+      openidGraphScopes: {
+        type: "text",
+        description: "Additional Microsoft Graph API scopes for Azure AD (e.g., 'User.Read Mail.Read').",
+        label: "OpenID Graph Scopes",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Azure AD",
+        technical: { envVar: "OPENID_GRAPH_SCOPES", configFile: ".env" }
+      },
+      openidJwksUrlCacheEnabled: {
+        type: "boolean",
+        description: "Enable caching of JWKS (JSON Web Key Set) URL responses for better performance.",
+        label: "JWKS URL Cache Enabled",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Performance",
+        technical: { envVar: "OPENID_JWKS_URL_CACHE_ENABLED", configFile: ".env" }
+      },
+      openidJwksUrlCacheTime: {
+        type: "number",
+        description: "JWKS URL cache time in seconds (default: 600). How long to cache the JWKS before refreshing.",
+        label: "JWKS URL Cache Time (seconds)",
+        placeholder: "600",
+        min: 60,
+        max: 86400,
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Performance",
+        technical: { envVar: "OPENID_JWKS_URL_CACHE_TIME", configFile: ".env" }
+      },
+      openidNameClaim: {
+        type: "text",
+        description: "JWT claim field containing the user's display name (e.g., 'name', 'displayName').",
+        label: "Name Claim",
+        placeholder: "name",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Claims",
+        technical: { envVar: "OPENID_NAME_CLAIM", configFile: ".env" }
+      },
+      openidOnBehalfFlowForUserinfoRequired: {
+        type: "boolean",
+        description: "Use On-Behalf-Of flow when fetching user info (required for some Azure AD configurations).",
+        label: "On-Behalf Flow Required",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Azure AD",
+        technical: { envVar: "OPENID_ON_BEHALF_FLOW_FOR_USERINFO_REQUIRED", configFile: ".env" }
+      },
+      openidOnBehalfFlowUserinfoScope: {
+        type: "text",
+        description: "Scope to request when using On-Behalf-Of flow for user info (e.g., 'api://your-api-id/.default').",
+        label: "On-Behalf Flow Scope",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Azure AD",
+        technical: { envVar: "OPENID_ON_BEHALF_FLOW_USERINFO_SCOPE", configFile: ".env" }
+      },
+      openidRequiredRole: {
+        type: "text",
+        description: "Required role name users must have to access the application (enforces role-based access control).",
+        label: "Required Role",
+        placeholder: "LibreChat-User",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Authorization",
+        technical: { envVar: "OPENID_REQUIRED_ROLE", configFile: ".env" }
+      },
+      openidRequiredRoleParameterPath: {
+        type: "text",
+        description: "JSON path in the token to find user roles (e.g., 'realm_access.roles' for Keycloak, 'roles' for Azure AD).",
+        label: "Required Role Parameter Path",
+        placeholder: "realm_access.roles",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Authorization",
+        technical: { envVar: "OPENID_REQUIRED_ROLE_PARAMETER_PATH", configFile: ".env" }
+      },
+      openidRequiredRoleTokenKind: {
+        type: "select",
+        description: "Which token to check for roles: 'access' token or 'id' token.",
+        label: "Required Role Token Kind",
+        options: [
+          { value: "access", label: "Access Token" },
+          { value: "id", label: "ID Token" }
+        ],
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Authorization",
+        technical: { envVar: "OPENID_REQUIRED_ROLE_TOKEN_KIND", configFile: ".env" }
+      },
+      openidReuseTokens: {
+        type: "boolean",
+        description: "Reuse existing tokens instead of requesting new ones on each request (improves performance).",
+        label: "Reuse Tokens",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Performance",
+        technical: { envVar: "OPENID_REUSE_TOKENS", configFile: ".env" }
+      },
+      openidUsernameClaim: {
+        type: "text",
+        description: "JWT claim field containing the username (e.g., 'preferred_username', 'email', 'sub').",
+        label: "Username Claim",
+        placeholder: "preferred_username",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Claims",
+        technical: { envVar: "OPENID_USERNAME_CLAIM", configFile: ".env" }
+      },
+      openidUseEndSessionEndpoint: {
+        type: "boolean",
+        description: "Use the provider's end_session_endpoint for logout (ensures user is logged out from identity provider).",
+        label: "Use End Session Endpoint",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Logout",
+        technical: { envVar: "OPENID_USE_END_SESSION_ENDPOINT", configFile: ".env" }
+      },
+      openidUsePkce: {
+        type: "boolean",
+        description: "Use PKCE (Proof Key for Code Exchange) for enhanced security in OAuth flow.",
+        label: "Use PKCE",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
+        docSection: "OpenID Connect - Security",
+        technical: { envVar: "OPENID_USE_PKCE", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // Email Configuration - Individual Fields
+      // =============================================================================
+      emailService: {
+        type: "text",
+        description: "Email service provider name (e.g., 'gmail', 'smtp'). Use 'smtp' for custom SMTP configuration.",
+        label: "Email Service",
+        placeholder: "smtp",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_SERVICE", configFile: ".env" }
+      },
+      emailUsername: {
+        type: "text",
+        description: "SMTP username or email address for authentication.",
+        label: "Email Username",
+        placeholder: "your-email@example.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_USERNAME", configFile: ".env" }
+      },
+      emailPassword: {
+        type: "password",
+        description: "SMTP password or app-specific password for email authentication.",
+        label: "Email Password",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_PASSWORD", configFile: ".env" }
+      },
+      emailFrom: {
+        type: "email",
+        description: "Email address to use as the sender for all outgoing emails.",
+        label: "From Email Address",
+        placeholder: "noreply@example.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_FROM", configFile: ".env" }
+      },
+      emailFromName: {
+        type: "text",
+        description: "Display name to use as the sender for all outgoing emails.",
+        label: "From Name",
+        placeholder: "LibreChat Support",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_FROM_NAME", configFile: ".env" }
+      },
+      emailHost: {
+        type: "text",
+        description: "SMTP server hostname (e.g., 'smtp.gmail.com', 'smtp.office365.com').",
+        label: "SMTP Host",
+        placeholder: "smtp.gmail.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_HOST", configFile: ".env" }
+      },
+      emailPort: {
+        type: "number",
+        description: "SMTP server port (common: 587 for TLS, 465 for SSL, 25 for unencrypted).",
+        label: "SMTP Port",
+        placeholder: "587",
+        min: 1,
+        max: 65535,
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP",
+        technical: { envVar: "EMAIL_PORT", configFile: ".env" }
+      },
+      emailAllowSelfsigned: {
+        type: "boolean",
+        description: "Allow self-signed SSL certificates for SMTP connection (not recommended for production).",
+        label: "Allow Self-Signed Certificates",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP Advanced",
+        technical: { envVar: "EMAIL_ALLOW_SELFSIGNED", configFile: ".env" }
+      },
+      emailEncryption: {
+        type: "select",
+        description: "Email encryption method to use for SMTP connection.",
+        label: "Encryption Method",
+        options: [
+          { value: "tls", label: "TLS/STARTTLS (Port 587)" },
+          { value: "ssl", label: "SSL (Port 465)" },
+          { value: "none", label: "None (Port 25)" }
+        ],
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP Advanced",
+        technical: { envVar: "EMAIL_ENCRYPTION", configFile: ".env" }
+      },
+      emailEncryptionHostname: {
+        type: "text",
+        description: "Hostname to use for email encryption (if different from EMAIL_HOST).",
+        label: "Encryption Hostname",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/email_setup",
+        docSection: "Email - SMTP Advanced",
+        technical: { envVar: "EMAIL_ENCRYPTION_HOSTNAME", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // SAML Additional Fields
+      // =============================================================================
+      samlButtonLabel: {
+        type: "text",
+        description: "Text to display on the SAML login button (e.g., 'Login with Company SSO').",
+        label: "SAML Button Label",
+        placeholder: "Login with SSO",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - UI",
+        technical: { envVar: "SAML_BUTTON_LABEL", configFile: ".env" }
+      },
+      samlEmailClaim: {
+        type: "text",
+        description: "SAML attribute name containing the user's email address.",
+        label: "Email Claim",
+        placeholder: "email",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_EMAIL_CLAIM", configFile: ".env" }
+      },
+      samlFamilyNameClaim: {
+        type: "text",
+        description: "SAML attribute name containing the user's family name (last name).",
+        label: "Family Name Claim",
+        placeholder: "familyName",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_FAMILY_NAME_CLAIM", configFile: ".env" }
+      },
+      samlGivenNameClaim: {
+        type: "text",
+        description: "SAML attribute name containing the user's given name (first name).",
+        label: "Given Name Claim",
+        placeholder: "givenName",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_GIVEN_NAME_CLAIM", configFile: ".env" }
+      },
+      samlImageUrl: {
+        type: "url",
+        description: "URL of image/logo to display on the SAML login button.",
+        label: "Button Image URL",
+        placeholder: "https://example.com/logo.png",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - UI",
+        technical: { envVar: "SAML_IMAGE_URL", configFile: ".env" }
+      },
+      samlNameClaim: {
+        type: "text",
+        description: "SAML attribute name containing the user's full name.",
+        label: "Name Claim",
+        placeholder: "name",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_NAME_CLAIM", configFile: ".env" }
+      },
+      samlPictureClaim: {
+        type: "text",
+        description: "SAML attribute name containing the URL to the user's profile picture.",
+        label: "Picture Claim",
+        placeholder: "picture",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_PICTURE_CLAIM", configFile: ".env" }
+      },
+      samlSessionSecret: {
+        type: "password",
+        description: "Secret key for encrypting SAML session data. Generate a strong random string.",
+        label: "Session Secret",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Security",
+        technical: { envVar: "SAML_SESSION_SECRET", configFile: ".env" }
+      },
+      samlUsernameClaim: {
+        type: "text",
+        description: "SAML attribute name containing the user's username or unique identifier.",
+        label: "Username Claim",
+        placeholder: "username",
+        docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
+        docSection: "SAML - Claims",
+        technical: { envVar: "SAML_USERNAME_CLAIM", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // Security & Rate Limits - Violation Scores & Message Limits
+      // =============================================================================
+      fileUploadViolationScore: {
+        type: "number",
+        description: "Violation score for excessive file uploads. Each violation adds to user's ban score.",
+        label: "File Upload Violation Score",
+        placeholder: "1",
+        min: 0,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Violations",
+        technical: { envVar: "FILE_UPLOAD_VIOLATION_SCORE", configFile: ".env" }
+      },
+      forkViolationScore: {
+        type: "number",
+        description: "Violation score for excessive conversation forking.",
+        label: "Fork Violation Score",
+        placeholder: "1",
+        min: 0,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Violations",
+        technical: { envVar: "FORK_VIOLATION_SCORE", configFile: ".env" }
+      },
+      importViolationScore: {
+        type: "number",
+        description: "Violation score for excessive conversation imports.",
+        label: "Import Violation Score",
+        placeholder: "1",
+        min: 0,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Violations",
+        technical: { envVar: "IMPORT_VIOLATION_SCORE", configFile: ".env" }
+      },
+      messageIpMax: {
+        type: "number",
+        description: "Maximum messages allowed per IP address within the message window.",
+        label: "Message IP Max",
+        placeholder: "100",
+        min: 1,
+        max: 10000,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Messages",
+        technical: { envVar: "MESSAGE_IP_MAX", configFile: ".env" }
+      },
+      messageIpWindow: {
+        type: "number",
+        description: "Time window in minutes for message IP rate limiting.",
+        label: "Message IP Window (minutes)",
+        placeholder: "1",
+        min: 1,
+        max: 1440,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Messages",
+        technical: { envVar: "MESSAGE_IP_WINDOW", configFile: ".env" }
+      },
+      messageUserMax: {
+        type: "number",
+        description: "Maximum messages allowed per user within the message window.",
+        label: "Message User Max",
+        placeholder: "50",
+        min: 1,
+        max: 10000,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Messages",
+        technical: { envVar: "MESSAGE_USER_MAX", configFile: ".env" }
+      },
+      messageUserWindow: {
+        type: "number",
+        description: "Time window in minutes for message user rate limiting.",
+        label: "Message User Window (minutes)",
+        placeholder: "1",
+        min: 1,
+        max: 1440,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Messages",
+        technical: { envVar: "MESSAGE_USER_WINDOW", configFile: ".env" }
+      },
+      registerMax: {
+        type: "number",
+        description: "Maximum registration attempts allowed within the registration window.",
+        label: "Registration Max",
+        placeholder: "5",
+        min: 1,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Registration",
+        technical: { envVar: "REGISTER_MAX", configFile: ".env" }
+      },
+      registerWindow: {
+        type: "number",
+        description: "Time window in minutes for registration rate limiting.",
+        label: "Registration Window (minutes)",
+        placeholder: "60",
+        min: 1,
+        max: 1440,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Registration",
+        technical: { envVar: "REGISTER_WINDOW", configFile: ".env" }
+      },
+      sttViolationScore: {
+        type: "number",
+        description: "Violation score for excessive speech-to-text requests.",
+        label: "STT Violation Score",
+        placeholder: "1",
+        min: 0,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Violations",
+        technical: { envVar: "STT_VIOLATION_SCORE", configFile: ".env" }
+      },
+      ttsViolationScore: {
+        type: "number",
+        description: "Violation score for excessive text-to-speech requests.",
+        label: "TTS Violation Score",
+        placeholder: "1",
+        min: 0,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/dotenv",
+        docSection: "Rate Limits - Violations",
+        technical: { envVar: "TTS_VIOLATION_SCORE", configFile: ".env" }
+      },
+
+      // =============================================================================
+      // File Config - OpenAI Endpoint Specific
+      // =============================================================================
+      fileConfigEndpointsOpenAIFileLimit: {
+        type: "number",
+        description: "Maximum number of files that can be uploaded in a single OpenAI request.",
+        label: "OpenAI File Limit",
+        placeholder: "10",
+        min: 1,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Config - OpenAI",
+        technical: { yamlPath: "fileConfig.endpoints.openAI.fileLimit", configFile: "librechat.yaml" }
+      },
+      fileConfigEndpointsOpenAIFileSizeLimit: {
+        type: "number",
+        description: "Maximum file size in MB for individual OpenAI file uploads.",
+        label: "OpenAI File Size Limit (MB)",
+        placeholder: "20",
+        min: 1,
+        max: 500,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Config - OpenAI",
+        technical: { yamlPath: "fileConfig.endpoints.openAI.fileSizeLimit", configFile: "librechat.yaml" }
+      },
+      fileConfigEndpointsOpenAITotalSizeLimit: {
+        type: "number",
+        description: "Maximum total size in MB for all files in a single OpenAI request.",
+        label: "OpenAI Total Size Limit (MB)",
+        placeholder: "50",
+        min: 1,
+        max: 2000,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Config - OpenAI",
+        technical: { yamlPath: "fileConfig.endpoints.openAI.totalSizeLimit", configFile: "librechat.yaml" }
+      },
+      fileConfigEndpointsOpenAISupportedMimeTypes: {
+        type: "array",
+        description: "Array of allowed MIME types for OpenAI file uploads (e.g., 'image/png', 'application/pdf').",
+        label: "OpenAI Supported MIME Types",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
+        docSection: "File Config - OpenAI",
+        technical: { yamlPath: "fileConfig.endpoints.openAI.supportedMimeTypes", configFile: "librechat.yaml" }
+      },
     };
     
     return fieldMap[fieldName] || { type: "text", description: `Configuration for ${fieldName}`, label: fieldName };

@@ -503,7 +503,13 @@ export class FileStorage implements IStorage {
   }
 
   async getDefaultConfiguration(): Promise<Configuration> {
-    // Try to get the "Default test" profile first
+    // PRIORITY 1: Latest saved configuration (persists across restarts)
+    const latestConfig = await this.getLatestConfiguration();
+    if (latestConfig) {
+      return latestConfig;
+    }
+    
+    // PRIORITY 2: Try to get the "Default test" profile
     if (this.defaultProfileId) {
       const defaultProfile = await this.getProfile(this.defaultProfileId);
       if (defaultProfile) {
@@ -518,7 +524,7 @@ export class FileStorage implements IStorage {
       }
     }
     
-    // Fallback to basic default configuration
+    // PRIORITY 3: Fallback to basic default configuration
     return { ...this.defaultConfig };
   }
 

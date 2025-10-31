@@ -260,7 +260,7 @@ paths:
           icon: Brain,
           description: "Primary AI Providers",
           color: "from-indigo-500 to-indigo-600",
-          settings: ["openaiApiKey", "openaiApiBase", "openaiReverseProxy", "openaiModerationReverseProxy", "anthropicApiKey", "googleApiKey", "groqApiKey", "mistralApiKey"],
+          settings: ["openaiApiKey", "openaiApiBase", "openaiReverseProxy", "openaiModeration", "openaiModerationApiKey", "openaiModerationReverseProxy", "anthropicApiKey", "googleApiKey", "groqApiKey", "mistralApiKey"],
           docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai",
         },
         {

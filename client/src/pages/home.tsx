@@ -30,6 +30,8 @@ export default function Home() {
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
   const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
   const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
+  const [showYamlOnlyDialog, setShowYamlOnlyDialog] = useState(false);
+  const [yamlOnlyFieldsData, setYamlOnlyFieldsData] = useState<Array<{ envKey: string; yamlPath: string }> | null>(null);
   const [showImportSummary, setShowImportSummary] = useState(false);
   const [importSummaryData, setImportSummaryData] = useState<{ 
     type: 'yaml' | 'env'; 
@@ -481,12 +483,9 @@ export default function Home() {
                 console.log("   These fields MUST be configured in librechat.yaml, NOT .env");
                 console.log("   Please move them to your librechat.yaml file and retry.\n");
                 
-                // Show error dialog
-                toast({
-                  title: "Import Rejected - YAML-Only Fields",
-                  description: `${validation.yamlOnlyVars.length} field(s) must be configured in librechat.yaml, not .env. See console for details.`,
-                  variant: "destructive",
-                });
+                // Show detailed dialog with YAML-only violations
+                setYamlOnlyFieldsData(validation.yamlOnlyVars);
+                setShowYamlOnlyDialog(true);
                 
                 return; // BLOCK IMPORT
               }
@@ -1424,6 +1423,99 @@ export default function Home() {
 
             <div className="flex justify-end">
               <Button onClick={() => setShowMergeResults(false)} data-testid="button-close-merge-results">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* YAML-Only Fields Dialog */}
+      <Dialog open={showYamlOnlyDialog} onOpenChange={setShowYamlOnlyDialog}>
+        <DialogContent className="max-w-4xl" data-testid="dialog-yaml-only-fields">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Import Blocked: YAML-Only Fields in .env File
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4" data-testid="yaml-only-warning">
+              <p className="text-sm text-destructive font-semibold" data-testid="text-yaml-only-count">
+                Your .env file contains <span className="font-bold">{yamlOnlyFieldsData?.length || 0}</span> field{(yamlOnlyFieldsData?.length || 0) > 1 ? 's' : ''} that MUST be configured in librechat.yaml, NOT .env
+              </p>
+              <p className="text-sm text-destructive/80 mt-2">
+                <strong>STRICT POLICY:</strong> This tool enforces clean separation between .env and librechat.yaml files. Fields that belong in librechat.yaml will not be imported from .env files.
+              </p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-sm" data-testid="text-yaml-only-title">
+                  Fields That Must Move to librechat.yaml ({yamlOnlyFieldsData?.length || 0}):
+                </h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const mapping = yamlOnlyFieldsData?.map(({ envKey, yamlPath }) => 
+                      `${envKey} → ${yamlPath}`
+                    ).join('\n') || '';
+                    navigator.clipboard.writeText(mapping);
+                    toast({
+                      title: "Copied to Clipboard",
+                      description: `${yamlOnlyFieldsData?.length} field mappings copied.`,
+                    });
+                  }}
+                  data-testid="button-copy-yaml-mapping"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Copy Mapping
+                </Button>
+              </div>
+              
+              <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto" data-testid="list-yaml-only-fields">
+                <div className="space-y-2">
+                  {yamlOnlyFieldsData?.map(({ envKey, yamlPath }, index) => (
+                    <div key={envKey} className="text-sm font-mono border-l-2 border-yellow-500 pl-3 py-1" data-testid={`yaml-field-${envKey}`}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground w-8">{index + 1}.</span>
+                        <span className="text-destructive font-semibold">{envKey}</span>
+                        <span className="text-muted-foreground">→</span>
+                        <span className="text-primary">{yamlPath}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="space-y-2 text-sm">
+                  <p className="font-medium text-yellow-800 dark:text-yellow-200">
+                    How to Fix
+                  </p>
+                  <ol className="list-decimal list-inside space-y-1 text-yellow-700 dark:text-yellow-300 ml-2">
+                    <li>Remove these fields from your .env file</li>
+                    <li>Add them to your librechat.yaml file using the paths shown above (e.g., <code className="text-xs bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded">interface.customFooter</code>)</li>
+                    <li>Retry the import</li>
+                  </ol>
+                  <p className="text-xs mt-2 text-yellow-600 dark:text-yellow-400">
+                    <strong>Why?</strong> LibreChat RC4 uses librechat.yaml for UI and feature configuration. Keeping these fields in .env creates confusion and inconsistency.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowYamlOnlyDialog(false)}
+                data-testid="button-close-yaml-only-dialog"
+              >
                 Close
               </Button>
             </div>

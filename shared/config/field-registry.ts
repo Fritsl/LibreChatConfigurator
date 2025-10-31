@@ -267,6 +267,22 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     description: 'OpenAI Reverse Proxy URL (deprecated, use custom endpoints)',
   },
   {
+    id: 'openaiModeration',
+    envKey: 'OPENAI_MODERATION',
+    type: 'boolean',
+    defaultValue: false,
+    category: 'ai-providers',
+    description: 'Enable OpenAI content moderation',
+  },
+  {
+    id: 'openaiModerationApiKey',
+    envKey: 'OPENAI_MODERATION_API_KEY',
+    type: 'string',
+    defaultValue: '',
+    category: 'ai-providers',
+    description: 'OpenAI Moderation API Key',
+  },
+  {
     id: 'openaiModerationReverseProxy',
     envKey: 'OPENAI_MODERATION_REVERSE_PROXY',
     type: 'string',

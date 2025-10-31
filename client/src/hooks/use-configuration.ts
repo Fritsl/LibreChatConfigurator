@@ -347,47 +347,29 @@ export function useConfiguration() {
   });
   
   const LOCAL_STORAGE_KEY = "librechat_configurator_config";
+  const BACKEND_LOADED_FLAG = "backend_config_loaded";
 
-  // Initialize configuration from localStorage or fallback (MUST be before other hooks)
-  const [configuration, setConfiguration] = useState<Configuration>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Merge saved data with fallback to populate any NEW fields added in updates
-        // This ensures backward compatibility when new config options are added
-        const merged = deepMerge(fallbackConfiguration, parsed) as Configuration;
-        
-        // MIGRATION: Move legacy root-level customWelcome/customFooter to interface object
-        // This preserves data from old configurations (pre-v1.18) that had these at root level
-        if (merged.interface) {
-          if (parsed.customWelcome && (!merged.interface.customWelcome || merged.interface.customWelcome === "")) {
-            merged.interface.customWelcome = parsed.customWelcome;
-          }
-          if (parsed.customFooter && (!merged.interface.customFooter || merged.interface.customFooter === "")) {
-            merged.interface.customFooter = parsed.customFooter;
-          }
-        }
-        
-        return merged;
-      }
-      return fallbackConfiguration;
-    } catch {
-      return fallbackConfiguration;
-    }
-  });
+  // Initialize with fallback - backend data will load via query
+  const [configuration, setConfiguration] = useState<Configuration>(fallbackConfiguration);
 
-  // Get default configuration (used for schema reference, not for overwriting user data)
-  const { data: defaultConfiguration, isLoading } = useQuery({
+  // Load configuration from backend (persists across restarts)
+  const { data: backendConfiguration, isLoading } = useQuery({
     queryKey: ["/api/configuration/default"],
   });
 
-  // REMOVED: The useEffect that applied backend defaults was causing data loss on restarts
-  // User configuration should ONLY come from:
-  // 1. localStorage (persisted user data)
-  // 2. Explicit imports (user action)
-  // 3. Fallback configuration (only if localStorage is empty)
-  // The backend default is for reference only, NOT for overwriting user data
+  // Apply backend configuration on first load ONLY
+  // This ensures persistence across restarts while avoiding overwrite loops
+  useEffect(() => {
+    const hasLoadedFromBackend = sessionStorage.getItem(BACKEND_LOADED_FLAG);
+    
+    if (backendConfiguration && !hasLoadedFromBackend) {
+      // Mark as loaded for this browser session to prevent re-applying
+      sessionStorage.setItem(BACKEND_LOADED_FLAG, "true");
+      
+      // Apply backend configuration (which includes latest saved data)
+      setConfiguration(backendConfiguration as Configuration);
+    }
+  }, [backendConfiguration]);
 
   // Auto-save configuration to BOTH localStorage AND backend for persistence
   useEffect(() => {

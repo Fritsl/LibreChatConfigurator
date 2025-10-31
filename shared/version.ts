@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.0.1";
+export const TOOL_VERSION = "2.1.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "Bug fix: UserExperiencePresets component now correctly syncs preset selection and agent ID from backend configuration after page reload."
+  changelog: "FEATURE COMPLETE: Achieved 100% ENV coverage of LibreChat RC4 - all 176 environment variables now supported. Added 90+ missing fields including SAML (13), OpenID (15), Azure AI Search (7), MongoDB (7), rate limiting (11), and more. Field registry expanded to 480+ fields with complete bidirectional parity."
 } as const;
 
 // Helper function to get the tool's version string

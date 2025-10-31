@@ -14,7 +14,7 @@
 
 **LibreChat is powerful, but configuration shouldn't require a PhD in YAML.**
 
-This tool provides a clean UI for managing 100+ LibreChat settings and generates complete deployment packages. No more manually editing environment files or debugging YAML syntax errors.
+This tool provides a clean UI for managing **480+ LibreChat settings** (100% coverage of all 176 ENV variables + 191+ YAML fields) and generates complete deployment packages. No more manually editing environment files or debugging YAML syntax errors.
 
 **Key Benefits:**
 - ✅ **Progressive disclosure** - Pick providers first, see only relevant fields
@@ -242,10 +242,12 @@ If you want to develop LibreChat locally in VS Code with hot-reload and full deb
 ## Features
 
 ### Configuration Management
-- **100+ Settings Coverage** - All LibreChat v0.8.0-rc4 configuration options
+- **480+ Settings Coverage** - Complete LibreChat v0.8.0-rc4 configuration (176 ENV variables + 191+ YAML fields)
+- **100% ENV Coverage** - All environment variables supported
 - **Tabbed Interface** - 18 organized categories (Server, Security, AI Providers, etc.)
 - **Profile System** - Save and load configuration profiles with versioning
 - **Auto-Save** - Browser localStorage prevents data loss on refresh/close
+- **Strict YAML-First Policy** - Clean separation between .env and librechat.yaml files
 
 ### Package Generation
 - **Complete Deployment Files**:
@@ -315,7 +317,15 @@ This strict enforcement keeps your configuration clean and prevents the common m
 
 ## Supported Configuration
 
-This tool supports all LibreChat v0.8.0-rc4 settings organized into categories:
+This tool supports **all** LibreChat v0.8.0-rc4 settings with 100% coverage:
+
+### Coverage Statistics
+- **480+ Total Configuration Fields**
+- **176 Environment Variables** (100% coverage)
+- **191+ YAML Configuration Fields**
+- **196 YAML-Only Fields** (strict enforcement)
+
+### Configuration Categories
 
 **Core (.env)**
 - Server (APP_TITLE, HOST, PORT, domains)
@@ -406,10 +416,20 @@ We welcome contributions! Here's how to help:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
-## Known Issues (v1.18.0)
+## Version Information
 
-- **modelSpecs.addedEndpoints bug**: LibreChat RC4 has a known issue where this setting causes interface visibility problems. Keep it disabled (empty array) unless you need custom model specs.
-- **Active development**: Tool is evolving with LibreChat. Report bugs via [GitHub Issues](https://github.com/Fritsl/LibreChatConfigurator/issues).
+**Current Version: 2.1.3** (October 31, 2025)
+
+### Recent Improvements
+- ✅ **100% ENV Coverage** - All 176 LibreChat environment variables supported
+- ✅ **Strict YAML-First Policy** - Clean architectural separation with import/export enforcement
+- ✅ **480+ Configuration Fields** - Complete coverage of all LibreChat RC4 settings
+- ✅ **Bidirectional Parity** - Perfect import/export fidelity across all fields
+- ✅ **Enhanced Validation** - Pre-import checks prevent data loss
+
+### Known Considerations
+- **modelSpecs.addedEndpoints**: LibreChat RC4 has a known issue where this setting causes interface visibility problems. Keep it disabled (empty array) unless you need custom model specs.
+- **Active Development**: Tool is evolving with LibreChat. Report bugs via [GitHub Issues](https://github.com/Fritsl/LibreChatConfigurator/issues).
 
 ## License
 

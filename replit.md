@@ -4,6 +4,31 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.1.5 - October 31, 2025 📦 **FIELD COVERAGE EXPANSION**
+🎯 **BUG FIX:** Added 19 missing LibreChat RC4 fields to fix import rejections
+
+**What Changed:**
+- Tool Version: 2.1.4 → **2.1.5**
+- **Added 4 fileConfig.endpoints.agents fields:** fileLimit, fileSizeLimit, totalSizeLimit, supportedMimeTypes
+- **Added 4 memory.agent.model_parameters fields:** temperature, max_tokens, top_p, frequency_penalty
+- **Added 11 speech.speechTab fields:** advancedMode, engineSTT, languageSTT, autoTranscribeAudio, decibelValue, autoSendText, engineTTS, languageTTS, automaticPlayback, playbackRate, cacheTTS
+
+**The Problem:**
+- Users importing valid LibreChat YAML files received "19 unsupported fields" error
+- These were legitimate LibreChat RC4 fields that existed in documentation but not in the field registry
+- Import was completely blocked, preventing users from loading their configurations
+
+**The Solution:**
+- **Complete Field Coverage:** Added all 19 missing fields to the field registry with proper types and defaults
+- **Agents File Config:** Now supports per-endpoint file upload limits for Agents endpoint (matching OpenAI structure)
+- **Memory Agent Parameters:** Full support for memory agent LLM configuration (temperature, tokens, etc.)
+- **Speech Tab Advanced Features:** Complete coverage of speech tab configuration including browser engines, auto-transcription, playback settings
+
+**Impact:**
+- **No More Import Rejections:** Users can now import complete LibreChat RC4 configurations
+- **Better Coverage:** Field registry now supports more LibreChat features
+- **Future-Proof:** Alignment with latest LibreChat RC4 capabilities
+
 ## Version 2.1.4 - October 31, 2025 ✨ **AUTO-MIGRATE FEATURE**
 🚀 **NEW FEATURE:** One-click automatic migration for YAML-only fields in .env files
 

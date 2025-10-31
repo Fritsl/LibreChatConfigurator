@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.4";
+export const TOOL_VERSION = "2.1.5";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "AUTO-MIGRATE FEATURE: Added intelligent one-click migration button for YAML-only fields detected in .env files. Users can now automatically transfer values to correct librechat.yaml paths instead of manual copying. Enhanced import validation dialog with recommended auto-migrate option and improved UX with blue color scheme highlighting the easy fix."
+  changelog: "FIELD COVERAGE EXPANSION: Added 19 missing LibreChat RC4 fields to registry including fileConfig.endpoints.agents file limits (4 fields), memory.agent.model_parameters (4 fields), and speech.speechTab advanced features (11 fields). Fixes YAML import rejections for legitimate LibreChat configurations."
 } as const;
 
 // Helper function to get the tool's version string

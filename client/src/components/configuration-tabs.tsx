@@ -405,7 +405,13 @@ paths:
           icon: Key,
           description: "Social Login Configuration",
           color: "from-purple-500 to-purple-600",
-          settings: ["oauthProviders"],
+          settings: [
+            "oauthProviders",
+            "googleClientId", "googleClientSecret", "googleCallbackUrl",
+            "githubClientId", "githubClientSecret", "githubCallbackUrl",
+            "discordClientId", "discordClientSecret", "discordCallbackUrl",
+            "facebookClientId", "facebookClientSecret", "facebookCallbackUrl"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
         },
         {
@@ -414,7 +420,13 @@ paths:
           icon: Shield,
           description: "SAML Single Sign-On Configuration",
           color: "from-indigo-500 to-indigo-600",
-          settings: ["samlIssuer", "samlEntryPoint", "samlCallbackUrl", "samlCert", "samlDecryptionPvk", "samlSignatureAlgorithm", "samlIdentifierFormat", "samlAcceptedClockSkewMs", "samlAttributeMapping", "samlRoleMapping", "samlGroupMapping", "samlSloUrl", "samlAllowCreate"],
+          settings: [
+            "samlIssuer", "samlEntryPoint", "samlCallbackUrl", "samlCert", 
+            "samlDecryptionPvk", "samlSignatureAlgorithm", "samlIdentifierFormat", "samlAcceptedClockSkewMs", 
+            "samlAttributeMapping", "samlRoleMapping", "samlGroupMapping", "samlSloUrl", "samlAllowCreate",
+            "samlButtonLabel", "samlEmailClaim", "samlFamilyNameClaim", "samlGivenNameClaim", 
+            "samlImageUrl", "samlNameClaim", "samlPictureClaim", "samlSessionSecret", "samlUsernameClaim"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/authentication/SSO-SAML",
         },
         {
@@ -423,7 +435,18 @@ paths:
           icon: Key,
           description: "OpenID Connect Authentication",
           color: "from-blue-500 to-blue-600",
-          settings: ["openidIssuer", "openidClientId", "openidClientSecret", "openidCallbackUrl", "openidScope", "openidAuthorizationURL", "openidTokenURL", "openidUserInfoURL", "openidButtonLabel", "openidImageUrl", "openidAccessType", "openidHd", "openidPrompt", "openidGrantType", "openidProviderType", "openidRedirectProxyUrl", "openidConfigPath"],
+          settings: [
+            "openidIssuer", "openidClientId", "openidClientSecret", "openidCallbackUrl", "openidScope", 
+            "openidAuthorizationURL", "openidTokenURL", "openidUserInfoURL", "openidButtonLabel", "openidImageUrl", 
+            "openidAccessType", "openidHd", "openidPrompt", "openidGrantType", "openidProviderType", 
+            "openidRedirectProxyUrl", "openidConfigPath",
+            "openidUrl", "openidSessionSecret",
+            "openidAudience", "openidAutoRedirect", "openidGraphScopes", 
+            "openidJwksUrlCacheEnabled", "openidJwksUrlCacheTime", "openidNameClaim", 
+            "openidOnBehalfFlowForUserinfoRequired", "openidOnBehalfFlowUserinfoScope", 
+            "openidRequiredRole", "openidRequiredRoleParameterPath", "openidRequiredRoleTokenKind", 
+            "openidReuseTokens", "openidUsernameClaim", "openidUseEndSessionEndpoint", "openidUsePkce"
+          ],
           docUrl: "https://www.librechat.ai/docs/configuration/authentication/OAuth2-OIDC",
         },
         {
@@ -451,7 +474,10 @@ paths:
           description: "Email Configuration",
           color: "from-blue-400 to-blue-500",
           settings: [
-            "emailComposite", 
+            "emailComposite",
+            "emailService", "emailUsername", "emailPassword", 
+            "emailFrom", "emailFromName", "emailHost", "emailPort",
+            "emailAllowSelfsigned", "emailEncryption", "emailEncryptionHostname",
             "mailgunApiKey", "mailgunDomain", "mailgunHost", "mailgunWebhookSigningKey", 
             "emailReplyToAddress"
           ],
@@ -464,9 +490,12 @@ paths:
           description: "File Upload & Storage",
           color: "from-teal-500 to-teal-600",
           settings: [
-            "fileStorage", "fileConfig.endpoints", "fileConfig.serverFileSizeLimit", "fileConfig.avatarSizeLimit", 
+            "fileStorage", "fileConfig.endpoints", 
+            "fileConfig.serverFileSizeLimit", "fileConfig.avatarSizeLimit", 
             "fileConfig.clientImageResize.enabled", "fileConfig.clientImageResize.maxWidth", "fileConfig.clientImageResize.maxHeight", 
             "fileConfig.clientImageResize.quality", "fileConfig.clientImageResize.compressFormat",
+            "fileConfigEndpointsOpenAIFileLimit", "fileConfigEndpointsOpenAIFileSizeLimit", 
+            "fileConfigEndpointsOpenAITotalSizeLimit", "fileConfigEndpointsOpenAISupportedMimeTypes",
             "awsAccessKeyIdFileStorage", "awsSecretAccessKeyFileStorage", "awsRegionFileStorage", 
             "azureStorageConnectionString", "firebaseServiceAccountKey"
           ],
@@ -537,6 +566,10 @@ paths:
             "limitConcurrentMessages", "concurrentMessageMax", "banViolations", "banDuration", "banInterval",
             "loginViolationScore", "registrationViolationScore", "concurrentViolationScore", "messageViolationScore", 
             "nonBrowserViolationScore", "loginMax", "loginWindow",
+            "fileUploadViolationScore", "forkViolationScore", "importViolationScore", 
+            "sttViolationScore", "ttsViolationScore",
+            "messageIpMax", "messageIpWindow", "messageUserMax", "messageUserWindow",
+            "registerMax", "registerWindow",
             "rateLimits.fileUploads.ipMax", "rateLimits.fileUploads.ipWindowInMinutes", "rateLimits.fileUploads.userMax", "rateLimits.fileUploads.userWindowInMinutes",
             "rateLimits.conversationsImport.ipMax", "rateLimits.conversationsImport.ipWindowInMinutes", "rateLimits.conversationsImport.userMax", "rateLimits.conversationsImport.userWindowInMinutes",
             "rateLimits.stt.ipMax", "rateLimits.stt.ipWindowInMinutes", "rateLimits.stt.userMax", "rateLimits.stt.userWindowInMinutes",

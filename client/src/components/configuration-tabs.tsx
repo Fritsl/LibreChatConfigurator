@@ -296,12 +296,75 @@ paths:
           docUrl: "https://www.librechat.ai/docs/configuration/pre_configured_ai/bedrock",
         },
         {
+          id: "endpoints-agents",
+          label: "Agents Endpoint",
+          icon: Bot,
+          description: "Agents endpoint-specific configuration",
+          color: "from-emerald-500 to-emerald-600",
+          settings: ["endpointsAgentsDisableBuilder", "endpointsAgentsRecursionLimit", "endpointsAgentsMaxRecursionLimit", "endpointsAgentsCapabilities", "endpointsAgentsMaxCitations", "endpointsAgentsMaxCitationsPerFile", "endpointsAgentsMinRelevanceScore"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
+          id: "endpoints-openai",
+          label: "OpenAI Endpoint",
+          icon: Brain,
+          description: "OpenAI endpoint configuration",
+          color: "from-green-500 to-green-600",
+          settings: ["endpointsOpenAITitle", "endpointsOpenAITitleConvo", "endpointsOpenAITitleModel", "endpointsOpenAIApiKey", "endpointsOpenAIBaseURL", "endpointsOpenAIModels", "endpointsOpenAIModelsFetch", "endpointsOpenAIModelsDefault", "endpointsOpenAIDropParams"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
+          id: "endpoints-anthropic",
+          label: "Anthropic Endpoint",
+          icon: Brain,
+          description: "Anthropic endpoint configuration",
+          color: "from-orange-500 to-orange-600",
+          settings: ["endpointsAnthropicTitle", "endpointsAnthropicApiKey", "endpointsAnthropicModelsFetch", "endpointsAnthropicModelsDefault", "endpointsAnthropicTitleConvo", "endpointsAnthropicBaseURL", "endpointsAnthropicModels"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
+          id: "endpoints-google",
+          label: "Google Endpoint",
+          icon: Brain,
+          description: "Google AI endpoint configuration",
+          color: "from-blue-500 to-blue-600",
+          settings: ["endpointsGoogleTitle", "endpointsGoogleApiKey", "endpointsGoogleModelsFetch", "endpointsGoogleModelsDefault", "endpointsGoogleBaseURL", "endpointsGoogleModels"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
+          id: "endpoints-mistral",
+          label: "Mistral Endpoint",
+          icon: Brain,
+          description: "Mistral AI endpoint configuration",
+          color: "from-purple-500 to-purple-600",
+          settings: ["endpointsMistralTitle", "endpointsMistralApiKey", "endpointsMistralBaseURL", "endpointsMistralModels"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
+          id: "endpoints-azure-openai",
+          label: "Azure OpenAI Endpoint",
+          icon: Plug,
+          description: "Azure OpenAI endpoint configuration",
+          color: "from-cyan-500 to-cyan-600",
+          settings: ["endpointsAzureOpenAITitle", "endpointsAzureOpenAIApiKey", "endpointsAzureOpenAIInstanceName", "endpointsAzureOpenAIVersion", "endpointsAzureOpenAIBaseURL", "endpointsAzureOpenAIModels"],
+          docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        },
+        {
+          id: "endpoints-gpt-plugins",
+          label: "GPT Plugins Endpoint",
+          icon: Plug,
+          description: "GPT Plugins endpoint (deprecated)",
+          color: "from-gray-400 to-gray-500",
+          settings: ["endpointsGptPluginsTitle", "endpointsGptPluginsModels"],
+          docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        },
+        {
           id: "custom-endpoints",
           label: "Custom Endpoints",
           icon: Network,
           description: "Custom OpenAI-compatible endpoints",
           color: "from-pink-500 to-pink-600",
-          settings: ["endpoints.custom"],
+          settings: ["customEndpoints"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/custom_endpoint",
         },
       ]
@@ -2365,6 +2428,404 @@ paths:
       },
       
       // MCP Servers - now handled by specialized editor, so no individual nested fields needed
+      
+      // =============================================================================
+      // Endpoint Configuration Fields (camelCase versions)
+      // =============================================================================
+      
+      // Agents Endpoint Configuration
+      endpointsAgentsDisableBuilder: { 
+        type: "boolean", 
+        description: "Disable the built-in agent builder interface. When enabled, users cannot create or modify agents - useful for enterprise deployments with pre-configured agents.", 
+        label: "Disable Agent Builder",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.disableBuilder", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsRecursionLimit: { 
+        type: "number", 
+        description: "Default number of steps an agent can take in a single run. Higher values allow more complex multi-step reasoning but increase costs. Range: 1-100, Default: 50", 
+        label: "Recursion Limit",
+        placeholder: "50",
+        min: 1,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.recursionLimit", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsMaxRecursionLimit: { 
+        type: "number", 
+        description: "Maximum number of steps users can configure for agent runs. Sets the ceiling for the agent steps slider. Range: 1-200, Default: 100", 
+        label: "Max Recursion Limit",
+        placeholder: "100",
+        min: 1,
+        max: 200,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.maxRecursionLimit", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsCapabilities: { 
+        type: "array", 
+        description: "Array of capabilities available to agents. Enable features like code execution, file search, web search, etc.", 
+        label: "Agent Capabilities",
+        options: [
+          { value: "execute_code", label: "Execute Code" },
+          { value: "file_search", label: "File Search" },
+          { value: "actions", label: "Actions" },
+          { value: "tools", label: "Tools" },
+          { value: "artifacts", label: "Artifacts (Generative UI)" },
+          { value: "context", label: "Context (Upload as Text)" },
+          { value: "ocr", label: "OCR" },
+          { value: "chain", label: "Agent Chaining" },
+          { value: "web_search", label: "Web Search" }
+        ],
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/agents",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.capabilities", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsMaxCitations: { 
+        type: "number", 
+        description: "Maximum total citations an agent can use across all sources. Range: 1-100, Default: 30", 
+        label: "Max Citations",
+        placeholder: "30",
+        min: 1,
+        max: 100,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.maxCitations", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsMaxCitationsPerFile: { 
+        type: "number", 
+        description: "Maximum citations from any single source to prevent over-reliance. Range: 1-20, Default: 7", 
+        label: "Max Citations Per File",
+        placeholder: "7",
+        min: 1,
+        max: 20,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.maxCitationsPerFile", configFile: "librechat.yaml" }
+      },
+      endpointsAgentsMinRelevanceScore: { 
+        type: "number", 
+        description: "Minimum relevance threshold for search results. Range: 0.0-1.0, Default: 0.45", 
+        label: "Min Relevance Score",
+        placeholder: "0.45",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Agents Endpoint",
+        technical: { yamlPath: "endpoints.agents.minRelevanceScore", configFile: "librechat.yaml" }
+      },
+      
+      // OpenAI Endpoint Configuration
+      endpointsOpenAITitle: { 
+        type: "text", 
+        description: "Custom display title for OpenAI endpoint in the UI. Default: 'OpenAI'", 
+        label: "OpenAI Title",
+        placeholder: "OpenAI",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.title", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAITitleConvo: { 
+        type: "boolean", 
+        description: "Enable automatic conversation title generation using OpenAI. Default: true", 
+        label: "Title Conversations",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.titleConvo", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAITitleModel: { 
+        type: "text", 
+        description: "Model to use for generating conversation titles. Default: 'gpt-3.5-turbo'", 
+        label: "Title Model",
+        placeholder: "gpt-3.5-turbo",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.titleModel", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIApiKey: { 
+        type: "password", 
+        description: "OpenAI API key reference for this endpoint configuration (uses environment variable)", 
+        label: "API Key (Reference)",
+        placeholder: "${OPENAI_API_KEY}",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.apiKey", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIBaseURL: { 
+        type: "text", 
+        description: "Custom base URL for OpenAI-compatible endpoints (e.g., for proxies or alternative providers)", 
+        label: "Base URL",
+        placeholder: "https://api.openai.com/v1",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.baseURL", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIModels: { 
+        type: "object", 
+        description: "OpenAI models configuration object. Contains fetch, default, and other model settings.", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.models", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIModelsFetch: { 
+        type: "boolean", 
+        description: "Automatically fetch available models from OpenAI API. Default: true", 
+        label: "Fetch Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.models.fetch", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIModelsDefault: { 
+        type: "array", 
+        description: "Array of default OpenAI models to display if fetch is disabled or fails", 
+        label: "Default Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.models.default", configFile: "librechat.yaml" }
+      },
+      endpointsOpenAIDropParams: { 
+        type: "array", 
+        description: "Array of parameters to exclude when making requests to OpenAI", 
+        label: "Drop Parameters",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.openAI.dropParams", configFile: "librechat.yaml" }
+      },
+      
+      // Anthropic Endpoint Configuration
+      endpointsAnthropicTitle: { 
+        type: "text", 
+        description: "Custom display title for Anthropic endpoint in the UI. Default: 'Anthropic'", 
+        label: "Anthropic Title",
+        placeholder: "Anthropic",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.title", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicApiKey: { 
+        type: "password", 
+        description: "Anthropic API key reference for this endpoint configuration", 
+        label: "API Key (Reference)",
+        placeholder: "${ANTHROPIC_API_KEY}",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.apiKey", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicModelsFetch: { 
+        type: "boolean", 
+        description: "Automatically fetch available models from Anthropic API. Default: true", 
+        label: "Fetch Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.models.fetch", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicModelsDefault: { 
+        type: "array", 
+        description: "Array of default Anthropic models to display", 
+        label: "Default Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.models.default", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicTitleConvo: { 
+        type: "boolean", 
+        description: "Enable automatic conversation title generation using Anthropic. Default: true", 
+        label: "Title Conversations",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.titleConvo", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicBaseURL: { 
+        type: "text", 
+        description: "Custom base URL for Anthropic-compatible endpoints", 
+        label: "Base URL",
+        placeholder: "https://api.anthropic.com",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.baseURL", configFile: "librechat.yaml" }
+      },
+      endpointsAnthropicModels: { 
+        type: "object", 
+        description: "Anthropic models configuration object", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Anthropic Endpoint",
+        technical: { yamlPath: "endpoints.anthropic.models", configFile: "librechat.yaml" }
+      },
+      
+      // Google Endpoint Configuration
+      endpointsGoogleTitle: { 
+        type: "text", 
+        description: "Custom display title for Google endpoint in the UI. Default: 'Google'", 
+        label: "Google Title",
+        placeholder: "Google",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.title", configFile: "librechat.yaml" }
+      },
+      endpointsGoogleApiKey: { 
+        type: "password", 
+        description: "Google AI API key reference for this endpoint configuration", 
+        label: "API Key (Reference)",
+        placeholder: "${GOOGLE_API_KEY}",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.apiKey", configFile: "librechat.yaml" }
+      },
+      endpointsGoogleModelsFetch: { 
+        type: "boolean", 
+        description: "Automatically fetch available models from Google AI API. Default: true", 
+        label: "Fetch Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.models.fetch", configFile: "librechat.yaml" }
+      },
+      endpointsGoogleModelsDefault: { 
+        type: "array", 
+        description: "Array of default Google models to display", 
+        label: "Default Models",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.models.default", configFile: "librechat.yaml" }
+      },
+      endpointsGoogleBaseURL: { 
+        type: "text", 
+        description: "Custom base URL for Google AI endpoints", 
+        label: "Base URL",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.baseURL", configFile: "librechat.yaml" }
+      },
+      endpointsGoogleModels: { 
+        type: "object", 
+        description: "Google models configuration object", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Google Endpoint",
+        technical: { yamlPath: "endpoints.google.models", configFile: "librechat.yaml" }
+      },
+      
+      // Mistral Endpoint Configuration
+      endpointsMistralTitle: { 
+        type: "text", 
+        description: "Custom display title for Mistral endpoint in the UI. Default: 'Mistral'", 
+        label: "Mistral Title",
+        placeholder: "Mistral",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Mistral Endpoint",
+        technical: { yamlPath: "endpoints.mistral.title", configFile: "librechat.yaml" }
+      },
+      endpointsMistralApiKey: { 
+        type: "password", 
+        description: "Mistral AI API key reference for this endpoint configuration", 
+        label: "API Key (Reference)",
+        placeholder: "${MISTRAL_API_KEY}",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Mistral Endpoint",
+        technical: { yamlPath: "endpoints.mistral.apiKey", configFile: "librechat.yaml" }
+      },
+      endpointsMistralBaseURL: { 
+        type: "text", 
+        description: "Custom base URL for Mistral endpoints", 
+        label: "Base URL",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Mistral Endpoint",
+        technical: { yamlPath: "endpoints.mistral.baseURL", configFile: "librechat.yaml" }
+      },
+      endpointsMistralModels: { 
+        type: "object", 
+        description: "Mistral models configuration object", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "Mistral Endpoint",
+        technical: { yamlPath: "endpoints.mistral.models", configFile: "librechat.yaml" }
+      },
+      
+      // Azure OpenAI Endpoint Configuration
+      endpointsAzureOpenAITitle: { 
+        type: "text", 
+        description: "Custom display title for Azure OpenAI endpoint in the UI. Default: 'Azure OpenAI'", 
+        label: "Azure OpenAI Title",
+        placeholder: "Azure OpenAI",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.title", configFile: "librechat.yaml" }
+      },
+      endpointsAzureOpenAIApiKey: { 
+        type: "password", 
+        description: "Azure OpenAI API key reference for this endpoint configuration", 
+        label: "API Key (Reference)",
+        placeholder: "${AZURE_API_KEY}",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.apiKey", configFile: "librechat.yaml" }
+      },
+      endpointsAzureOpenAIInstanceName: { 
+        type: "text", 
+        description: "Azure OpenAI instance/resource name", 
+        label: "Instance Name",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.instanceName", configFile: "librechat.yaml" }
+      },
+      endpointsAzureOpenAIVersion: { 
+        type: "text", 
+        description: "Azure OpenAI API version (e.g., '2024-02-15-preview')", 
+        label: "API Version",
+        placeholder: "2024-02-15-preview",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.version", configFile: "librechat.yaml" }
+      },
+      endpointsAzureOpenAIBaseURL: { 
+        type: "text", 
+        description: "Custom base URL for Azure OpenAI endpoint", 
+        label: "Base URL",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.baseURL", configFile: "librechat.yaml" }
+      },
+      endpointsAzureOpenAIModels: { 
+        type: "object", 
+        description: "Azure OpenAI models configuration object with deployment mappings", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/azure",
+        docSection: "Azure OpenAI Endpoint",
+        technical: { yamlPath: "endpoints.azureOpenAI.models", configFile: "librechat.yaml" }
+      },
+      
+      // GPT Plugins Endpoint Configuration  
+      endpointsGptPluginsTitle: { 
+        type: "text", 
+        description: "Custom display title for GPT Plugins endpoint. Note: GPT Plugins are deprecated in favor of Agents.", 
+        label: "GPT Plugins Title",
+        placeholder: "Plugins",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "GPT Plugins Endpoint (Deprecated)",
+        technical: { yamlPath: "endpoints.gptPlugins.title", configFile: "librechat.yaml" }
+      },
+      endpointsGptPluginsModels: { 
+        type: "object", 
+        description: "GPT Plugins models configuration. Note: This endpoint is deprecated.", 
+        label: "Models Configuration",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/endpoints",
+        docSection: "GPT Plugins Endpoint (Deprecated)",
+        technical: { yamlPath: "endpoints.gptPlugins.models", configFile: "librechat.yaml" }
+      },
+      
+      // Custom Endpoints Configuration
+      customEndpoints: { 
+        type: "custom-endpoints", 
+        description: "Configure custom OpenAI-compatible endpoints. Allows you to add any OpenAI API-compatible service (like LM Studio, Ollama, or custom proxies) as a provider in LibreChat.", 
+        label: "Custom Endpoints",
+        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/custom_endpoint",
+        docSection: "Custom Endpoints",
+        technical: { yamlPath: "endpoints.custom", configFile: "librechat.yaml" }
+      },
     };
     
     return fieldMap[fieldName] || { type: "text", description: `Configuration for ${fieldName}`, label: fieldName };

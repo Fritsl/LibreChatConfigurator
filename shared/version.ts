@@ -22,20 +22,20 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "1.18.0";
+export const TOOL_VERSION = "2.0.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
 
 // Configuration Schema Version (for migration tracking)
-export const SCHEMA_VERSION = "1.0.0";
+export const SCHEMA_VERSION = "2.0.0";
 
 export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
-  lastUpdated: "2025-10-10",
-  changelog: "ARCHITECTURE: Implemented versioned schema-driven configuration with dynamic defaults generation and migration system for future-proof exports/imports."
+  lastUpdated: "2025-10-31",
+  changelog: "MAJOR RELEASE: Unified field registry architecture with 100% bidirectional parity for all 400+ configuration fields. Native LibreChat YAML format support with configPath translation layer for perfect import/export fidelity."
 } as const;
 
 // Helper function to get the tool's version string

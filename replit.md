@@ -4,6 +4,18 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.0.0 Release - October 31, 2025 ✅ COMPLETE
+Major version bump reflecting the unified field registry architecture:
+
+**What Changed:**
+- Tool Version: 1.18.0 → **2.0.0**
+- Schema Version: 1.0.0 → **2.0.0**
+- Added support for OPENAI_MODERATION and OPENAI_MODERATION_API_KEY environment variables
+- Complete architectural overhaul justifies major version increment
+
+**Why Version 2.0:**
+This represents a fundamental architectural shift from manual field management to a unified registry system that achieves 100% bidirectional parity across all 400+ configuration fields. The configPath translation layer enables perfect compatibility with LibreChat's native YAML format while maintaining our internal schema structure.
+
 ## LibreChat YAML Compatibility - October 30, 2025 ✅ COMPLETE
 Successfully restructured YAML export/import to generate LibreChat's native YAML format with full bidirectional compatibility:
 

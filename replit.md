@@ -4,6 +4,36 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.1.6 - October 31, 2025 🔧 **LIBRECHAT BUG HANDLING SYSTEM**
+🛠️ **NEW FEATURE:** Intelligent workaround system for known LibreChat bugs
+
+**What Changed:**
+- Tool Version: 2.1.5 → **2.1.6**
+- **Bug Metadata System:** Added `librechatBug` property to field registry for documenting known LibreChat issues
+- **Smart Export Logic:** Fields with documented bugs export to .env instead of YAML as workaround
+- **Enhanced Validation:** Import validation accepts bug-affected fields in .env without false-positive errors
+- **User Warnings:** UI tooltips show detailed bug explanations and workaround instructions
+
+**The Problem:**
+- LibreChat v0.8.0-rc4 has bug where `customFooter` cannot be set in librechat.yaml
+- Backend loads it correctly from YAML, but frontend TypeScript interface missing the field definition
+- Frontend filters out customFooter before displaying it to users
+- Standard YAML-first policy would block users from using valid .env workaround
+
+**The Solution:**
+- **librechatBug Field:** New metadata property documents bug description, workaround, and affected versions
+- **Exception Handling:** Export logic detects librechatBug and routes field to .env instead of YAML
+- **Validation Updates:** Import validation allows CUSTOM_FOOTER in .env without YAML-only errors
+- **UI Warnings:** Field tooltip shows: "⚠️ LIBRECHAT BUG: customFooter cannot be set in YAML... WORKAROUND: Use CUSTOM_FOOTER in .env"
+- **Future-Proof:** System can easily document and handle other LibreChat bugs as discovered
+
+**Impact:**
+- **Works Around LibreChat Bugs:** Users can configure affected fields using .env workaround
+- **Clear Guidance:** UI explains the bug and workaround so users understand why
+- **No False Errors:** Import validation recognizes valid workarounds
+- **Extensible System:** Easy to add workarounds for future LibreChat bugs
+- **Documentation Built-In:** Bug metadata serves as both code documentation and user help text
+
 ## Version 2.1.5 - October 31, 2025 📦 **FIELD COVERAGE EXPANSION**
 🎯 **BUG FIX:** Added 19 missing LibreChat RC4 fields to fix import rejections
 
@@ -117,6 +147,7 @@ Preferred communication style: Simple, everyday language.
 - **Versioned Configuration System**: JSON exports include metadata (`toolVersion`, `librechatVersion`, `schemaVersion`, `exportDate`, `configurationName`). Features dynamic schema defaults and import compatibility checking to prevent data loss and ensure forward-compatibility.
 - **Strict Import Validation System**: Comprehensive pre-import validation for YAML and .env files, rejecting imports with unmapped fields to prevent data loss and provide detailed user feedback.
 - **YAML-First Policy**: All fields with a `yamlPath` are strictly exported to `librechat.yaml` and not `.env`. Imports containing YAML-only fields in `.env` are rejected with detailed user guidance.
+- **LibreChat Bug Handling System**: Intelligent workaround system for known LibreChat bugs. Fields with documented bugs (e.g., customFooter) export to .env instead of YAML, with UI warnings explaining the issue and workaround. Import validation recognizes these exceptions to avoid false-positive errors.
 
 ## System Design Choices
 - **UI/UX**: Tabbed interface with specialized input controls, responsive design, and smart UI elements that adapt based on dependencies (e.g., disabling `interface.modelSelect` when `modelSpecs.addedEndpoints` is populated). Includes user experience presets for common LibreChat configurations (e.g., "Agents-Only Mode").

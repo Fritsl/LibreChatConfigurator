@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.5";
+export const TOOL_VERSION = "2.1.6";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "FIELD COVERAGE EXPANSION: Added 19 missing LibreChat RC4 fields to registry including fileConfig.endpoints.agents file limits (4 fields), memory.agent.model_parameters (4 fields), and speech.speechTab advanced features (11 fields). Fixes YAML import rejections for legitimate LibreChat configurations."
+  changelog: "LIBRECHAT BUG HANDLING SYSTEM: Added intelligent workaround system for known LibreChat bugs. Introduced librechatBug metadata field to document bugs and workarounds. Fields with bugs (e.g., customFooter) now export to .env instead of YAML with clear UI warnings. Import validation accepts these exceptions. Enhanced search to find fields by environment variable names and YAML paths."
 } as const;
 
 // Helper function to get the tool's version string

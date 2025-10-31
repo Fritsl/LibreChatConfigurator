@@ -3061,6 +3061,48 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     exportToEnv: false,
     exportToYaml: true,
   },
+  
+  // OpenAI Endpoint File Configuration
+  {
+    id: 'fileConfigEndpointsOpenAIFileLimit',
+    yamlPath: 'fileConfig.endpoints.openAI.fileLimit',
+    type: 'number',
+    defaultValue: 5,
+    category: 'file-config',
+    description: 'Maximum number of files per upload request for OpenAI endpoint',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
+    id: 'fileConfigEndpointsOpenAIFileSizeLimit',
+    yamlPath: 'fileConfig.endpoints.openAI.fileSizeLimit',
+    type: 'number',
+    defaultValue: 10,
+    category: 'file-config',
+    description: 'Maximum size for a single file in MB for OpenAI endpoint',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
+    id: 'fileConfigEndpointsOpenAITotalSizeLimit',
+    yamlPath: 'fileConfig.endpoints.openAI.totalSizeLimit',
+    type: 'number',
+    defaultValue: 50,
+    category: 'file-config',
+    description: 'Maximum total size for all files in a request in MB for OpenAI endpoint',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
+    id: 'fileConfigEndpointsOpenAISupportedMimeTypes',
+    yamlPath: 'fileConfig.endpoints.openAI.supportedMimeTypes',
+    type: 'array',
+    defaultValue: ['image/*', 'application/pdf'],
+    category: 'file-config',
+    description: 'Allowed MIME types for OpenAI endpoint (supports wildcards)',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
 
   // =============================================================================
   // YAML-Only Fields: Additional Interface Nested Objects

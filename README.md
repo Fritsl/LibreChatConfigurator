@@ -269,6 +269,50 @@ If you want to develop LibreChat locally in VS Code with hot-reload and full deb
 - **Technical Metadata** - Hover over info icons to see env var names and file paths
 - **Responsive Design** - Works on desktop, tablet, and mobile
 
+## Design Philosophy
+
+### Strict YAML-First Policy
+
+**We enforce clean separation between `.env` and `librechat.yaml` files.**
+
+LibreChat RC4 uses two configuration files with different purposes:
+- **`.env`** - Environment variables (API keys, secrets, server settings)
+- **`librechat.yaml`** - UI and feature configuration (interface settings, endpoints, capabilities)
+
+**Our Design Choice:**
+
+This tool enforces a strict policy: **any field that CAN be configured in librechat.yaml will NEVER appear in .env files**, even if LibreChat technically supports both locations.
+
+**Why This Matters:**
+
+1. **Prevents Confusion** - Users know exactly where each setting belongs
+2. **Cleaner Files** - `.env` contains only true environment variables and secrets
+3. **Better Maintainability** - Clear separation makes configuration easier to understand
+4. **Follows Best Practices** - YAML for structured configuration, ENV for secrets/runtime settings
+
+**How It Works:**
+
+- **Export**: 196 YAML-only fields are automatically excluded from `.env` files
+- **Import**: If you try to import a `.env` file containing YAML-only fields, the tool will:
+  - Block the import completely
+  - Show you exactly which fields need to move
+  - Provide the correct YAML path for each field
+  - Explain how to fix it
+
+**Example:**
+
+If your `.env` contains `CUSTOM_FOOTER=My Footer`, the tool will reject it and tell you:
+```
+CUSTOM_FOOTER → interface.customFooter
+```
+You need to remove it from `.env` and add it to `librechat.yaml` as:
+```yaml
+interface:
+  customFooter: "My Footer"
+```
+
+This strict enforcement keeps your configuration clean and prevents the common mistake of mixing YAML-configurable fields into environment files.
+
 ## Supported Configuration
 
 This tool supports all LibreChat v0.8.0-rc4 settings organized into categories:

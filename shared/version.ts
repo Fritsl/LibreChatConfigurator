@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.0.0";
+export const TOOL_VERSION = "2.0.1";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-10-31",
-  changelog: "MAJOR RELEASE: Unified field registry architecture with 100% bidirectional parity for all 400+ configuration fields. Native LibreChat YAML format support with configPath translation layer for perfect import/export fidelity."
+  changelog: "Bug fix: UserExperiencePresets component now correctly syncs preset selection and agent ID from backend configuration after page reload."
 } as const;
 
 // Helper function to get the tool's version string

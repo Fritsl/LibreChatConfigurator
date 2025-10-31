@@ -4,6 +4,20 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.0.1 - October 31, 2025 ✅ COMPLETE
+Bug fix release improving configuration persistence UX:
+
+**What Changed:**
+- Tool Version: 2.0.0 → **2.0.1**
+- Fixed UserExperiencePresets component to correctly sync preset selection and agent ID from backend configuration after page reload
+- Added useEffect hooks to synchronize local UI state with loaded configuration data
+
+**Technical Details:**
+- Component previously initialized state from props only once on mount
+- When backend configuration loaded, prop changes didn't update local state
+- Now properly syncs both preset selection (radio button) and agent ID (input field) when configuration loads from backend
+- Ensures UI accurately reflects saved configuration after Replit workflow restarts
+
 ## Version 2.0.0 Release - October 31, 2025 ✅ COMPLETE
 Major version bump reflecting the unified field registry architecture:
 

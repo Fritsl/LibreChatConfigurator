@@ -368,6 +368,14 @@ export function useConfiguration() {
       // Apply backend configuration (which includes latest saved data)
       setConfiguration(backendConfiguration as Configuration);
       
+      // IMPORTANT: Also update localStorage to sync with backend
+      // This ensures localStorage doesn't have stale data
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(backendConfiguration));
+      } catch (error) {
+        console.error("Failed to sync localStorage with backend:", error);
+      }
+      
       // Enable auto-save now that backend data is loaded
       setIsInitialized(true);
     }

@@ -267,7 +267,7 @@ export function FieldStatesPanel({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[40px]"></TableHead>
+                  <TableHead className="w-[120px]"></TableHead>
                   <TableHead className="w-[250px]">
                     <Button 
                       variant="ghost" 
@@ -327,23 +327,42 @@ export function FieldStatesPanel({
                     const isExpanded = expandedRows.has(field.id);
                     return (
                       <Fragment key={field.id}>
-                        <TableRow data-testid={`row-field-${field.id}`}>
-                          <TableCell className="p-0">
+                        <TableRow 
+                          data-testid={`row-field-${field.id}`}
+                          className="border-b-2 border-border hover:bg-muted/50 cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            if ((e.target as HTMLElement).tagName !== 'BUTTON' && 
+                                (e.target as HTMLElement).tagName !== 'INPUT' &&
+                                !(e.target as HTMLElement).closest('button, input, [role="checkbox"]')) {
+                              toggleRowExpansion(field.id);
+                            }
+                          }}
+                        >
+                          <TableCell className="p-2 w-[120px]">
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toggleRowExpansion(field.id)}
-                              className="h-full w-full"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleRowExpansion(field.id);
+                              }}
+                              className="h-9 w-full flex items-center gap-2 justify-start text-xs"
                               data-testid={`button-expand-${field.id}`}
                             >
                               {isExpanded ? (
-                                <ChevronDown className="h-4 w-4" />
+                                <>
+                                  <ChevronDown className="h-4 w-4" />
+                                  <span>Collapse</span>
+                                </>
                               ) : (
-                                <ChevronRight className="h-4 w-4" />
+                                <>
+                                  <ChevronRight className="h-4 w-4" />
+                                  <span>Expand</span>
+                                </>
                               )}
                             </Button>
                           </TableCell>
-                          <TableCell className="font-mono text-sm">{field.id}</TableCell>
+                          <TableCell className="font-mono text-sm font-medium">{field.id}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{field.category}</TableCell>
                       <TableCell className="font-mono text-xs">
                         {!isUsingDefault ? (
@@ -429,22 +448,66 @@ export function FieldStatesPanel({
                       </TableCell>
                     </TableRow>
                     {isExpanded && (
-                      <TableRow>
-                        <TableCell colSpan={7} className="bg-muted/30 p-6">
-                          <div className="max-w-3xl">
-                            <SettingInput
-                              label={field.id}
-                              description={field.description}
-                              type={field.type as any}
-                              value={currentValue}
-                              onChange={(newValue) => handleValueChange(field.id, newValue)}
-                              options={field.enumValues ? [...field.enumValues] : undefined}
-                              fieldId={field.id}
-                              defaultValue={field.defaultValue}
-                              isUsingDefault={isUsingDefault}
-                              data-testid={`expanded-input-${field.id}`}
-                            />
-                          </div>
+                      <TableRow className="border-b-2 border-border">
+                        <TableCell colSpan={7} className="bg-muted/20 p-0">
+                          <Card className="border-0 shadow-none bg-white dark:bg-gray-900 m-4">
+                            <CardHeader className="border-b-2 border-primary/20 pb-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <CardTitle className="text-lg font-mono">{field.id}</CardTitle>
+                                  {state === "not-set" && (
+                                    <Badge variant="secondary" className="gap-1">
+                                      <Circle className="h-3 w-3" />
+                                      Not Set
+                                    </Badge>
+                                  )}
+                                  {state === "explicit-default" && (
+                                    <Badge variant="outline" className="gap-1 border-blue-300 text-blue-700">
+                                      <CheckCircle className="h-3 w-3" />
+                                      Explicit Default
+                                    </Badge>
+                                  )}
+                                  {state === "explicit-modified" && (
+                                    <Badge variant="default" className="gap-1 bg-orange-500">
+                                      <AlertCircle className="h-3 w-3" />
+                                      Modified
+                                    </Badge>
+                                  )}
+                                  <Badge variant="outline" className="font-normal text-xs">
+                                    {field.category}
+                                  </Badge>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleRowExpansion(field.id)}
+                                  data-testid={`button-collapse-${field.id}`}
+                                >
+                                  <ChevronDown className="h-4 w-4 mr-2" />
+                                  Collapse
+                                </Button>
+                              </div>
+                              <CardDescription className="mt-2">
+                                {field.description}
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent className="pt-6">
+                              <div className="max-w-3xl">
+                                <SettingInput
+                                  label={field.id}
+                                  description={field.description}
+                                  type={field.type as any}
+                                  value={currentValue}
+                                  onChange={(newValue) => handleValueChange(field.id, newValue)}
+                                  options={field.enumValues ? [...field.enumValues] : undefined}
+                                  fieldId={field.id}
+                                  defaultValue={field.defaultValue}
+                                  isUsingDefault={isUsingDefault}
+                                  data-testid={`expanded-input-${field.id}`}
+                                />
+                              </div>
+                            </CardContent>
+                          </Card>
                         </TableCell>
                       </TableRow>
                     )}

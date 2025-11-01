@@ -157,10 +157,10 @@ export function ConfigurationComparison({
 
   const getChangeBadge = (changeType: ChangeType) => {
     const variants: Record<ChangeType, { label: string; className: string }> = {
-      added: { label: 'Added', className: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' },
-      modified: { label: 'Modified', className: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-100' },
-      unchanged: { label: 'Unchanged', className: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' },
-      removed: { label: 'Removed', className: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100' }
+      added: { label: 'New', className: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' },
+      modified: { label: 'Changed', className: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-100' },
+      unchanged: { label: 'Identical', className: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' },
+      removed: { label: 'Deleted', className: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100' }
     };
 
     const variant = variants[changeType];
@@ -192,15 +192,15 @@ export function ConfigurationComparison({
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.added}</div>
-            <div className="text-xs text-muted-foreground">Added</div>
+            <div className="text-xs text-muted-foreground">New</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.modified}</div>
-            <div className="text-xs text-muted-foreground">Modified</div>
+            <div className="text-xs text-muted-foreground">Changed</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">{stats.unchanged}</div>
-            <div className="text-xs text-muted-foreground">Unchanged</div>
+            <div className="text-xs text-muted-foreground">Identical</div>
           </div>
         </div>
 
@@ -249,7 +249,7 @@ export function ConfigurationComparison({
             {filteredChanges.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 {filterType === 'changes-only' ? 
-                  'No changes detected' : 
+                  'No differences detected' : 
                   'No fields match your search'
                 }
               </div>

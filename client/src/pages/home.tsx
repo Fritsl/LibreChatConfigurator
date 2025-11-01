@@ -185,7 +185,8 @@ export default function Home() {
 
   // Helper function to mark imported fields as explicitly set
   const markImportedFieldsAsExplicit = (baseConfig: Configuration, importedUpdates: Partial<Configuration>): Configuration => {
-    let result = { ...baseConfig, ...importedUpdates };
+    // Deep merge to preserve untouched nested properties
+    let result = deepMerge(baseConfig, importedUpdates);
     
     // Find all fields that have values in the imported updates
     const getFieldIdsFromUpdates = (obj: any, prefix = ''): string[] => {
@@ -473,6 +474,7 @@ export default function Home() {
             // This ensures YAML fields are updated while ENV-only fields remain intact
             // AND the Field States Panel correctly shows imported fields as "explicit"
             const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+            // Use replace mode since markImportedFieldsAsExplicit already deep-merged everything
             updateConfiguration(configWithOverrides, true);
             
             // Show detailed import summary
@@ -578,6 +580,7 @@ export default function Home() {
             // This ensures ENV fields are updated while YAML-only fields remain intact
             // AND the Field States Panel correctly shows imported fields as "explicit"
             const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+            // Use replace mode since markImportedFieldsAsExplicit already deep-merged everything
             updateConfiguration(configWithOverrides, true);
             
             // Show detailed import summary

@@ -50,7 +50,6 @@ export default function Home() {
     type: 'yaml' | 'env';
     fileName: string;
     proposedChanges: Partial<Configuration>;
-    currentConfig: Configuration;
   } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
@@ -712,8 +711,7 @@ export default function Home() {
             setComparisonData({
               type: 'yaml',
               fileName: file.name,
-              proposedChanges,
-              currentConfig: configuration
+              proposedChanges
             });
             setShowComparisonDialog(true);
           } catch (error) {
@@ -785,8 +783,7 @@ export default function Home() {
             setComparisonData({
               type: 'env',
               fileName: file.name,
-              proposedChanges,
-              currentConfig: configuration
+              proposedChanges
             });
             setShowComparisonDialog(true);
           } catch (error) {
@@ -2045,7 +2042,7 @@ export default function Home() {
           onOpenChange={setShowComparisonDialog}
           type={comparisonData.type}
           fileName={comparisonData.fileName}
-          currentConfig={comparisonData.currentConfig}
+          currentConfig={configuration}
           proposedChanges={comparisonData.proposedChanges}
           onApply={handleApplyComparison}
         />

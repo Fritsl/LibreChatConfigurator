@@ -4715,7 +4715,6 @@ paths:
                         <FieldStatesPanel
                           configuration={configuration}
                           onConfigurationChange={onConfigurationChange}
-                          onNavigateToField={handleNavigateToField}
                         />
                       </div>
                     )}

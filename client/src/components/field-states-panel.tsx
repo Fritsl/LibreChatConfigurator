@@ -3,11 +3,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
-import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, Edit } from "lucide-react";
+import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 type SortField = "name" | "state" | "category";
 type SortDirection = "asc" | "desc";
@@ -15,17 +16,16 @@ type SortDirection = "asc" | "desc";
 interface FieldStatesPanelProps {
   configuration: Configuration;
   onConfigurationChange: (updates: Partial<Configuration>) => void;
-  onNavigateToField?: (fieldId: string) => void;
 }
 
 export function FieldStatesPanel({
   configuration,
   onConfigurationChange,
-  onNavigateToField,
 }: FieldStatesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [editingField, setEditingField] = useState<string | null>(null);
 
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
@@ -133,6 +133,31 @@ export function FieldStatesPanel({
   const handleResetAll = () => {
     const clearedConfig = clearAllOverrides(configuration);
     onConfigurationChange(clearedConfig);
+  };
+
+  const handleValueChange = (fieldId: string, newValue: any) => {
+    const field = FIELD_REGISTRY.find(f => f.id === fieldId);
+    if (!field) return;
+
+    let updatedConfig = { ...configuration };
+
+    // Set the value
+    if (field.yamlPath) {
+      const keys = field.yamlPath.split('.');
+      let current: any = updatedConfig;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = newValue;
+    } else {
+      (updatedConfig as any)[fieldId] = newValue;
+    }
+
+    // Ensure the field is marked as explicit
+    updatedConfig = setFieldOverride(updatedConfig, fieldId, false);
+    onConfigurationChange(updatedConfig);
+    setEditingField(null);
   };
 
   const formatValue = (value: any): string => {
@@ -291,7 +316,45 @@ export function FieldStatesPanel({
                     <TableRow key={field.id} data-testid={`row-field-${field.id}`}>
                       <TableCell className="font-mono text-sm">{field.id}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{field.category}</TableCell>
-                      <TableCell className="font-mono text-xs">{formatValue(currentValue)}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {!isUsingDefault ? (
+                          // Editable value for explicit fields
+                          field.type === "boolean" ? (
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                checked={currentValue === true}
+                                onCheckedChange={(checked) => handleValueChange(field.id, checked)}
+                                data-testid={`checkbox-${field.id}`}
+                              />
+                              <span className="text-xs">{currentValue ? "true" : "false"}</span>
+                            </div>
+                          ) : field.type === "number" ? (
+                            <Input
+                              type="number"
+                              value={currentValue || ""}
+                              onChange={(e) => {
+                                const val = e.target.value === "" ? undefined : Number(e.target.value);
+                                handleValueChange(field.id, val);
+                              }}
+                              className="h-7 text-xs"
+                              data-testid={`input-${field.id}`}
+                            />
+                          ) : field.type === "object" || field.type === "array" ? (
+                            <span className="text-muted-foreground italic">{formatValue(currentValue)}</span>
+                          ) : (
+                            <Input
+                              type="text"
+                              value={currentValue || ""}
+                              onChange={(e) => handleValueChange(field.id, e.target.value)}
+                              className="h-7 text-xs"
+                              data-testid={`input-${field.id}`}
+                            />
+                          )
+                        ) : (
+                          // Read-only display for "Not Set" fields
+                          <span className="text-muted-foreground italic">{formatValue(currentValue)}</span>
+                        )}
+                      </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{formatValue(field.defaultValue)}</TableCell>
                       <TableCell>
                         {state === "not-set" && (
@@ -315,17 +378,6 @@ export function FieldStatesPanel({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {!isUsingDefault && onNavigateToField && (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={() => onNavigateToField(field.id)}
-                              data-testid={`button-edit-${field.id}`}
-                            >
-                              <Edit className="h-3 w-3 mr-1" />
-                              Edit Value
-                            </Button>
-                          )}
                           <Button
                             variant="outline"
                             size="sm"

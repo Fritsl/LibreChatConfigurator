@@ -158,7 +158,7 @@ export function ConfigurationComparison({
   const getChangeBadge = (changeType: ChangeType) => {
     const variants: Record<ChangeType, { label: string; className: string }> = {
       added: { label: 'New', className: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' },
-      modified: { label: 'Changed', className: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-100' },
+      modified: { label: 'Differs', className: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-100' },
       unchanged: { label: 'Identical', className: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' },
       removed: { label: 'Deleted', className: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100' }
     };
@@ -196,7 +196,7 @@ export function ConfigurationComparison({
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats.modified}</div>
-            <div className="text-xs text-muted-foreground">Changed</div>
+            <div className="text-xs text-muted-foreground">Differs</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">{stats.unchanged}</div>
@@ -239,7 +239,7 @@ export function ConfigurationComparison({
             onClick={() => setFilterType('changes-only')}
             data-testid="filter-changes-only"
           >
-            Changes Only
+            Differences Only
           </Button>
         </div>
 
@@ -334,7 +334,7 @@ export function ConfigurationComparison({
             disabled={stats.added === 0 && stats.modified === 0}
             data-testid="button-apply-changes"
           >
-            Apply {stats.added + stats.modified > 0 && `${stats.added + stats.modified} Changes`}
+            Import {stats.added + stats.modified > 0 && `${stats.added + stats.modified} Differences`}
           </Button>
         </div>
       </DialogContent>

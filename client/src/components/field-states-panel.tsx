@@ -73,16 +73,12 @@ export function FieldStatesPanel({
 
   // Filter and sort fields
   const filteredAndSortedFields = useMemo(() => {
-    // First, filter
+    // First, filter by field name only
     let results = fieldStates;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       results = fieldStates.filter(({ field }) => 
-        field.id.toLowerCase().includes(query) ||
-        field.description?.toLowerCase().includes(query) ||
-        field.category?.toLowerCase().includes(query) ||
-        field.envKey?.toLowerCase().includes(query) ||
-        field.yamlPath?.toLowerCase().includes(query)
+        field.id.toLowerCase().includes(query)
       );
     }
 

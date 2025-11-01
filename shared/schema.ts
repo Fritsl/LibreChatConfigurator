@@ -162,19 +162,34 @@ const webSearchSchema = z.object({
   scraperType: z.enum(["none", "firecrawl", "serper"]).default("none"),
   rerankerType: z.enum(["none", "jina", "cohere"]).default("none"),
   scraperTimeout: z.number().min(1000).max(60000).default(20000),
-  safeSearch: z.boolean().default(true),
+  safeSearch: z.number().min(0).max(2).default(1), // 0=OFF, 1=MODERATE, 2=STRICT
   
   // Firecrawl Advanced Options
   firecrawlOptions: z.object({
     formats: z.array(z.enum(["markdown", "html", "links", "screenshot"])).default(["markdown", "links"]),
+    includeTags: z.array(z.string()).optional(),
+    excludeTags: z.array(z.string()).optional(),
+    headers: z.record(z.string()).optional(),
     onlyMainContent: z.boolean().default(true),
     timeout: z.number().min(1000).max(120000).default(20000),
     waitFor: z.number().min(0).max(30000).default(1000),
     blockAds: z.boolean().default(true),
     removeBase64Images: z.boolean().default(true),
+    parsePDF: z.boolean().default(true),
     mobile: z.boolean().default(true),
     maxAge: z.number().min(0).max(86400000).default(0), // max 24 hours in ms
     proxy: z.string().default("auto"),
+    skipTlsVerification: z.boolean().default(false),
+    storeInCache: z.boolean().default(true),
+    zeroDataRetention: z.boolean().default(false),
+    location: z.object({
+      country: z.string().optional(),
+      languages: z.array(z.string()).optional(),
+    }).optional(),
+    changeTrackingOptions: z.object({
+      enabled: z.boolean().optional(),
+      threshold: z.number().optional(),
+    }).optional(),
   }).optional(),
 }).optional();
 

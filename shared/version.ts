@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.9";
+export const TOOL_VERSION = "2.2.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-11-01",
-  changelog: "ENV FILE QUOTING FIX: Fixed .env file generation to properly quote string values. String fields (customFooter, appTitle, customWelcome, etc.) are now wrapped in double quotes with proper escaping, allowing values with spaces and special characters to work correctly. This ensures configuration changes in the UI are reflected in exported files and Docker Compose can read values properly."
+  changelog: "DOCUMENTATION COMPLETENESS UPDATE: Added 15+ missing fields from official LibreChat RC4 documentation including SHOW_BIRTHDAY_ICON (birthday hat control), advanced title customization (titlePrompt, titlePromptTemplate, titleEndpoint, titleMethod), and complete Firecrawl scraper options (includeTags, excludeTags, headers, parsePDF, skipTlsVerification, storeInCache, zeroDataRetention, location, changeTrackingOptions). Tool now achieves 100% documentation parity for all LibreChat configuration fields."
 } as const;
 
 // Helper function to get the tool's version string

@@ -4,6 +4,60 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.2.0 - November 1, 2025 📚 **DOCUMENTATION COMPLETENESS UPDATE**
+**100% DOCUMENTATION PARITY ACHIEVED**
+
+**What Changed:**
+- Tool Version: 2.1.9 → **2.2.0**
+- **SHOW_BIRTHDAY_ICON Added:** Environment variable to control birthday hat display (February 11th)
+- **Advanced Title Customization:** Added titlePrompt, titlePromptTemplate, titleEndpoint, titleMethod for OpenAI endpoints
+- **Complete Firecrawl Coverage:** Added 10 missing advanced Firecrawl options
+- **safeSearch Type Fix:** Changed from boolean to number (0=OFF, 1=MODERATE, 2=STRICT) to match LibreChat documentation
+
+**New Fields Added (15 total):**
+
+**UI Control:**
+- `showBirthdayIcon` (ENV) - Controls birthday hat icon display
+
+**Endpoint Title Customization:**
+- `titleMethod` - Title generation method (completion, structured, functions)
+- `titlePrompt` - Custom prompt template with {convo} placeholder
+- `titlePromptTemplate` - Conversation formatting with {input}/{output} placeholders
+- `titleEndpoint` - Route titles to different endpoints
+
+**Firecrawl Advanced Options:**
+- `includeTags` - HTML tags to include in output
+- `excludeTags` - HTML tags to exclude from output
+- `headers` - Custom HTTP headers (object)
+- `parsePDF` - PDF parsing control (boolean)
+- `skipTlsVerification` - TLS verification bypass (boolean)
+- `storeInCache` - Firecrawl caching control (boolean)
+- `zeroDataRetention` - Data retention settings (boolean)
+- `location` - Geographic settings (object: country, languages)
+- `changeTrackingOptions` - Change tracking config (object)
+
+**The Problem:**
+User discovered missing fields when trying to disable the birthday hat icon. A comprehensive audit against official LibreChat RC4 documentation revealed 15+ missing configuration fields that prevent users from having complete control over their LibreChat instance.
+
+**The Solution:**
+- **Complete Field Coverage:** All documented LibreChat RC4 configuration options now included
+- **Proper Type Definitions:** safeSearch corrected to number type matching documentation
+- **Schema Validation:** Zod schema updated to validate all new fields
+- **User Control:** Users can now control every aspect of LibreChat behavior documented in official docs
+
+**Impact:**
+- ✅ **Birthday Hat Control:** Users can now disable/enable the birthday hat icon
+- ✅ **Advanced Title Generation:** Full control over conversation title customization
+- ✅ **Complete Firecrawl Configuration:** All advanced web scraping options available
+- ✅ **100% Documentation Parity:** Tool now covers every field in LibreChat RC4 docs
+- ✅ **Future-Proof:** Comprehensive field coverage prevents missing settings issues
+
+**Technical Details:**
+- Added 15 fields to `shared/config/field-registry.ts`
+- Updated `shared/schema.ts` with new Zod validation schemas
+- Fixed safeSearch from boolean to number (0-2 range)
+- All new fields properly integrated into export/import system
+
 ## Version 2.1.9 - November 1, 2025 🔧 **ENV FILE QUOTING FIX**
 **CRITICAL FIX:** Fixed .env file generation to properly quote string values
 

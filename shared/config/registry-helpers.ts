@@ -952,6 +952,15 @@ function generateEndpointsSection(config: any): string {
       if (endpoint.titleMethod) {
         lines.push(`      titleMethod: '${escapeYamlString(endpoint.titleMethod)}'`);
       }
+      if (endpoint.titlePrompt) {
+        lines.push(`      titlePrompt: '${escapeYamlString(endpoint.titlePrompt)}'`);
+      }
+      if (endpoint.titlePromptTemplate) {
+        lines.push(`      titlePromptTemplate: '${escapeYamlString(endpoint.titlePromptTemplate)}'`);
+      }
+      if (endpoint.titleEndpoint) {
+        lines.push(`      titleEndpoint: '${escapeYamlString(endpoint.titleEndpoint)}'`);
+      }
       if (endpoint.summarize !== undefined) {
         lines.push(`      summarize: ${endpoint.summarize}`);
       }
@@ -1434,19 +1443,40 @@ function generateWebSearchSection(config: any): string {
     lines.push(`  firecrawlApiUrl: "${firecrawlApiUrl || 'https://api.firecrawl.dev'}"`);
     
     const formats = config.webSearch?.firecrawlOptions?.formats ?? config.webSearchFirecrawlOptionsFormats;
+    const includeTags = config.webSearch?.firecrawlOptions?.includeTags ?? config.webSearchFirecrawlOptionsIncludeTags;
+    const excludeTags = config.webSearch?.firecrawlOptions?.excludeTags ?? config.webSearchFirecrawlOptionsExcludeTags;
+    const headers = config.webSearch?.firecrawlOptions?.headers ?? config.webSearchFirecrawlOptionsHeaders;
     const onlyMainContent = config.webSearch?.firecrawlOptions?.onlyMainContent ?? config.webSearchFirecrawlOptionsOnlyMainContent;
     const timeout = config.webSearch?.firecrawlOptions?.timeout ?? config.webSearchFirecrawlOptionsTimeout;
     const waitFor = config.webSearch?.firecrawlOptions?.waitFor ?? config.webSearchFirecrawlOptionsWaitFor;
     const blockAds = config.webSearch?.firecrawlOptions?.blockAds ?? config.webSearchFirecrawlOptionsBlockAds;
     const removeBase64Images = config.webSearch?.firecrawlOptions?.removeBase64Images ?? config.webSearchFirecrawlOptionsRemoveBase64Images;
+    const parsePDF = config.webSearch?.firecrawlOptions?.parsePDF ?? config.webSearchFirecrawlOptionsParsePDF;
     const mobile = config.webSearch?.firecrawlOptions?.mobile ?? config.webSearchFirecrawlOptionsMobile;
     const maxAge = config.webSearch?.firecrawlOptions?.maxAge ?? config.webSearchFirecrawlOptionsMaxAge;
     const proxy = config.webSearch?.firecrawlOptions?.proxy ?? config.webSearchFirecrawlOptionsProxy;
+    const skipTlsVerification = config.webSearch?.firecrawlOptions?.skipTlsVerification ?? config.webSearchFirecrawlOptionsSkipTlsVerification;
+    const storeInCache = config.webSearch?.firecrawlOptions?.storeInCache ?? config.webSearchFirecrawlOptionsStoreInCache;
+    const zeroDataRetention = config.webSearch?.firecrawlOptions?.zeroDataRetention ?? config.webSearchFirecrawlOptionsZeroDataRetention;
+    const location = config.webSearch?.firecrawlOptions?.location ?? config.webSearchFirecrawlOptionsLocation;
+    const changeTrackingOptions = config.webSearch?.firecrawlOptions?.changeTrackingOptions ?? config.webSearchFirecrawlOptionsChangeTrackingOptions;
     
-    if (formats || onlyMainContent !== undefined || timeout !== undefined || waitFor !== undefined || blockAds !== undefined || removeBase64Images !== undefined || mobile !== undefined || maxAge !== undefined || proxy) {
+    if (formats || includeTags || excludeTags || headers || onlyMainContent !== undefined || timeout !== undefined || waitFor !== undefined || blockAds !== undefined || removeBase64Images !== undefined || parsePDF !== undefined || mobile !== undefined || maxAge !== undefined || proxy || skipTlsVerification !== undefined || storeInCache !== undefined || zeroDataRetention !== undefined || location || changeTrackingOptions) {
       lines.push(`  firecrawlOptions:`);
       if (formats) {
         lines.push(`    formats: [${formats?.map((f: string) => `"${f}"`).join(', ') || '"markdown", "links"'}]`);
+      }
+      if (includeTags && includeTags.length > 0) {
+        lines.push(`    includeTags: [${includeTags.map((tag: string) => `"${tag}"`).join(', ')}]`);
+      }
+      if (excludeTags && excludeTags.length > 0) {
+        lines.push(`    excludeTags: [${excludeTags.map((tag: string) => `"${tag}"`).join(', ')}]`);
+      }
+      if (headers && Object.keys(headers).length > 0) {
+        lines.push(`    headers:`);
+        Object.entries(headers).forEach(([key, value]) => {
+          lines.push(`      ${key}: "${value}"`);
+        });
       }
       if (onlyMainContent !== undefined) {
         lines.push(`    onlyMainContent: ${onlyMainContent ?? true}`);
@@ -1463,6 +1493,9 @@ function generateWebSearchSection(config: any): string {
       if (removeBase64Images !== undefined) {
         lines.push(`    removeBase64Images: ${removeBase64Images ?? true}`);
       }
+      if (parsePDF !== undefined) {
+        lines.push(`    parsePDF: ${parsePDF ?? true}`);
+      }
       if (mobile !== undefined) {
         lines.push(`    mobile: ${mobile ?? true}`);
       }
@@ -1471,6 +1504,33 @@ function generateWebSearchSection(config: any): string {
       }
       if (proxy) {
         lines.push(`    proxy: "${proxy ?? 'auto'}"`);
+      }
+      if (skipTlsVerification !== undefined) {
+        lines.push(`    skipTlsVerification: ${skipTlsVerification ?? false}`);
+      }
+      if (storeInCache !== undefined) {
+        lines.push(`    storeInCache: ${storeInCache ?? true}`);
+      }
+      if (zeroDataRetention !== undefined) {
+        lines.push(`    zeroDataRetention: ${zeroDataRetention ?? false}`);
+      }
+      if (location) {
+        lines.push(`    location:`);
+        if (location.country) {
+          lines.push(`      country: "${location.country}"`);
+        }
+        if (location.languages && location.languages.length > 0) {
+          lines.push(`      languages: [${location.languages.map((lang: string) => `"${lang}"`).join(', ')}]`);
+        }
+      }
+      if (changeTrackingOptions) {
+        lines.push(`    changeTrackingOptions:`);
+        if (changeTrackingOptions.enabled !== undefined) {
+          lines.push(`      enabled: ${changeTrackingOptions.enabled}`);
+        }
+        if (changeTrackingOptions.threshold !== undefined) {
+          lines.push(`      threshold: ${changeTrackingOptions.threshold}`);
+        }
       }
     }
   }
@@ -1487,8 +1547,8 @@ function generateWebSearchSection(config: any): string {
   if (scraperTimeout) {
     lines.push(`  scraperTimeout: ${scraperTimeout}`);
   }
-  if (safeSearch !== undefined) {
-    lines.push(`  safeSearch: ${safeSearch ? 1 : 0}`);
+  if (safeSearch !== undefined && safeSearch !== null) {
+    lines.push(`  safeSearch: ${safeSearch}`);
   }
   
   return lines.join('\n');

@@ -77,9 +77,12 @@ export function FieldStatesPanel({
     let results = fieldStates;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      results = fieldStates.filter(({ field }) => 
-        field.id.toLowerCase().includes(query)
-      );
+      console.log('Filtering with query:', query);
+      results = fieldStates.filter(({ field }) => {
+        const matches = field.id.toLowerCase().includes(query);
+        return matches;
+      });
+      console.log('Filtered results count:', results.length);
     }
 
     // Then, sort

@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.1.8";
+export const TOOL_VERSION = "2.1.9";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -34,8 +34,8 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
-  lastUpdated: "2025-10-31",
-  changelog: "SPEECH BLOCK DISABLED: Disabled Speech configuration block (STT/TTS/speechTab) in YAML exports due to LibreChat RC4 strict validation. Incomplete speech configurations cause entire YAML file rejection, preventing core UI customizations from loading. Speech section now outputs explanatory comment instead of config block to ensure stable YAML loading."
+  lastUpdated: "2025-11-01",
+  changelog: "ENV FILE QUOTING FIX: Fixed .env file generation to properly quote string values. String fields (customFooter, appTitle, customWelcome, etc.) are now wrapped in double quotes with proper escaping, allowing values with spaces and special characters to work correctly. This ensures configuration changes in the UI are reflected in exported files and Docker Compose can read values properly."
 } as const;
 
 // Helper function to get the tool's version string

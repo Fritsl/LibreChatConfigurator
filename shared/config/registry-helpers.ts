@@ -495,7 +495,9 @@ function getDefaultComment(field: FieldDescriptor): string {
     case 'array':
       return Array.isArray(field.defaultValue) ? field.defaultValue.join(',') : '';
     default:
-      return String(field.defaultValue);
+      // Escape double quotes and wrap string in quotes
+      const escapedValue = String(field.defaultValue).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return `"${escapedValue}"`;
   }
 }
 
@@ -513,7 +515,10 @@ function formatEnvValue(value: any, field: FieldDescriptor): string {
     case 'array':
       return Array.isArray(value) ? value.join(',') : '';
     default:
-      return String(value);
+      // Escape backslashes and double quotes, then wrap in quotes
+      // This ensures .env files can handle spaces, special characters, and multi-line values
+      const escapedValue = String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      return `"${escapedValue}"`;
   }
 }
 

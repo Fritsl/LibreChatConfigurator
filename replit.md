@@ -4,6 +4,39 @@ This project provides a web-based configuration interface for LibreChat v0.8.0-r
 
 # Recent Changes
 
+## Version 2.1.9 - November 1, 2025 🔧 **ENV FILE QUOTING FIX**
+**CRITICAL FIX:** Fixed .env file generation to properly quote string values
+
+**What Changed:**
+- Tool Version: 2.1.8 → **2.1.9**
+- **String Quoting Added:** `formatEnvValue` function now properly quotes all string values
+- **Escaping Added:** Double quotes and backslashes are properly escaped in string values
+- **Affects All String Fields:** customFooter, appTitle, customWelcome, helpAndFAQURL, and all other string configuration fields
+
+**The Problem:**
+- String values in .env files were generated without quotation marks
+- Values containing spaces (e.g., "My custom footer text") would break .env parsing
+- Changes to footer text in the UI always appeared the same in exported files
+- Docker Compose couldn't properly read multi-word configuration values
+
+**The Solution:**
+- **Proper Quoting:** All string values are now wrapped in double quotes: `CUSTOM_FOOTER="My footer text"`
+- **Escape Handling:** Backslashes and double quotes in values are properly escaped: `\"` and `\\`
+- **Multi-line Support:** String values can now contain special characters and be parsed correctly
+
+**Impact:**
+- ✅ **Footer Text Works:** Changes to customFooter in UI now properly export to .env file
+- ✅ **Spaces Handled:** String values with spaces no longer break .env file parsing
+- ✅ **Special Characters:** Quotes, backslashes, and other special characters are properly escaped
+- ✅ **Docker Compose Compatibility:** Environment variables are now properly formatted for Docker
+- ✅ **All String Fields Fixed:** appTitle, customWelcome, helpAndFAQURL, and all other string fields benefit from this fix
+
+**Technical Details:**
+Modified `formatEnvValue()` and `getDefaultComment()` functions in `shared/config/registry-helpers.ts` to:
+1. Escape backslashes: `\` → `\\`
+2. Escape double quotes: `"` → `\"`
+3. Wrap result in double quotes: `value` → `"value"`
+
 ## Version 2.1.8 - October 31, 2025 ⚠️ **SPEECH BLOCK DISABLED**
 🛑 **CRITICAL FIX:** Disabled Speech configuration block in YAML exports to prevent validation errors
 

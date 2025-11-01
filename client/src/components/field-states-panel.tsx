@@ -9,56 +9,10 @@ import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverride
 import type { Configuration } from "@shared/schema";
 import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, X } from "lucide-react";
 import { SettingInput } from "@/components/setting-input";
+import { getCategoryColor } from "@/lib/category-colors";
 
 type SortField = "name" | "state" | "category";
 type SortDirection = "asc" | "desc";
-
-// Category color mapping
-const CATEGORY_COLORS: Record<string, string> = {
-  'actions': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  'ai-providers': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  'app': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  'artifacts': 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',
-  'auth': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  'caching': 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300',
-  'code-execution': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
-  'database': 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-  'debug': 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300',
-  'email': 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-  'endpoints': 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
-  'external-apis': 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
-  'features': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-  'file-config': 'bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-300',
-  'file-storage': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  'image-generation': 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300',
-  'interface': 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
-  'ldap': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-  'mcp': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  'meilisearch': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  'memory': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
-  'misc': 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-300',
-  'model-specs': 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300',
-  'oauth': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  'ocr': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  'openid': 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-  'rag': 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
-  'rate-limits': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-  'registration': 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',
-  'saml': 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-  'search': 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300',
-  'security': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  'server': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
-  'speech': 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300',
-  'subdirectory': 'bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-300',
-  'system': 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300',
-  'tools': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  'user-management': 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
-  'web-search': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-};
-
-const getCategoryColor = (category: string) => {
-  return CATEGORY_COLORS[category] || 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
-};
 
 interface FieldStatesPanelProps {
   configuration: Configuration;

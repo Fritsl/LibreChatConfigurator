@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"; 
 import { Label } from "@/components/ui/label";
 import { ConfigurationHistory } from "@/components/ConfigurationHistory";
+import { ConfigurationComparison } from "@/components/configuration-comparison";
 import { getToolVersion, getVersionInfo } from "@shared/version";
 import type { Configuration } from "@shared/schema";
 import yaml from "js-yaml";
@@ -43,6 +44,13 @@ export default function Home() {
     updatedFields: number;
     unchangedFields: number;
     fieldDetails: { name: string; status: 'new' | 'updated' | 'unchanged' }[];
+  } | null>(null);
+  const [showComparisonDialog, setShowComparisonDialog] = useState(false);
+  const [comparisonData, setComparisonData] = useState<{
+    type: 'yaml' | 'env';
+    fileName: string;
+    proposedChanges: Partial<Configuration>;
+    currentConfig: Configuration;
   } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
@@ -648,6 +656,179 @@ export default function Home() {
     setShowSelfTestConfirmation(true);
   };
 
+  const handleCompareYaml = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".yaml,.yml";
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            console.log("🔍 [YAML COMPARE] Parsing YAML file for comparison:", file.name);
+            const yamlContent = event.target?.result as string;
+            const yamlData = yaml.load(yamlContent) as any;
+            
+            // Validate YAML fields first
+            const validation = registryValidateYamlFields(yamlData);
+            if (!validation.valid && validation.unmappedPaths && validation.unmappedPaths.length > 0) {
+              console.error("❌ [YAML COMPARE] Unmapped YAML paths detected:", validation.unmappedPaths);
+              
+              setUnsupportedFieldsData({
+                type: 'yaml',
+                fields: validation.unmappedPaths
+              });
+              setShowUnsupportedFieldsDialog(true);
+              
+              return;
+            }
+            
+            // Map YAML to configuration format
+            const proposedChanges = registryMapYamlToConfig(yamlData);
+            console.log("   - Proposed changes mapped from YAML");
+            
+            // Open comparison dialog
+            setComparisonData({
+              type: 'yaml',
+              fileName: file.name,
+              proposedChanges,
+              currentConfig: configuration
+            });
+            setShowComparisonDialog(true);
+          } catch (error) {
+            console.error("YAML comparison error:", error);
+            toast({
+              title: "Comparison Failed",
+              description: "Failed to parse YAML file. Please check the file format.",
+              variant: "destructive",
+            });
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleCompareEnv = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".env";
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            console.log("🔍 [ENV COMPARE] Parsing ENV file for comparison:", file.name);
+            const envContent = event.target?.result as string;
+            const envVars = parseEnvFile(envContent);
+            
+            // Validate env vars first
+            const validation = registryValidateEnvVars(envVars);
+            if (!validation.valid) {
+              // Handle YAML-only field violations
+              if (validation.yamlOnlyVars && validation.yamlOnlyVars.length > 0) {
+                console.error("❌ [ENV COMPARE] YAML-only fields detected in .env file:", validation.yamlOnlyVars);
+                
+                const yamlOnlyWithValues = validation.yamlOnlyVars.map(({ envKey, yamlPath }) => ({
+                  envKey,
+                  yamlPath,
+                  value: envVars[envKey] || ''
+                }));
+                setYamlOnlyFieldsData(yamlOnlyWithValues);
+                setShowYamlOnlyDialog(true);
+                
+                return;
+              }
+              
+              // Handle unmapped variables
+              if (validation.unmappedVars && validation.unmappedVars.length > 0) {
+                console.error("❌ [ENV COMPARE] Unmapped environment variables detected:", validation.unmappedVars);
+                
+                setUnsupportedFieldsData({
+                  type: 'env',
+                  fields: validation.unmappedVars
+                });
+                setShowUnsupportedFieldsDialog(true);
+                
+                return;
+              }
+            }
+            
+            // Map ENV to configuration format
+            const proposedChanges = mapEnvToConfiguration(envVars);
+            console.log("   - Proposed changes mapped from ENV");
+            
+            // Open comparison dialog
+            setComparisonData({
+              type: 'env',
+              fileName: file.name,
+              proposedChanges,
+              currentConfig: configuration
+            });
+            setShowComparisonDialog(true);
+          } catch (error) {
+            console.error("ENV comparison error:", error);
+            toast({
+              title: "Comparison Failed",
+              description: "Failed to parse environment file. Please check the file format.",
+              variant: "destructive",
+            });
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleApplyComparison = () => {
+    if (!comparisonData) return;
+    
+    try {
+      console.log(`📥 [${comparisonData.type.toUpperCase()} IMPORT] Applying changes from comparison`);
+      
+      // Use the same import logic as the regular import handlers
+      if (comparisonData.type === 'yaml') {
+        const analysis = analyzeConfigurationChanges(configuration, comparisonData.proposedChanges);
+        const configWithOverrides = markImportedFieldsAsExplicit(configuration, comparisonData.proposedChanges);
+        updateConfiguration(configWithOverrides, true);
+        
+        setImportSummaryData({
+          type: 'yaml',
+          fileName: comparisonData.fileName,
+          ...analysis
+        });
+        setShowImportSummary(true);
+      } else {
+        const analysis = analyzeConfigurationChanges(configuration, comparisonData.proposedChanges);
+        const configWithOverrides = markImportedFieldsAsExplicit(configuration, comparisonData.proposedChanges);
+        updateConfiguration(configWithOverrides, true);
+        
+        setImportSummaryData({
+          type: 'env',
+          fileName: comparisonData.fileName,
+          ...analysis
+        });
+        setShowImportSummary(true);
+      }
+      
+      toast({
+        title: "Changes Applied",
+        description: `Configuration updated from ${comparisonData.fileName}`,
+      });
+    } catch (error) {
+      console.error("Apply comparison error:", error);
+      toast({
+        title: "Apply Failed",
+        description: "Failed to apply configuration changes.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleRoundTripTest = async () => {
     console.log("🔄 [ROUND-TRIP TEST] Starting REAL WORKFLOW import/export parity test...");
     console.log("   This test simulates the exact user workflow: Export → Import → Compare");
@@ -1138,6 +1319,15 @@ export default function Home() {
                   <DropdownMenuItem onClick={handleImportEnv} data-testid="menu-import-env">
                     <Settings className="h-4 w-4 mr-2" />
                     Import Environment File (.env)
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleCompareYaml} data-testid="menu-compare-yaml">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Compare librechat.yaml
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCompareEnv} data-testid="menu-compare-env">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Compare Environment File (.env)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -1827,6 +2017,19 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Configuration Comparison Dialog */}
+      {comparisonData && (
+        <ConfigurationComparison
+          open={showComparisonDialog}
+          onOpenChange={setShowComparisonDialog}
+          type={comparisonData.type}
+          fileName={comparisonData.fileName}
+          currentConfig={comparisonData.currentConfig}
+          proposedChanges={comparisonData.proposedChanges}
+          onApply={handleApplyComparison}
+        />
+      )}
       
     </div>
   );

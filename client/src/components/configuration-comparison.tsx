@@ -68,9 +68,10 @@ export function ConfigurationComparison({
 
     // Iterate through all fields in the registry
     Object.entries(FIELD_REGISTRY).forEach(([key, field]) => {
-      const configPath = field.configPath || field.id;
-      const currentValue = getNestedValue(currentConfig, configPath);
-      const newValue = getNestedValue(proposedChanges, configPath);
+      // Use yamlPath for configuration structure, fall back to field.id for flat fields
+      const path = field.yamlPath || field.id;
+      const currentValue = getNestedValue(currentConfig, path);
+      const newValue = getNestedValue(proposedChanges, path);
 
       let changeType: ChangeType;
       if (newValue === undefined) {

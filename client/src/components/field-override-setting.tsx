@@ -2,6 +2,7 @@ import { SettingInput } from "./setting-input";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
+import { deepMerge } from "@/lib/merge-utils";
 
 interface FieldOverrideSettingProps {
   fieldId: string;
@@ -84,7 +85,8 @@ export function FieldOverrideSetting({
     }
     
     // When user changes a value, automatically mark it as explicit
-    const configWithValue = { ...configuration, ...updates };
+    // Use deep merge to preserve sibling properties in nested objects
+    const configWithValue = deepMerge(configuration, updates);
     const configWithOverride = setFieldOverride(configWithValue, actualFieldId, false);
     onConfigurationChange(configWithOverride);
   };

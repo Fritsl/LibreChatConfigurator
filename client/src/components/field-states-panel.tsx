@@ -17,6 +17,9 @@ interface FieldStatesPanelProps {
   onConfigurationChange: (updates: Partial<Configuration>) => void;
 }
 
+type FileTypeFilter = "all" | "env" | "yaml";
+type StateFilter = "all" | "hide-not-set";
+
 export function FieldStatesPanel({
   configuration,
   onConfigurationChange,
@@ -25,6 +28,8 @@ export function FieldStatesPanel({
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [fileTypeFilter, setFileTypeFilter] = useState<FileTypeFilter>("all");
+  const [stateFilter, setStateFilter] = useState<StateFilter>("all");
 
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
@@ -72,11 +77,24 @@ export function FieldStatesPanel({
 
   // Filter and sort fields
   const filteredAndSortedFields = useMemo(() => {
-    // First, filter by field name (search across envKey, yamlPath, and ID)
     let results = fieldStates;
+    
+    // Filter by file type
+    if (fileTypeFilter === "env") {
+      results = results.filter(({ field }) => field.envKey !== undefined);
+    } else if (fileTypeFilter === "yaml") {
+      results = results.filter(({ field }) => field.yamlPath !== undefined);
+    }
+    
+    // Filter by state
+    if (stateFilter === "hide-not-set") {
+      results = results.filter(({ state }) => state !== "not-set");
+    }
+    
+    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      results = fieldStates.filter(({ field }) => {
+      results = results.filter(({ field }) => {
         const id = field.id.toLowerCase();
         const envKey = field.envKey?.toLowerCase() || '';
         const yamlPath = field.yamlPath?.toLowerCase() || '';
@@ -107,7 +125,7 @@ export function FieldStatesPanel({
     });
 
     return sorted;
-  }, [fieldStates, searchQuery, sortField, sortDirection]);
+  }, [fieldStates, searchQuery, sortField, sortDirection, fileTypeFilter, stateFilter]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -268,7 +286,7 @@ export function FieldStatesPanel({
           <div className="grid grid-cols-12 gap-4 h-[700px]">
             {/* LEFT: Compact Field List (Master) */}
             <div className="col-span-4 border rounded-lg overflow-hidden flex flex-col bg-muted/20">
-              <div className="p-3 border-b bg-background sticky top-0">
+              <div className="p-3 border-b bg-background sticky top-0 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-sm">All Fields ({filteredAndSortedFields.length})</h3>
                   <Button
@@ -282,11 +300,59 @@ export function FieldStatesPanel({
                     <SortIcon field={sortField} />
                   </Button>
                 </div>
+                
+                {/* Filter Controls */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 flex-1">
+                    <Button
+                      variant={fileTypeFilter === "all" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setFileTypeFilter("all")}
+                      className="h-7 text-[10px] px-2"
+                      data-testid="filter-all"
+                    >
+                      All
+                    </Button>
+                    <Button
+                      variant={fileTypeFilter === "env" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setFileTypeFilter("env")}
+                      className="h-7 text-[10px] px-2"
+                      data-testid="filter-env"
+                    >
+                      .env
+                    </Button>
+                    <Button
+                      variant={fileTypeFilter === "yaml" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setFileTypeFilter("yaml")}
+                      className="h-7 text-[10px] px-2"
+                      data-testid="filter-yaml"
+                    >
+                      YAML
+                    </Button>
+                  </div>
+                  <Button
+                    variant={stateFilter === "hide-not-set" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setStateFilter(stateFilter === "all" ? "hide-not-set" : "all")}
+                    className="h-7 text-[10px] px-2 whitespace-nowrap"
+                    data-testid="filter-hide-not-set"
+                  >
+                    {stateFilter === "hide-not-set" ? "Show All" : "Hide Not Set"}
+                  </Button>
+                </div>
               </div>
               <div className="flex-1 overflow-y-auto">
                 {filteredAndSortedFields.length === 0 ? (
                   <div className="text-center text-muted-foreground py-12 px-4 text-sm">
-                    No fields found matching "{searchQuery}"
+                    {searchQuery.trim() ? (
+                      `No fields found matching "${searchQuery}"`
+                    ) : fileTypeFilter !== "all" || stateFilter !== "all" ? (
+                      <>No fields match the current filters</>
+                    ) : (
+                      <>No fields available</>
+                    )}
                   </div>
                 ) : (
                   <div className="divide-y">

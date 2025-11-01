@@ -72,13 +72,16 @@ export function FieldStatesPanel({
 
   // Filter and sort fields
   const filteredAndSortedFields = useMemo(() => {
-    // First, filter by field name only
+    // First, filter by field name (search across envKey, yamlPath, and ID)
     let results = fieldStates;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      results = fieldStates.filter(({ field }) => 
-        field.id.toLowerCase().includes(query)
-      );
+      results = fieldStates.filter(({ field }) => {
+        const id = field.id.toLowerCase();
+        const envKey = field.envKey?.toLowerCase() || '';
+        const yamlPath = field.yamlPath?.toLowerCase() || '';
+        return id.includes(query) || envKey.includes(query) || yamlPath.includes(query);
+      });
     }
 
     // Then, sort
@@ -182,6 +185,16 @@ export function FieldStatesPanel({
   const selectedFieldData = selectedFieldId 
     ? fieldStates.find(fs => fs.field.id === selectedFieldId)
     : null;
+
+  // Get the display name as it appears in config files
+  const getFieldDisplayName = (field: typeof FIELD_REGISTRY[0]) => {
+    // Prefer envKey (for .env files)
+    if (field.envKey) return field.envKey;
+    // Then yamlPath (for YAML-only fields)
+    if (field.yamlPath) return field.yamlPath;
+    // Fall back to field ID
+    return field.id;
+  };
 
   return (
     <div className="space-y-4">
@@ -293,7 +306,7 @@ export function FieldStatesPanel({
                           data-testid={`list-item-${field.id}`}
                         >
                           <div className="flex items-start justify-between gap-2 mb-1">
-                            <div className="font-mono text-xs font-medium flex-1 break-all">{field.id}</div>
+                            <div className="font-mono text-xs font-medium flex-1 break-all">{getFieldDisplayName(field)}</div>
                             {state === "not-set" && (
                               <Badge variant="secondary" className="text-[10px] h-5 px-1.5 gap-0.5 flex-shrink-0">
                                 <Circle className="h-2.5 w-2.5" />
@@ -330,7 +343,14 @@ export function FieldStatesPanel({
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h2 className="font-mono text-xl font-bold">{selectedFieldData.field.id}</h2>
+                          <div>
+                            <h2 className="font-mono text-xl font-bold">{getFieldDisplayName(selectedFieldData.field)}</h2>
+                            {(selectedFieldData.field.envKey || selectedFieldData.field.yamlPath) && (
+                              <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                                Internal ID: {selectedFieldData.field.id}
+                              </p>
+                            )}
+                          </div>
                           {selectedFieldData.state === "not-set" && (
                             <Badge variant="secondary" className="gap-1">
                               <Circle className="h-3 w-3" />

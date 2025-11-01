@@ -1,14 +1,12 @@
-import { useState, useMemo, Fragment } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
-import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { SettingInput } from "@/components/setting-input";
 
 type SortField = "name" | "state" | "category";
@@ -26,8 +24,7 @@ export function FieldStatesPanel({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [editingField, setEditingField] = useState<string | null>(null);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
@@ -155,7 +152,6 @@ export function FieldStatesPanel({
     // Ensure the field is marked as explicit
     updatedConfig = setFieldOverride(updatedConfig, fieldId, false);
     onConfigurationChange(updatedConfig);
-    setEditingField(null);
   };
 
   const formatValue = (value: any): string => {
@@ -182,17 +178,10 @@ export function FieldStatesPanel({
       : <ArrowDown className="h-3 w-3 ml-1" />;
   };
 
-  const toggleRowExpansion = (fieldId: string) => {
-    setExpandedRows(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(fieldId)) {
-        newSet.delete(fieldId);
-      } else {
-        newSet.add(fieldId);
-      }
-      return newSet;
-    });
-  };
+  // Get selected field data
+  const selectedFieldData = selectedFieldId 
+    ? fieldStates.find(fs => fs.field.id === selectedFieldId)
+    : null;
 
   return (
     <div className="space-y-4">
@@ -262,261 +251,160 @@ export function FieldStatesPanel({
             </Button>
           </div>
 
-          {/* Table */}
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[120px]"></TableHead>
-                  <TableHead className="w-[250px]">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleSort("name")}
-                      className="h-8 px-2 -ml-2 hover:bg-transparent"
-                      data-testid="sort-name"
-                    >
-                      <span className="flex items-center">
-                        Field Name
-                        <SortIcon field="name" />
-                      </span>
-                    </Button>
-                  </TableHead>
-                  <TableHead className="w-[150px]">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleSort("category")}
-                      className="h-8 px-2 -ml-2 hover:bg-transparent"
-                      data-testid="sort-category"
-                    >
-                      <span className="flex items-center">
-                        Category
-                        <SortIcon field="category" />
-                      </span>
-                    </Button>
-                  </TableHead>
-                  <TableHead className="w-[200px]">Current Value</TableHead>
-                  <TableHead className="w-[200px]">Default Value</TableHead>
-                  <TableHead className="w-[150px]">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => handleSort("state")}
-                      className="h-8 px-2 -ml-2 hover:bg-transparent"
-                      data-testid="sort-state"
-                    >
-                      <span className="flex items-center">
-                        State
-                        <SortIcon field="state" />
-                      </span>
-                    </Button>
-                  </TableHead>
-                  <TableHead className="w-[200px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+          {/* Master-Detail Layout */}
+          <div className="grid grid-cols-12 gap-4 h-[700px]">
+            {/* LEFT: Compact Field List (Master) */}
+            <div className="col-span-4 border rounded-lg overflow-hidden flex flex-col bg-muted/20">
+              <div className="p-3 border-b bg-background sticky top-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">All Fields ({filteredAndSortedFields.length})</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSort("name")}
+                    className="h-7 text-xs"
+                    data-testid="sort-fields-list"
+                  >
+                    Sort
+                    <SortIcon field={sortField} />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-y-auto">
                 {filteredAndSortedFields.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                      No fields found matching "{searchQuery}"
-                    </TableCell>
-                  </TableRow>
+                  <div className="text-center text-muted-foreground py-12 px-4 text-sm">
+                    No fields found matching "{searchQuery}"
+                  </div>
                 ) : (
-                  filteredAndSortedFields.map(({ field, currentValue, isUsingDefault, state }) => {
-                    const isExpanded = expandedRows.has(field.id);
-                    return (
-                      <Fragment key={field.id}>
-                        <TableRow 
-                          data-testid={`row-field-${field.id}`}
-                          className="border-b-2 border-border hover:bg-muted/50 cursor-pointer transition-colors"
-                          onClick={(e) => {
-                            if ((e.target as HTMLElement).tagName !== 'BUTTON' && 
-                                (e.target as HTMLElement).tagName !== 'INPUT' &&
-                                !(e.target as HTMLElement).closest('button, input, [role="checkbox"]')) {
-                              toggleRowExpansion(field.id);
+                  <div className="divide-y">
+                    {filteredAndSortedFields.map(({ field, state }) => {
+                      const isSelected = selectedFieldId === field.id;
+                      return (
+                        <div
+                          key={field.id}
+                          onClick={() => setSelectedFieldId(field.id)}
+                          className={`
+                            p-3 cursor-pointer transition-all border-l-4
+                            ${isSelected 
+                              ? 'bg-primary/10 border-l-primary dark:bg-primary/20' 
+                              : 'border-l-transparent hover:bg-muted/50 hover:border-l-muted-foreground/20'
                             }
-                          }}
+                          `}
+                          data-testid={`list-item-${field.id}`}
                         >
-                          <TableCell className="p-2 w-[120px]">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleRowExpansion(field.id);
-                              }}
-                              className="h-9 w-full flex items-center gap-2 justify-start text-xs"
-                              data-testid={`button-expand-${field.id}`}
-                            >
-                              {isExpanded ? (
-                                <>
-                                  <ChevronDown className="h-4 w-4" />
-                                  <span>Collapse</span>
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronRight className="h-4 w-4" />
-                                  <span>Expand</span>
-                                </>
-                              )}
-                            </Button>
-                          </TableCell>
-                          <TableCell className="font-mono text-sm font-medium">{field.id}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{field.category}</TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {!isUsingDefault ? (
-                          // Editable value for explicit fields
-                          field.type === "boolean" ? (
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                checked={currentValue === true}
-                                onCheckedChange={(checked) => handleValueChange(field.id, checked)}
-                                data-testid={`checkbox-${field.id}`}
-                              />
-                              <span className="text-xs">{currentValue ? "true" : "false"}</span>
-                            </div>
-                          ) : field.type === "number" ? (
-                            <Input
-                              type="number"
-                              value={currentValue || ""}
-                              onChange={(e) => {
-                                const val = e.target.value === "" ? undefined : Number(e.target.value);
-                                handleValueChange(field.id, val);
-                              }}
-                              className="h-7 text-xs"
-                              data-testid={`input-${field.id}`}
-                            />
-                          ) : field.type === "object" || field.type === "array" ? (
-                            <span className="text-muted-foreground italic">{formatValue(currentValue)}</span>
-                          ) : (
-                            <Input
-                              type="text"
-                              value={currentValue || ""}
-                              onChange={(e) => handleValueChange(field.id, e.target.value)}
-                              className="h-7 text-xs"
-                              data-testid={`input-${field.id}`}
-                            />
-                          )
-                        ) : (
-                          // Read-only display for "Not Set" fields
-                          <span className="text-muted-foreground italic">{formatValue(currentValue)}</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">{formatValue(field.defaultValue)}</TableCell>
-                      <TableCell>
-                        {state === "not-set" && (
-                          <Badge variant="secondary" className="gap-1">
-                            <Circle className="h-3 w-3" />
-                            Not Set
-                          </Badge>
-                        )}
-                        {state === "explicit-default" && (
-                          <Badge variant="outline" className="gap-1 border-blue-300 text-blue-700">
-                            <CheckCircle className="h-3 w-3" />
-                            Explicit
-                          </Badge>
-                        )}
-                        {state === "explicit-modified" && (
-                          <Badge variant="default" className="gap-1 bg-orange-500">
-                            <AlertCircle className="h-3 w-3" />
-                            Modified
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleToggleState(field.id, isUsingDefault)}
-                            data-testid={`button-toggle-${field.id}`}
-                          >
-                            {isUsingDefault ? "Set Explicit" : "Use Default"}
-                          </Button>
-                          {!isUsingDefault && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleResetToDefault(field.id)}
-                              data-testid={`button-reset-${field.id}`}
-                            >
-                              <RotateCcw className="h-4 w-4" />
-                            </Button>
-                          )}
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <div className="font-mono text-xs font-medium flex-1 break-all">{field.id}</div>
+                            {state === "not-set" && (
+                              <Badge variant="secondary" className="text-[10px] h-5 px-1.5 gap-0.5 flex-shrink-0">
+                                <Circle className="h-2.5 w-2.5" />
+                                Not Set
+                              </Badge>
+                            )}
+                            {state === "explicit-default" && (
+                              <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-0.5 border-blue-300 text-blue-700 flex-shrink-0">
+                                <CheckCircle className="h-2.5 w-2.5" />
+                                Explicit
+                              </Badge>
+                            )}
+                            {state === "explicit-modified" && (
+                              <Badge className="text-[10px] h-5 px-1.5 gap-0.5 bg-orange-500 flex-shrink-0">
+                                <AlertCircle className="h-2.5 w-2.5" />
+                                Modified
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">{field.category}</div>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                    {isExpanded && (
-                      <TableRow className="border-b-2 border-border">
-                        <TableCell colSpan={7} className="bg-muted/20 p-0">
-                          <Card className="border-0 shadow-none bg-white dark:bg-gray-900 m-4">
-                            <CardHeader className="border-b-2 border-primary/20 pb-3">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <CardTitle className="text-lg font-mono">{field.id}</CardTitle>
-                                  {state === "not-set" && (
-                                    <Badge variant="secondary" className="gap-1">
-                                      <Circle className="h-3 w-3" />
-                                      Not Set
-                                    </Badge>
-                                  )}
-                                  {state === "explicit-default" && (
-                                    <Badge variant="outline" className="gap-1 border-blue-300 text-blue-700">
-                                      <CheckCircle className="h-3 w-3" />
-                                      Explicit Default
-                                    </Badge>
-                                  )}
-                                  {state === "explicit-modified" && (
-                                    <Badge variant="default" className="gap-1 bg-orange-500">
-                                      <AlertCircle className="h-3 w-3" />
-                                      Modified
-                                    </Badge>
-                                  )}
-                                  <Badge variant="outline" className="font-normal text-xs">
-                                    {field.category}
-                                  </Badge>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleRowExpansion(field.id)}
-                                  data-testid={`button-collapse-${field.id}`}
-                                >
-                                  <ChevronDown className="h-4 w-4 mr-2" />
-                                  Collapse
-                                </Button>
-                              </div>
-                              <CardDescription className="mt-2">
-                                {field.description}
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent className="pt-6">
-                              <div className="max-w-3xl">
-                                <SettingInput
-                                  label={field.id}
-                                  description={field.description}
-                                  type={field.type as any}
-                                  value={currentValue}
-                                  onChange={(newValue) => handleValueChange(field.id, newValue)}
-                                  options={field.enumValues ? [...field.enumValues] : undefined}
-                                  fieldId={field.id}
-                                  defaultValue={field.defaultValue}
-                                  isUsingDefault={isUsingDefault}
-                                  data-testid={`expanded-input-${field.id}`}
-                                />
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                    );
-                  })
+                      );
+                    })}
+                  </div>
                 )}
-              </TableBody>
-            </Table>
+              </div>
+            </div>
+
+            {/* RIGHT: Field Editor (Detail) */}
+            <div className="col-span-8 border rounded-lg overflow-hidden flex flex-col">
+              {selectedFieldData ? (
+                <>
+                  <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 p-4 sticky top-0 z-10 shadow-sm">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h2 className="font-mono text-xl font-bold">{selectedFieldData.field.id}</h2>
+                          {selectedFieldData.state === "not-set" && (
+                            <Badge variant="secondary" className="gap-1">
+                              <Circle className="h-3 w-3" />
+                              Not Set
+                            </Badge>
+                          )}
+                          {selectedFieldData.state === "explicit-default" && (
+                            <Badge variant="outline" className="gap-1 border-blue-300 text-blue-700">
+                              <CheckCircle className="h-3 w-3" />
+                              Explicit Default
+                            </Badge>
+                          )}
+                          {selectedFieldData.state === "explicit-modified" && (
+                            <Badge className="gap-1 bg-orange-500">
+                              <AlertCircle className="h-3 w-3" />
+                              Modified
+                            </Badge>
+                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {selectedFieldData.field.category}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{selectedFieldData.field.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-4">
+                      <Button
+                        variant={selectedFieldData.isUsingDefault ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleToggleState(selectedFieldData.field.id, selectedFieldData.isUsingDefault)}
+                        data-testid={`button-toggle-${selectedFieldData.field.id}`}
+                      >
+                        {selectedFieldData.isUsingDefault ? "Set Explicit" : "Use Default"}
+                      </Button>
+                      {!selectedFieldData.isUsingDefault && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleResetToDefault(selectedFieldData.field.id)}
+                          data-testid={`button-reset-${selectedFieldData.field.id}`}
+                        >
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Reset to Default
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-6 bg-background">
+                    <div className="max-w-2xl">
+                      <SettingInput
+                        label={selectedFieldData.field.id}
+                        description={selectedFieldData.field.description}
+                        type={selectedFieldData.field.type as any}
+                        value={selectedFieldData.currentValue}
+                        onChange={(newValue) => handleValueChange(selectedFieldData.field.id, newValue)}
+                        options={selectedFieldData.field.enumValues ? [...selectedFieldData.field.enumValues] : undefined}
+                        fieldId={selectedFieldData.field.id}
+                        defaultValue={selectedFieldData.field.defaultValue}
+                        isUsingDefault={selectedFieldData.isUsingDefault}
+                        data-testid={`detail-input-${selectedFieldData.field.id}`}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-muted-foreground p-8 text-center">
+                  <div>
+                    <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium">Select a field to edit</p>
+                    <p className="text-sm mt-2">Click any field in the list to view and edit its settings</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

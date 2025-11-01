@@ -837,22 +837,6 @@ paths:
     return Math.round((validSettings.length / tabSettings.length) * 100);
   };
 
-  const filteredTabs = allTabs.filter(tab => 
-    searchQuery === "" || 
-    tab.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tab.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tab.settings.some(setting => {
-      const fieldInfo = getFieldInfo(setting);
-      return (
-        setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    })
-  );
-
   // Helper function to get field type and description
   const getFieldInfo = (fieldName: string) => {
     const fieldMap: Record<string, { 
@@ -4091,6 +4075,22 @@ paths:
     
     return baseFieldInfo;
   };
+
+  const filteredTabs = allTabs.filter(tab => 
+    searchQuery === "" || 
+    tab.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tab.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tab.settings.some(setting => {
+      const fieldInfo = getFieldInfo(setting);
+      return (
+        setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    })
+  );
 
   return (
     <div className="flex">

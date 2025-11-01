@@ -154,7 +154,13 @@ export function FieldStatesPanel({
     let resetConfig: any = { ...configuration };
     
     // Reset all field values to their defaults
+    // Skip internal fields that aren't exported (exportToYaml=false and exportToEnv=false)
     FIELD_REGISTRY.forEach(field => {
+      // Skip internal/derived fields that shouldn't be reset
+      if (field.exportToYaml === false && field.exportToEnv === false) {
+        return;
+      }
+      
       if (field.yamlPath) {
         // Handle nested fields (e.g., interface.customFooter)
         const keys = field.yamlPath.split('.');

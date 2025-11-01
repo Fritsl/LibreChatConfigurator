@@ -463,17 +463,18 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
  * Get configuration value, handling nested structures
  */
 function getConfigValue(config: Record<string, any>, field: FieldDescriptor): any {
-  // First try direct field access
-  if (config[field.id] !== undefined) {
-    return config[field.id];
-  }
-  
-  // Try nested access for fields with yamlPath (e.g., interface.customWelcome)
+  // PRIORITY 1: Try nested access via yamlPath first (e.g., interface.customWelcome)
+  // This ensures we read from the correct location even if a top-level field exists
   if (field.yamlPath) {
     const value = getNestedValue(config, field.yamlPath);
     if (value !== undefined) {
       return value;
     }
+  }
+  
+  // PRIORITY 2: Fall back to direct field access
+  if (config[field.id] !== undefined) {
+    return config[field.id];
   }
   
   return undefined;

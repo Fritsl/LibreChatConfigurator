@@ -65,7 +65,7 @@ export function ConfigurationTabs({
   searchQuery,
   onSearchQueryChange
 }: ConfigurationTabsProps) {
-  const [activeTab, setActiveTab] = useState("ui-visibility");
+  const [activeTab, setActiveTab] = useState("field-states");
   const { toast } = useToast();
   
   // Auto-scroll to first highlighted setting when search changes or tab changes
@@ -238,6 +238,20 @@ paths:
 
   // Define tab groups with logical organization
   const tabGroups = [
+    {
+      label: "FIELD MANAGEMENT",
+      tabs: [
+        {
+          id: "field-states",
+          label: "Field States",
+          icon: Settings,
+          description: "Manage all 480+ field override states - Search, Sort, and Edit values directly",
+          color: "from-indigo-500 to-purple-600",
+          settings: [],
+          docUrl: "https://www.librechat.ai/docs/configuration",
+        },
+      ]
+    },
     {
       label: "CORE CONFIGURATION",
       tabs: [
@@ -761,20 +775,6 @@ paths:
           color: "from-gray-400 to-gray-500",
           settings: ["cdnProvider"],
           docUrl: "https://www.librechat.ai/docs/configuration/cdn",
-        },
-      ]
-    },
-    {
-      label: "MANAGEMENT",
-      tabs: [
-        {
-          id: "field-states",
-          label: "Field States",
-          icon: Settings,
-          description: "Manage field override states (Not Set vs Explicit)",
-          color: "from-slate-500 to-slate-600",
-          settings: [],
-          docUrl: "https://www.librechat.ai/docs/configuration",
         },
       ]
     }

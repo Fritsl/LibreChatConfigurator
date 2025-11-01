@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
-import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight } from "lucide-react";
+import { SettingInput } from "@/components/setting-input";
 
 type SortField = "name" | "state" | "category";
 type SortDirection = "asc" | "desc";
@@ -26,6 +27,7 @@ export function FieldStatesPanel({
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
@@ -180,6 +182,18 @@ export function FieldStatesPanel({
       : <ArrowDown className="h-3 w-3 ml-1" />;
   };
 
+  const toggleRowExpansion = (fieldId: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fieldId)) {
+        newSet.delete(fieldId);
+      } else {
+        newSet.add(fieldId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <div className="space-y-4">
       <Card>
@@ -253,6 +267,7 @@ export function FieldStatesPanel({
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[40px]"></TableHead>
                   <TableHead className="w-[250px]">
                     <Button 
                       variant="ghost" 
@@ -303,14 +318,32 @@ export function FieldStatesPanel({
               <TableBody>
                 {filteredAndSortedFields.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       No fields found matching "{searchQuery}"
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAndSortedFields.map(({ field, currentValue, isUsingDefault, state }) => (
-                    <TableRow key={field.id} data-testid={`row-field-${field.id}`}>
-                      <TableCell className="font-mono text-sm">{field.id}</TableCell>
+                  filteredAndSortedFields.map(({ field, currentValue, isUsingDefault, state }) => {
+                    const isExpanded = expandedRows.has(field.id);
+                    return (
+                      <Fragment key={field.id}>
+                        <TableRow data-testid={`row-field-${field.id}`}>
+                          <TableCell className="p-0">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleRowExpansion(field.id)}
+                              className="h-full w-full"
+                              data-testid={`button-expand-${field.id}`}
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">{field.id}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{field.category}</TableCell>
                       <TableCell className="font-mono text-xs">
                         {!isUsingDefault ? (
@@ -395,7 +428,29 @@ export function FieldStatesPanel({
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
+                    {isExpanded && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="bg-muted/30 p-6">
+                          <div className="max-w-3xl">
+                            <SettingInput
+                              label={field.id}
+                              description={field.description}
+                              type={field.type as any}
+                              value={currentValue}
+                              onChange={(newValue) => handleValueChange(field.id, newValue)}
+                              options={field.enumValues ? [...field.enumValues] : undefined}
+                              fieldId={field.id}
+                              defaultValue={field.defaultValue}
+                              isUsingDefault={isUsingDefault}
+                              data-testid={`expanded-input-${field.id}`}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </Fragment>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>

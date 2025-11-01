@@ -147,8 +147,34 @@ export function FieldStatesPanel({
   };
 
   const handleResetAll = () => {
-    const clearedConfig = clearAllOverrides(configuration);
-    onConfigurationChange(clearedConfig);
+    // Create a fresh configuration with all fields set to their default values
+    let resetConfig: any = { ...configuration };
+    
+    // Reset all field values to their defaults
+    FIELD_REGISTRY.forEach(field => {
+      if (field.yamlPath) {
+        // Handle nested fields (e.g., interface.customFooter)
+        const keys = field.yamlPath.split('.');
+        let current: any = resetConfig;
+        
+        // Navigate to the parent object
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!current[keys[i]]) current[keys[i]] = {};
+          current = current[keys[i]];
+        }
+        
+        // Set the default value
+        current[keys[keys.length - 1]] = field.defaultValue;
+      } else {
+        // Handle flat fields (e.g., appTitle)
+        resetConfig[field.id] = field.defaultValue;
+      }
+    });
+    
+    // Clear all override flags
+    resetConfig = clearAllOverrides(resetConfig);
+    
+    onConfigurationChange(resetConfig);
   };
 
   const handleValueChange = (fieldId: string, newValue: any) => {

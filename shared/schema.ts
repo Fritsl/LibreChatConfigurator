@@ -753,6 +753,10 @@ export const configurationSchema = z.object({
     "azureAssistants", "bedrock", "cohere", "assistants", "gptPlugins"
   ])).default(["openAI", "anthropic", "google", "azureOpenAI", "agents"]), // ENDPOINTS - gptPlugins excluded by default (deprecated)
   
+  // Field Overrides - tracks which fields should use LibreChat defaults vs be explicitly set
+  // true = use LibreChat default (export commented), false = use our value (export uncommented)
+  fieldOverrides: z.record(z.string(), z.boolean()).optional().default({}),
+  
   // Configuration Metadata
   configurationName: z.string().default("My LibreChat Configuration"),
 });

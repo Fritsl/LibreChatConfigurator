@@ -193,6 +193,10 @@ export class FileStorage implements IStorage {
       // Configuration Metadata
       configurationName: "My LibreChat Configuration",
       
+      // Field Overrides - initially empty (all fields use LibreChat defaults)
+      // Fields are added here when user explicitly sets them
+      fieldOverrides: undefined,
+      
       // Security (empty for security)
       jwtSecret: "",
       jwtRefreshSecret: "",
@@ -302,6 +306,10 @@ export class FileStorage implements IStorage {
       
       // Configuration Metadata
       configurationName: "Default test",
+      
+      // Field Overrides - initially empty (all fields use LibreChat defaults)
+      // Fields are added here when user explicitly sets them
+      fieldOverrides: undefined,
       
       // Security (empty for security)
       jwtSecret: "",

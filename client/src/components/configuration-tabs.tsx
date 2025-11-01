@@ -49,7 +49,9 @@ import {
   Terminal,
   Copy,
   Sparkles,
-  Info
+  Info,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 interface ConfigurationTabsProps {
@@ -66,6 +68,7 @@ export function ConfigurationTabs({
   onSearchQueryChange
 }: ConfigurationTabsProps) {
   const [activeTab, setActiveTab] = useState("field-states");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { toast } = useToast();
   
   // Auto-scroll to first highlighted setting when search changes or tab changes
@@ -4163,31 +4166,49 @@ paths:
   return (
     <div className="flex">
       {/* Sidebar Navigation */}
-      <aside className="w-80 bg-white shadow-lg border-r border-border h-screen sticky top-16 overflow-y-auto">
-        <div className="p-6">
-          {/* Search functionality */}
-          <div className="relative mb-4">
-            <Input
-              type="text"
-              placeholder="Search settings..."
-              value={searchQuery}
-              onChange={(e) => onSearchQueryChange(e.target.value)}
-              className="w-full pl-10 pr-10"
-              data-testid="search-settings"
-            />
-            <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => onSearchQueryChange("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                data-testid="clear-search"
-                aria-label="Clear search"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white dark:bg-gray-900 shadow-lg border-r border-border h-screen sticky top-16 overflow-y-auto transition-all duration-300`}>
+        <div className={`${sidebarCollapsed ? 'p-2' : 'p-6'} transition-all duration-300`}>
+          {/* Collapse Toggle Button */}
+          <div className={`flex ${sidebarCollapsed ? 'justify-center' : 'justify-end'} mb-4`}>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              data-testid="toggle-sidebar"
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+              )}
+            </button>
           </div>
+          
+          {/* Search functionality */}
+          {!sidebarCollapsed && (
+            <div className="relative mb-4">
+              <Input
+                type="text"
+                placeholder="Search settings..."
+                value={searchQuery}
+                onChange={(e) => onSearchQueryChange(e.target.value)}
+                className="w-full pl-10 pr-10"
+                data-testid="search-settings"
+              />
+              <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => onSearchQueryChange("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  data-testid="clear-search"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          )}
           
           <nav className="space-y-1">
             {/* Render grouped tabs with headers */}
@@ -4213,11 +4234,13 @@ paths:
               return (
                 <div key={group.label}>
                   {/* Group Header */}
-                  <div className="px-2 py-2 mt-4 first:mt-0">
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      {group.label}
-                    </h3>
-                  </div>
+                  {!sidebarCollapsed && (
+                    <div className="px-2 py-2 mt-4 first:mt-0">
+                      <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        {group.label}
+                      </h3>
+                    </div>
+                  )}
                   
                   {/* Group Tabs */}
                   <div className="space-y-1">
@@ -4231,21 +4254,26 @@ paths:
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
                           data-testid={`tab-${tab.id}`}
-                          className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg shadow-sm transition-all ${
+                          title={sidebarCollapsed ? tab.label : undefined}
+                          className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'} rounded-lg shadow-sm transition-all ${
                             isActive 
                               ? `bg-gradient-to-r ${tab.color} text-white` 
                               : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
                           }`}
                         >
-                          <Icon className="h-5 w-5" />
-                          <div className="text-left flex-1">
-                            <div className="font-medium">{tab.label}</div>
-                            <div className="text-xs opacity-90">{tab.description}</div>
-                          </div>
-                          {tab.settings.length > 0 && (
-                            <Badge className={`${categoryColor} text-xs`} variant="outline">
-                              {getTabCategory(tab.settings)}
-                            </Badge>
+                          <Icon className="h-5 w-5 flex-shrink-0" />
+                          {!sidebarCollapsed && (
+                            <>
+                              <div className="text-left flex-1">
+                                <div className="font-medium">{tab.label}</div>
+                                <div className="text-xs opacity-90">{tab.description}</div>
+                              </div>
+                              {tab.settings.length > 0 && (
+                                <Badge className={`${categoryColor} text-xs`} variant="outline">
+                                  {getTabCategory(tab.settings)}
+                                </Badge>
+                              )}
+                            </>
                           )}
                         </button>
                       );
@@ -4268,21 +4296,26 @@ paths:
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   data-testid={`tab-${tab.id}`}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg shadow-sm transition-all ${
+                  title={sidebarCollapsed ? tab.label : undefined}
+                  className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'} rounded-lg shadow-sm transition-all ${
                     isActive 
                       ? `bg-gradient-to-r ${tab.color} text-white` 
                       : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <div className="text-left flex-1">
-                    <div className="font-medium">{tab.label}</div>
-                    <div className="text-xs opacity-90">{tab.description}</div>
-                  </div>
-                  {tab.settings.length > 0 && (
-                    <Badge className={`${categoryColor} text-xs`} variant="outline">
-                      {getTabCategory(tab.settings)}
-                    </Badge>
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  {!sidebarCollapsed && (
+                    <>
+                      <div className="text-left flex-1">
+                        <div className="font-medium">{tab.label}</div>
+                        <div className="text-xs opacity-90">{tab.description}</div>
+                      </div>
+                      {tab.settings.length > 0 && (
+                        <Badge className={`${categoryColor} text-xs`} variant="outline">
+                          {getTabCategory(tab.settings)}
+                        </Badge>
+                      )}
+                    </>
                   )}
                 </button>
               );

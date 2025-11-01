@@ -389,14 +389,14 @@ export function FieldStatesPanel({
             <div className="col-span-8 border rounded-lg overflow-hidden flex flex-col">
               {selectedFieldData ? (
                 <>
-                  <div className="border-b bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 p-4 sticky top-0 z-10 shadow-sm">
-                    <div className="flex items-start justify-between gap-4">
+                  <div className="border-b-2 bg-gradient-to-r from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 p-6 sticky top-0 z-10 shadow-md">
+                    <div className="flex items-start justify-between gap-4 mb-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-3">
                           <div>
-                            <h2 className="font-mono text-xl font-bold">{getFieldDisplayName(selectedFieldData.field)}</h2>
+                            <h2 className="font-mono text-2xl font-bold tracking-tight">{getFieldDisplayName(selectedFieldData.field)}</h2>
                             {(selectedFieldData.field.envKey || selectedFieldData.field.yamlPath) && (
-                              <p className="text-xs text-muted-foreground font-mono mt-0.5">
+                              <p className="text-xs text-muted-foreground font-mono mt-1">
                                 Internal ID: {selectedFieldData.field.id}
                               </p>
                             )}
@@ -417,10 +417,10 @@ export function FieldStatesPanel({
                             {selectedFieldData.field.category}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">{selectedFieldData.field.description}</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{selectedFieldData.field.description}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2 pt-3 border-t border-border/40">
                       <Button
                         variant={selectedFieldData.isUsingDefault ? "default" : "outline"}
                         size="sm"
@@ -442,7 +442,7 @@ export function FieldStatesPanel({
                       )}
                     </div>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-6 bg-background">
+                  <div className="flex-1 overflow-y-auto p-8 bg-background">
                     <div className="max-w-2xl">
                       <SettingInput
                         label={selectedFieldData.field.id}

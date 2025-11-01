@@ -124,10 +124,10 @@ export function ConfigurationTabs({
         }
       }, 150);
     } else {
+      // Field not in any tab - it's only in Field States Manager
       toast({
-        title: "Field Not Found",
-        description: `Could not find tab containing ${fieldId}`,
-        variant: "destructive",
+        title: "Field Only in Field States",
+        description: `${fieldId} is not assigned to a configuration tab. You can only edit it in the Field States Manager.`,
       });
     }
   };

@@ -245,7 +245,7 @@ paths:
           id: "field-states",
           label: "Field States",
           icon: Settings,
-          description: "Manage all 480+ field override states - Search, Sort, and Edit values directly",
+          description: "Search and manage field states",
           color: "from-indigo-500 to-purple-600",
           settings: [],
           docUrl: "https://www.librechat.ai/docs/configuration",

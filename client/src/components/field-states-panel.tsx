@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
@@ -30,6 +31,7 @@ export function FieldStatesPanel({
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [fileTypeFilter, setFileTypeFilter] = useState<FileTypeFilter>("all");
   const [stateFilter, setStateFilter] = useState<StateFilter>("all");
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
@@ -274,7 +276,7 @@ export function FieldStatesPanel({
             </div>
             <Button
               variant="outline"
-              onClick={handleResetAll}
+              onClick={() => setShowResetConfirm(true)}
               data-testid="button-reset-all-states"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -482,6 +484,37 @@ export function FieldStatesPanel({
           </div>
         </CardContent>
       </Card>
+
+      {/* Reset All Confirmation Dialog */}
+      <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset All Fields to Defaults?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will reset <strong>all {stats.total} configuration fields</strong> back to LibreChat's default values.
+              <br /><br />
+              <strong className="text-destructive">⚠️ This action cannot be undone.</strong>
+              <br /><br />
+              You currently have <strong>{stats.modified} modified fields</strong> that will be lost.
+              <br /><br />
+              Are you sure you want to continue?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-reset">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleResetAll();
+                setShowResetConfirm(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-reset"
+            >
+              Yes, Reset All Fields
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

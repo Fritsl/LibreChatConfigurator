@@ -180,6 +180,15 @@ export function FieldStatesPanel({
       }
     });
     
+    // Clean up problematic nested objects that were created as side effects
+    // These fields have string defaults but end up as objects due to child field resets
+    if (resetConfig.speech?.stt?.openai && typeof resetConfig.speech.stt.openai === 'object') {
+      delete resetConfig.speech.stt.openai;
+    }
+    if (resetConfig.speech?.tts?.openai && typeof resetConfig.speech.tts.openai === 'object') {
+      delete resetConfig.speech.tts.openai;
+    }
+    
     // Clear all override flags
     resetConfig = clearAllOverrides(resetConfig);
     

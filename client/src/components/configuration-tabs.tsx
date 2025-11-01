@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { SettingInput } from "./setting-input";
 import { FieldOverrideSetting } from "./field-override-setting";
-import { StatusIndicator } from "./status-indicator";
 import { SpeechPresetSelector } from "./speech-preset-selector";
 import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
 import { UserExperiencePresets } from "./user-experience-presets";
@@ -19,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { type Configuration } from "@shared/schema";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
+import { getCategoryColor } from "@/lib/category-colors";
 import { 
   Server, 
   Shield, 
@@ -874,13 +874,24 @@ paths:
     return result;
   };
 
-  const getTabProgress = (tabSettings: string[]) => {
-    if (tabSettings.length === 0) return 100;
-    const validSettings = tabSettings.filter(setting => {
-      const value = getNestedValue(configuration, setting);
-      return value !== undefined && value !== null && value !== "";
+  // Get the primary category for a tab based on its settings
+  const getTabCategory = (tabSettings: string[]): string => {
+    if (tabSettings.length === 0) return "misc";
+    
+    // Map tab settings to their categories
+    const categories: Record<string, number> = {};
+    tabSettings.forEach(settingId => {
+      const field = Object.values(FIELD_REGISTRY).find(f => 
+        f.id === settingId || f.yamlPath === settingId || f.envKey === settingId
+      );
+      if (field?.category) {
+        categories[field.category] = (categories[field.category] || 0) + 1;
+      }
     });
-    return Math.round((validSettings.length / tabSettings.length) * 100);
+    
+    // Return the most common category
+    const sortedCategories = Object.entries(categories).sort((a, b) => b[1] - a[1]);
+    return sortedCategories[0]?.[0] || "misc";
   };
 
   // Helper function to get field type and description
@@ -4212,8 +4223,8 @@ paths:
                   <div className="space-y-1">
                     {groupTabs.map((tab) => {
                       const Icon = tab.icon;
-                      const progress = getTabProgress(tab.settings);
                       const isActive = activeTab === tab.id;
+                      const categoryColor = getCategoryColor(getTabCategory(tab.settings));
                       
                       return (
                         <button
@@ -4223,7 +4234,7 @@ paths:
                           className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg shadow-sm transition-all ${
                             isActive 
                               ? `bg-gradient-to-r ${tab.color} text-white` 
-                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
                           }`}
                         >
                           <Icon className="h-5 w-5" />
@@ -4231,10 +4242,11 @@ paths:
                             <div className="font-medium">{tab.label}</div>
                             <div className="text-xs opacity-90">{tab.description}</div>
                           </div>
-                          <StatusIndicator 
-                            status={progress === 100 ? "valid" : progress > 50 ? "pending" : "invalid"}
-                            count={`${Math.floor((progress / 100) * tab.settings.length)}/${tab.settings.length}`}
-                          />
+                          {tab.settings.length > 0 && (
+                            <Badge className={`${categoryColor} text-xs`} variant="outline">
+                              {getTabCategory(tab.settings)}
+                            </Badge>
+                          )}
                         </button>
                       );
                     })}
@@ -4248,8 +4260,8 @@ paths:
               !tabGroups.some(group => group.tabs.some(groupTab => groupTab.id === tab.id))
             ).map((tab) => {
               const Icon = tab.icon;
-              const progress = getTabProgress(tab.settings);
               const isActive = activeTab === tab.id;
+              const categoryColor = getCategoryColor(getTabCategory(tab.settings));
               
               return (
                 <button
@@ -4259,7 +4271,7 @@ paths:
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg shadow-sm transition-all ${
                     isActive 
                       ? `bg-gradient-to-r ${tab.color} text-white` 
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -4267,10 +4279,11 @@ paths:
                     <div className="font-medium">{tab.label}</div>
                     <div className="text-xs opacity-90">{tab.description}</div>
                   </div>
-                  <StatusIndicator 
-                    status={progress === 100 ? "valid" : progress > 50 ? "pending" : "invalid"}
-                    count={`${Math.floor((progress / 100) * tab.settings.length)}/${tab.settings.length}`}
-                  />
+                  {tab.settings.length > 0 && (
+                    <Badge className={`${categoryColor} text-xs`} variant="outline">
+                      {getTabCategory(tab.settings)}
+                    </Badge>
+                  )}
                 </button>
               );
             })}
@@ -4297,10 +4310,11 @@ paths:
                           <CardDescription>{tab.description}</CardDescription>
                         </div>
                       </div>
-                      <StatusIndicator 
-                        status={getTabProgress(tab.settings) === 100 ? "valid" : getTabProgress(tab.settings) > 50 ? "pending" : "invalid"}
-                        count={`${Math.floor((getTabProgress(tab.settings) / 100) * tab.settings.length)}/${tab.settings.length}`}
-                      />
+                      {tab.settings.length > 0 && (
+                        <Badge className={`${getCategoryColor(getTabCategory(tab.settings))} text-sm`} variant="outline">
+                          {getTabCategory(tab.settings)}
+                        </Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent>

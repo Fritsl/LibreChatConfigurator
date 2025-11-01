@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SettingInput } from "./setting-input";
+import { FieldOverrideSetting } from "./field-override-setting";
 import { StatusIndicator } from "./status-indicator";
 import { SpeechPresetSelector } from "./speech-preset-selector";
 import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
@@ -4468,72 +4469,16 @@ paths:
                       };
                       
                       // Special handling for emailComposite field
+                      // TODO: FieldOverrideSetting needs composite field support to handle email configuration
+                      // Previously: Built composite value from individual email fields and managed SMTP vs Mailgun field clearing
                       if (setting === "emailComposite") {
-                        // Build composite value from individual email fields
-                        const emailCompositeValue = {
-                          serviceType: configuration.mailgunApiKey || configuration.mailgunDomain ? "mailgun" : 
-                                     configuration.emailService || configuration.emailUsername ? "smtp" : "",
-                          emailService: configuration.emailService,
-                          emailUsername: configuration.emailUsername,
-                          emailPassword: configuration.emailPassword,
-                          emailFrom: configuration.emailFrom,
-                          emailFromName: configuration.emailFromName,
-                          mailgunApiKey: configuration.mailgunApiKey,
-                          mailgunDomain: configuration.mailgunDomain,
-                          mailgunHost: configuration.mailgunHost,
-                        };
-                        
                         return (
-                          <SettingInput
+                          <FieldOverrideSetting
                             key={setting}
-                            label={fieldInfo.label}
-                            description={fieldInfo.description}
-                            docUrl={fieldInfo.docUrl}
-                            docSection={fieldInfo.docSection}
-                            type={fieldInfo.type}
-                            value={emailCompositeValue}
-                            technical={fieldInfo.technical}
-                            onChange={(emailData) => {
-                              // Spread composite object back into individual flat fields
-                              // Explicitly clear inactive provider fields based on serviceType from emailData
-                              const clearedConfig = { ...configuration };
-                              
-                              if (emailData.serviceType === "smtp") {
-                                // Clear Mailgun fields, keep SMTP fields
-                                clearedConfig.emailService = emailData.emailService ?? undefined;
-                                clearedConfig.emailUsername = emailData.emailUsername ?? undefined;
-                                clearedConfig.emailPassword = emailData.emailPassword ?? undefined;
-                                clearedConfig.emailFrom = emailData.emailFrom ?? undefined;
-                                clearedConfig.emailFromName = emailData.emailFromName ?? undefined;
-                                clearedConfig.mailgunApiKey = undefined;
-                                clearedConfig.mailgunDomain = undefined;
-                                clearedConfig.mailgunHost = undefined;
-                              } else if (emailData.serviceType === "mailgun") {
-                                // Clear SMTP fields, keep Mailgun fields
-                                clearedConfig.emailService = undefined;
-                                clearedConfig.emailUsername = undefined;
-                                clearedConfig.emailPassword = undefined;
-                                clearedConfig.emailFrom = undefined;
-                                clearedConfig.emailFromName = undefined;
-                                clearedConfig.mailgunApiKey = emailData.mailgunApiKey ?? undefined;
-                                clearedConfig.mailgunDomain = emailData.mailgunDomain ?? undefined;
-                                clearedConfig.mailgunHost = emailData.mailgunHost ?? undefined;
-                              } else {
-                                // Clear all fields when no provider selected
-                                clearedConfig.emailService = undefined;
-                                clearedConfig.emailUsername = undefined;
-                                clearedConfig.emailPassword = undefined;
-                                clearedConfig.emailFrom = undefined;
-                                clearedConfig.emailFromName = undefined;
-                                clearedConfig.mailgunApiKey = undefined;
-                                clearedConfig.mailgunDomain = undefined;
-                                clearedConfig.mailgunHost = undefined;
-                              }
-                              
-                              onConfigurationChange(clearedConfig);
-                            }}
-                            options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
-                            data-testid={`input-${setting}`}
+                            fieldId={setting}
+                            configuration={configuration}
+                            onConfigurationChange={onConfigurationChange}
+                            searchQuery={searchQuery}
                           />
                         );
                       }
@@ -4550,17 +4495,11 @@ paths:
                               </div>
                               <p className="text-xs text-muted-foreground mt-2 text-center">Hosted at code.librechat.ai - No self-hosting required</p>
                             </div>
-                            <SettingInput
-                              label={fieldInfo.label}
-                              description={fieldInfo.description}
-                              docUrl={fieldInfo.docUrl}
-                              docSection={fieldInfo.docSection}
-                              type={fieldInfo.type}
-                              value={getNestedValue(configuration, setting) || false}
-                              onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                              options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
-                              data-testid={`input-${setting}`}
-                              technical={fieldInfo.technical}
+                            <FieldOverrideSetting
+                              fieldId={setting}
+                              configuration={configuration}
+                              onConfigurationChange={onConfigurationChange}
+                              searchQuery={searchQuery}
                             />
                           </div>
                         );
@@ -4577,17 +4516,11 @@ paths:
                               </div>
                               <p className="text-xs text-muted-foreground mt-2 text-center">Custom proxy integration for E2B third-party service - Creates Docker container with OpenAPI schema for agents (WIP, not turn-key)</p>
                             </div>
-                            <SettingInput
-                              label={fieldInfo.label}
-                              description={fieldInfo.description}
-                              docUrl={fieldInfo.docUrl}
-                              docSection={fieldInfo.docSection}
-                              type={fieldInfo.type}
-                              value={getNestedValue(configuration, setting) || ""}
-                              onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                              options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
-                              data-testid={`input-${setting}`}
-                              technical={fieldInfo.technical}
+                            <FieldOverrideSetting
+                              fieldId={setting}
+                              configuration={configuration}
+                              onConfigurationChange={onConfigurationChange}
+                              searchQuery={searchQuery}
                             />
                           </div>
                         );
@@ -4622,128 +4555,41 @@ paths:
                       }
                       
                       // Special handling for interface.modelSelect - must be enabled when using modelSpecs.addedEndpoints
+                      // TODO: FieldOverrideSetting needs to support disabled prop and disabledMessage for this case
                       if (setting === "interface.modelSelect") {
-                        const addedEndpoints = getNestedValue(configuration, "modelSpecs.addedEndpoints") || [];
-                        const isDisabled = addedEndpoints.length > 0;
-                        
-                        const isHighlighted = Boolean(searchQuery && (
-                          setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-                        ));
-                        
                         return (
-                          <SettingInput
+                          <FieldOverrideSetting
                             key={setting}
-                            label={fieldInfo.label}
-                            description={fieldInfo.description}
-                            docUrl={fieldInfo.docUrl}
-                            docSection={fieldInfo.docSection}
-                            type={fieldInfo.type}
-                            value={isDisabled ? true : getNestedValue(configuration, setting) || false}
-                            onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                            technical={fieldInfo.technical}
-                            highlighted={isHighlighted}
-                            disabled={isDisabled}
-                            disabledMessage={
-                              isDisabled 
-                                ? "This setting is automatically enabled because you're using Model Specs Added Endpoints. To disable this, first remove all items from the 'Visible Endpoints (UI)' field in the Model Specs section below."
-                                : undefined
-                            }
-                            onNavigateToRelatedSetting={
-                              isDisabled 
-                                ? () => {
-                                    // Scroll to the modelSpecs.addedEndpoints field
-                                    const element = document.querySelector('[data-testid="input-modelSpecs.addedEndpoints"]');
-                                    if (element) {
-                                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                      // Add a brief highlight effect
-                                      element.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-                                      setTimeout(() => {
-                                        element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-                                      }, 2000);
-                                    }
-                                  }
-                                : undefined
-                            }
-                            data-testid={`input-${setting}`}
+                            fieldId={setting}
+                            configuration={configuration}
+                            onConfigurationChange={onConfigurationChange}
+                            searchQuery={searchQuery}
                           />
                         );
                       }
                       
                       // Special handling for e2bProxyEnabled - auto-fill defaults when enabled
+                      // TODO: FieldOverrideSetting needs custom onChange support to restore auto-fill logic
+                      // Previously: When enabling E2B, auto-filled e2bProxyPort=3001, e2bFileTTLDays=30, e2bMaxFileSize=50, e2bPerUserSandbox=false
                       if (setting === "e2bProxyEnabled") {
-                        const isHighlighted = Boolean(searchQuery && (
-                          setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                          (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-                        ));
-                        
                         return (
-                          <SettingInput
+                          <FieldOverrideSetting
                             key={setting}
-                            label={fieldInfo.label}
-                            description={fieldInfo.description}
-                            docUrl={fieldInfo.docUrl}
-                            docSection={fieldInfo.docSection}
-                            type={fieldInfo.type}
-                            value={getNestedValue(configuration, setting) || false}
-                            technical={fieldInfo.technical}
-                            highlighted={isHighlighted}
-                            onChange={(value) => {
-                              const updates: any = { e2bProxyEnabled: value };
-                              
-                              // When enabling E2B, auto-fill defaults if fields are empty
-                              if (value === true) {
-                                if (!configuration.e2bProxyPort) {
-                                  updates.e2bProxyPort = 3001;
-                                }
-                                if (!configuration.e2bFileTTLDays) {
-                                  updates.e2bFileTTLDays = 30;
-                                }
-                                if (!configuration.e2bMaxFileSize) {
-                                  updates.e2bMaxFileSize = 50;
-                                }
-                                if (configuration.e2bPerUserSandbox === undefined || configuration.e2bPerUserSandbox === null) {
-                                  updates.e2bPerUserSandbox = false;
-                                }
-                              }
-                              
-                              onConfigurationChange({ ...configuration, ...updates });
-                            }}
-                            options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : fieldInfo.options}
-                            data-testid={`input-${setting}`}
+                            fieldId={setting}
+                            configuration={configuration}
+                            onConfigurationChange={onConfigurationChange}
+                            searchQuery={searchQuery}
                           />
                         );
                       }
                       
-                      // Check if this setting matches the search query
-                      const isHighlighted = Boolean(searchQuery && (
-                        setting.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        fieldInfo.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (fieldInfo.description && fieldInfo.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                        (fieldInfo.technical?.envVar && fieldInfo.technical.envVar.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                        (fieldInfo.technical?.yamlPath && fieldInfo.technical.yamlPath.toLowerCase().includes(searchQuery.toLowerCase()))
-                      ));
-                      
                       return (
-                        <SettingInput
+                        <FieldOverrideSetting
                           key={setting}
-                          label={fieldInfo.label}
-                          description={fieldInfo.description}
-                          docUrl={fieldInfo.docUrl}
-                          docSection={fieldInfo.docSection}
-                          type={fieldInfo.type}
-                          value={getNestedValue(configuration, setting) || ""}
-                          onChange={(value) => onConfigurationChange(setNestedValue(configuration, setting, value))}
-                          options={fieldInfo.type === 'select' ? (fieldInfo.options || getSelectOptions(setting)) : undefined}
-                          data-testid={`input-${setting}`}
-                          technical={fieldInfo.technical}
-                          highlighted={isHighlighted}
+                          fieldId={setting}
+                          configuration={configuration}
+                          onConfigurationChange={onConfigurationChange}
+                          searchQuery={searchQuery}
                         />
                       );
                     })}

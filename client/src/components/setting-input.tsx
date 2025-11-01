@@ -18,6 +18,7 @@ import { CachingIntegrationEditor } from "@/components/caching-integration-edito
 import { FileStorageEditor } from "@/components/file-storage-editor-fixed";
 import { EmailServiceEditor } from "@/components/email-service-editor";
 import { EndpointFileLimitsEditor } from "@/components/endpoint-file-limits-editor";
+import { FieldStateControl } from "@/components/field-state-control";
 
 interface SettingInputProps {
   label: string;
@@ -43,6 +44,11 @@ interface SettingInputProps {
   disabled?: boolean;
   disabledMessage?: string;
   onNavigateToRelatedSetting?: () => void;
+  fieldId?: string;
+  defaultValue?: any;
+  isUsingDefault?: boolean;
+  onSetUseDefault?: (useDefault: boolean) => void;
+  onResetToDefault?: () => void;
 }
 
 export function SettingInput({
@@ -65,6 +71,11 @@ export function SettingInput({
   disabled = false,
   disabledMessage,
   onNavigateToRelatedSetting,
+  fieldId,
+  defaultValue,
+  isUsingDefault,
+  onSetUseDefault,
+  onResetToDefault,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
@@ -446,47 +457,62 @@ export function SettingInput({
 
   return (
     <div className={`space-y-2 ${highlighted ? 'p-4 -mx-4 rounded-lg bg-yellow-100 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 animate-pulse' : ''}`} data-highlighted={highlighted}>
-      <div className="flex items-center space-x-2">
-        <Label className="text-sm font-medium text-foreground">
-          {label}
-        </Label>
-        {description && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-auto p-0 hover:bg-transparent">
-                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="max-w-sm">
-              <div className="space-y-3">
-                <p className="text-sm">{description}</p>
-                {technical && (
-                  <div className="border-t pt-2">
-                    <p className="text-xs font-mono text-muted-foreground">
-                      {technical.envVar && `→ Sets ${technical.envVar}`}
-                      {technical.yamlPath && `→ Sets ${technical.yamlPath}`}
-                      {' in '}
-                      <span className="font-semibold">{technical.configFile}</span>
-                    </p>
-                  </div>
-                )}
-                {docUrl && (
-                  <div className="border-t pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs gap-2"
-                      onClick={() => window.open(docUrl, '_blank')}
-                      data-testid={`${testId}-docs`}
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      {docSection ? `${docSection} Docs` : 'Learn More'}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center space-x-2">
+          <Label className="text-sm font-medium text-foreground">
+            {label}
+          </Label>
+          {description && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-auto p-0 hover:bg-transparent">
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="max-w-sm">
+                <div className="space-y-3">
+                  <p className="text-sm">{description}</p>
+                  {technical && (
+                    <div className="border-t pt-2">
+                      <p className="text-xs font-mono text-muted-foreground">
+                        {technical.envVar && `→ Sets ${technical.envVar}`}
+                        {technical.yamlPath && `→ Sets ${technical.yamlPath}`}
+                        {' in '}
+                        <span className="font-semibold">{technical.configFile}</span>
+                      </p>
+                    </div>
+                  )}
+                  {docUrl && (
+                    <div className="border-t pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-2"
+                        onClick={() => window.open(docUrl, '_blank')}
+                        data-testid={`${testId}-docs`}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {docSection ? `${docSection} Docs` : 'Learn More'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+        
+        {fieldId && defaultValue !== undefined && onSetUseDefault && onResetToDefault && (
+          <FieldStateControl
+            fieldId={fieldId}
+            fieldLabel={label}
+            currentValue={value}
+            defaultValue={defaultValue}
+            isUsingDefault={isUsingDefault ?? true}
+            onSetUseDefault={onSetUseDefault}
+            onResetToDefault={onResetToDefault}
+            data-testid={testId}
+          />
         )}
       </div>
       {renderInput()}

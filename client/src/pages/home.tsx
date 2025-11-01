@@ -19,6 +19,7 @@ import { getToolVersion, getVersionInfo } from "@shared/version";
 import yaml from "js-yaml";
 import { getAllEnvKeys } from '@/../../shared/config/field-registry';
 import { mapEnvToConfiguration as registryMapEnvToConfig, mapYamlToConfiguration as registryMapYamlToConfig, validateYamlFields as registryValidateYamlFields, validateEnvVars as registryValidateEnvVars } from '@/../../shared/config/registry-helpers';
+import { clearAllOverrides } from '@/../../shared/config/field-overrides';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -582,6 +583,16 @@ export default function Home() {
     });
   };
 
+  const handleResetAllFieldStates = () => {
+    const clearedConfig = clearAllOverrides(configuration);
+    updateConfiguration(clearedConfig);
+    
+    toast({
+      title: "All Fields Reset to 'Not Set'",
+      description: "All configuration fields will now use LibreChat's defaults (commented out in exports). Values preserved but marked as not set.",
+    });
+  };
+
   const handleRunSelfTest = () => {
     setShowSelfTestConfirmation(true);
   };
@@ -1043,6 +1054,10 @@ export default function Home() {
                   <DropdownMenuItem onClick={handleResetToDefaults} data-testid="menu-reset">
                     <Settings className="h-4 w-4 mr-2" />
                     Reset to LibreChat Defaults
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleResetAllFieldStates} data-testid="menu-reset-field-states">
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Reset All Field States to "Not Set"
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLoadDemoConfiguration} data-testid="menu-load-demo">
                     <Zap className="h-4 w-4 mr-2" />

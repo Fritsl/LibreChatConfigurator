@@ -9,6 +9,7 @@ import { SpeechPresetSelector } from "./speech-preset-selector";
 import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
 import { UserExperiencePresets } from "./user-experience-presets";
 import { AgentCapabilitiesManager } from "./agent-capabilities-manager";
+import { FieldStatesPanel } from "./field-states-panel";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -730,6 +731,20 @@ paths:
           color: "from-gray-400 to-gray-500",
           settings: ["cdnProvider"],
           docUrl: "https://www.librechat.ai/docs/configuration/cdn",
+        },
+      ]
+    },
+    {
+      label: "MANAGEMENT",
+      tabs: [
+        {
+          id: "field-states",
+          label: "Field States",
+          icon: Settings,
+          description: "Manage field override states (Not Set vs Explicit)",
+          color: "from-slate-500 to-slate-600",
+          settings: [],
+          docUrl: "https://www.librechat.ai/docs/configuration",
         },
       ]
     }
@@ -4665,7 +4680,16 @@ paths:
                       </div>
                     )}
                     
-                    {tab.settings.length === 0 && (
+                    {tab.id === "field-states" && tab.settings.length === 0 && (
+                      <div className="col-span-full">
+                        <FieldStatesPanel
+                          configuration={configuration}
+                          onConfigurationChange={onConfigurationChange}
+                        />
+                      </div>
+                    )}
+                    
+                    {tab.id !== "field-states" && tab.settings.length === 0 && (
                       <div className="col-span-full text-center py-8 text-muted-foreground">
                         <tab.icon className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>This section will contain configuration options for {tab.label.toLowerCase()}.</p>

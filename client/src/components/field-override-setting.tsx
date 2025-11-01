@@ -135,11 +135,6 @@ export function FieldOverrideSetting({
       data-testid={`setting-${actualFieldId}`}
       technical={technical}
       highlighted={shouldHighlight}
-      fieldId={actualFieldId}
-      defaultValue={field.defaultValue}
-      isUsingDefault={isUsingDefault}
-      onSetUseDefault={handleSetUseDefault}
-      onResetToDefault={handleResetToDefault}
     />
   );
 }

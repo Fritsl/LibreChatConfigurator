@@ -643,12 +643,32 @@ export default function Home() {
   };
 
   const handleResetAllFieldStates = () => {
-    const clearedConfig = clearAllOverrides(configuration);
+    // Create a fresh configuration with all fields set to their default values
+    let resetConfig: any = { ...configuration };
+    
+    // Reset all field values to their defaults
+    Object.values(FIELD_REGISTRY).forEach(field => {
+      const configPath = field.configPath || field.id;
+      const keys = configPath.split('.');
+      let current: any = resetConfig;
+      
+      // Navigate to the parent object
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      
+      // Set the default value
+      current[keys[keys.length - 1]] = field.defaultValue;
+    });
+    
+    // Clear all override flags
+    const clearedConfig = clearAllOverrides(resetConfig);
     updateConfiguration(clearedConfig);
     
     toast({
-      title: "All Fields Reset to 'Not Set'",
-      description: "All configuration fields will now use LibreChat's defaults (commented out in exports). Values preserved but marked as not set.",
+      title: "All Fields Reset to Defaults",
+      description: "All configuration fields have been reset to their default values and will use LibreChat's defaults (commented out in exports).",
     });
   };
 

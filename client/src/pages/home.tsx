@@ -16,10 +16,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Label } from "@/components/ui/label";
 import { ConfigurationHistory } from "@/components/ConfigurationHistory";
 import { getToolVersion, getVersionInfo } from "@shared/version";
+import type { Configuration } from "@shared/schema";
 import yaml from "js-yaml";
-import { getAllEnvKeys } from '@/../../shared/config/field-registry';
+import { getAllEnvKeys, FIELD_REGISTRY } from '@/../../shared/config/field-registry';
 import { mapEnvToConfiguration as registryMapEnvToConfig, mapYamlToConfiguration as registryMapYamlToConfig, validateYamlFields as registryValidateYamlFields, validateEnvVars as registryValidateEnvVars } from '@/../../shared/config/registry-helpers';
-import { clearAllOverrides } from '@/../../shared/config/field-overrides';
+import { clearAllOverrides, setFieldOverride } from '@/../../shared/config/field-overrides';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,6 +181,49 @@ export default function Home() {
     // - Alias handling (memory.disabled, rateLimits.uploads, etc.)
     // - Complex structures (mcpServers, customEndpoints, fileConfig.endpoints)
     return registryMapYamlToConfig(yamlData);
+  };
+
+  // Helper function to mark imported fields as explicitly set
+  const markImportedFieldsAsExplicit = (baseConfig: Configuration, importedUpdates: Partial<Configuration>): Configuration => {
+    let result = { ...baseConfig, ...importedUpdates };
+    
+    // Find all fields that have values in the imported updates
+    const getFieldIdsFromUpdates = (obj: any, prefix = ''): string[] => {
+      const fieldIds: string[] = [];
+      
+      for (const [key, value] of Object.entries(obj)) {
+        if (value === undefined) continue;
+        
+        const path = prefix ? `${prefix}.${key}` : key;
+        
+        // Find field in registry by yamlPath or id
+        const field = FIELD_REGISTRY.find(f => 
+          f.yamlPath === path || f.id === key || f.id === path
+        );
+        
+        if (field) {
+          fieldIds.push(field.id);
+        }
+        
+        // Recursively check nested objects
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          fieldIds.push(...getFieldIdsFromUpdates(value, path));
+        }
+      }
+      
+      return fieldIds;
+    };
+    
+    const importedFieldIds = getFieldIdsFromUpdates(importedUpdates);
+    
+    // Mark all imported fields as explicitly set (not using LibreChat default)
+    for (const fieldId of importedFieldIds) {
+      result = setFieldOverride(result, fieldId, false);
+    }
+    
+    console.log(`🏷️ [Import] Marked ${importedFieldIds.length} fields as explicitly set`);
+    
+    return result;
   };
 
   const handleImportProfile = () => {
@@ -425,9 +469,11 @@ export default function Home() {
             // Analyze what changed BEFORE import (compare existing config vs YAML)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // MERGE configuration with YAML data (preserves ENV-only fields)
+            // MERGE configuration with YAML data AND mark all imported fields as explicitly set
             // This ensures YAML fields are updated while ENV-only fields remain intact
-            updateConfiguration(configUpdates, false);
+            // AND the Field States Panel correctly shows imported fields as "explicit"
+            const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+            updateConfiguration(configWithOverrides, true);
             
             // Show detailed import summary
             setImportSummaryData({
@@ -528,9 +574,11 @@ export default function Home() {
             // Analyze what changed BEFORE import (compare existing config vs .env)
             const analysis = analyzeConfigurationChanges(configuration, configUpdates);
             
-            // MERGE configuration with .env data (preserves YAML-only fields)
+            // MERGE configuration with .env data AND mark all imported fields as explicitly set
             // This ensures ENV fields are updated while YAML-only fields remain intact
-            updateConfiguration(configUpdates, false);
+            // AND the Field States Panel correctly shows imported fields as "explicit"
+            const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+            updateConfiguration(configWithOverrides, true);
             
             // Show detailed import summary
             setImportSummaryData({

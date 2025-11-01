@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -31,15 +31,6 @@ export function FieldStatesPanel({
   const [fileTypeFilter, setFileTypeFilter] = useState<FileTypeFilter>("all");
   const [stateFilter, setStateFilter] = useState<StateFilter>("all");
 
-  // Debug: Log configuration changes
-  useEffect(() => {
-    console.log("🔍 [Field States] Configuration object changed:", {
-      fieldOverridesKeys: configuration.fieldOverrides ? Object.keys(configuration.fieldOverrides).length : 0,
-      appTitle: configuration.appTitle,
-      configName: configuration.configurationName
-    });
-  }, [configuration]);
-
   // Get current value for a field
   const getCurrentValue = (fieldId: string): any => {
     const field = FIELD_REGISTRY.find(f => f.id === fieldId);
@@ -61,7 +52,6 @@ export function FieldStatesPanel({
 
   // Calculate field states
   const fieldStates = useMemo(() => {
-    console.log("♻️ [Field States] Recalculating field states");
     return FIELD_REGISTRY.map(field => {
       const currentValue = getCurrentValue(field.id);
       const isUsingDefault = useLibreChatDefault(configuration, field.id);

@@ -50,20 +50,19 @@ export function FieldStatesPanel({
       : field.defaultValue;
   };
 
-  // Calculate field states
+  // Calculate field states based on whether value differs from default
   const fieldStates = useMemo(() => {
     return FIELD_REGISTRY.map(field => {
       const currentValue = getCurrentValue(field.id);
       const isUsingDefault = useLibreChatDefault(configuration, field.id);
       const valueMatchesDefault = JSON.stringify(currentValue) === JSON.stringify(field.defaultValue);
 
+      // State is determined by whether the VALUE differs from default, not by override flags
       let state: "not-set" | "explicit-default" | "explicit-modified";
-      if (isUsingDefault) {
-        state = "not-set";
-      } else if (valueMatchesDefault) {
-        state = "explicit-default";
+      if (valueMatchesDefault) {
+        state = "not-set"; // Using default value (regardless of override flag)
       } else {
-        state = "explicit-modified";
+        state = "explicit-modified"; // Value differs from default
       }
 
       return {
@@ -129,11 +128,10 @@ export function FieldStatesPanel({
 
   // Statistics
   const stats = useMemo(() => {
-    const notSet = fieldStates.filter(f => f.state === "not-set").length;
-    const explicit = fieldStates.filter(f => f.state === "explicit-default" || f.state === "explicit-modified").length;
+    const usingDefault = fieldStates.filter(f => f.state === "not-set").length;
     const modified = fieldStates.filter(f => f.state === "explicit-modified").length;
 
-    return { notSet, explicit, modified, total: fieldStates.length };
+    return { usingDefault, modified, total: fieldStates.length };
   }, [fieldStates]);
 
   const handleToggleState = (fieldId: string, currentlyUsingDefault: boolean) => {
@@ -220,12 +218,12 @@ export function FieldStatesPanel({
         <CardHeader>
           <CardTitle>Field States Manager</CardTitle>
           <CardDescription>
-            Control which fields use LibreChat defaults vs explicit values. Fields marked "Not Set" will be commented out in exports.
+            View and manage all 480+ configuration fields. See which fields are using default values vs which have been modified.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Fields</CardTitle>
@@ -236,18 +234,10 @@ export function FieldStatesPanel({
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Not Set</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Using Default</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-600" data-testid="stat-not-set">{stats.notSet}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Explicit</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-blue-600" data-testid="stat-explicit">{stats.explicit}</div>
+                <div className="text-2xl font-bold text-gray-600" data-testid="stat-using-default">{stats.usingDefault}</div>
               </CardContent>
             </Card>
             <Card>
@@ -278,7 +268,7 @@ export function FieldStatesPanel({
               data-testid="button-reset-all-states"
             >
               <RotateCcw className="h-4 w-4 mr-2" />
-              Reset All to "Not Set"
+              Reset All to Defaults
             </Button>
           </div>
 
@@ -339,7 +329,7 @@ export function FieldStatesPanel({
                     className="h-7 text-[10px] px-2 whitespace-nowrap"
                     data-testid="filter-hide-not-set"
                   >
-                    {stateFilter === "hide-not-set" ? "Show All" : "Hide Not Set"}
+                    {stateFilter === "hide-not-set" ? "Show All" : "Hide Defaults"}
                   </Button>
                 </div>
               </div>
@@ -375,14 +365,8 @@ export function FieldStatesPanel({
                             <div className="font-mono text-xs font-medium flex-1 break-all">{getFieldDisplayName(field)}</div>
                             {state === "not-set" && (
                               <Badge variant="secondary" className="text-[10px] h-5 px-1.5 gap-0.5 flex-shrink-0">
-                                <Circle className="h-2.5 w-2.5" />
-                                Not Set
-                              </Badge>
-                            )}
-                            {state === "explicit-default" && (
-                              <Badge variant="outline" className="text-[10px] h-5 px-1.5 gap-0.5 border-blue-300 text-blue-700 flex-shrink-0">
                                 <CheckCircle className="h-2.5 w-2.5" />
-                                Explicit
+                                Default
                               </Badge>
                             )}
                             {state === "explicit-modified" && (
@@ -419,14 +403,8 @@ export function FieldStatesPanel({
                           </div>
                           {selectedFieldData.state === "not-set" && (
                             <Badge variant="secondary" className="gap-1">
-                              <Circle className="h-3 w-3" />
-                              Not Set
-                            </Badge>
-                          )}
-                          {selectedFieldData.state === "explicit-default" && (
-                            <Badge variant="outline" className="gap-1 border-blue-300 text-blue-700">
                               <CheckCircle className="h-3 w-3" />
-                              Explicit Default
+                              Default Value
                             </Badge>
                           )}
                           {selectedFieldData.state === "explicit-modified" && (

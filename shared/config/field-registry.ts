@@ -2179,50 +2179,6 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   },
 
   // =============================================================================
-  // YAML-Only Fields: General Configuration
-  // =============================================================================
-  {
-    id: 'fileStrategy',
-    yamlPath: 'fileStrategy',
-    type: 'string',
-    defaultValue: '',
-    category: 'app',
-    description: 'File handling strategy',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
-  {
-    id: 'imageOutputType',
-    yamlPath: 'imageOutputType',
-    type: 'string',
-    defaultValue: '',
-    category: 'app',
-    description: 'Image output format',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
-  {
-    id: 'secureImageLinks',
-    yamlPath: 'secureImageLinks',
-    type: 'boolean',
-    defaultValue: false,
-    category: 'app',
-    description: 'Secure image link flag',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
-  {
-    id: 'temporaryChatRetention',
-    yamlPath: 'temporaryChatRetention',
-    type: 'number',
-    defaultValue: 720,
-    category: 'app',
-    description: 'Chat retention time in minutes',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
-
-  // =============================================================================
   // YAML-Only Fields: Interface Configuration
   // =============================================================================
   {
@@ -2494,16 +2450,6 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     defaultValue: '',
     category: 'ocr',
     description: 'OCR model',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
-  {
-    id: 'ocrApiKey',
-    yamlPath: 'ocr.apiKey',
-    type: 'string',
-    defaultValue: '',
-    category: 'ocr',
-    description: 'OCR API key',
     exportToEnv: false,
     exportToYaml: true,
   },
@@ -4233,17 +4179,6 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     exportToEnv: false,
     exportToYaml: true,
   },
-  {
-    id: 'modelSpecsAddedEndpoints',
-    yamlPath: 'modelSpecs.addedEndpoints',
-    type: 'array',
-    defaultValue: [],
-    category: 'model-specs',
-    arrayItemType: 'string',
-    description: 'Array of added endpoint names',
-    exportToEnv: false,
-    exportToYaml: true,
-  },
 
   // =============================================================================
   // AUTH: Missing Fields (5 fields)
@@ -4821,44 +4756,12 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   // FILE STORAGE: Missing Fields (5 fields)
   // =============================================================================
   {
-    id: 'awsAccessKeyId',
-    envKey: 'AWS_ACCESS_KEY_ID',
-    type: 'string',
-    defaultValue: '',
-    category: 'file-storage',
-    description: 'AWS Access Key ID for S3 storage.',
-  },
-  {
-    id: 'awsBucketName',
-    envKey: 'AWS_BUCKET_NAME',
-    type: 'string',
-    defaultValue: '',
-    category: 'file-storage',
-    description: 'AWS S3 bucket name.',
-  },
-  {
     id: 'awsEndpointUrl',
     envKey: 'AWS_ENDPOINT_URL',
     type: 'string',
     defaultValue: '',
     category: 'file-storage',
     description: 'AWS S3 endpoint URL.',
-  },
-  {
-    id: 'awsRegion',
-    envKey: 'AWS_REGION',
-    type: 'string',
-    defaultValue: '',
-    category: 'file-storage',
-    description: 'AWS region for S3 storage.',
-  },
-  {
-    id: 'awsSecretAccessKey',
-    envKey: 'AWS_SECRET_ACCESS_KEY',
-    type: 'string',
-    defaultValue: '',
-    category: 'file-storage',
-    description: 'AWS Secret Access Key for S3 storage.',
   },
 
   // =============================================================================
@@ -4881,14 +4784,6 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     description: 'Google Custom Search Engine ID.',
   },
   {
-    id: 'googleSearchApiKey',
-    envKey: 'GOOGLE_SEARCH_API_KEY',
-    type: 'string',
-    defaultValue: '',
-    category: 'external-apis',
-    description: 'Google Search API key.',
-  },
-  {
     id: 'serpapiApiKey',
     envKey: 'SERPAPI_API_KEY',
     type: 'string',
@@ -4897,28 +4792,12 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     description: 'Your SerpAPI API key.',
   },
   {
-    id: 'sttApiKey',
-    envKey: 'STT_API_KEY',
-    type: 'string',
-    defaultValue: '',
-    category: 'external-apis',
-    description: 'Speech-to-text API key.',
-  },
-  {
     id: 'tavilyApiKey',
     envKey: 'TAVILY_API_KEY',
     type: 'string',
     defaultValue: '',
     category: 'external-apis',
     description: 'Tavily API key.',
-  },
-  {
-    id: 'ttsApiKey',
-    envKey: 'TTS_API_KEY',
-    type: 'string',
-    defaultValue: '',
-    category: 'external-apis',
-    description: 'Text-to-speech API key.',
   },
   {
     id: 'wolframAppId',
@@ -4995,14 +4874,6 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     defaultValue: 'DrhYf7zENyR6AlUCKmnz0eYASOQdl6zxH7s7MKFSfFCt',
     category: 'system',
     description: 'The master key for MeiliSearch.',
-  },
-  {
-    id: 'meiliNoAnalytics',
-    envKey: 'MEILI_NO_ANALYTICS',
-    type: 'boolean',
-    defaultValue: true,
-    category: 'system',
-    description: 'Disables anonymized telemetry analytics for MeiliSearch.',
   },
   {
     id: 'proxy',

@@ -363,10 +363,10 @@ export function FieldStatesPanel({
                           key={field.id}
                           onClick={() => setSelectedFieldId(field.id)}
                           className={`
-                            p-3 cursor-pointer transition-all border-l-4
+                            p-3 cursor-pointer transition-all duration-200 border-l-4
                             ${isSelected 
-                              ? 'bg-primary/10 border-l-primary dark:bg-primary/20' 
-                              : 'border-l-transparent hover:bg-muted/50 hover:border-l-muted-foreground/20'
+                              ? 'bg-primary/10 border-l-primary dark:bg-primary/20 shadow-sm' 
+                              : 'border-l-transparent hover:bg-accent hover:border-l-primary/40 hover:shadow-sm hover:scale-[1.01]'
                             }
                           `}
                           data-testid={`list-item-${field.id}`}

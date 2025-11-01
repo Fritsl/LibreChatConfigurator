@@ -99,6 +99,36 @@ export function ConfigurationTabs({
     }
   };
 
+  const handleNavigateToField = (fieldId: string) => {
+    // Find which tab contains this field
+    const tab = tabs.find(t => t.settings.includes(fieldId));
+    
+    if (tab) {
+      setActiveTab(tab.id);
+      toast({
+        title: "Navigated to Field",
+        description: `Opening ${tab.label} tab to edit ${fieldId}`,
+      });
+      
+      // Scroll to the field after tab change
+      setTimeout(() => {
+        const fieldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
+        if (fieldElement) {
+          fieldElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 150);
+    } else {
+      toast({
+        title: "Field Not Found",
+        description: `Could not find tab containing ${fieldId}`,
+        variant: "destructive",
+      });
+    }
+  };
+
   const generateE2BOpenAPISchema = (port: number = 3001): string => {
     const proxyUrl = `http://e2b-proxy:${port}`;
     
@@ -4685,6 +4715,7 @@ paths:
                         <FieldStatesPanel
                           configuration={configuration}
                           onConfigurationChange={onConfigurationChange}
+                          onNavigateToField={handleNavigateToField}
                         />
                       </div>
                     )}

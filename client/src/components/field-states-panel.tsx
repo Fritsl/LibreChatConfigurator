@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
-import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, Edit } from "lucide-react";
 
 type SortField = "name" | "state" | "category";
 type SortDirection = "asc" | "desc";
@@ -15,11 +15,13 @@ type SortDirection = "asc" | "desc";
 interface FieldStatesPanelProps {
   configuration: Configuration;
   onConfigurationChange: (updates: Partial<Configuration>) => void;
+  onNavigateToField?: (fieldId: string) => void;
 }
 
 export function FieldStatesPanel({
   configuration,
   onConfigurationChange,
+  onNavigateToField,
 }: FieldStatesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
@@ -313,6 +315,17 @@ export function FieldStatesPanel({
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
+                          {!isUsingDefault && onNavigateToField && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => onNavigateToField(field.id)}
+                              data-testid={`button-edit-${field.id}`}
+                            >
+                              <Edit className="h-3 w-3 mr-1" />
+                              Edit Value
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"

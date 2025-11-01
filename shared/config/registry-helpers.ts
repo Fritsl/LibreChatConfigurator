@@ -1,4 +1,6 @@
 import { FIELD_REGISTRY, FieldDescriptor, getFieldByEnvKey, getFieldByYamlPath, getAllEnvKeys, getAllYamlPaths, getYamlFields } from './field-registry';
+import { useLibreChatDefault } from './field-overrides';
+import type { Configuration } from '../schema';
 
 /**
  * Registry-Driven Import/Export Helpers
@@ -429,6 +431,24 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   // Get value - handle nested structures
   let value = getConfigValue(config, field);
   
+  // Check if field should use LibreChat default
+  // IMPORTANT: If fieldOverrides is undefined (legacy configs), treat all fields as explicit
+  // This maintains backward compatibility with existing saved configurations
+  const shouldUseDefault = config.fieldOverrides 
+    ? useLibreChatDefault(config as Configuration, field.id)
+    : false; // Legacy configs: treat all fields as explicit
+  
+  // Add bug warning header if field has known LibreChat bug
+  const bugWarning = field.librechatBug
+    ? [
+        '',
+        `# ⚠️  KNOWN LIBRECHAT BUG - ${field.envKey || field.id}`,
+        `# ${field.librechatBug.description}`,
+        `# Workaround: ${field.librechatBug.workaround}`,
+        field.librechatBug.affectedVersions ? `# Affected: ${field.librechatBug.affectedVersions}` : null
+      ].filter(line => line !== null).join('\n') + '\n' // Add trailing newline
+    : '';
+  
   // Special handling for security fields with cached secrets
   const securityFields: Record<string, keyof CachedSecrets> = {
     'JWT_SECRET': 'jwtSecret',
@@ -439,24 +459,38 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   
   if (field.envKey && securityFields[field.envKey]) {
     if (value) {
-      return `${field.envKey}=${value}`;
+      // Check fieldOverrides even for security fields
+      if (shouldUseDefault) {
+        return bugWarning + `# ${field.envKey}=${value}  # Using LibreChat default`;
+      }
+      return bugWarning + `${field.envKey}=${value}`;
     } else {
       const cachedValue = cachedSecrets[securityFields[field.envKey]];
-      return `# ${field.envKey}=${cachedValue} (auto-generated - configure in Security settings to export)`;
+      return bugWarning + `# ${field.envKey}=${cachedValue} (auto-generated - configure in Security settings to export)`;
     }
   }
   
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
   
+  // If field should use LibreChat default, comment it out
+  if (shouldUseDefault) {
+    if (envValue !== '') {
+      return bugWarning + `# ${field.envKey}=${envValue}  # Using LibreChat default`;
+    } else {
+      const defaultComment = getDefaultComment(field);
+      return bugWarning + `# ${field.envKey}=${defaultComment}  # Using LibreChat default`;
+    }
+  }
+  
   // If value exists, output uncommented
   if (envValue !== '') {
-    return `${field.envKey}=${envValue}`;
+    return bugWarning + `${field.envKey}=${envValue}`;
   }
   
   // If no value, output commented with default
   const defaultComment = getDefaultComment(field);
-  return `# ${field.envKey}=${defaultComment}`;
+  return bugWarning + `# ${field.envKey}=${defaultComment}`;
 }
 
 /**
@@ -548,6 +582,39 @@ export function escapeYamlDoubleQuoted(str: string): string {
     .replace(/\r/g, '\\r')
     .replace(/\t/g, '\\t')
     .replace(/"/g, '\\"');
+}
+
+/**
+ * Format a YAML field respecting fieldOverrides
+ * If field should use LibreChat default, formats as comment
+ * Otherwise formats normally
+ * 
+ * @param config - Configuration object (must be Configuration type or compatible)
+ * @param fieldId - Field identifier from registry
+ * @param yamlKey - The YAML key name (e.g., 'agents', 'modelSelect')
+ * @param value - The value to output
+ * @param indent - Number of spaces for indentation (default: 2)
+ * @returns Formatted YAML line (commented if using default, normal if explicitly set)
+ */
+function formatYamlField(
+  config: any,
+  fieldId: string,
+  yamlKey: string,
+  value: any,
+  indent: number = 2
+): string {
+  const indentStr = ' '.repeat(indent);
+  const formattedValue = typeof value === 'string' && value.includes('"')
+    ? `"${escapeYamlDoubleQuoted(value)}"`
+    : String(value);
+  
+  // Check if this field should use LibreChat default
+  if (config.fieldOverrides && useLibreChatDefault(config as Configuration, fieldId)) {
+    return `${indentStr}# ${yamlKey}: ${formattedValue}  # Using LibreChat default`;
+  }
+  
+  // Field is explicitly set, output normally
+  return `${indentStr}${yamlKey}: ${formattedValue}`;
 }
 
 /**
@@ -973,20 +1040,21 @@ function generateInterfaceSection(config: any): string {
   
   const lines = ['# Interface Configuration', 'interface:'];
   
+  // Use formatYamlField() to respect fieldOverrides
   if (config.interface?.agents !== undefined) {
-    lines.push(`  agents: ${config.interface.agents}`);
+    lines.push(formatYamlField(config, 'interfaceAgents', 'agents', config.interface.agents));
   }
   if (config.interface?.modelSelect !== undefined) {
-    lines.push(`  modelSelect: ${config.interface.modelSelect}`);
+    lines.push(formatYamlField(config, 'interfaceModelSelect', 'modelSelect', config.interface.modelSelect));
   }
   if (config.interface?.parameters !== undefined) {
-    lines.push(`  parameters: ${config.interface.parameters}`);
+    lines.push(formatYamlField(config, 'interfaceParameters', 'parameters', config.interface.parameters));
   }
   if (config.interface?.sidePanel !== undefined) {
-    lines.push(`  sidePanel: ${config.interface.sidePanel}`);
+    lines.push(formatYamlField(config, 'interfaceSidePanel', 'sidePanel', config.interface.sidePanel));
   }
   if (config.interface?.presets !== undefined) {
-    lines.push(`  presets: ${config.interface.presets}`);
+    lines.push(formatYamlField(config, 'interfacePresets', 'presets', config.interface.presets));
   }
   if (config.interface?.prompts !== undefined) {
     lines.push(`  prompts: ${config.interface.prompts}`);

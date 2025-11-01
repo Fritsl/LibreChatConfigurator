@@ -25,7 +25,10 @@ interface CustomEndpoint {
   };
   titleConvo?: boolean;
   titleModel?: string;
-  titleMethod?: "completion" | "functions";
+  titleMethod?: "completion" | "functions" | "structured";
+  titlePrompt?: string;
+  titlePromptTemplate?: string;
+  titleEndpoint?: string;
   summarize?: boolean;
   summaryModel?: string;
   forcePrompt?: boolean;
@@ -465,7 +468,7 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                 <Label htmlFor={`title-method-${endpointIndex}`} className="text-sm">Title Method</Label>
                 <Select
                   value={endpoint.titleMethod || "completion"}
-                  onValueChange={(value: "completion" | "functions") => updateEndpoint(endpointIndex, { titleMethod: value })}
+                  onValueChange={(value: "completion" | "functions" | "structured") => updateEndpoint(endpointIndex, { titleMethod: value })}
                 >
                   <SelectTrigger id={`title-method-${endpointIndex}`} data-testid={`select-title-method-${endpointIndex}`}>
                     <SelectValue />
@@ -473,6 +476,7 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                   <SelectContent>
                     <SelectItem value="completion">Completion</SelectItem>
                     <SelectItem value="functions">Functions</SelectItem>
+                    <SelectItem value="structured">Structured</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -499,6 +503,55 @@ export function CustomEndpointsEditor({ value, onChange, "data-testid": testId }
                   placeholder="gpt-3.5-turbo"
                   data-testid={`input-summary-model-${endpointIndex}`}
                 />
+              </div>
+            </div>
+
+            {/* Advanced Title Configuration */}
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor={`title-prompt-${endpointIndex}`}>
+                  Title Prompt
+                  <span className="text-xs text-muted-foreground ml-2">(Optional: Use {"{convo}"} placeholder for conversation)</span>
+                </Label>
+                <Textarea
+                  id={`title-prompt-${endpointIndex}`}
+                  value={endpoint.titlePrompt || ""}
+                  onChange={(e) => updateEndpoint(endpointIndex, { titlePrompt: e.target.value })}
+                  placeholder="Create a concise title for this conversation: {convo}"
+                  rows={2}
+                  data-testid={`textarea-title-prompt-${endpointIndex}`}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor={`title-prompt-template-${endpointIndex}`}>
+                    Title Prompt Template
+                    <span className="text-xs text-muted-foreground ml-2">(Use {"{input}"} and {"{output}"})</span>
+                  </Label>
+                  <Textarea
+                    id={`title-prompt-template-${endpointIndex}`}
+                    value={endpoint.titlePromptTemplate || ""}
+                    onChange={(e) => updateEndpoint(endpointIndex, { titlePromptTemplate: e.target.value })}
+                    placeholder="User: {input}\nAssistant: {output}"
+                    rows={2}
+                    data-testid={`textarea-title-prompt-template-${endpointIndex}`}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`title-endpoint-${endpointIndex}`}>
+                    Title Endpoint
+                    <span className="text-xs text-muted-foreground ml-2">(Route titles to different endpoint)</span>
+                  </Label>
+                  <Input
+                    id={`title-endpoint-${endpointIndex}`}
+                    value={endpoint.titleEndpoint || ""}
+                    onChange={(e) => updateEndpoint(endpointIndex, { titleEndpoint: e.target.value })}
+                    placeholder="openAI, anthropic, etc."
+                    data-testid={`input-title-endpoint-${endpointIndex}`}
+                  />
+                </div>
               </div>
             </div>
 

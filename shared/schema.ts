@@ -513,6 +513,7 @@ export const configurationSchema = z.object({
   
   // Core Application Settings
   appTitle: z.string().optional(), // APP_TITLE
+  showBirthdayIcon: z.boolean().default(true), // SHOW_BIRTHDAY_ICON - Display birthday hat on Feb 11th
   customWelcome: z.string().optional(), // CUSTOM_WELCOME  
   customFooter: z.string().optional(), // CUSTOM_FOOTER
   helpAndFAQURL: z.string().url().optional(), // HELP_AND_FAQ_URL

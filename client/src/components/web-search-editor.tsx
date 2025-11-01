@@ -22,17 +22,32 @@ interface WebSearchConfig {
   jinaApiUrl?: string;
   cohereApiKey?: string;
   scraperTimeout?: number;
-  safeSearch?: boolean;
+  safeSearch?: number; // 0=OFF, 1=MODERATE, 2=STRICT
   firecrawlOptions?: {
     formats?: ("markdown" | "html" | "links" | "screenshot")[];
+    includeTags?: string[];
+    excludeTags?: string[];
+    headers?: Record<string, string>;
     onlyMainContent?: boolean;
     timeout?: number;
     waitFor?: number;
     blockAds?: boolean;
     removeBase64Images?: boolean;
+    parsePDF?: boolean;
     mobile?: boolean;
     maxAge?: number;
     proxy?: string;
+    skipTlsVerification?: boolean;
+    storeInCache?: boolean;
+    zeroDataRetention?: boolean;
+    location?: {
+      country?: string;
+      languages?: string[];
+    };
+    changeTrackingOptions?: {
+      enabled?: boolean;
+      threshold?: number;
+    };
   };
 }
 
@@ -50,7 +65,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
     scraperType: "none", 
     rerankerType: "none",
     scraperTimeout: 30000,
-    safeSearch: true,
+    safeSearch: 1, // 0=OFF, 1=MODERATE (default), 2=STRICT
     ...value
   });
 
@@ -71,7 +86,7 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
         scraperType: "none", 
         rerankerType: "none",
         scraperTimeout: 30000,
-        safeSearch: true,
+        safeSearch: 1,
         ...value
       });
       // Reset flag after React completes the state update
@@ -579,19 +594,24 @@ export function WebSearchEditor({ value, onChange, "data-testid": testId }: WebS
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label htmlFor="safe-search">Safe Search</Label>
-              <p className="text-xs text-muted-foreground">
-                Filter adult content from search results
-              </p>
-            </div>
-            <Switch
-              id="safe-search"
-              checked={config.safeSearch || false}
-              onCheckedChange={(checked) => updateConfig({ safeSearch: checked })}
-              data-testid="switch-safe-search"
-            />
+          <div>
+            <Label htmlFor="safe-search">Safe Search Level</Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Control filtering of adult content from search results
+            </p>
+            <Select
+              value={String(config.safeSearch ?? 1)}
+              onValueChange={(value) => updateConfig({ safeSearch: parseInt(value) })}
+            >
+              <SelectTrigger id="safe-search" data-testid="select-safe-search">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">OFF - No filtering</SelectItem>
+                <SelectItem value="1">MODERATE - Default filtering</SelectItem>
+                <SelectItem value="2">STRICT - Maximum filtering</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>

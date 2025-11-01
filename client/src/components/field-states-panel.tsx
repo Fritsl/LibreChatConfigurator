@@ -7,7 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault, clearAllOverrides } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
-import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, X } from "lucide-react";
+import { Search, RotateCcw, CheckCircle, Circle, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown, X, ExternalLink } from "lucide-react";
 import { SettingInput } from "@/components/setting-input";
 import { getCategoryColor } from "@/lib/category-colors";
 
@@ -17,6 +17,7 @@ type SortDirection = "asc" | "desc";
 interface FieldStatesPanelProps {
   configuration: Configuration;
   onConfigurationChange: (updates: Partial<Configuration>) => void;
+  onNavigateToField?: (fieldId: string) => void;
 }
 
 type FileTypeFilter = "all" | "env" | "yaml";
@@ -25,6 +26,7 @@ type StateFilter = "all" | "hide-not-set";
 export function FieldStatesPanel({
   configuration,
   onConfigurationChange,
+  onNavigateToField,
 }: FieldStatesPanelProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
@@ -503,6 +505,19 @@ export function FieldStatesPanel({
                         >
                           <RotateCcw className="h-4 w-4 mr-2" />
                           Reset to Default
+                        </Button>
+                      )}
+                      {onNavigateToField && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onNavigateToField(selectedFieldData.field.id)}
+                          className="ml-auto"
+                          title="View in configuration tab"
+                          data-testid={`navigate-to-tab-${selectedFieldData.field.id}`}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          View in Tab
                         </Button>
                       )}
                     </div>

@@ -4571,6 +4571,13 @@ paths:
                             configuration={configuration}
                             onConfigurationChange={onConfigurationChange}
                             searchQuery={searchQuery}
+                            onNavigateToFieldStates={() => {
+                              setActiveTab("field-states");
+                              toast({
+                                title: "Navigated to Field States",
+                                description: `Opening Field States Manager`,
+                              });
+                            }}
                           />
                         );
                       }
@@ -4592,6 +4599,13 @@ paths:
                               configuration={configuration}
                               onConfigurationChange={onConfigurationChange}
                               searchQuery={searchQuery}
+                              onNavigateToFieldStates={() => {
+                                setActiveTab("field-states");
+                                toast({
+                                  title: "Navigated to Field States",
+                                  description: `Opening Field States Manager`,
+                                });
+                              }}
                             />
                           </div>
                         );
@@ -4613,6 +4627,13 @@ paths:
                               configuration={configuration}
                               onConfigurationChange={onConfigurationChange}
                               searchQuery={searchQuery}
+                              onNavigateToFieldStates={() => {
+                                setActiveTab("field-states");
+                                toast({
+                                  title: "Navigated to Field States",
+                                  description: `Opening Field States Manager`,
+                                });
+                              }}
                             />
                           </div>
                         );
@@ -4656,6 +4677,13 @@ paths:
                             configuration={configuration}
                             onConfigurationChange={onConfigurationChange}
                             searchQuery={searchQuery}
+                            onNavigateToFieldStates={() => {
+                              setActiveTab("field-states");
+                              toast({
+                                title: "Navigated to Field States",
+                                description: `Opening Field States Manager`,
+                              });
+                            }}
                           />
                         );
                       }
@@ -4671,6 +4699,13 @@ paths:
                             configuration={configuration}
                             onConfigurationChange={onConfigurationChange}
                             searchQuery={searchQuery}
+                            onNavigateToFieldStates={() => {
+                              setActiveTab("field-states");
+                              toast({
+                                title: "Navigated to Field States",
+                                description: `Opening Field States Manager`,
+                              });
+                            }}
                           />
                         );
                       }
@@ -4762,6 +4797,7 @@ paths:
                         <FieldStatesPanel
                           configuration={configuration}
                           onConfigurationChange={onConfigurationChange}
+                          onNavigateToField={handleNavigateToField}
                         />
                       </div>
                     )}

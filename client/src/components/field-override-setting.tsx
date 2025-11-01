@@ -3,12 +3,15 @@ import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
 import { useLibreChatDefault, setFieldOverride, resetToDefault } from "@/../../shared/config/field-overrides";
 import type { Configuration } from "@shared/schema";
 import { deepMerge } from "@/lib/merge-utils";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 
 interface FieldOverrideSettingProps {
   fieldId: string;
   configuration: Configuration;
   onConfigurationChange: (updates: Partial<Configuration>) => void;
   searchQuery?: string;
+  onNavigateToFieldStates?: () => void;
 }
 
 export function FieldOverrideSetting({
@@ -16,6 +19,7 @@ export function FieldOverrideSetting({
   configuration,
   onConfigurationChange,
   searchQuery = "",
+  onNavigateToFieldStates,
 }: FieldOverrideSettingProps) {
   // Try to find field by id first, then by yamlPath
   let field = FIELD_REGISTRY.find(f => f.id === fieldId);
@@ -92,12 +96,12 @@ export function FieldOverrideSetting({
   };
 
   // Determine if field should be highlighted based on search query
-  const shouldHighlight = searchQuery && (
+  const shouldHighlight = !!(searchQuery && (
     actualFieldId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     field.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     field.envKey?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     field.yamlPath?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ));
 
   // Map field descriptor type to SettingInput type
   const getInputType = (): any => {
@@ -124,19 +128,37 @@ export function FieldOverrideSetting({
   } : undefined;
 
   return (
-    <SettingInput
-      label={actualFieldId}
-      description={field.description}
-      type={getInputType()}
-      value={currentValue}
-      onChange={handleValueChange}
-      options={field.enumValues as any}
-      min={field.min}
-      max={field.max}
-      fieldName={actualFieldId}
-      data-testid={`setting-${actualFieldId}`}
-      technical={technical}
-      highlighted={shouldHighlight}
-    />
+    <div className="space-y-2" data-field-id={actualFieldId}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1">
+          <SettingInput
+            label={actualFieldId}
+            description={field.description}
+            type={getInputType()}
+            value={currentValue}
+            onChange={handleValueChange}
+            options={field.enumValues as any}
+            min={field.min}
+            max={field.max}
+            fieldName={actualFieldId}
+            data-testid={`setting-${actualFieldId}`}
+            technical={technical}
+            highlighted={shouldHighlight}
+          />
+        </div>
+        {onNavigateToFieldStates && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onNavigateToFieldStates}
+            className="mt-1 flex-shrink-0"
+            title="View in Field States Manager"
+            data-testid={`navigate-to-field-states-${actualFieldId}`}
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }

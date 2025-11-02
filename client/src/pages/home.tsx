@@ -801,16 +801,47 @@ export default function Home() {
     input.click();
   };
 
-  const handleApplyComparison = () => {
+  const handleApplyComparison = (selectedFieldIds: string[]) => {
     if (!comparisonData) return;
     
     try {
-      console.log(`📥 [${comparisonData.type.toUpperCase()} IMPORT] Applying changes from comparison`);
+      console.log(`📥 [${comparisonData.type.toUpperCase()} IMPORT] Applying ${selectedFieldIds.length} selected changes from comparison`);
+      
+      // Filter proposed changes to only include selected fields
+      const filteredProposedChanges: Partial<Configuration> = {};
+      
+      for (const fieldId of selectedFieldIds) {
+        const field = FIELD_REGISTRY.find(f => f.id === fieldId);
+        if (!field) continue;
+        
+        const path = field.yamlPath || field.id;
+        const pathParts = path.split('.');
+        
+        // Get value from proposedChanges
+        let value: any = comparisonData.proposedChanges;
+        for (const part of pathParts) {
+          if (value === undefined) break;
+          value = value[part];
+        }
+        
+        // Set value in filteredProposedChanges
+        if (value !== undefined) {
+          let current: any = filteredProposedChanges;
+          for (let i = 0; i < pathParts.length - 1; i++) {
+            const part = pathParts[i];
+            if (!current[part]) current[part] = {};
+            current = current[part];
+          }
+          current[pathParts[pathParts.length - 1]] = value;
+        }
+      }
+      
+      console.log(`   - Filtered to ${selectedFieldIds.length} selected fields`);
       
       // Use the same import logic as the regular import handlers
       if (comparisonData.type === 'yaml') {
-        const analysis = analyzeConfigurationChanges(configuration, comparisonData.proposedChanges);
-        const configWithOverrides = markImportedFieldsAsExplicit(configuration, comparisonData.proposedChanges);
+        const analysis = analyzeConfigurationChanges(configuration, filteredProposedChanges);
+        const configWithOverrides = markImportedFieldsAsExplicit(configuration, filteredProposedChanges);
         updateConfiguration(configWithOverrides, true);
         
         setImportSummaryData({
@@ -820,8 +851,8 @@ export default function Home() {
         });
         setShowImportSummary(true);
       } else {
-        const analysis = analyzeConfigurationChanges(configuration, comparisonData.proposedChanges);
-        const configWithOverrides = markImportedFieldsAsExplicit(configuration, comparisonData.proposedChanges);
+        const analysis = analyzeConfigurationChanges(configuration, filteredProposedChanges);
+        const configWithOverrides = markImportedFieldsAsExplicit(configuration, filteredProposedChanges);
         updateConfiguration(configWithOverrides, true);
         
         setImportSummaryData({
@@ -834,7 +865,7 @@ export default function Home() {
       
       toast({
         title: "Changes Applied",
-        description: `Configuration updated from ${comparisonData.fileName}`,
+        description: `${selectedFieldIds.length} selected ${selectedFieldIds.length === 1 ? 'field' : 'fields'} imported from ${comparisonData.fileName}`,
       });
     } catch (error) {
       console.error("Apply comparison error:", error);

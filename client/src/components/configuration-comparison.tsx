@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Search, X, CheckCircle, AlertCircle, MinusCircle, ChevronDown, ChevronRight } from "lucide-react";
 import type { Configuration } from "@shared/schema";
 import { FIELD_REGISTRY } from "@/../../shared/config/field-registry";
@@ -29,7 +30,7 @@ interface ConfigurationComparisonProps {
   fileName: string;
   currentConfig: Configuration;
   proposedChanges: Partial<Configuration>;
-  onApply: () => void;
+  onApply: (selectedFieldIds: string[]) => void;
 }
 
 export function ConfigurationComparison({
@@ -44,6 +45,7 @@ export function ConfigurationComparison({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<'all' | 'changes-only'>('changes-only');
   const [expandedFields, setExpandedFields] = useState<Set<string>>(new Set());
+  const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set());
 
   // Compute field changes
   const fieldChanges = useMemo(() => {
@@ -133,6 +135,16 @@ export function ConfigurationComparison({
     return { added, modified, unchanged, total: fieldChanges.length };
   }, [fieldChanges]);
 
+  // Initialize selectedFields with all changed fields when dialog opens
+  useEffect(() => {
+    if (open) {
+      const changedFields = fieldChanges
+        .filter(c => c.changeType === 'added' || c.changeType === 'modified')
+        .map(c => c.fieldName);
+      setSelectedFields(new Set(changedFields));
+    }
+  }, [open, fieldChanges]);
+
   const toggleFieldExpanded = (fieldKey: string) => {
     const newExpanded = new Set(expandedFields);
     if (newExpanded.has(fieldKey)) {
@@ -141,6 +153,27 @@ export function ConfigurationComparison({
       newExpanded.add(fieldKey);
     }
     setExpandedFields(newExpanded);
+  };
+
+  const toggleFieldSelected = (fieldName: string) => {
+    const newSelected = new Set(selectedFields);
+    if (newSelected.has(fieldName)) {
+      newSelected.delete(fieldName);
+    } else {
+      newSelected.add(fieldName);
+    }
+    setSelectedFields(newSelected);
+  };
+
+  const selectAllChanges = () => {
+    const changedFields = fieldChanges
+      .filter(c => c.changeType === 'added' || c.changeType === 'modified')
+      .map(c => c.fieldName);
+    setSelectedFields(new Set(changedFields));
+  };
+
+  const deselectAll = () => {
+    setSelectedFields(new Set());
   };
 
   const getChangeIcon = (changeType: ChangeType) => {
@@ -227,6 +260,22 @@ export function ConfigurationComparison({
             )}
           </div>
           <Button
+            variant="outline"
+            size="sm"
+            onClick={selectAllChanges}
+            data-testid="button-select-all"
+          >
+            Select All
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={deselectAll}
+            data-testid="button-deselect-all"
+          >
+            Deselect All
+          </Button>
+          <Button
             variant={filterType === 'all' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilterType('all')}
@@ -259,38 +308,54 @@ export function ConfigurationComparison({
                 const isExpanded = expandedFields.has(change.fieldKey);
                 const categoryColor = getCategoryColor(change.category);
 
+                const isChanged = change.changeType === 'added' || change.changeType === 'modified';
+                const isSelected = selectedFields.has(change.fieldName);
+
                 return (
                   <div
                     key={change.fieldKey}
                     className="border rounded-lg p-3 hover:bg-muted/50 transition-colors"
                   >
-                    <div
-                      className="flex items-start gap-3 cursor-pointer"
-                      onClick={() => toggleFieldExpanded(change.fieldKey)}
-                    >
-                      <div className="pt-0.5">
-                        {isExpanded ? (
-                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {getChangeIcon(change.changeType)}
-                          <span className="font-medium">{change.fieldName}</span>
-                          {getChangeBadge(change.changeType)}
-                          <Badge
-                            className={categoryColor}
-                            variant="outline"
-                          >
-                            {change.category}
-                          </Badge>
+                    <div className="flex items-start gap-3">
+                      {/* Checkbox for changed fields only */}
+                      {isChanged && (
+                        <div className="pt-0.5">
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={() => toggleFieldSelected(change.fieldName)}
+                            data-testid={`checkbox-field-${change.fieldName}`}
+                          />
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {change.yamlPath && <span className="font-mono">YAML: {change.yamlPath}</span>}
-                          {change.yamlPath && change.envKey && <span className="mx-2">•</span>}
-                          {change.envKey && <span className="font-mono">ENV: {change.envKey}</span>}
+                      )}
+                      
+                      <div
+                        className="flex items-start gap-3 flex-1 cursor-pointer"
+                        onClick={() => toggleFieldExpanded(change.fieldKey)}
+                      >
+                        <div className="pt-0.5">
+                          {isExpanded ? (
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {getChangeIcon(change.changeType)}
+                            <span className="font-medium">{change.fieldName}</span>
+                            {getChangeBadge(change.changeType)}
+                            <Badge
+                              className={categoryColor}
+                              variant="outline"
+                            >
+                              {change.category}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {change.yamlPath && <span className="font-mono">YAML: {change.yamlPath}</span>}
+                            {change.yamlPath && change.envKey && <span className="mx-2">•</span>}
+                            {change.envKey && <span className="font-mono">ENV: {change.envKey}</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -320,23 +385,28 @@ export function ConfigurationComparison({
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            data-testid="button-cancel-comparison"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              onApply();
-              onOpenChange(false);
-            }}
-            disabled={stats.added === 0 && stats.modified === 0}
-            data-testid="button-apply-changes"
-          >
-            Import {stats.added + stats.modified > 0 && `${stats.added + stats.modified} Differences`}
-          </Button>
+          <div className="text-sm text-muted-foreground">
+            {selectedFields.size} of {stats.added + stats.modified} changes selected
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              data-testid="button-cancel-comparison"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                onApply(Array.from(selectedFields));
+                onOpenChange(false);
+              }}
+              disabled={selectedFields.size === 0}
+              data-testid="button-apply-changes"
+            >
+              Import {selectedFields.size > 0 && `${selectedFields.size} Selected ${selectedFields.size === 1 ? 'Field' : 'Fields'}`}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

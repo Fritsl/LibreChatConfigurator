@@ -32,7 +32,14 @@ export default function Home() {
   const [showMergeResults, setShowMergeResults] = useState(false);
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
   const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
-  const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
+  const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ 
+    type: 'yaml' | 'env'; 
+    fileName: string;
+    unsupportedFields: string[];
+    totalFields: number;
+    validFields: number;
+    allData: any; // The full parsed data (envVars or yamlData)
+  } | null>(null);
   const [showYamlOnlyDialog, setShowYamlOnlyDialog] = useState(false);
   const [yamlOnlyFieldsData, setYamlOnlyFieldsData] = useState<Array<{ envKey: string; yamlPath: string; value: string }> | null>(null);
   const [showPartialImportChoice, setShowPartialImportChoice] = useState(false);
@@ -469,14 +476,31 @@ export default function Home() {
               console.log("   2. OR remove unsupported fields from your YAML file");
               console.log("   3. Then retry the import\n");
               
-              // Show permanent dialog with unsupported fields
+              // Try mapping to see how many fields are actually valid
+              const mappedConfig = registryMapYamlToConfig(yamlData);
+              const mappedFieldCount = Object.keys(mappedConfig).reduce((count, key) => {
+                const value = mappedConfig[key as keyof typeof mappedConfig];
+                if (value && typeof value === 'object' && !Array.isArray(value)) {
+                  return count + Object.keys(value).length;
+                }
+                return count + 1;
+              }, 0);
+              
+              const unsupportedCount = validation.unmappedFields.length;
+              const totalFields = mappedFieldCount + unsupportedCount;
+              
+              // Show dialog with option for partial import
               setUnsupportedFieldsData({
                 type: 'yaml',
-                fields: validation.unmappedFields
+                fileName: file.name,
+                unsupportedFields: validation.unmappedFields,
+                totalFields,
+                validFields: mappedFieldCount,
+                allData: yamlData
               });
               setShowUnsupportedFieldsDialog(true);
               
-              return; // BLOCK IMPORT
+              return; // Wait for user choice
             }
             
             const configUpdates = mapYamlToConfiguration(yamlData);
@@ -575,14 +599,23 @@ export default function Home() {
                 console.log("   2. OR remove unsupported variables from your .env file");
                 console.log("   3. Then retry the import\n");
                 
-                // Show permanent dialog with unsupported fields
+                // Calculate valid vs unsupported fields
+                const totalFields = Object.keys(envVars).length;
+                const unsupportedCount = validation.unmappedVars.length;
+                const validCount = totalFields - unsupportedCount;
+                
+                // Show dialog with option for partial import
                 setUnsupportedFieldsData({
                   type: 'env',
-                  fields: validation.unmappedVars
+                  fileName: file.name,
+                  unsupportedFields: validation.unmappedVars,
+                  totalFields,
+                  validFields: validCount,
+                  allData: envVars
                 });
                 setShowUnsupportedFieldsDialog(true);
                 
-                return; // BLOCK IMPORT
+                return; // Wait for user choice
               }
             }
             
@@ -741,11 +774,28 @@ export default function Home() {
             // Validate YAML fields first
             const validation = registryValidateYamlFields(yamlData);
             if (!validation.valid && validation.unmappedFields && validation.unmappedFields.length > 0) {
-              console.error("❌ [YAML COMPARE] Unmapped YAML fields detected:", validation.unmappedFields);
+              console.log("⚠️ [YAML COMPARE] Unmapped YAML fields detected:", validation.unmappedFields);
+              
+              // Try mapping to see how many fields are actually valid
+              const mappedConfig = registryMapYamlToConfig(yamlData);
+              const mappedFieldCount = Object.keys(mappedConfig).reduce((count, key) => {
+                const value = mappedConfig[key as keyof typeof mappedConfig];
+                if (value && typeof value === 'object' && !Array.isArray(value)) {
+                  return count + Object.keys(value).length;
+                }
+                return count + 1;
+              }, 0);
+              
+              const unsupportedCount = validation.unmappedFields.length;
+              const totalFields = mappedFieldCount + unsupportedCount;
               
               setUnsupportedFieldsData({
                 type: 'yaml',
-                fields: validation.unmappedFields
+                fileName: file.name,
+                unsupportedFields: validation.unmappedFields,
+                totalFields,
+                validFields: mappedFieldCount,
+                allData: yamlData
               });
               setShowUnsupportedFieldsDialog(true);
               
@@ -823,13 +873,21 @@ export default function Home() {
                 return;
               }
               
-              // Handle unmapped variables - still block these
+              // Handle unmapped variables - offer partial import
               if (validation.unmappedVars && validation.unmappedVars.length > 0) {
-                console.error("❌ [ENV COMPARE] Unmapped environment variables detected:", validation.unmappedVars);
+                console.log("⚠️ [ENV COMPARE] Unmapped environment variables detected:", validation.unmappedVars);
+                
+                const totalFields = Object.keys(envVars).length;
+                const unsupportedCount = validation.unmappedVars.length;
+                const validCount = totalFields - unsupportedCount;
                 
                 setUnsupportedFieldsData({
                   type: 'env',
-                  fields: validation.unmappedVars
+                  fileName: file.name,
+                  unsupportedFields: validation.unmappedVars,
+                  totalFields,
+                  validFields: validCount,
+                  allData: envVars
                 });
                 setShowUnsupportedFieldsDialog(true);
                 
@@ -2049,86 +2107,142 @@ export default function Home() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Unsupported Fields Dialog */}
-      <Dialog open={showUnsupportedFieldsDialog} onOpenChange={setShowUnsupportedFieldsDialog}>
-        <DialogContent className="max-w-3xl" data-testid="dialog-unsupported-fields">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              Import Blocked: Unsupported Fields Detected
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4" data-testid="unsupported-fields-warning">
-              <p className="text-sm text-destructive" data-testid="text-unsupported-count">
-                Your {unsupportedFieldsData?.type === 'yaml' ? 'YAML' : '.env'} file contains <span className="font-semibold">{unsupportedFieldsData?.fields.length || 0}</span> field{(unsupportedFieldsData?.fields.length || 0) > 1 ? 's' : ''} not yet supported by this tool.
-              </p>
-              <p className="text-sm text-destructive/80 mt-2">
-                The import has been rejected to prevent data loss. These fields need to be added to the tool before your file can be imported.
-              </p>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-sm" data-testid="text-unsupported-fields-title">
-                  Unsupported {unsupportedFieldsData?.type === 'yaml' ? 'YAML Fields' : 'Environment Variables'} ({unsupportedFieldsData?.fields.length || 0}):
-                </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const fieldsList = unsupportedFieldsData?.fields.join('\n') || '';
-                    navigator.clipboard.writeText(fieldsList);
-                    toast({
-                      title: "Copied to Clipboard",
-                      description: `${unsupportedFieldsData?.fields.length} field names copied.`,
-                    });
-                  }}
-                  data-testid="button-copy-unsupported-fields"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Copy List
-                </Button>
-              </div>
-              
-              <div className="bg-muted rounded-lg p-4 max-h-96 overflow-y-auto" data-testid="list-unsupported-fields">
-                <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap select-all">
-                  {unsupportedFieldsData?.fields.map((field, index) => `${index + 1}. ${field}`).join('\n')}
-                </pre>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="space-y-2 text-sm">
-                  <p className="font-medium text-blue-800 dark:text-blue-200">
-                    Next Steps
+      {/* Unsupported Fields Dialog - Now with Partial Import Option */}
+      <AlertDialog open={showUnsupportedFieldsDialog} onOpenChange={setShowUnsupportedFieldsDialog}>
+        <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" data-testid="dialog-unsupported-fields">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              Unsupported Fields Detected in {unsupportedFieldsData?.fileName}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200 font-semibold" data-testid="text-unsupported-summary">
+                  Your {unsupportedFieldsData?.type === 'yaml' ? 'YAML' : '.env'} file contains {unsupportedFieldsData?.unsupportedFields.length || 0} field{(unsupportedFieldsData?.unsupportedFields.length || 0) !== 1 ? 's' : ''} not yet supported by this tool
+                </p>
+                {unsupportedFieldsData && unsupportedFieldsData.validFields > 0 ? (
+                  <div className="mt-3 space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-green-700 dark:text-green-300 font-medium">
+                        {unsupportedFieldsData.validFields} valid field{unsupportedFieldsData.validFields !== 1 ? 's' : ''} can be imported
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                      <span className="text-yellow-700 dark:text-yellow-300 font-medium">
+                        {unsupportedFieldsData.unsupportedFields.length} unsupported field{unsupportedFieldsData.unsupportedFields.length !== 1 ? 's' : ''} will be skipped
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-2">
+                    All fields in this file are unsupported. Nothing can be imported.
                   </p>
-                  <ol className="list-decimal list-inside space-y-1 text-blue-700 dark:text-blue-300 ml-2">
-                    <li>Click "Copy List" to copy all unsupported field names</li>
-                    <li>Report these fields so they can be added to the tool</li>
-                    <li className="text-xs mt-1 ml-6 text-blue-600 dark:text-blue-400">
-                      Alternatively, remove these fields from your {unsupportedFieldsData?.type === 'yaml' ? 'YAML' : '.env'} file and retry the import
-                    </li>
-                  </ol>
+                )}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm" data-testid="text-unsupported-fields-title">
+                    Unsupported {unsupportedFieldsData?.type === 'yaml' ? 'YAML Fields' : 'Environment Variables'} ({unsupportedFieldsData?.unsupportedFields.length || 0}):
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const fieldsList = unsupportedFieldsData?.unsupportedFields.join('\n') || '';
+                      navigator.clipboard.writeText(fieldsList);
+                      toast({
+                        title: "Copied to Clipboard",
+                        description: `${unsupportedFieldsData?.unsupportedFields.length} field names copied.`,
+                      });
+                    }}
+                    data-testid="button-copy-unsupported-fields"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Copy List
+                  </Button>
+                </div>
+                
+                <div className="bg-muted rounded-lg p-4 max-h-48 overflow-y-auto" data-testid="list-unsupported-fields">
+                  <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap select-all">
+                    {unsupportedFieldsData?.unsupportedFields.map((field, index) => `${index + 1}. ${field}`).join('\n')}
+                  </pre>
                 </div>
               </div>
-            </div>
 
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowUnsupportedFieldsDialog(false)}
-                data-testid="button-close-unsupported-dialog"
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>What would you like to do?</strong>
+                </p>
+                {unsupportedFieldsData && unsupportedFieldsData.validFields > 0 ? (
+                  <ul className="text-xs text-blue-700 dark:text-blue-300 mt-2 space-y-1 ml-4 list-disc">
+                    <li><strong>Import valid fields only:</strong> Import the {unsupportedFieldsData.validFields} supported field{unsupportedFieldsData.validFields !== 1 ? 's' : ''} and skip unsupported ones</li>
+                    <li><strong>Cancel:</strong> Don't import anything (report unsupported fields or remove them first)</li>
+                  </ul>
+                ) : (
+                  <ul className="text-xs text-blue-700 dark:text-blue-300 mt-2 space-y-1 ml-4 list-disc">
+                    <li>Report these fields so they can be added to the tool</li>
+                    <li>OR remove unsupported fields from your file and retry</li>
+                  </ul>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-unsupported-import">
+              Cancel
+            </AlertDialogCancel>
+            {unsupportedFieldsData && unsupportedFieldsData.validFields > 0 && (
+              <AlertDialogAction
+                onClick={() => {
+                  // Handle partial import of valid fields
+                  if (!unsupportedFieldsData) return;
+                  
+                  const unsupportedSet = new Set(unsupportedFieldsData.unsupportedFields);
+                  
+                  if (unsupportedFieldsData.type === 'env') {
+                    // Filter out unsupported env vars
+                    const validEnvVars: Record<string, string> = {};
+                    Object.entries(unsupportedFieldsData.allData as Record<string, string>).forEach(([key, value]) => {
+                      if (!unsupportedSet.has(key)) {
+                        validEnvVars[key] = value;
+                      }
+                    });
+                    
+                    // Import valid fields
+                    const configUpdates = registryMapEnvToConfig(validEnvVars);
+                    updateConfiguration(configUpdates, false);
+                    
+                    toast({
+                      title: "Partial Import Complete",
+                      description: `Imported ${unsupportedFieldsData.validFields} valid fields. ${unsupportedFieldsData.unsupportedFields.length} unsupported fields were skipped.`,
+                    });
+                  } else {
+                    // For YAML, we need to filter the data structure (complex)
+                    // For now, import what we can
+                    const configUpdates = registryMapYamlToConfig(unsupportedFieldsData.allData);
+                    updateConfiguration(configUpdates, false);
+                    
+                    toast({
+                      title: "Partial Import Complete",
+                      description: `Imported valid YAML fields. ${unsupportedFieldsData.unsupportedFields.length} unsupported paths were skipped.`,
+                    });
+                  }
+                  
+                  setShowUnsupportedFieldsDialog(false);
+                }}
+                className="bg-green-600 hover:bg-green-700"
+                data-testid="button-confirm-partial-unsupported-import"
               >
-                Close
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Import {unsupportedFieldsData?.validFields || 0} Valid Field{(unsupportedFieldsData?.validFields || 0) !== 1 ? 's' : ''}
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Import Summary Dialog */}
       <Dialog open={showImportSummary} onOpenChange={setShowImportSummary}>

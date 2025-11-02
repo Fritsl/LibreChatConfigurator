@@ -9,7 +9,7 @@ import * as e2bGenerators from "./e2b-generators";
 import crypto from "crypto";
 import { TOOL_VERSION, createExportMetadata, getVersionInfo } from "@shared/version";
 import { getConfigurationDefaults, deepMerge } from "@shared/schema-defaults";
-import { generateEnvFile, generateYamlFile, getCachedSecrets } from "@shared/config/registry-helpers";
+import { generateEnvFile, generateYamlFile, getCachedSecrets, canonicalizeConfiguration } from "@shared/config/registry-helpers";
 
 // ⚠️ REMINDER: When adding new API endpoints or changing route functionality,
 // update version number in shared/version.ts!
@@ -2069,12 +2069,13 @@ function generateProfileFile(config: any): string {
   const metadata = createExportMetadata(configName);
   const versionInfo = getVersionInfo();
   
+  // CRITICAL ROOT CAUSE FIX: Canonicalize FIRST to remove duplicate envKey fields
+  // Package generation bypasses storage pipeline, so we must dedupe here
+  const canonicalizedConfig = canonicalizeConfiguration(config);
+  
   // Strip empty/null/undefined values to ensure round-trip parity
   // Only export fields that have actual meaningful values
-  const cleanedConfig = stripEmptyValues(config) || {};
-  
-  // NOTE: Deduplication now handled by canonicalizeConfiguration in storage pipeline
-  // No need to dedupe here since storage.saveConfigurationToHistory already canonicalizes
+  const cleanedConfig = stripEmptyValues(canonicalizedConfig) || {};
   
   // CRITICAL: Ensure configurationName is ALWAYS present in the configuration object
   // The .bat file requires it at $json.configuration.configurationName

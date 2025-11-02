@@ -30,6 +30,7 @@ interface ConfigurationComparisonProps {
   fileName: string;
   currentConfig: Configuration;
   proposedChanges: Partial<Configuration>;
+  skippedYamlFields?: Array<{ envKey: string; yamlPath: string }>;
   onApply: (selectedFieldIds: string[]) => void;
 }
 
@@ -40,6 +41,7 @@ export function ConfigurationComparison({
   fileName,
   currentConfig,
   proposedChanges,
+  skippedYamlFields,
   onApply
 }: ConfigurationComparisonProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -238,6 +240,36 @@ export function ConfigurationComparison({
             <div className="text-xs text-muted-foreground">Identical</div>
           </div>
         </div>
+
+        {/* Skipped YAML-Only Fields Warning */}
+        {skippedYamlFields && skippedYamlFields.length > 0 && (
+          <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <h4 className="font-semibold text-sm text-yellow-800 dark:text-yellow-200 mb-2 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              ⏭️ {skippedYamlFields.length} YAML-Only Field{skippedYamlFields.length !== 1 ? 's' : ''} Excluded from Comparison
+            </h4>
+            <p className="text-xs text-yellow-700 dark:text-yellow-300 mb-3">
+              These fields can only work in librechat.yaml (LibreChat doesn't support them in .env). They were excluded from this comparison and won't be imported.
+            </p>
+            <details className="text-xs">
+              <summary className="cursor-pointer text-yellow-800 dark:text-yellow-200 font-medium hover:underline">
+                View {skippedYamlFields.length} skipped field{skippedYamlFields.length !== 1 ? 's' : ''}
+              </summary>
+              <div className="mt-2 space-y-1 max-h-32 overflow-y-auto bg-yellow-100/50 dark:bg-yellow-900/30 rounded p-2">
+                {skippedYamlFields.map(({ envKey, yamlPath }) => (
+                  <div key={envKey} className="font-mono text-xs border-l-2 border-yellow-500 pl-2 py-0.5">
+                    <span className="text-yellow-700 dark:text-yellow-400">{envKey}</span>
+                    <span className="text-muted-foreground mx-1">→</span>
+                    <span className="text-primary">{yamlPath}</span>
+                  </div>
+                ))}
+              </div>
+            </details>
+            <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-2">
+              <em>Note:</em> API keys and other sensitive settings CAN be in .env safely - this tool routes them there for security while LibreChat is in beta.
+            </p>
+          </div>
+        )}
 
         {/* Search and Filter Controls */}
         <div className="flex items-center gap-2">

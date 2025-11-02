@@ -58,6 +58,7 @@ export default function Home() {
     type: 'yaml' | 'env';
     fileName: string;
     proposedChanges: Partial<Configuration>;
+    skippedYamlFields?: Array<{ envKey: string; yamlPath: string }>;
   } | null>(null);
   const { configuration, updateConfiguration, saveProfile, generatePackage, loadDemoConfiguration, verifyConfiguration } = useConfiguration();
   const { isBackendAvailable, isDemo } = useBackendAvailability();
@@ -739,12 +740,12 @@ export default function Home() {
             
             // Validate YAML fields first
             const validation = registryValidateYamlFields(yamlData);
-            if (!validation.valid && validation.unmappedPaths && validation.unmappedPaths.length > 0) {
-              console.error("❌ [YAML COMPARE] Unmapped YAML paths detected:", validation.unmappedPaths);
+            if (!validation.valid && validation.unmappedFields && validation.unmappedFields.length > 0) {
+              console.error("❌ [YAML COMPARE] Unmapped YAML fields detected:", validation.unmappedFields);
               
               setUnsupportedFieldsData({
                 type: 'yaml',
-                fields: validation.unmappedPaths
+                fields: validation.unmappedFields
               });
               setShowUnsupportedFieldsDialog(true);
               
@@ -794,22 +795,35 @@ export default function Home() {
             // Validate env vars first
             const validation = registryValidateEnvVars(envVars);
             if (!validation.valid) {
-              // Handle YAML-only field violations
+              // Handle YAML-only field violations - allow partial comparison
               if (validation.yamlOnlyVars && validation.yamlOnlyVars.length > 0) {
-                console.error("❌ [ENV COMPARE] YAML-only fields detected in .env file:", validation.yamlOnlyVars);
+                console.log("⚠️ [ENV COMPARE] YAML-only fields detected - will be excluded from comparison:", validation.yamlOnlyVars);
                 
-                const yamlOnlyWithValues = validation.yamlOnlyVars.map(({ envKey, yamlPath }) => ({
-                  envKey,
-                  yamlPath,
-                  value: envVars[envKey] || ''
-                }));
-                setYamlOnlyFieldsData(yamlOnlyWithValues);
-                setShowYamlOnlyDialog(true);
+                // Filter out YAML-only fields from envVars for comparison
+                const yamlOnlyKeys = new Set(validation.yamlOnlyVars.map(v => v.envKey));
+                const filteredEnvVars: Record<string, string> = {};
+                Object.entries(envVars).forEach(([key, value]) => {
+                  if (!yamlOnlyKeys.has(key)) {
+                    filteredEnvVars[key] = value;
+                  }
+                });
+                
+                console.log(`✅ [ENV COMPARE] Proceeding with ${Object.keys(filteredEnvVars).length} valid fields (${validation.yamlOnlyVars.length} YAML-only fields excluded)`);
+                
+                // Continue with comparison using filtered env vars
+                const configUpdates = registryMapEnvToConfig(filteredEnvVars);
+                setComparisonData({
+                  type: 'env',
+                  fileName: file.name,
+                  proposedChanges: configUpdates,
+                  skippedYamlFields: validation.yamlOnlyVars // Pass skipped fields to comparison UI
+                });
+                setShowComparisonDialog(true);
                 
                 return;
               }
               
-              // Handle unmapped variables
+              // Handle unmapped variables - still block these
               if (validation.unmappedVars && validation.unmappedVars.length > 0) {
                 console.error("❌ [ENV COMPARE] Unmapped environment variables detected:", validation.unmappedVars);
                 
@@ -2259,6 +2273,7 @@ export default function Home() {
           fileName={comparisonData.fileName}
           currentConfig={configuration}
           proposedChanges={comparisonData.proposedChanges}
+          skippedYamlFields={comparisonData.skippedYamlFields}
           onApply={handleApplyComparison}
         />
       )}

@@ -1095,8 +1095,20 @@ if not exist "LibreChatConfigSettings.json" (
 )
 
 REM Extract and sanitize project name from JSON configuration (matches Linux: replace non-alphanum, collapse hyphens, lowercase)
-powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+powershell -Command "try { $ErrorActionPreference='Stop'; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $json = Get-Content 'LibreChatConfigSettings.json' -Raw -Encoding UTF8 | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' } } catch { Write-Error $_.Exception.Message; '' }" > temp_project_name.txt 2>&1
 set /p PROJECT_NAME=<temp_project_name.txt
+
+REM Check for PowerShell errors
+findstr /C:"Exception" temp_project_name.txt >nul
+if not errorlevel 1 (
+    echo [ERROR] Failed to parse LibreChatConfigSettings.json
+    echo PowerShell error:
+    type temp_project_name.txt
+    del temp_project_name.txt
+    pause
+    exit /b 1
+)
+
 del temp_project_name.txt
 
 if "%PROJECT_NAME%"=="" (
@@ -1321,8 +1333,20 @@ if not exist "LibreChatConfigSettings.json" (
 )
 
 REM Extract and sanitize project name from JSON configuration
-powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+powershell -Command "try { $ErrorActionPreference='Stop'; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $json = Get-Content 'LibreChatConfigSettings.json' -Raw -Encoding UTF8 | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' } } catch { Write-Error $_.Exception.Message; '' }" > temp_project_name.txt 2>&1
 set /p PROJECT_NAME=<temp_project_name.txt
+
+REM Check for PowerShell errors
+findstr /C:"Exception" temp_project_name.txt >nul
+if not errorlevel 1 (
+    echo [ERROR] Failed to parse LibreChatConfigSettings.json
+    echo PowerShell error:
+    type temp_project_name.txt
+    del temp_project_name.txt
+    pause
+    exit /b 1
+)
+
 del temp_project_name.txt
 
 if "%PROJECT_NAME%"=="" (
@@ -1468,8 +1492,20 @@ if not exist "LibreChatConfigSettings.json" (
 )
 
 REM Extract and sanitize project name from JSON configuration
-powershell -Command "$json = Get-Content 'LibreChatConfigSettings.json' | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' }" > temp_project_name.txt
+powershell -Command "try { $ErrorActionPreference='Stop'; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $json = Get-Content 'LibreChatConfigSettings.json' -Raw -Encoding UTF8 | ConvertFrom-Json; if ($json.configuration.configurationName) { $name = $json.configuration.configurationName -replace '[^a-zA-Z0-9-]', '-' -replace '--+', '-'; $name.ToLower() } else { '' } } catch { Write-Error $_.Exception.Message; '' }" > temp_project_name.txt 2>&1
 set /p PROJECT_NAME=<temp_project_name.txt
+
+REM Check for PowerShell errors
+findstr /C:"Exception" temp_project_name.txt >nul
+if not errorlevel 1 (
+    echo [ERROR] Failed to parse LibreChatConfigSettings.json
+    echo PowerShell error:
+    type temp_project_name.txt
+    del temp_project_name.txt
+    pause
+    exit /b 1
+)
+
 del temp_project_name.txt
 
 if "%PROJECT_NAME%"=="" (

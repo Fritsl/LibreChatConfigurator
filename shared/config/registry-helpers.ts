@@ -473,28 +473,20 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
   
-  // Check if value actually differs from default
-  const defaultEnvValue = formatEnvValue(field.defaultValue, field);
-  const valueMatchesDefault = envValue === defaultEnvValue;
-  
-  // If field should use LibreChat default AND value matches default, comment it out
-  // But if value DIFFERS from default, export it uncommented (user changed it)
-  if (shouldUseDefault && valueMatchesDefault) {
-    if (envValue !== '') {
-      return bugWarning + `# ${field.envKey}=${envValue}  # Using LibreChat default`;
-    } else {
-      const defaultComment = getDefaultComment(field);
-      return bugWarning + `# ${field.envKey}=${defaultComment}  # Using LibreChat default`;
-    }
-  }
-  
-  // If value exists, output uncommented
+  // Export strategy: Output uncommented if field has ANY value
+  // This ensures old saved configs with broken fieldOverrides still export properly
+  // The fieldOverrides system is for UI state only, not export decisions
   if (envValue !== '') {
     return bugWarning + `${field.envKey}=${envValue}`;
   }
   
-  // If no value, output commented with default
+  // If no value and shouldUseDefault, add helpful comment
   const defaultComment = getDefaultComment(field);
+  if (shouldUseDefault) {
+    return bugWarning + `# ${field.envKey}=${defaultComment}  # Using LibreChat default`;
+  }
+  
+  // If no value, output commented with default
   return bugWarning + `# ${field.envKey}=${defaultComment}`;
 }
 

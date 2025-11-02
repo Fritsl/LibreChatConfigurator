@@ -473,8 +473,13 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
   
-  // If field should use LibreChat default, comment it out
-  if (shouldUseDefault) {
+  // Check if value actually differs from default
+  const defaultEnvValue = formatEnvValue(field.defaultValue, field);
+  const valueMatchesDefault = envValue === defaultEnvValue;
+  
+  // If field should use LibreChat default AND value matches default, comment it out
+  // But if value DIFFERS from default, export it uncommented (user changed it)
+  if (shouldUseDefault && valueMatchesDefault) {
     if (envValue !== '') {
       return bugWarning + `# ${field.envKey}=${envValue}  # Using LibreChat default`;
     } else {

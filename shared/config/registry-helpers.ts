@@ -1632,19 +1632,6 @@ function generateWebSearchSection(config: any): string {
       }
     }
   }
-  if (rerankerType && rerankerType !== 'none') {
-    lines.push(`  rerankerType: "${rerankerType}"`);
-  }
-  // ❌ SECURITY: jinaApiKey and cohereApiKey excluded from YAML - stored in .env instead
-  if (jinaApiUrl && rerankerType === 'jina' && jinaApiUrl !== 'https://api.jina.ai/v1/rerank') {
-    lines.push(`  jinaApiUrl: "${jinaApiUrl}"`);
-  }
-  if (scraperTimeout) {
-    lines.push(`  scraperTimeout: ${scraperTimeout}`);
-  }
-  if (safeSearch !== undefined && safeSearch !== null) {
-    lines.push(`  safeSearch: ${safeSearch}`);
-  }
   
   return lines.join('\n');
 }

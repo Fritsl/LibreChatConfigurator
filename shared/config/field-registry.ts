@@ -4753,19 +4753,12 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   },
 
   // =============================================================================
-  // FILE STORAGE: Missing Fields (5 fields)
+  // FILE STORAGE: Missing Fields (4 fields)
   // =============================================================================
-  {
-    id: 'awsEndpointUrl',
-    envKey: 'AWS_ENDPOINT_URL',
-    type: 'string',
-    defaultValue: '',
-    category: 'file-storage',
-    description: 'AWS S3 endpoint URL.',
-  },
+  // NOTE: awsEndpointUrl removed - duplicate of awsEndpointURL (line 1378)
 
   // =============================================================================
-  // EXTERNAL APIS: Missing Fields (8 fields)
+  // EXTERNAL APIS: Missing Fields (7 fields)
   // =============================================================================
   {
     id: 'fluxApiBaseUrl',
@@ -4775,14 +4768,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     category: 'external-apis',
     description: 'Flux API base URL.',
   },
-  {
-    id: 'googleCseId',
-    envKey: 'GOOGLE_CSE_ID',
-    type: 'string',
-    defaultValue: '',
-    category: 'external-apis',
-    description: 'Google Custom Search Engine ID.',
-  },
+  // NOTE: googleCseId removed - duplicate of googleCSEId (line 1491)
   {
     id: 'serpapiApiKey',
     envKey: 'SERPAPI_API_KEY',

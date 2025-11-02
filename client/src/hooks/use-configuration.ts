@@ -468,14 +468,69 @@ export function useConfiguration() {
     return output;
   };
 
+  // Sanitize configuration values to fix corrupted data from quote bugs
+  const sanitizeConfigValue = (key: string, value: any): any => {
+    if (value === null || value === undefined) return value;
+    
+    // If it's a string, check if it's a JSON-encoded string and decode it
+    if (typeof value === 'string') {
+      // Remove wrapping quotes if present: "\"value\"" → "value" or "value" → value
+      let sanitized = value;
+      
+      // Try to parse as JSON to unwrap quoted strings
+      if (sanitized.startsWith('"') && sanitized.endsWith('"')) {
+        try {
+          sanitized = JSON.parse(sanitized);
+        } catch {
+          // Not valid JSON, keep as-is
+        }
+      }
+      
+      return sanitized;
+    }
+    
+    // For objects, recursively sanitize
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      const sanitized: any = {};
+      for (const [k, v] of Object.entries(value)) {
+        sanitized[k] = sanitizeConfigValue(k, v);
+      }
+      return sanitized;
+    }
+    
+    // For arrays, sanitize each element
+    if (Array.isArray(value)) {
+      return value.map((item, index) => sanitizeConfigValue(`${key}[${index}]`, item));
+    }
+    
+    return value;
+  };
+
   const updateConfiguration = (updates: Partial<Configuration>, replace: boolean = false) => {
+    // Sanitize all incoming values to fix corrupted data
+    const sanitizedUpdates: Partial<Configuration> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      sanitizedUpdates[key as keyof Configuration] = sanitizeConfigValue(key, value) as any;
+    }
+    
     if (replace) {
       // Full replacement - use updates as the complete configuration
-      setConfiguration(updates as Configuration);
+      setConfiguration(sanitizedUpdates as Configuration);
     } else {
       // Deep merge mode - update specified fields while preserving nested object values
-      setConfiguration(prev => deepMerge(prev, updates));
+      setConfiguration(prev => deepMerge(prev, sanitizedUpdates));
     }
+  };
+  
+  // One-time cleanup to fix corrupted data in existing configuration
+  const cleanupCorruptedData = () => {
+    setConfiguration(prev => {
+      const cleaned: any = {};
+      for (const [key, value] of Object.entries(prev)) {
+        cleaned[key] = sanitizeConfigValue(key, value);
+      }
+      return cleaned as Configuration;
+    });
   };
 
   const saveProfile = async (profileData: Omit<InsertConfigurationProfile, "configuration">) => {
@@ -578,6 +633,15 @@ export function useConfiguration() {
     return verification;
   };
 
+  // Auto-cleanup corrupted data on mount (one-time)
+  const hasCleanedRef = useRef(false);
+  useEffect(() => {
+    if (!hasCleanedRef.current && !isLoading) {
+      hasCleanedRef.current = true;
+      cleanupCorruptedData();
+    }
+  }, [isLoading]);
+
   return {
     configuration,
     updateConfiguration,
@@ -587,6 +651,7 @@ export function useConfiguration() {
     loadDemoConfiguration,
     verifyConfiguration,
     createDemoConfiguration,
+    cleanupCorruptedData,
     isLoading,
     isSaving: saveProfileMutation.isPending,
     isGenerating: generatePackageMutation.isPending,

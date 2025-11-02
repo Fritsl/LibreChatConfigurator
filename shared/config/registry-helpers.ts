@@ -568,6 +568,47 @@ export function escapeYamlString(str: string): string {
 }
 
 /**
+ * Canonicalize configuration by removing duplicate fields that map to the same envKey
+ * This prevents duplicate key errors in JSON and ensures only registry-canonical fields persist
+ * 
+ * ROOT CAUSE FIX: Historical duplicate field definitions in FIELD_REGISTRY allowed imports
+ * to create multiple fields for the same envKey (e.g., awsEndpointURL + awsEndpointUrl).
+ * Once duplicates entered saved configs, they persisted indefinitely through load/save cycles.
+ * 
+ * @param config - Configuration object that may contain duplicate fields
+ * @returns Canonicalized configuration with only the first registered field for each envKey
+ */
+export function canonicalizeConfiguration(config: any): any {
+  if (!config || typeof config !== 'object') return config;
+  
+  // Build map of envKey -> first field ID that maps to it (canonical field)
+  const envKeyToCanonical = new Map<string, string>();
+  const duplicateFields = new Set<string>();
+  
+  for (const field of FIELD_REGISTRY) {
+    if (field.envKey) {
+      if (!envKeyToCanonical.has(field.envKey)) {
+        // First field for this envKey is the canonical one
+        envKeyToCanonical.set(field.envKey, field.id);
+      } else {
+        // This is a duplicate - mark for removal
+        duplicateFields.add(field.id);
+      }
+    }
+  }
+  
+  // Remove duplicate fields from config
+  const canonicalized = { ...config };
+  for (const duplicateId of Array.from(duplicateFields)) {
+    if (duplicateId in canonicalized) {
+      delete canonicalized[duplicateId];
+    }
+  }
+  
+  return canonicalized;
+}
+
+/**
  * Escape double-quoted YAML strings to prevent injection
  * Escapes: backslashes, newlines, carriage returns, tabs, and double quotes
  */

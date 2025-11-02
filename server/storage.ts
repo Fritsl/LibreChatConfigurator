@@ -1,4 +1,5 @@
 import { type ConfigurationProfile, type InsertConfigurationProfile, type Configuration, type ValidationStatus, type Deployment, type InsertDeployment, type UpdateDeployment } from "@shared/schema";
+import { canonicalizeConfiguration } from "../shared/config/registry-helpers";
 
 export interface ConfigurationHistory {
   id: string;
@@ -385,7 +386,14 @@ export class FileStorage implements IStorage {
   }
 
   async getProfile(id: string): Promise<ConfigurationProfile | undefined> {
-    return this.profiles.get(id);
+    const profile = this.profiles.get(id);
+    if (!profile) return undefined;
+    
+    // ROOT CAUSE FIX: Canonicalize configuration when loading profile to sanitize legacy duplicates
+    return {
+      ...profile,
+      configuration: canonicalizeConfiguration(profile.configuration)
+    };
   }
 
   async getProfileByName(name: string): Promise<ConfigurationProfile | undefined> {
@@ -414,6 +422,11 @@ export class FileStorage implements IStorage {
     const existing = this.profiles.get(id);
     if (!existing) {
       throw new Error(`Profile with id ${id} not found`);
+    }
+    
+    // ROOT CAUSE FIX: Canonicalize configuration before saving profile
+    if (updates.configuration) {
+      updates.configuration = canonicalizeConfiguration(updates.configuration);
     }
     
     const updated: ConfigurationProfile = {
@@ -613,9 +626,13 @@ export class FileStorage implements IStorage {
     // CRITICAL: Store the actual configuration with real API keys and secrets.
     // This system is designed to backup and manage working LibreChat configurations.
     // DO NOT redact or modify any sensitive data - preserve exactly as user entered.
+    
+    // ROOT CAUSE FIX: Canonicalize before saving to prevent duplicate envKey fields
+    const canonicalizedConfig = canonicalizeConfiguration(config);
+    
     const historyEntry: ConfigurationHistory = {
       id: randomUUID(),
-      configuration: config, // Store actual configuration with real values
+      configuration: canonicalizedConfig, // Store canonicalized configuration
       timestamp: new Date().toISOString(),
       packageName: packageName || `Package-${new Date().toISOString().slice(0,10)}`
     };
@@ -641,7 +658,8 @@ export class FileStorage implements IStorage {
     if (this.configHistory.length === 0) {
       return undefined;
     }
-    return this.configHistory[0].configuration;
+    // ROOT CAUSE FIX: Canonicalize when loading to sanitize legacy duplicates
+    return canonicalizeConfiguration(this.configHistory[0].configuration);
   }
 
   private async loadConfigurationHistory(): Promise<void> {

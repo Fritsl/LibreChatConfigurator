@@ -581,28 +581,29 @@ export function escapeYamlString(str: string): string {
 export function canonicalizeConfiguration(config: any): any {
   if (!config || typeof config !== 'object') return config;
   
-  // Build map of envKey -> first field ID that maps to it (canonical field)
+  // Build map of canonical field IDs (fields that are IN the registry)
+  const registeredFieldIds = new Set<string>();
   const envKeyToCanonical = new Map<string, string>();
-  const duplicateFields = new Set<string>();
   
   for (const field of FIELD_REGISTRY) {
+    registeredFieldIds.add(field.id);
     if (field.envKey) {
       if (!envKeyToCanonical.has(field.envKey)) {
         // First field for this envKey is the canonical one
         envKeyToCanonical.set(field.envKey, field.id);
-      } else {
-        // This is a duplicate - mark for removal
-        duplicateFields.add(field.id);
       }
     }
   }
   
-  // Remove duplicate fields from config
-  const canonicalized = { ...config };
-  for (const duplicateId of Array.from(duplicateFields)) {
-    if (duplicateId in canonicalized) {
-      delete canonicalized[duplicateId];
+  // Remove ANY field from config that's not in the registry
+  // This removes historical duplicates like 'awsEndpointUrl' that were deleted from registry
+  const canonicalized: any = {};
+  for (const key in config) {
+    if (registeredFieldIds.has(key)) {
+      // Field is in registry - keep it
+      canonicalized[key] = config[key];
     }
+    // Otherwise skip it - it's a legacy duplicate or unknown field
   }
   
   return canonicalized;

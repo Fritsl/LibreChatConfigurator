@@ -62,12 +62,13 @@ const rateLimitsSchema = z.object({
 }).optional();
 
 // Interface Configuration
+// NOTE: customWelcome, customFooter, and temporaryChatRetention were removed from here
+// because they exist at top-level in configurationSchema (dual-placement bug fix)
+// See lines 474, 517-518 for their top-level definitions
 const interfaceSchema = z.object({
   mcpServers: z.object({
     placeholder: z.string().optional(),
   }).optional(),
-  customWelcome: z.string().optional(),
-  customFooter: z.string().optional(),
   defaultPreset: z.string().optional(), // RC4: Name of preset to use as default
   fileSearch: z.boolean().default(true),
   uploadAsText: z.boolean().default(false), // RC4 "Upload as Text" feature
@@ -102,7 +103,6 @@ const interfaceSchema = z.object({
   marketplace: z.object({
     use: z.boolean().default(false),
   }).optional(),
-  temporaryChatRetention: z.number().min(1).max(8760).optional(), // Chat retention in hours (1-8760, default: 720)
 }).optional();
 
 // Model Specs Configuration - Controls which endpoints are visible in UI

@@ -178,7 +178,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'customWelcome',
     envKey: 'CUSTOM_WELCOME',
-    yamlPath: 'interface.customWelcome',
+    // yamlPath removed - dual-placement bug fixed, now ENV-only (top-level in schema)
     type: 'string',
     defaultValue: '',
     category: 'app',
@@ -187,7 +187,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'customFooter',
     envKey: 'CUSTOM_FOOTER',
-    yamlPath: 'interface.customFooter',
+    // yamlPath removed - dual-placement bug fixed, now ENV-only (top-level in schema)
     type: 'string',
     defaultValue: '',
     category: 'app',

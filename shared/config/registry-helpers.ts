@@ -563,9 +563,22 @@ function formatEnvValue(value: any, field: FieldDescriptor): string {
     case 'array':
       return Array.isArray(value) ? value.join(',') : '';
     default:
+      // Convert to string
+      let strValue = String(value);
+      
+      // If the value is already a JSON string (wrapped in quotes), parse it first
+      // This prevents double-quoting: "\"value\"" → "value"
+      if (strValue.startsWith('"') && strValue.endsWith('"')) {
+        try {
+          strValue = JSON.parse(strValue);
+        } catch {
+          // If JSON.parse fails, use the value as-is
+        }
+      }
+      
       // Escape backslashes and double quotes, then wrap in quotes
       // This ensures .env files can handle spaces, special characters, and multi-line values
-      const escapedValue = String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      const escapedValue = strValue.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
       return `"${escapedValue}"`;
   }
 }

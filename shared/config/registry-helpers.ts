@@ -510,20 +510,28 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
   
-  // Export strategy: Output uncommented if field has ANY value
-  // This ensures old saved configs with broken fieldOverrides still export properly
-  // The fieldOverrides system is for UI state only, not export decisions
+  // ✅ DOCKER COMPATIBILITY FIX: Always export fields with values OR defaults
+  // Docker needs all referenced env vars to exist in .env, even if using defaults
+  // This prevents "variable not set" warnings and broken rate limiting
+  
+  // If field has explicit value, use it
   if (envValue !== '') {
     return bugWarning + `${field.envKey}=${envValue}`;
   }
   
-  // If no value and shouldUseDefault, add helpful comment
+  // If field is using LibreChat default, export with comment
   const defaultComment = getDefaultComment(field);
   if (shouldUseDefault) {
     return bugWarning + `# ${field.envKey}=${defaultComment}  # Using LibreChat default`;
   }
   
-  // If no value, output commented with default
+  // If field has a default value in registry, export it uncommented for Docker
+  // This ensures rate limiting, RAG, and other critical features work
+  if (field.defaultValue !== undefined && field.defaultValue !== null && field.defaultValue !== '') {
+    return bugWarning + `${field.envKey}=${defaultComment}`;
+  }
+  
+  // Only comment out fields with no value AND no default
   return bugWarning + `# ${field.envKey}=${defaultComment}`;
 }
 

@@ -64,6 +64,13 @@ function generateHexSecret(byteLength: number): string {
 /**
  * Validate ENV variables against registry
  * Returns list of unsupported variables and YAML-only field violations
+ * 
+ * DUAL-PLACEMENT POLICY (LibreChat Beta Safety):
+ * LibreChat RC4 is in active beta with bugs allowing some fields in both .env and YAML.
+ * For security, this tool prioritizes .env for ANY field with an envKey (including dual-placement).
+ * Only pure YAML-only fields (no envKey) are rejected from .env imports.
+ * 
+ * Policy: "If it has an envKey, it belongs in .env" - keeps API keys secure.
  */
 export function validateEnvVars(envVars: Record<string, string>): {
   valid: boolean;
@@ -81,18 +88,18 @@ export function validateEnvVars(envVars: Record<string, string>): {
     // Check if this field exists in registry
     const field = getFieldByEnvKey(varName);
     
-    if (field && field.yamlPath) {
-      // EXCEPTION: If field has a known LibreChat bug, allow .env workaround
-      if (field.librechatBug) {
-        // This field has a LibreChat bug that prevents YAML from working
-        // Allow .env usage as workaround - do NOT add to yamlOnlyVars
-        continue;
-      }
-      
-      // STRICT POLICY: This field has yamlPath, it MUST go in librechat.yaml
+    if (field && field.envKey) {
+      // ✅ VALID: Field has envKey, so it CAN be in .env
+      // This includes:
+      //   - Pure .env fields (envKey only)
+      //   - Dual-placement fields (envKey + yamlPath) ← LibreChat beta bugs
+      // For security, dual-placement fields go to .env to protect API keys
+      continue;
+    } else if (field && field.yamlPath && !field.envKey) {
+      // ❌ YAML-ONLY: Field has yamlPath but NO envKey - pure YAML field
       yamlOnlyVars.push({ envKey: varName, yamlPath: field.yamlPath });
     } else if (!supportedKeys.has(varName)) {
-      // Field not found in registry at all
+      // ❌ UNMAPPED: Field not found in registry at all
       unmappedVars.push(varName);
     }
   }
@@ -316,6 +323,12 @@ function setNestedValue(obj: any, path: string, value: any): void {
  * - Nested structure access (webSearch.*, interface.*, etc.)
  * - Conditional output based on config values
  * - Default value comments
+ * 
+ * DUAL-PLACEMENT POLICY (LibreChat Beta Safety):
+ * LibreChat RC4 has bugs allowing some fields in both .env and YAML.
+ * For security, this tool exports ALL fields with envKey to .env (including dual-placement).
+ * This keeps API keys and secrets secure in .env rather than YAML.
+ * Policy: "If it has an envKey, export it to .env" - even if it also has yamlPath.
  */
 export function generateEnvFile(config: Record<string, any>): string {
   const currentDate = new Date().toISOString().split('T')[0];
@@ -326,7 +339,12 @@ export function generateEnvFile(config: Record<string, any>): string {
     '# =============================================================================',
     '# LibreChat Environment Configuration (RC4)',
     `# Generated on ${currentDate}`,
-    '# ============================================================================='
+    '# =============================================================================',
+    '#',
+    '# NOTE: Some fields appear here that could also be in librechat.yaml.',
+    '# This is due to LibreChat beta bugs. For security, we keep them in .env',
+    '# to protect API keys and secrets. This will normalize when LibreChat stabilizes.',
+    '#'
   ];
   
   // Group fields by category for organized output
@@ -336,14 +354,12 @@ export function generateEnvFile(config: Record<string, any>): string {
     let shouldExport = false;
     
     if (field.envKey && field.exportToEnv !== false) {
-      // EXCEPTION: If field has LibreChat bug, export to .env despite having yamlPath
-      if (field.librechatBug) {
-        shouldExport = true;
-      }
-      // STRICT POLICY: Skip fields with yamlPath (they belong in librechat.yaml only)
-      else if (!field.yamlPath) {
-        shouldExport = true;
-      }
+      // ✅ DUAL-PLACEMENT POLICY: Export ALL fields with envKey to .env
+      // This includes:
+      //   - Pure .env fields (envKey only)
+      //   - Dual-placement fields (envKey + yamlPath) ← LibreChat beta bugs
+      // For security, dual-placement fields go to .env to protect API keys
+      shouldExport = true;
     }
     
     if (!shouldExport) continue;
@@ -670,12 +686,23 @@ function formatYamlField(
 /**
  * Generate YAML file content from configuration using registry-based approach
  * This replaces the manual template literal implementation with a structured approach
+ * 
+ * DUAL-PLACEMENT POLICY (LibreChat Beta Safety):
+ * LibreChat RC4 has bugs allowing some fields in both .env and YAML.
+ * For security, this tool exports fields with envKey to .env ONLY (not YAML).
+ * YAML generation skips dual-placement fields and only includes pure YAML-only fields.
+ * Policy: "If it has an envKey, skip it in YAML" - keep API keys secure in .env.
  */
 export function generateYamlFile(config: Record<string, any>): string {
   const lines: string[] = [
     '# =============================================================================',
     '# LibreChat Configuration for v0.8.0-RC4',
     '# =============================================================================',
+    '#',
+    '# NOTE: API keys and secrets are stored in .env for security.',
+    '# This file contains only non-sensitive configuration fields.',
+    '# Due to LibreChat beta bugs, some fields that could be here are in .env instead.',
+    '#',
     '',
     `version: ${config.version || "0.8.0-rc4"}`,
     `cache: ${config.cache ?? true}`,
@@ -826,6 +853,10 @@ function generateMcpServersSection(config: any): string {
 
 /**
  * Generate Endpoints section
+ * 
+ * DUAL-PLACEMENT POLICY: API keys (openaiApiKey, anthropicApiKey, googleApiKey, 
+ * groqApiKey, mistralApiKey, custom endpoint apiKey) are NOT included in YAML.
+ * They're exported to .env for security. Only non-sensitive configuration appears in YAML.
  */
 function generateEndpointsSection(config: any): string {
   const hasAgents = config.endpoints?.agents;
@@ -837,7 +868,12 @@ function generateEndpointsSection(config: any): string {
   
   if (!hasAgents && !hasOpenAI && !hasAnthropic && !hasGoogle && !hasCustom && !hasGroqOrMistral) return '';
   
-  const lines = ['# Endpoints Configuration', 'endpoints:'];
+  const lines = [
+    '# Endpoints Configuration', 
+    '# NOTE: API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, etc.)',
+    '# are stored in .env for security. Only non-sensitive settings appear here.',
+    'endpoints:'
+  ];
   
   // Agents endpoint
   const agentsConfig = config.endpoints?.agents || {};
@@ -979,9 +1015,8 @@ function generateEndpointsSection(config: any): string {
     lines.push('  custom:');
     for (const endpoint of config.endpoints.custom) {
       lines.push(`    - name: '${escapeYamlString(endpoint.name)}'`);
-      if (endpoint.apiKey) {
-        lines.push(`      apiKey: '${escapeYamlString(endpoint.apiKey)}'`);
-      }
+      // ❌ SECURITY: apiKey excluded from YAML - stored in .env instead
+      // LibreChat reads API keys from .env automatically
       lines.push(`      baseURL: '${escapeYamlString(endpoint.baseURL)}'`);
       lines.push(`      models:`);
       if (endpoint.models?.fetch !== undefined) {
@@ -1047,7 +1082,7 @@ function generateEndpointsSection(config: any): string {
     lines.push('  custom:');
     if (config.groqApiKey) {
       lines.push(`    - name: 'groq'`);
-      lines.push(`      apiKey: '\${GROQ_API_KEY}'`);
+      // ❌ SECURITY: apiKey excluded from YAML - stored in .env instead
       lines.push(`      baseURL: 'https://api.groq.com/openai/v1/'`);
       lines.push(`      models:`);
       lines.push(`        fetch: false`);
@@ -1063,7 +1098,7 @@ function generateEndpointsSection(config: any): string {
     }
     if (config.mistralApiKey) {
       lines.push(`    - name: 'Mistral'`);
-      lines.push(`      apiKey: '\${MISTRAL_API_KEY}'`);
+      // ❌ SECURITY: apiKey excluded from YAML - stored in .env instead
       lines.push(`      baseURL: 'https://api.mistral.ai/v1'`);
       lines.push(`      models:`);
       lines.push(`        fetch: true`);
@@ -1453,6 +1488,10 @@ function generateMemorySection(config: any): string {
 
 /**
  * Generate Web Search section
+ * 
+ * DUAL-PLACEMENT POLICY: API keys (serperApiKey, jinaApiKey, cohereApiKey, firecrawlApiKey) 
+ * are NOT included in YAML - they're exported to .env for security.
+ * Only non-sensitive configuration fields appear in YAML.
  */
 function generateWebSearchSection(config: any): string {
   const searchProvider = config.webSearch?.searchProvider ?? config.webSearchProvider;
@@ -1460,38 +1499,47 @@ function generateWebSearchSection(config: any): string {
     return '# Web search is not configured';
   }
   
-  const lines = ['# Web Search Configuration', 'webSearch:'];
+  const lines = [
+    '# Web Search Configuration',
+    '# NOTE: API keys (SERPER_API_KEY, JINA_API_KEY, COHERE_API_KEY, FIRECRAWL_API_KEY)',
+    '# are stored in .env for security. Only non-sensitive settings appear here.',
+    'webSearch:'
+  ];
   lines.push(`  searchProvider: "${searchProvider}"`);
   
-  const serperApiKey = config.webSearch?.serperApiKey ?? config.webSearchSerperApiKey;
   const searxngInstanceUrl = config.webSearch?.searxngInstanceUrl ?? config.webSearchSearxngInstanceUrl;
-  const searxngApiKey = config.webSearch?.searxngApiKey ?? config.webSearchSearxngApiKey;
   const scraperType = config.webSearch?.scraperType ?? config.webSearchScraperType;
   const scraperTimeout = config.webSearch?.scraperTimeout ?? config.webSearchScraperTimeout;
   const safeSearch = config.webSearch?.safeSearch ?? config.webSearchSafeSearch;
   const rerankerType = config.webSearch?.rerankerType ?? config.webSearchRerankerType;
-  const jinaApiKey = config.webSearch?.jinaApiKey ?? config.webSearchJinaApiKey;
   const jinaApiUrl = config.webSearch?.jinaApiUrl ?? config.webSearchJinaApiUrl;
-  const cohereApiKey = config.webSearch?.cohereApiKey ?? config.webSearchCohereApiKey;
-  const firecrawlApiKey = config.webSearch?.firecrawlApiKey ?? config.webSearchFirecrawlApiKey;
   const firecrawlApiUrl = config.webSearch?.firecrawlApiUrl ?? config.webSearchFirecrawlApiUrl;
   
-  if (serperApiKey || searchProvider === 'serper') {
-    lines.push(`  serperApiKey: "\${SERPER_API_KEY}"`);
-  }
-  if (searxngInstanceUrl || searchProvider === 'searxng') {
-    lines.push(`  searxngInstanceUrl: "\${SEARXNG_INSTANCE_URL}"`);
-  }
-  if (searchProvider === 'searxng') {
-    lines.push(`  searxngApiKey: "${searxngApiKey || ''}"`);
+  // ✅ NON-SENSITIVE: URLs and configuration settings (not secrets)
+  if (searxngInstanceUrl && searchProvider === 'searxng') {
+    lines.push(`  searxngInstanceUrl: "${searxngInstanceUrl}"`);
   }
   if (scraperType && scraperType !== 'none') {
     lines.push(`  scraperType: "${scraperType}"`);
   }
-  if (firecrawlApiKey && scraperType === 'firecrawl') {
-    lines.push(`  firecrawlApiKey: "\${FIRECRAWL_API_KEY}"`);
-    lines.push(`  firecrawlApiUrl: "${firecrawlApiUrl || 'https://api.firecrawl.dev'}"`);
+  if (scraperTimeout !== undefined && scraperTimeout !== 30000) {
+    lines.push(`  scraperTimeout: ${scraperTimeout}`);
+  }
+  if (safeSearch !== undefined && safeSearch !== 0) {
+    lines.push(`  safeSearch: ${safeSearch}`);
+  }
+  if (rerankerType && rerankerType !== 'none') {
+    lines.push(`  rerankerType: "${rerankerType}"`);
+  }
+  if (jinaApiUrl && jinaApiUrl !== 'https://r.jina.ai') {
+    lines.push(`  jinaApiUrl: "${jinaApiUrl}"`);
+  }
+  if (firecrawlApiUrl && scraperType === 'firecrawl' && firecrawlApiUrl !== 'https://api.firecrawl.dev') {
+    lines.push(`  firecrawlApiUrl: "${firecrawlApiUrl}"`);
+  }
     
+  // Firecrawl options (configuration, not secrets)
+  if (scraperType === 'firecrawl') {
     const formats = config.webSearch?.firecrawlOptions?.formats ?? config.webSearchFirecrawlOptionsFormats;
     const includeTags = config.webSearch?.firecrawlOptions?.includeTags ?? config.webSearchFirecrawlOptionsIncludeTags;
     const excludeTags = config.webSearch?.firecrawlOptions?.excludeTags ?? config.webSearchFirecrawlOptionsExcludeTags;
@@ -1587,12 +1635,9 @@ function generateWebSearchSection(config: any): string {
   if (rerankerType && rerankerType !== 'none') {
     lines.push(`  rerankerType: "${rerankerType}"`);
   }
-  if (jinaApiKey && rerankerType === 'jina') {
-    lines.push(`  jinaApiKey: "\${JINA_API_KEY}"`);
-    lines.push(`  jinaApiUrl: "${jinaApiUrl || 'https://api.jina.ai/v1/rerank'}"`);
-  }
-  if (cohereApiKey && rerankerType === 'cohere') {
-    lines.push(`  cohereApiKey: "\${COHERE_API_KEY}"`);
+  // ❌ SECURITY: jinaApiKey and cohereApiKey excluded from YAML - stored in .env instead
+  if (jinaApiUrl && rerankerType === 'jina' && jinaApiUrl !== 'https://api.jina.ai/v1/rerank') {
+    lines.push(`  jinaApiUrl: "${jinaApiUrl}"`);
   }
   if (scraperTimeout) {
     lines.push(`  scraperTimeout: ${scraperTimeout}`);
@@ -1620,11 +1665,9 @@ function generateOcrSection(config: any): string {
   if (ocrProvider === 'mistral' || ocrMistralModel) {
     lines.push(`  mistralModel: "${ocrMistralModel || 'mistral-ocr-latest'}"`);
   }
-  if (ocrApiKey) {
-    lines.push(`  apiKey: "\${OCR_API_KEY}"`);
-  }
+  // ❌ SECURITY: OCR_API_KEY excluded from YAML - stored in .env instead
   if (ocrBaseUrl) {
-    lines.push(`  baseURL: "\${OCR_BASEURL}"`);
+    lines.push(`  baseURL: "${ocrBaseUrl}"`);
   }
   
   return lines.join('\n');

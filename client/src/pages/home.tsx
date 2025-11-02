@@ -241,11 +241,17 @@ export default function Home() {
     const importedFieldIds = getFieldIdsFromUpdates(importedUpdates);
     
     // Mark all imported fields as explicitly set (not using LibreChat default)
+    // false = use our value (explicit), true = use LibreChat default
+    if (!result.fieldOverrides) {
+      result.fieldOverrides = {};
+    }
+    
     for (const fieldId of importedFieldIds) {
-      result = setFieldOverride(result, fieldId, false);
+      result.fieldOverrides[fieldId] = false; // Mark as explicit
     }
     
     console.log(`🏷️ [Import] Marked ${importedFieldIds.length} fields as explicitly set`);
+    console.log(`🏷️ [Import] Sample overrides:`, Object.keys(result.fieldOverrides).slice(0, 10));
     
     return result;
   };

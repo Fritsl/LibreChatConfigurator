@@ -2142,9 +2142,59 @@ export default function Home() {
                 )}
               </div>
 
+              {/* Valid Fields Section */}
+              {unsupportedFieldsData && unsupportedFieldsData.validFields > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-sm text-green-700 dark:text-green-300" data-testid="text-valid-fields-title">
+                      <CheckCircle className="h-4 w-4 inline mr-1" />
+                      Valid {unsupportedFieldsData.type === 'yaml' ? 'YAML Fields' : 'Environment Variables'} ({unsupportedFieldsData.validFields}):
+                    </h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const unsupportedSet = new Set(unsupportedFieldsData.unsupportedFields);
+                        const validFields = unsupportedFieldsData.type === 'env'
+                          ? Object.keys(unsupportedFieldsData.allData as Record<string, string>).filter(key => !unsupportedSet.has(key))
+                          : ['(Complex YAML structure - will be mapped on import)'];
+                        const fieldsList = validFields.join('\n');
+                        navigator.clipboard.writeText(fieldsList);
+                        toast({
+                          title: "Copied to Clipboard",
+                          description: `${validFields.length} valid field names copied.`,
+                        });
+                      }}
+                      data-testid="button-copy-valid-fields"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Copy List
+                    </Button>
+                  </div>
+                  
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4 max-h-48 overflow-y-auto" data-testid="list-valid-fields">
+                    <pre className="text-xs font-mono text-green-700 dark:text-green-300 whitespace-pre-wrap select-all">
+                      {unsupportedFieldsData.type === 'env' ? (
+                        (() => {
+                          const unsupportedSet = new Set(unsupportedFieldsData.unsupportedFields);
+                          const validFields = Object.keys(unsupportedFieldsData.allData as Record<string, string>)
+                            .filter(key => !unsupportedSet.has(key))
+                            .sort();
+                          return validFields.map((field, index) => `${index + 1}. ${field}`).join('\n');
+                        })()
+                      ) : (
+                        '(YAML fields will be mapped to configuration on import - structure varies)'
+                      )}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Unsupported Fields Section */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-sm" data-testid="text-unsupported-fields-title">
+                  <h3 className="font-semibold text-sm text-yellow-700 dark:text-yellow-300" data-testid="text-unsupported-fields-title">
+                    <AlertTriangle className="h-4 w-4 inline mr-1" />
                     Unsupported {unsupportedFieldsData?.type === 'yaml' ? 'YAML Fields' : 'Environment Variables'} ({unsupportedFieldsData?.unsupportedFields.length || 0}):
                   </h3>
                   <Button

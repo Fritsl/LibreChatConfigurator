@@ -35,6 +35,13 @@ export default function Home() {
   const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ type: 'yaml' | 'env'; fields: string[] } | null>(null);
   const [showYamlOnlyDialog, setShowYamlOnlyDialog] = useState(false);
   const [yamlOnlyFieldsData, setYamlOnlyFieldsData] = useState<Array<{ envKey: string; yamlPath: string; value: string }> | null>(null);
+  const [showPartialImportChoice, setShowPartialImportChoice] = useState(false);
+  const [partialImportData, setPartialImportData] = useState<{
+    fileName: string;
+    allEnvVars: Record<string, string>;
+    yamlOnlyVars: Array<{ envKey: string; yamlPath: string }>;
+    validEnvVarsCount: number;
+  } | null>(null);
   const [showImportSummary, setShowImportSummary] = useState(false);
   const [importSummaryData, setImportSummaryData] = useState<{ 
     type: 'yaml' | 'env'; 
@@ -44,6 +51,7 @@ export default function Home() {
     updatedFields: number;
     unchangedFields: number;
     fieldDetails: { name: string; status: 'new' | 'updated' | 'unchanged' }[];
+    skippedYamlFields?: Array<{ envKey: string; yamlPath: string }>;
   } | null>(null);
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
   const [comparisonData, setComparisonData] = useState<{
@@ -525,30 +533,30 @@ export default function Home() {
             // VALIDATION: Check for unmapped environment variables AND YAML-only violations BEFORE importing
             const validation = registryValidateEnvVars(envVars);
             if (!validation.valid) {
-              // Handle YAML-only field violations
+              // Handle YAML-only field violations - offer partial import
               if (validation.yamlOnlyVars && validation.yamlOnlyVars.length > 0) {
-                console.error("❌ [ENV IMPORT] YAML-only fields detected in .env file:", validation.yamlOnlyVars);
+                console.log("⚠️ [ENV IMPORT] YAML-only fields detected in .env file:", validation.yamlOnlyVars);
                 
-                // Show detailed list in console
-                console.log("\n🚫 IMPORT REJECTED - YAML-Only Fields Found in .env:");
-                console.log("=========================================================");
-                validation.yamlOnlyVars.forEach(({ envKey, yamlPath }, index) => {
-                  console.log(`${index + 1}. ${envKey} → Must be configured in librechat.yaml as '${yamlPath}'`);
+                // Calculate how many valid fields can be imported
+                const totalEnvVars = Object.keys(envVars).length;
+                const yamlOnlyCount = validation.yamlOnlyVars.length;
+                const validEnvVarsCount = totalEnvVars - yamlOnlyCount;
+                
+                console.log("📊 [ENV IMPORT] Import analysis:");
+                console.log(`   - Total env vars: ${totalEnvVars}`);
+                console.log(`   - Valid for .env: ${validEnvVarsCount}`);
+                console.log(`   - YAML-only (skipped): ${yamlOnlyCount}`);
+                
+                // Show partial import choice dialog
+                setPartialImportData({
+                  fileName: file.name,
+                  allEnvVars: envVars,
+                  yamlOnlyVars: validation.yamlOnlyVars,
+                  validEnvVarsCount
                 });
-                console.log("\n💡 STRICT POLICY:");
-                console.log("   These fields MUST be configured in librechat.yaml, NOT .env");
-                console.log("   Please move them to your librechat.yaml file and retry.\n");
+                setShowPartialImportChoice(true);
                 
-                // Show detailed dialog with YAML-only violations (include values for auto-migration)
-                const yamlOnlyWithValues = validation.yamlOnlyVars.map(({ envKey, yamlPath }) => ({
-                  envKey,
-                  yamlPath,
-                  value: envVars[envKey] || ''
-                }));
-                setYamlOnlyFieldsData(yamlOnlyWithValues);
-                setShowYamlOnlyDialog(true);
-                
-                return; // BLOCK IMPORT
+                return; // Wait for user choice
               }
               
               // Handle unmapped variables
@@ -629,6 +637,46 @@ export default function Home() {
     });
     
     setShowResetConfirmation(false);
+  };
+
+  const handlePartialImport = () => {
+    if (!partialImportData) return;
+    
+    // Filter out YAML-only fields from env vars
+    const yamlOnlyKeys = new Set(partialImportData.yamlOnlyVars.map(v => v.envKey));
+    const validEnvVars: Record<string, string> = {};
+    
+    for (const [key, value] of Object.entries(partialImportData.allEnvVars)) {
+      if (!yamlOnlyKeys.has(key)) {
+        validEnvVars[key] = value;
+      }
+    }
+    
+    console.log("✅ [PARTIAL IMPORT] Importing valid .env fields:", Object.keys(validEnvVars));
+    console.log("⏭️ [PARTIAL IMPORT] Skipping YAML-only fields:", Array.from(yamlOnlyKeys));
+    
+    // Import the valid env vars
+    const configUpdates = registryMapEnvToConfig(validEnvVars);
+    const analysis = analyzeConfigurationChanges(configuration, configUpdates);
+    const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+    updateConfiguration(configWithOverrides, true);
+    
+    // Show summary with skipped fields info
+    setImportSummaryData({
+      type: 'env',
+      fileName: partialImportData.fileName,
+      ...analysis,
+      skippedYamlFields: partialImportData.yamlOnlyVars,
+    });
+    
+    toast({
+      title: "Partial Import Complete",
+      description: `Imported ${partialImportData.validEnvVarsCount} valid fields. ${partialImportData.yamlOnlyVars.length} YAML-only fields were skipped.`,
+    });
+    
+    setShowPartialImportChoice(false);
+    setPartialImportData(null);
+    setShowImportSummary(true);
   };
 
   const handleLoadDemoConfiguration = () => {
@@ -1885,6 +1933,78 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
+      {/* Partial Import Choice Dialog */}
+      <AlertDialog open={showPartialImportChoice} onOpenChange={setShowPartialImportChoice}>
+        <AlertDialogContent className="max-w-3xl" data-testid="dialog-partial-import-choice">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              YAML-Only Fields Detected in .env File
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200 font-semibold" data-testid="text-partial-import-summary">
+                  Your .env file contains {partialImportData?.yamlOnlyVars.length || 0} field{(partialImportData?.yamlOnlyVars.length || 0) > 1 ? 's' : ''} that belong in librechat.yaml
+                </p>
+                <div className="mt-3 space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span className="text-green-700 dark:text-green-300 font-medium">
+                      {partialImportData?.validEnvVarsCount || 0} valid .env field{(partialImportData?.validEnvVarsCount || 0) !== 1 ? 's' : ''} can be imported
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <span className="text-yellow-700 dark:text-yellow-300 font-medium">
+                      {partialImportData?.yamlOnlyVars.length || 0} YAML-only field{(partialImportData?.yamlOnlyVars.length || 0) !== 1 ? 's' : ''} will be skipped
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-sm mb-2">YAML-Only Fields (will be skipped):</h4>
+                <div className="bg-muted rounded-lg p-3 max-h-48 overflow-y-auto">
+                  <div className="space-y-1">
+                    {partialImportData?.yamlOnlyVars.map(({ envKey, yamlPath }, index) => (
+                      <div key={envKey} className="text-xs font-mono border-l-2 border-yellow-500 pl-2 py-0.5">
+                        <span className="text-muted-foreground mr-2">{index + 1}.</span>
+                        <span className="text-yellow-700 dark:text-yellow-400">{envKey}</span>
+                        <span className="text-muted-foreground mx-1">→</span>
+                        <span className="text-primary text-xs">{yamlPath}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>What would you like to do?</strong>
+                </p>
+                <ul className="text-xs text-blue-700 dark:text-blue-300 mt-2 space-y-1 ml-4 list-disc">
+                  <li><strong>Import valid fields only:</strong> Import the {partialImportData?.validEnvVarsCount || 0} .env-compatible field{(partialImportData?.validEnvVarsCount || 0) !== 1 ? 's' : ''} and skip YAML-only ones</li>
+                  <li><strong>Cancel:</strong> Don't import anything (fix your .env file first)</li>
+                </ul>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-partial-import">
+              Cancel Import
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handlePartialImport}
+              className="bg-green-600 hover:bg-green-700"
+              data-testid="button-confirm-partial-import"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Import {partialImportData?.validEnvVarsCount || 0} Valid Field{(partialImportData?.validEnvVarsCount || 0) !== 1 ? 's' : ''}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Unsupported Fields Dialog */}
       <Dialog open={showUnsupportedFieldsDialog} onOpenChange={setShowUnsupportedFieldsDialog}>
         <DialogContent className="max-w-3xl" data-testid="dialog-unsupported-fields">
@@ -2050,6 +2170,37 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">
                   All {importSummaryData?.totalFields} fields match your current configuration.
                 </p>
+              </div>
+            )}
+
+            {/* Skipped YAML-Only Fields (for partial imports) */}
+            {importSummaryData?.skippedYamlFields && importSummaryData.skippedYamlFields.length > 0 && (
+              <div className="space-y-2">
+                <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4" data-testid="skipped-yaml-warning">
+                  <h3 className="font-semibold text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+                    ⏭️ {importSummaryData.skippedYamlFields.length} YAML-Only Field{importSummaryData.skippedYamlFields.length !== 1 ? 's' : ''} Skipped
+                  </h3>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                    The following fields were detected in your .env file but belong in librechat.yaml. They were not imported.
+                  </p>
+                </div>
+                
+                <div className="bg-muted rounded-lg p-4 max-h-48 overflow-y-auto" data-testid="list-skipped-yaml-fields">
+                  <div className="space-y-1">
+                    {importSummaryData.skippedYamlFields.map(({ envKey, yamlPath }, index) => (
+                      <div 
+                        key={envKey} 
+                        className="text-xs font-mono border-l-2 border-yellow-500 pl-3 py-1"
+                        data-testid={`skipped-field-${envKey}`}
+                      >
+                        <span className="text-muted-foreground mr-2">{index + 1}.</span>
+                        <span className="text-yellow-700 dark:text-yellow-400 font-semibold">{envKey}</span>
+                        <span className="text-muted-foreground mx-1">→</span>
+                        <span className="text-primary text-xs">{yamlPath}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 

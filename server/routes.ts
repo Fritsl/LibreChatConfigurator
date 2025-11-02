@@ -524,6 +524,26 @@ function generateDockerComposeFile(config: any): string {
     config.temporaryChatRetention = config.interface.temporaryChatRetention;
   }
   
+  // Extract web search configuration (supports both nested and flat structures for compatibility)
+  const webSearchProvider = config.webSearch?.searchProvider ?? config.webSearchProvider;
+  const webSearchScraperType = config.webSearch?.scraperType ?? config.webSearchScraperType;
+  const webSearchRerankerType = config.webSearch?.rerankerType ?? config.webSearchRerankerType;
+  
+  // Determine which web search features are active
+  const hasSerperSearch = webSearchProvider === 'serper';
+  const hasSearxngSearch = webSearchProvider === 'searxng';
+  const hasFirecrawlScraper = webSearchScraperType === 'firecrawl';
+  const hasJinaReranker = webSearchRerankerType === 'jina';
+  const hasCohereReranker = webSearchRerankerType === 'cohere';
+  
+  console.log("🔍 [DOCKER-COMPOSE] Web Search Detection:");
+  console.log("  - webSearchProvider:", webSearchProvider);
+  console.log("  - webSearchScraperType:", webSearchScraperType);
+  console.log("  - webSearchRerankerType:", webSearchRerankerType);
+  console.log("  - hasSearxngSearch:", hasSearxngSearch);
+  console.log("  - hasFirecrawlScraper:", hasFirecrawlScraper);
+  console.log("  - hasJinaReranker:", hasJinaReranker);
+  
   return `version: '3.8'
 
 services:
@@ -794,14 +814,14 @@ ${config.embeddingsProvider ? `      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER
       # =============================================================================
       # Web Search Configuration
       # =============================================================================
-${config.webSearch?.searchProvider === 'serper' ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
-${config.webSearch?.searchProvider === 'searxng' || config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
-${config.webSearch?.searchProvider === 'searxng' ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
-${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
-${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
-${config.webSearch?.rerankerType === 'jina' ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
-${config.webSearch?.rerankerType === 'jina' ? `      JINA_API_URL: \${JINA_API_URL}` : '      # JINA_API_URL: ${JINA_API_URL}'}
-${config.webSearch?.rerankerType === 'cohere' ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
+${hasSerperSearch ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
+${hasSearxngSearch ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
+${hasSearxngSearch ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
+${hasFirecrawlScraper ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
+${hasFirecrawlScraper ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
+${hasJinaReranker ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
+${hasJinaReranker ? `      JINA_API_URL: \${JINA_API_URL}` : '      # JINA_API_URL: ${JINA_API_URL}'}
+${hasCohereReranker ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
       
       # =============================================================================
       # MeiliSearch Configuration

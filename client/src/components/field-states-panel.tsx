@@ -189,8 +189,20 @@ export function FieldStatesPanel({
       delete resetConfig.speech.tts.openai;
     }
     
-    // Clear all override flags
-    resetConfig = clearAllOverrides(resetConfig);
+    // Mark all fields as EXPLICIT (not using LibreChat defaults)
+    // This ensures they export properly to .env and YAML files
+    // Users clicking "Reset All" want to export the default values, not have them commented out
+    const allOverrides: Record<string, boolean> = {};
+    FIELD_REGISTRY.forEach(field => {
+      if (field.exportToYaml === false && field.exportToEnv === false) {
+        // Keep internal fields as "use default" since they don't export anyway
+        allOverrides[field.id] = true;
+      } else {
+        // Mark exportable fields as explicit so they export uncommented
+        allOverrides[field.id] = false;
+      }
+    });
+    resetConfig.fieldOverrides = allOverrides;
     
     onConfigurationChange(resetConfig);
   };

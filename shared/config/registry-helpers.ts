@@ -523,19 +523,19 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
     return bugWarning + `${field.envKey}=${envValue}`;
   }
   
-  // If field is using LibreChat default, export with comment
+  // Get default comment for all other cases
   const defaultComment = getDefaultComment(field);
-  if (shouldUseDefault) {
-    return bugWarning + `# ${field.envKey}=${defaultComment}  # Using LibreChat default`;
+  
+  // ✅ CRITICAL: Export ALL fields with defined defaults UNCOMMENTED
+  // Docker-compose references these variables and needs them to exist with values
+  // This includes fields using LibreChat defaults AND fields with empty string defaults
+  if (field.defaultValue !== undefined && field.defaultValue !== null) {
+    // Add inline comment if using LibreChat default (for user clarity)
+    const inlineComment = shouldUseDefault ? '  # Using LibreChat default' : '';
+    return bugWarning + `${field.envKey}=${defaultComment}${inlineComment}`;
   }
   
-  // If field has a default value in registry, export it uncommented for Docker
-  // This ensures rate limiting, RAG, and other critical features work
-  if (field.defaultValue !== undefined && field.defaultValue !== null && field.defaultValue !== '') {
-    return bugWarning + `${field.envKey}=${defaultComment}`;
-  }
-  
-  // Only comment out fields with no value AND no default
+  // Only comment out fields with truly undefined defaults (shouldn't happen)
   return bugWarning + `# ${field.envKey}=${defaultComment}`;
 }
 

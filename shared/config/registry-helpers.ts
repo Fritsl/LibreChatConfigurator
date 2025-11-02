@@ -605,12 +605,23 @@ function formatYamlField(
     ? `"${escapeYamlDoubleQuoted(value)}"`
     : String(value);
   
-  // Check if this field should use LibreChat default
-  if (config.fieldOverrides && useLibreChatDefault(config as Configuration, fieldId)) {
-    return `${indentStr}# ${yamlKey}: ${formattedValue}  # Using LibreChat default`;
+  // Export strategy: Output uncommented if field has ANY value
+  // This ensures old saved configs with broken fieldOverrides still export properly
+  // The fieldOverrides system is for UI state only, not export decisions
+  
+  // Find the field in registry to check if value matches default
+  const field = FIELD_REGISTRY.find(f => f.id === fieldId);
+  if (field) {
+    // If value matches the default, check if user wants to use LibreChat default
+    const valueMatchesDefault = value === field.defaultValue;
+    const shouldUseDefault = config.fieldOverrides && useLibreChatDefault(config as Configuration, fieldId);
+    
+    if (valueMatchesDefault && shouldUseDefault) {
+      return `${indentStr}# ${yamlKey}: ${formattedValue}  # Using LibreChat default`;
+    }
   }
   
-  // Field is explicitly set, output normally
+  // Field has a value (even if it matches default), output normally
   return `${indentStr}${yamlKey}: ${formattedValue}`;
 }
 

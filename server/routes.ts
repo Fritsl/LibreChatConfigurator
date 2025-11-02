@@ -2034,11 +2034,16 @@ function generateProfileFile(config: any): string {
   // Only export fields that have actual meaningful values
   const cleanedConfig = stripEmptyValues(config) || {};
   
+  // CRITICAL: Ensure configurationName is ALWAYS present in the configuration object
+  // The .bat file requires it at $json.configuration.configurationName
+  // This must be preserved even if stripEmptyValues removed it
+  cleanedConfig.configurationName = configName;
+  
   // Match client-side export structure exactly for 1:1 parity
   const profile = {
     name: configName, // ✅ Same as client: use configurationName directly
     description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
-    configuration: cleanedConfig, // ✅ Cleaned configuration (no empty values)
+    configuration: cleanedConfig, // ✅ Cleaned configuration (no empty values) + configurationName
     metadata: metadata, // ✨ Structured version metadata for migration support
     // Legacy fields for backward compatibility
     toolVersion: versionInfo.toolVersion,

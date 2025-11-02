@@ -2071,11 +2071,14 @@ function generateProfileFile(config: any): string {
   
   // CRITICAL ROOT CAUSE FIX: Canonicalize FIRST to remove duplicate envKey fields
   // Package generation bypasses storage pipeline, so we must dedupe here
+  console.log('🔍 [DEDUPE DEBUG] Before canonicalization:', Object.keys(config).filter(k => k.toLowerCase().includes('endpoint')));
   const canonicalizedConfig = canonicalizeConfiguration(config);
+  console.log('🔍 [DEDUPE DEBUG] After canonicalization:', Object.keys(canonicalizedConfig).filter(k => k.toLowerCase().includes('endpoint')));
   
   // Strip empty/null/undefined values to ensure round-trip parity
   // Only export fields that have actual meaningful values
   const cleanedConfig = stripEmptyValues(canonicalizedConfig) || {};
+  console.log('🔍 [DEDUPE DEBUG] After stripEmptyValues:', Object.keys(cleanedConfig).filter(k => k.toLowerCase().includes('endpoint')));
   
   // CRITICAL: Ensure configurationName is ALWAYS present in the configuration object
   // The .bat file requires it at $json.configuration.configurationName

@@ -507,18 +507,29 @@ export function useConfiguration() {
   };
 
   const updateConfiguration = (updates: Partial<Configuration>, replace: boolean = false) => {
+    console.log("🔧 [UPDATE CONFIG] Received updates:", Object.keys(updates), "Replace mode:", replace);
+    console.log("🔧 [UPDATE CONFIG] Sample update - customWelcome:", updates.customWelcome);
+    
     // Sanitize all incoming values to fix corrupted data
     const sanitizedUpdates: Partial<Configuration> = {};
     for (const [key, value] of Object.entries(updates)) {
       sanitizedUpdates[key as keyof Configuration] = sanitizeConfigValue(key, value) as any;
     }
     
+    console.log("🔧 [UPDATE CONFIG] After sanitization - customWelcome:", sanitizedUpdates.customWelcome);
+    
     if (replace) {
       // Full replacement - use updates as the complete configuration
+      console.log("🔧 [UPDATE CONFIG] Setting configuration (replace mode)");
       setConfiguration(sanitizedUpdates as Configuration);
     } else {
       // Deep merge mode - update specified fields while preserving nested object values
-      setConfiguration(prev => deepMerge(prev, sanitizedUpdates));
+      console.log("🔧 [UPDATE CONFIG] Setting configuration (merge mode)");
+      setConfiguration(prev => {
+        const merged = deepMerge(prev, sanitizedUpdates);
+        console.log("🔧 [UPDATE CONFIG] Merged result - customWelcome:", merged.customWelcome);
+        return merged;
+      });
     }
   };
   

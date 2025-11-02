@@ -691,9 +691,16 @@ export default function Home() {
     
     // Import the valid env vars
     const configUpdates = registryMapEnvToConfig(validEnvVars);
+    console.log("🔍 [DEBUG] configUpdates from registry:", configUpdates);
+    console.log("🔍 [DEBUG] Sample field - CUSTOM_WELCOME:", validEnvVars.CUSTOM_WELCOME, "→", configUpdates.customWelcome);
+    
     const analysis = analyzeConfigurationChanges(configuration, configUpdates);
     const configWithOverrides = markImportedFieldsAsExplicit(configuration, configUpdates);
+    console.log("🔍 [DEBUG] configWithOverrides:", configWithOverrides);
+    console.log("🔍 [DEBUG] customWelcome in merged config:", configWithOverrides.customWelcome);
+    
     updateConfiguration(configWithOverrides, true);
+    console.log("✅ [PARTIAL IMPORT] Configuration updated");
     
     // Show summary with skipped fields info
     setImportSummaryData({

@@ -653,80 +653,82 @@ ${config.allowPasswordReset !== undefined ? `      ALLOW_PASSWORD_RESET: \${ALLO
       # =============================================================================
       # Core AI Provider API Keys
       # =============================================================================
-${config.openaiApiKey ? `      OPENAI_API_KEY: \${OPENAI_API_KEY}` : '      # OPENAI_API_KEY: ${OPENAI_API_KEY}'}
-${config.openaiApiBase ? `      OPENAI_API_BASE: \${OPENAI_API_BASE}` : '      # OPENAI_API_BASE: ${OPENAI_API_BASE}'}
-${config.openaiReverseProxy ? `      OPENAI_REVERSE_PROXY: \${OPENAI_REVERSE_PROXY}` : '      # OPENAI_REVERSE_PROXY: ${OPENAI_REVERSE_PROXY}'}
-${config.openaiModerationReverseProxy ? `      OPENAI_MODERATION_REVERSE_PROXY: \${OPENAI_MODERATION_REVERSE_PROXY}` : '      # OPENAI_MODERATION_REVERSE_PROXY: ${OPENAI_MODERATION_REVERSE_PROXY}'}
-${config.anthropicApiKey ? `      ANTHROPIC_API_KEY: \${ANTHROPIC_API_KEY}` : '      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}'}
-${config.googleApiKey ? `      GOOGLE_API_KEY: \${GOOGLE_API_KEY}` : '      # GOOGLE_API_KEY: ${GOOGLE_API_KEY}'}
-${config.groqApiKey ? `      GROQ_API_KEY: \${GROQ_API_KEY}` : '      # GROQ_API_KEY: ${GROQ_API_KEY}'}
-${config.mistralApiKey ? `      MISTRAL_API_KEY: \${MISTRAL_API_KEY}` : '      # MISTRAL_API_KEY: ${MISTRAL_API_KEY}'}
+      # Note: API keys are always emitted as ACTIVE when agents/endpoints are configured.
+      # The .env file controls actual values. Commented keys indicate no agents configured.
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      OPENAI_API_KEY: \${OPENAI_API_KEY}` : '      # OPENAI_API_KEY: ${OPENAI_API_KEY}'}
+${config.openaiApiBase || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      OPENAI_API_BASE: \${OPENAI_API_BASE}` : '      # OPENAI_API_BASE: ${OPENAI_API_BASE}'}
+${config.openaiReverseProxy || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      OPENAI_REVERSE_PROXY: \${OPENAI_REVERSE_PROXY}` : '      # OPENAI_REVERSE_PROXY: ${OPENAI_REVERSE_PROXY}'}
+${config.openaiModerationReverseProxy || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      OPENAI_MODERATION_REVERSE_PROXY: \${OPENAI_MODERATION_REVERSE_PROXY}` : '      # OPENAI_MODERATION_REVERSE_PROXY: ${OPENAI_MODERATION_REVERSE_PROXY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      ANTHROPIC_API_KEY: \${ANTHROPIC_API_KEY}` : '      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      GOOGLE_API_KEY: \${GOOGLE_API_KEY}` : '      # GOOGLE_API_KEY: ${GOOGLE_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      GROQ_API_KEY: \${GROQ_API_KEY}` : '      # GROQ_API_KEY: ${GROQ_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      MISTRAL_API_KEY: \${MISTRAL_API_KEY}` : '      # MISTRAL_API_KEY: ${MISTRAL_API_KEY}'}
       
       # =============================================================================
       # Extended AI Provider API Keys
       # =============================================================================
-${config.deepseekApiKey ? `      DEEPSEEK_API_KEY: \${DEEPSEEK_API_KEY}` : '      # DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}'}
-${config.perplexityApiKey ? `      PERPLEXITY_API_KEY: \${PERPLEXITY_API_KEY}` : '      # PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}'}
-${config.fireworksApiKey ? `      FIREWORKS_API_KEY: \${FIREWORKS_API_KEY}` : '      # FIREWORKS_API_KEY: ${FIREWORKS_API_KEY}'}
-${config.togetheraiApiKey ? `      TOGETHERAI_API_KEY: \${TOGETHERAI_API_KEY}` : '      # TOGETHERAI_API_KEY: ${TOGETHERAI_API_KEY}'}
-${config.huggingfaceToken ? `      HUGGINGFACE_TOKEN: \${HUGGINGFACE_TOKEN}` : '      # HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}'}
-${config.xaiApiKey ? `      XAI_API_KEY: \${XAI_API_KEY}` : '      # XAI_API_KEY: ${XAI_API_KEY}'}
-${config.nvidiaApiKey ? `      NVIDIA_API_KEY: \${NVIDIA_API_KEY}` : '      # NVIDIA_API_KEY: ${NVIDIA_API_KEY}'}
-${config.sambanovaApiKey ? `      SAMBANOVA_API_KEY: \${SAMBANOVA_API_KEY}` : '      # SAMBANOVA_API_KEY: ${SAMBANOVA_API_KEY}'}
-${config.hyperbolicApiKey ? `      HYPERBOLIC_API_KEY: \${HYPERBOLIC_API_KEY}` : '      # HYPERBOLIC_API_KEY: ${HYPERBOLIC_API_KEY}'}
-${config.klusterApiKey ? `      KLUSTER_API_KEY: \${KLUSTER_API_KEY}` : '      # KLUSTER_API_KEY: ${KLUSTER_API_KEY}'}
-${config.nanogptApiKey ? `      NANOGPT_API_KEY: \${NANOGPT_API_KEY}` : '      # NANOGPT_API_KEY: ${NANOGPT_API_KEY}'}
-${config.glhfApiKey ? `      GLHF_API_KEY: \${GLHF_API_KEY}` : '      # GLHF_API_KEY: ${GLHF_API_KEY}'}
-${config.apipieApiKey ? `      APIPIE_API_KEY: \${APIPIE_API_KEY}` : '      # APIPIE_API_KEY: ${APIPIE_API_KEY}'}
-${config.unifyApiKey ? `      UNIFY_API_KEY: \${UNIFY_API_KEY}` : '      # UNIFY_API_KEY: ${UNIFY_API_KEY}'}
-${config.openrouterKey ? `      OPENROUTER_KEY: \${OPENROUTER_KEY}` : '      # OPENROUTER_KEY: ${OPENROUTER_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      DEEPSEEK_API_KEY: \${DEEPSEEK_API_KEY}` : '      # DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      PERPLEXITY_API_KEY: \${PERPLEXITY_API_KEY}` : '      # PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      FIREWORKS_API_KEY: \${FIREWORKS_API_KEY}` : '      # FIREWORKS_API_KEY: ${FIREWORKS_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      TOGETHERAI_API_KEY: \${TOGETHERAI_API_KEY}` : '      # TOGETHERAI_API_KEY: ${TOGETHERAI_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      HUGGINGFACE_TOKEN: \${HUGGINGFACE_TOKEN}` : '      # HUGGINGFACE_TOKEN: ${HUGGINGFACE_TOKEN}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      XAI_API_KEY: \${XAI_API_KEY}` : '      # XAI_API_KEY: ${XAI_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      NVIDIA_API_KEY: \${NVIDIA_API_KEY}` : '      # NVIDIA_API_KEY: ${NVIDIA_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      SAMBANOVA_API_KEY: \${SAMBANOVA_API_KEY}` : '      # SAMBANOVA_API_KEY: ${SAMBANOVA_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      HYPERBOLIC_API_KEY: \${HYPERBOLIC_API_KEY}` : '      # HYPERBOLIC_API_KEY: ${HYPERBOLIC_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      KLUSTER_API_KEY: \${KLUSTER_API_KEY}` : '      # KLUSTER_API_KEY: ${KLUSTER_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      NANOGPT_API_KEY: \${NANOGPT_API_KEY}` : '      # NANOGPT_API_KEY: ${NANOGPT_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      GLHF_API_KEY: \${GLHF_API_KEY}` : '      # GLHF_API_KEY: ${GLHF_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      APIPIE_API_KEY: \${APIPIE_API_KEY}` : '      # APIPIE_API_KEY: ${APIPIE_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      UNIFY_API_KEY: \${UNIFY_API_KEY}` : '      # UNIFY_API_KEY: ${UNIFY_API_KEY}'}
+${(config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      OPENROUTER_KEY: \${OPENROUTER_KEY}` : '      # OPENROUTER_KEY: ${OPENROUTER_KEY}'}
       
       # =============================================================================
       # Azure OpenAI Configuration
       # =============================================================================
-${config.azureApiKey ? `      AZURE_API_KEY: \${AZURE_API_KEY}` : '      # AZURE_API_KEY: ${AZURE_API_KEY}'}
-${config.azureOpenAIApiInstanceName ? `      AZURE_OPENAI_API_INSTANCE_NAME: \${AZURE_OPENAI_API_INSTANCE_NAME}` : '      # AZURE_OPENAI_API_INSTANCE_NAME: ${AZURE_OPENAI_API_INSTANCE_NAME}'}
-${config.azureOpenAIApiDeploymentName ? `      AZURE_OPENAI_API_DEPLOYMENT_NAME: \${AZURE_OPENAI_API_DEPLOYMENT_NAME}` : '      # AZURE_OPENAI_API_DEPLOYMENT_NAME: ${AZURE_OPENAI_API_DEPLOYMENT_NAME}'}
-${config.azureOpenAIApiVersion ? `      AZURE_OPENAI_API_VERSION: \${AZURE_OPENAI_API_VERSION}` : '      # AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION}'}
-${config.azureOpenAIModels ? `      AZURE_OPENAI_MODELS: \${AZURE_OPENAI_MODELS}` : '      # AZURE_OPENAI_MODELS: ${AZURE_OPENAI_MODELS}'}
+${config.azureOpenAIApiInstanceName || config.azureOpenAIApiDeploymentName || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AZURE_API_KEY: \${AZURE_API_KEY}` : '      # AZURE_API_KEY: ${AZURE_API_KEY}'}
+${config.azureOpenAIApiInstanceName || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AZURE_OPENAI_API_INSTANCE_NAME: \${AZURE_OPENAI_API_INSTANCE_NAME}` : '      # AZURE_OPENAI_API_INSTANCE_NAME: ${AZURE_OPENAI_API_INSTANCE_NAME}'}
+${config.azureOpenAIApiDeploymentName || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AZURE_OPENAI_API_DEPLOYMENT_NAME: \${AZURE_OPENAI_API_DEPLOYMENT_NAME}` : '      # AZURE_OPENAI_API_DEPLOYMENT_NAME: ${AZURE_OPENAI_API_DEPLOYMENT_NAME}'}
+${config.azureOpenAIApiVersion || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AZURE_OPENAI_API_VERSION: \${AZURE_OPENAI_API_VERSION}` : '      # AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION}'}
+${config.azureOpenAIModels || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AZURE_OPENAI_MODELS: \${AZURE_OPENAI_MODELS}` : '      # AZURE_OPENAI_MODELS: ${AZURE_OPENAI_MODELS}'}
       
       # =============================================================================
       # AWS Bedrock Configuration
       # =============================================================================
-${config.awsAccessKeyId ? `      AWS_ACCESS_KEY_ID: \${AWS_ACCESS_KEY_ID}` : '      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}'}
-${config.awsSecretAccessKey ? `      AWS_SECRET_ACCESS_KEY: \${AWS_SECRET_ACCESS_KEY}` : '      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}'}
-${config.awsRegion ? `      AWS_REGION: \${AWS_REGION}` : '      # AWS_REGION: ${AWS_REGION}'}
-${config.awsBedrockRegion ? `      AWS_BEDROCK_REGION: \${AWS_BEDROCK_REGION}` : '      # AWS_BEDROCK_REGION: ${AWS_BEDROCK_REGION}'}
+${config.awsRegion || config.awsBedrockRegion || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AWS_ACCESS_KEY_ID: \${AWS_ACCESS_KEY_ID}` : '      # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}'}
+${config.awsRegion || config.awsBedrockRegion || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AWS_SECRET_ACCESS_KEY: \${AWS_SECRET_ACCESS_KEY}` : '      # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}'}
+${config.awsRegion || config.awsBedrockRegion || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AWS_REGION: \${AWS_REGION}` : '      # AWS_REGION: ${AWS_REGION}'}
+${config.awsBedrockRegion || (config.agents && config.agents.length > 0) || (Array.isArray(config.endpoints) && config.endpoints.length > 0) ? `      AWS_BEDROCK_REGION: \${AWS_BEDROCK_REGION}` : '      # AWS_BEDROCK_REGION: ${AWS_BEDROCK_REGION}'}
 ${config.awsEndpointUrl ? `      AWS_ENDPOINT_URL: \${AWS_ENDPOINT_URL}` : '      # AWS_ENDPOINT_URL: ${AWS_ENDPOINT_URL}'}
 ${config.awsBucketName ? `      AWS_BUCKET_NAME: \${AWS_BUCKET_NAME}` : '      # AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}'}
       
       # =============================================================================
       # OAuth Providers Configuration
       # =============================================================================
-${config.googleClientId ? `      GOOGLE_CLIENT_ID: \${GOOGLE_CLIENT_ID}` : '      # GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}'}
-${config.googleClientSecret ? `      GOOGLE_CLIENT_SECRET: \${GOOGLE_CLIENT_SECRET}` : '      # GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}'}
-${config.googleCallbackUrl ? `      GOOGLE_CALLBACK_URL: \${GOOGLE_CALLBACK_URL}` : '      # GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}'}
-${config.githubClientId ? `      GITHUB_CLIENT_ID: \${GITHUB_CLIENT_ID}` : '      # GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}'}
-${config.githubClientSecret ? `      GITHUB_CLIENT_SECRET: \${GITHUB_CLIENT_SECRET}` : '      # GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}'}
-${config.githubCallbackUrl ? `      GITHUB_CALLBACK_URL: \${GITHUB_CALLBACK_URL}` : '      # GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL}'}
-${config.discordClientId ? `      DISCORD_CLIENT_ID: \${DISCORD_CLIENT_ID}` : '      # DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}'}
-${config.discordClientSecret ? `      DISCORD_CLIENT_SECRET: \${DISCORD_CLIENT_SECRET}` : '      # DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}'}
-${config.discordCallbackUrl ? `      DISCORD_CALLBACK_URL: \${DISCORD_CALLBACK_URL}` : '      # DISCORD_CALLBACK_URL: ${DISCORD_CALLBACK_URL}'}
-${config.facebookClientId ? `      FACEBOOK_CLIENT_ID: \${FACEBOOK_CLIENT_ID}` : '      # FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}'}
-${config.facebookClientSecret ? `      FACEBOOK_CLIENT_SECRET: \${FACEBOOK_CLIENT_SECRET}` : '      # FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}'}
-${config.facebookCallbackUrl ? `      FACEBOOK_CALLBACK_URL: \${FACEBOOK_CALLBACK_URL}` : '      # FACEBOOK_CALLBACK_URL: ${FACEBOOK_CALLBACK_URL}'}
-${config.appleClientId ? `      APPLE_CLIENT_ID: \${APPLE_CLIENT_ID}` : '      # APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}'}
-${config.applePrivateKey ? `      APPLE_PRIVATE_KEY: \${APPLE_PRIVATE_KEY}` : '      # APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY}'}
-${config.appleKeyId ? `      APPLE_KEY_ID: \${APPLE_KEY_ID}` : '      # APPLE_KEY_ID: ${APPLE_KEY_ID}'}
-${config.appleTeamId ? `      APPLE_TEAM_ID: \${APPLE_TEAM_ID}` : '      # APPLE_TEAM_ID: ${APPLE_TEAM_ID}'}
-${config.appleCallbackUrl ? `      APPLE_CALLBACK_URL: \${APPLE_CALLBACK_URL}` : '      # APPLE_CALLBACK_URL: ${APPLE_CALLBACK_URL}'}
-${config.openidUrl ? `      OPENID_URL: \${OPENID_URL}` : '      # OPENID_URL: ${OPENID_URL}'}
-${config.openidClientId ? `      OPENID_CLIENT_ID: \${OPENID_CLIENT_ID}` : '      # OPENID_CLIENT_ID: ${OPENID_CLIENT_ID}'}
-${config.openidClientSecret ? `      OPENID_CLIENT_SECRET: \${OPENID_CLIENT_SECRET}` : '      # OPENID_CLIENT_SECRET: ${OPENID_CLIENT_SECRET}'}
-${config.openidCallbackUrl ? `      OPENID_CALLBACK_URL: \${OPENID_CALLBACK_URL}` : '      # OPENID_CALLBACK_URL: ${OPENID_CALLBACK_URL}'}
-${config.openidScope ? `      OPENID_SCOPE: \${OPENID_SCOPE}` : '      # OPENID_SCOPE: ${OPENID_SCOPE}'}
-${config.openidSessionSecret ? `      OPENID_SESSION_SECRET: \${OPENID_SESSION_SECRET}` : '      # OPENID_SESSION_SECRET: ${OPENID_SESSION_SECRET}'}
-${config.openidIssuer ? `      OPENID_ISSUER: \${OPENID_ISSUER}` : '      # OPENID_ISSUER: ${OPENID_ISSUER}'}
+${config.googleClientId || config.googleCallbackUrl ? `      GOOGLE_CLIENT_ID: \${GOOGLE_CLIENT_ID}` : '      # GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}'}
+${config.googleClientId || config.googleCallbackUrl ? `      GOOGLE_CLIENT_SECRET: \${GOOGLE_CLIENT_SECRET}` : '      # GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}'}
+${config.googleCallbackUrl || config.googleClientId ? `      GOOGLE_CALLBACK_URL: \${GOOGLE_CALLBACK_URL}` : '      # GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}'}
+${config.githubClientId || config.githubCallbackUrl ? `      GITHUB_CLIENT_ID: \${GITHUB_CLIENT_ID}` : '      # GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}'}
+${config.githubClientId || config.githubCallbackUrl ? `      GITHUB_CLIENT_SECRET: \${GITHUB_CLIENT_SECRET}` : '      # GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}'}
+${config.githubCallbackUrl || config.githubClientId ? `      GITHUB_CALLBACK_URL: \${GITHUB_CALLBACK_URL}` : '      # GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL}'}
+${config.discordClientId || config.discordCallbackUrl ? `      DISCORD_CLIENT_ID: \${DISCORD_CLIENT_ID}` : '      # DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}'}
+${config.discordClientId || config.discordCallbackUrl ? `      DISCORD_CLIENT_SECRET: \${DISCORD_CLIENT_SECRET}` : '      # DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}'}
+${config.discordCallbackUrl || config.discordClientId ? `      DISCORD_CALLBACK_URL: \${DISCORD_CALLBACK_URL}` : '      # DISCORD_CALLBACK_URL: ${DISCORD_CALLBACK_URL}'}
+${config.facebookClientId || config.facebookCallbackUrl ? `      FACEBOOK_CLIENT_ID: \${FACEBOOK_CLIENT_ID}` : '      # FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID}'}
+${config.facebookClientId || config.facebookCallbackUrl ? `      FACEBOOK_CLIENT_SECRET: \${FACEBOOK_CLIENT_SECRET}` : '      # FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET}'}
+${config.facebookCallbackUrl || config.facebookClientId ? `      FACEBOOK_CALLBACK_URL: \${FACEBOOK_CALLBACK_URL}` : '      # FACEBOOK_CALLBACK_URL: ${FACEBOOK_CALLBACK_URL}'}
+${config.appleClientId || config.appleCallbackUrl ? `      APPLE_CLIENT_ID: \${APPLE_CLIENT_ID}` : '      # APPLE_CLIENT_ID: ${APPLE_CLIENT_ID}'}
+${config.appleClientId || config.appleCallbackUrl ? `      APPLE_PRIVATE_KEY: \${APPLE_PRIVATE_KEY}` : '      # APPLE_PRIVATE_KEY: ${APPLE_PRIVATE_KEY}'}
+${config.appleKeyId || config.appleClientId ? `      APPLE_KEY_ID: \${APPLE_KEY_ID}` : '      # APPLE_KEY_ID: ${APPLE_KEY_ID}'}
+${config.appleTeamId || config.appleClientId ? `      APPLE_TEAM_ID: \${APPLE_TEAM_ID}` : '      # APPLE_TEAM_ID: ${APPLE_TEAM_ID}'}
+${config.appleCallbackUrl || config.appleClientId ? `      APPLE_CALLBACK_URL: \${APPLE_CALLBACK_URL}` : '      # APPLE_CALLBACK_URL: ${APPLE_CALLBACK_URL}'}
+${config.openidUrl || config.openidClientId || config.openidIssuer ? `      OPENID_URL: \${OPENID_URL}` : '      # OPENID_URL: ${OPENID_URL}'}
+${config.openidClientId || config.openidIssuer ? `      OPENID_CLIENT_ID: \${OPENID_CLIENT_ID}` : '      # OPENID_CLIENT_ID: ${OPENID_CLIENT_ID}'}
+${config.openidClientId || config.openidIssuer ? `      OPENID_CLIENT_SECRET: \${OPENID_CLIENT_SECRET}` : '      # OPENID_CLIENT_SECRET: ${OPENID_CLIENT_SECRET}'}
+${config.openidCallbackUrl || config.openidClientId || config.openidIssuer ? `      OPENID_CALLBACK_URL: \${OPENID_CALLBACK_URL}` : '      # OPENID_CALLBACK_URL: ${OPENID_CALLBACK_URL}'}
+${config.openidScope || config.openidClientId ? `      OPENID_SCOPE: \${OPENID_SCOPE}` : '      # OPENID_SCOPE: ${OPENID_SCOPE}'}
+${config.openidClientId || config.openidIssuer ? `      OPENID_SESSION_SECRET: \${OPENID_SESSION_SECRET}` : '      # OPENID_SESSION_SECRET: ${OPENID_SESSION_SECRET}'}
+${config.openidIssuer || config.openidClientId ? `      OPENID_ISSUER: \${OPENID_ISSUER}` : '      # OPENID_ISSUER: ${OPENID_ISSUER}'}
 ${config.openidButtonLabel ? `      OPENID_BUTTON_LABEL: \${OPENID_BUTTON_LABEL}` : '      # OPENID_BUTTON_LABEL: ${OPENID_BUTTON_LABEL}'}
 ${config.openidImageUrl ? `      OPENID_IMAGE_URL: \${OPENID_IMAGE_URL}` : '      # OPENID_IMAGE_URL: ${OPENID_IMAGE_URL}'}
       
@@ -734,12 +736,12 @@ ${config.openidImageUrl ? `      OPENID_IMAGE_URL: \${OPENID_IMAGE_URL}` : '    
       # Email Configuration
       # =============================================================================
 ${config.emailService ? `      EMAIL_SERVICE: \${EMAIL_SERVICE}` : '      # EMAIL_SERVICE: ${EMAIL_SERVICE}'}
-${config.emailUsername ? `      EMAIL_USERNAME: \${EMAIL_USERNAME}` : '      # EMAIL_USERNAME: ${EMAIL_USERNAME}'}
-${config.emailPassword ? `      EMAIL_PASSWORD: \${EMAIL_PASSWORD}` : '      # EMAIL_PASSWORD: ${EMAIL_PASSWORD}'}
-${config.emailFrom ? `      EMAIL_FROM: \${EMAIL_FROM}` : '      # EMAIL_FROM: ${EMAIL_FROM}'}
+${config.emailService ? `      EMAIL_USERNAME: \${EMAIL_USERNAME}` : '      # EMAIL_USERNAME: ${EMAIL_USERNAME}'}
+${config.emailService ? `      EMAIL_PASSWORD: \${EMAIL_PASSWORD}` : '      # EMAIL_PASSWORD: ${EMAIL_PASSWORD}'}
+${config.emailService || config.emailFrom ? `      EMAIL_FROM: \${EMAIL_FROM}` : '      # EMAIL_FROM: ${EMAIL_FROM}'}
 ${config.emailFromName ? `      EMAIL_FROM_NAME: \${EMAIL_FROM_NAME}` : '      # EMAIL_FROM_NAME: ${EMAIL_FROM_NAME}'}
-${config.mailgunApiKey ? `      MAILGUN_API_KEY: \${MAILGUN_API_KEY}` : '      # MAILGUN_API_KEY: ${MAILGUN_API_KEY}'}
-${config.mailgunDomain ? `      MAILGUN_DOMAIN: \${MAILGUN_DOMAIN}` : '      # MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}'}
+${config.emailService === 'mailgun' || config.mailgunDomain ? `      MAILGUN_API_KEY: \${MAILGUN_API_KEY}` : '      # MAILGUN_API_KEY: ${MAILGUN_API_KEY}'}
+${config.mailgunDomain || config.emailService === 'mailgun' ? `      MAILGUN_DOMAIN: \${MAILGUN_DOMAIN}` : '      # MAILGUN_DOMAIN: ${MAILGUN_DOMAIN}'}
 ${config.mailgunHost ? `      MAILGUN_HOST: \${MAILGUN_HOST}` : '      # MAILGUN_HOST: ${MAILGUN_HOST}'}
       
       # =============================================================================
@@ -792,14 +794,14 @@ ${config.embeddingsProvider ? `      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER
       # =============================================================================
       # Web Search Configuration
       # =============================================================================
-${config.webSearch?.serperApiKey ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
-${config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
-${config.webSearch?.searxngApiKey ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
-${config.webSearch?.firecrawlApiKey ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
+${config.webSearch?.searchProvider === 'serper' ? `      SERPER_API_KEY: \${SERPER_API_KEY}` : '      # SERPER_API_KEY: ${SERPER_API_KEY}'}
+${config.webSearch?.searchProvider === 'searxng' || config.webSearch?.searxngInstanceUrl ? `      SEARXNG_INSTANCE_URL: \${SEARXNG_INSTANCE_URL}` : '      # SEARXNG_INSTANCE_URL: ${SEARXNG_INSTANCE_URL}'}
+${config.webSearch?.searchProvider === 'searxng' ? `      SEARXNG_API_KEY: \${SEARXNG_API_KEY}` : '      # SEARXNG_API_KEY: ${SEARXNG_API_KEY}'}
+${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_KEY: \${FIRECRAWL_API_KEY}` : '      # FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY}'}
 ${config.webSearch?.scraperType === 'firecrawl' ? `      FIRECRAWL_API_URL: \${FIRECRAWL_API_URL}` : '      # FIRECRAWL_API_URL: ${FIRECRAWL_API_URL}'}
-${config.webSearch?.jinaApiKey ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
+${config.webSearch?.rerankerType === 'jina' ? `      JINA_API_KEY: \${JINA_API_KEY}` : '      # JINA_API_KEY: ${JINA_API_KEY}'}
 ${config.webSearch?.rerankerType === 'jina' ? `      JINA_API_URL: \${JINA_API_URL}` : '      # JINA_API_URL: ${JINA_API_URL}'}
-${config.webSearch?.cohereApiKey ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
+${config.webSearch?.rerankerType === 'cohere' ? `      COHERE_API_KEY: \${COHERE_API_KEY}` : '      # COHERE_API_KEY: ${COHERE_API_KEY}'}
       
       # =============================================================================
       # MeiliSearch Configuration

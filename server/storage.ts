@@ -196,7 +196,7 @@ export class FileStorage implements IStorage {
       
       // Field Overrides - initially empty (all fields use LibreChat defaults)
       // Fields are added here when user explicitly sets them
-      fieldOverrides: undefined,
+      fieldOverrides: {},
       
       // Security (empty for security)
       jwtSecret: "",
@@ -221,12 +221,15 @@ export class FileStorage implements IStorage {
       titleConvo: true,
       redisPingInterval: 30000,
       minPasswordLength: 8,
+      emailVerificationRequired: false,
+      allowUnverifiedEmailLogin: true,
       allowRegistration: true,
       allowEmailLogin: true,
       allowSocialLogin: false,
       allowSocialRegistration: false,
       allowPasswordReset: true,
       sessionExpiry: 900000,
+      showBirthdayIcon: false,
       refreshTokenExpiry: 604800000,
       
       // Code Execution Fields
@@ -291,12 +294,15 @@ export class FileStorage implements IStorage {
       titleConvo: true,
       redisPingInterval: 30000,
       minPasswordLength: 8,
+      emailVerificationRequired: false,
+      allowUnverifiedEmailLogin: true,
       allowRegistration: true,
       allowEmailLogin: true,
       allowSocialLogin: false,
       allowSocialRegistration: false,
       allowPasswordReset: true,
       sessionExpiry: 900000,
+      showBirthdayIcon: false,
       refreshTokenExpiry: 604800000,
       
       // Basic Server Configuration
@@ -310,7 +316,7 @@ export class FileStorage implements IStorage {
       
       // Field Overrides - initially empty (all fields use LibreChat defaults)
       // Fields are added here when user explicitly sets them
-      fieldOverrides: undefined,
+      fieldOverrides: {},
       
       // Security (empty for security)
       jwtSecret: "",

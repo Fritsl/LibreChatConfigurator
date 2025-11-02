@@ -2028,43 +2028,8 @@ If you encounter issues:
 `;
 }
 
-// Helper function to remove duplicate fields that map to the same envKey
-// This prevents JSON duplicate key errors (e.g., awsEndpointURL vs awsEndpointUrl both mapping to AWS_ENDPOINT_URL)
-function removeDuplicateEnvKeyFields(config: any): any {
-  const { FIELD_REGISTRY } = require('../shared/config/field-registry');
-  
-  // Build map of envKey -> field IDs that map to it
-  const envKeyMap = new Map<string, string[]>();
-  for (const field of FIELD_REGISTRY) {
-    if (field.envKey) {
-      if (!envKeyMap.has(field.envKey)) {
-        envKeyMap.set(field.envKey, []);
-      }
-      envKeyMap.get(field.envKey)!.push(field.id);
-    }
-  }
-  
-  // Find which fields to remove (keep first one, remove duplicates)
-  const fieldsToRemove = new Set<string>();
-  Array.from(envKeyMap.entries()).forEach(([envKey, fieldIds]) => {
-    if (fieldIds.length > 1) {
-      // Keep the first field ID, remove the rest
-      for (let i = 1; i < fieldIds.length; i++) {
-        fieldsToRemove.add(fieldIds[i]);
-      }
-    }
-  });
-  
-  // Remove duplicate fields from config
-  const cleanedConfig = { ...config };
-  Array.from(fieldsToRemove).forEach(fieldId => {
-    if (fieldId in cleanedConfig) {
-      delete cleanedConfig[fieldId];
-    }
-  });
-  
-  return cleanedConfig;
-}
+// NOTE: removeDuplicateEnvKeyFields removed - now using canonicalizeConfiguration from registry-helpers
+// which is properly integrated into the storage pipeline for systemic deduplication
 
 // Helper function to remove empty, null, or undefined values from configuration
 // This ensures round-trip parity: only export fields that have actual values
@@ -2106,11 +2071,10 @@ function generateProfileFile(config: any): string {
   
   // Strip empty/null/undefined values to ensure round-trip parity
   // Only export fields that have actual meaningful values
-  let cleanedConfig = stripEmptyValues(config) || {};
+  const cleanedConfig = stripEmptyValues(config) || {};
   
-  // CRITICAL: Remove duplicate fields that map to the same envKey
-  // This prevents JSON parsing errors in .bat file (e.g., awsEndpointURL vs awsEndpointUrl)
-  cleanedConfig = removeDuplicateEnvKeyFields(cleanedConfig);
+  // NOTE: Deduplication now handled by canonicalizeConfiguration in storage pipeline
+  // No need to dedupe here since storage.saveConfigurationToHistory already canonicalizes
   
   // CRITICAL: Ensure configurationName is ALWAYS present in the configuration object
   // The .bat file requires it at $json.configuration.configurationName

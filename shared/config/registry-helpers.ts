@@ -113,6 +113,7 @@ export function validateEnvVars(envVars: Record<string, string>): {
 
 /**
  * Map ENV variables to configuration object using registry
+ * Respects nested structure from yamlPath for proper data placement
  */
 export function mapEnvToConfiguration(envVars: Record<string, string>): Record<string, any> {
   const config: Record<string, any> = {};
@@ -129,7 +130,27 @@ export function mapEnvToConfiguration(envVars: Record<string, string>): Record<s
       value = convertEnvValue(envValue, field);
     }
     
-    config[field.id] = value;
+    // Determine where to place the value in the config structure
+    // If yamlPath indicates nesting (contains a dot), create nested structure
+    // Otherwise, use field.id at top level
+    if (field.yamlPath && field.yamlPath.includes('.')) {
+      const parts = field.yamlPath.split('.');
+      let current = config;
+      
+      // Create nested structure
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!current[parts[i]]) {
+          current[parts[i]] = {};
+        }
+        current = current[parts[i]];
+      }
+      
+      // Set the value at the final location
+      current[parts[parts.length - 1]] = value;
+    } else {
+      // Top-level field
+      config[field.id] = value;
+    }
   }
   
   return config;

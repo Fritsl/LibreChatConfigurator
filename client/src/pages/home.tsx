@@ -671,7 +671,7 @@ export default function Home() {
     
     toast({
       title: "Partial Import Complete",
-      description: `Imported ${partialImportData.validEnvVarsCount} valid fields. ${partialImportData.yamlOnlyVars.length} YAML-only fields were skipped.`,
+      description: `Imported ${partialImportData.validEnvVarsCount} valid fields. ${partialImportData.yamlOnlyVars.length} YAML-only fields were skipped (they must be in librechat.yaml).`,
     });
     
     setShowPartialImportChoice(false);
@@ -1800,10 +1800,10 @@ export default function Home() {
           <div className="space-y-4">
             <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4" data-testid="yaml-only-warning">
               <p className="text-sm text-destructive font-semibold" data-testid="text-yaml-only-count">
-                Your .env file contains <span className="font-bold">{yamlOnlyFieldsData?.length || 0}</span> field{(yamlOnlyFieldsData?.length || 0) > 1 ? 's' : ''} that MUST be configured in librechat.yaml, NOT .env
+                Your .env file contains <span className="font-bold">{yamlOnlyFieldsData?.length || 0}</span> field{(yamlOnlyFieldsData?.length || 0) > 1 ? 's' : ''} that can ONLY be configured in librechat.yaml
               </p>
               <p className="text-sm text-destructive/80 mt-2">
-                <strong>STRICT POLICY:</strong> This tool enforces clean separation between .env and librechat.yaml files. Fields that belong in librechat.yaml will not be imported from .env files.
+                <strong>LibreChat Requirement:</strong> These fields are not recognized by LibreChat when placed in .env files. They must be in librechat.yaml to work properly.
               </p>
             </div>
 
@@ -1914,7 +1914,10 @@ export default function Home() {
                     </div>
                   </div>
                   <p className="text-xs mt-2 text-blue-600 dark:text-blue-400">
-                    <strong>Why?</strong> LibreChat RC4 uses librechat.yaml for UI and feature configuration. Keeping these fields in .env creates confusion and inconsistency.
+                    <strong>Why?</strong> LibreChat doesn't support these specific fields in .env files. They must be in librechat.yaml or they won't work.
+                  </p>
+                  <p className="text-xs mt-1 text-blue-600 dark:text-blue-400">
+                    <strong>Note:</strong> API keys and other sensitive settings CAN be in .env safely - this tool routes them there for security while LibreChat is in beta.
                   </p>
                 </div>
               </div>
@@ -1944,7 +1947,7 @@ export default function Home() {
             <AlertDialogDescription className="space-y-4">
               <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                 <p className="text-sm text-yellow-800 dark:text-yellow-200 font-semibold" data-testid="text-partial-import-summary">
-                  Your .env file contains {partialImportData?.yamlOnlyVars.length || 0} field{(partialImportData?.yamlOnlyVars.length || 0) > 1 ? 's' : ''} that belong in librechat.yaml
+                  Your .env file contains {partialImportData?.yamlOnlyVars.length || 0} field{(partialImportData?.yamlOnlyVars.length || 0) > 1 ? 's' : ''} that can only work in librechat.yaml
                 </p>
                 <div className="mt-3 space-y-2 text-sm">
                   <div className="flex items-center gap-2">
@@ -2007,9 +2010,12 @@ export default function Home() {
                   <strong>What would you like to do?</strong>
                 </p>
                 <ul className="text-xs text-blue-700 dark:text-blue-300 mt-2 space-y-1 ml-4 list-disc">
-                  <li><strong>Import valid fields only:</strong> Import the {partialImportData?.validEnvVarsCount || 0} .env-compatible field{(partialImportData?.validEnvVarsCount || 0) !== 1 ? 's' : ''} and skip YAML-only ones</li>
-                  <li><strong>Cancel:</strong> Don't import anything (fix your .env file first)</li>
+                  <li><strong>Import valid fields only:</strong> Import the {partialImportData?.validEnvVarsCount || 0} .env-compatible field{(partialImportData?.validEnvVarsCount || 0) !== 1 ? 's' : ''} (API keys will be safely exported to .env)</li>
+                  <li><strong>Cancel:</strong> Don't import anything</li>
                 </ul>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
+                  <em>Note:</em> API keys and sensitive data can safely be in .env - this tool routes them there for security while LibreChat is in beta.
+                </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -2205,7 +2211,10 @@ export default function Home() {
                     ⏭️ {importSummaryData.skippedYamlFields.length} YAML-Only Field{importSummaryData.skippedYamlFields.length !== 1 ? 's' : ''} Skipped
                   </h3>
                   <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                    The following fields were detected in your .env file but belong in librechat.yaml. They were not imported.
+                    These fields can only work in librechat.yaml (LibreChat doesn't support them in .env). They were skipped during import.
+                  </p>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                    <em>Note:</em> API keys and other sensitive settings CAN be in .env - this tool routes them there for security while LibreChat is in beta.
                   </p>
                 </div>
                 

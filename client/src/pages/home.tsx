@@ -1962,18 +1962,42 @@ export default function Home() {
                 </div>
               </div>
 
-              <div>
-                <h4 className="font-semibold text-sm mb-2">YAML-Only Fields (will be skipped):</h4>
-                <div className="bg-muted rounded-lg p-3 max-h-48 overflow-y-auto">
-                  <div className="space-y-1">
-                    {partialImportData?.yamlOnlyVars.map(({ envKey, yamlPath }, index) => (
-                      <div key={envKey} className="text-xs font-mono border-l-2 border-yellow-500 pl-2 py-0.5">
-                        <span className="text-muted-foreground mr-2">{index + 1}.</span>
-                        <span className="text-yellow-700 dark:text-yellow-400">{envKey}</span>
-                        <span className="text-muted-foreground mx-1">→</span>
-                        <span className="text-primary text-xs">{yamlPath}</span>
-                      </div>
-                    ))}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Valid fields that WILL be imported */}
+                <div>
+                  <h4 className="font-semibold text-sm mb-2 text-green-700 dark:text-green-300">
+                    ✅ Valid .env Fields ({partialImportData?.validEnvVarsCount || 0} will be imported):
+                  </h4>
+                  <div className="bg-muted rounded-lg p-3 max-h-64 overflow-y-auto">
+                    <div className="space-y-1">
+                      {partialImportData && Object.keys(partialImportData.allEnvVars)
+                        .filter(key => !partialImportData.yamlOnlyVars.some(v => v.envKey === key))
+                        .map((envKey, index) => (
+                          <div key={envKey} className="text-xs font-mono border-l-2 border-green-500 pl-2 py-0.5">
+                            <span className="text-muted-foreground mr-2">{index + 1}.</span>
+                            <span className="text-green-700 dark:text-green-400">{envKey}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* YAML-only fields that will be skipped */}
+                <div>
+                  <h4 className="font-semibold text-sm mb-2 text-yellow-700 dark:text-yellow-300">
+                    ⏭️ YAML-Only Fields ({partialImportData?.yamlOnlyVars.length || 0} will be skipped):
+                  </h4>
+                  <div className="bg-muted rounded-lg p-3 max-h-64 overflow-y-auto">
+                    <div className="space-y-1">
+                      {partialImportData?.yamlOnlyVars.map(({ envKey, yamlPath }, index) => (
+                        <div key={envKey} className="text-xs font-mono border-l-2 border-yellow-500 pl-2 py-0.5">
+                          <span className="text-muted-foreground mr-2">{index + 1}.</span>
+                          <span className="text-yellow-700 dark:text-yellow-400">{envKey}</span>
+                          <span className="text-muted-foreground mx-1">→</span>
+                          <span className="text-primary text-xs">{yamlPath}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

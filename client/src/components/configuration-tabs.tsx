@@ -103,8 +103,14 @@ export function ConfigurationTabs({
   };
 
   const handleNavigateToField = (fieldId: string) => {
-    // Find which tab contains this field
-    const tab = tabs.find(t => t.settings.includes(fieldId));
+    // Find the field in registry to get its yamlPath
+    const field = FIELD_REGISTRY.find(f => f.id === fieldId);
+    
+    // Find which tab contains this field (check both field ID and yamlPath)
+    const tab = tabs.find(t => 
+      t.settings.includes(fieldId) || 
+      (field?.yamlPath && t.settings.includes(field.yamlPath))
+    );
     
     if (tab) {
       setActiveTab(tab.id);

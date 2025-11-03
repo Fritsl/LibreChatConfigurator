@@ -41,18 +41,20 @@ export function FieldStatesPanel({
     const field = FIELD_REGISTRY.find(f => f.id === fieldId);
     if (!field) return undefined;
 
+    // Try nested yamlPath first (if it exists)
     if (field.yamlPath) {
       const keys = field.yamlPath.split('.');
       let current: any = configuration;
       for (const key of keys) {
-        if (current === undefined || current === null) return field.defaultValue;
+        if (current === undefined || current === null) break;
         current = current[key];
       }
-      return current !== undefined ? current : field.defaultValue;
+      if (current !== undefined) return current;
     }
-    return (configuration as any)[fieldId] !== undefined 
-      ? (configuration as any)[fieldId] 
-      : field.defaultValue;
+    
+    // Fall back to flat field ID
+    const flatValue = (configuration as any)[fieldId];
+    return flatValue !== undefined ? flatValue : field.defaultValue;
   };
 
   // Calculate field states based on whether value differs from default

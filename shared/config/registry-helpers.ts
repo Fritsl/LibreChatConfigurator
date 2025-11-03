@@ -448,6 +448,12 @@ export function generateEnvFile(config: Record<string, any>): string {
     'misc': 'Miscellaneous Configuration'
   };
   
+  // Define mutually-exclusive field pairs (LibreChat RC4 validation)
+  // These fields cannot be set at the same time - LibreChat will throw an error
+  const mutuallyExclusivePairs: Record<string, string> = {
+    'REDIS_KEY_PREFIX_VAR': 'REDIS_KEY_PREFIX', // Only export REDIS_KEY_PREFIX if both are empty
+  };
+  
   // Generate ENV file with category headers in specific order
   for (const category of categoryOrder) {
     const fields = byCategory.get(category);
@@ -459,7 +465,11 @@ export function generateEnvFile(config: Record<string, any>): string {
     lines.push('# =============================================================================');
     
     for (const field of fields) {
-      const envLine = generateEnvLine(field, config, cachedSecrets);
+      const envLine = generateEnvLine(field, config, cachedSecrets, mutuallyExclusivePairs);
+      
+      // Skip empty lines returned by mutually-exclusive logic
+      if (envLine === '') continue;
+      
       lines.push(envLine);
     }
   }
@@ -470,7 +480,12 @@ export function generateEnvFile(config: Record<string, any>): string {
 /**
  * Generate a single ENV line for a field
  */
-function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, cachedSecrets: CachedSecrets): string {
+function generateEnvLine(
+  field: FieldDescriptor, 
+  config: Record<string, any>, 
+  cachedSecrets: CachedSecrets,
+  mutuallyExclusivePairs: Record<string, string> = {}
+): string {
   // Get value - handle nested structures
   let value = getConfigValue(config, field);
   
@@ -503,36 +518,58 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   if (field.envKey && securityFields[field.envKey]) {
     // CRITICAL FIX: Security fields must NEVER be commented out for Docker
     // Always export them uncommented, regardless of override flags
-    if (value && value !== "") {
-      // Use explicit value from config (non-empty)
-      return bugWarning + `${field.envKey}=${value}`;
-    } else {
-      // CRITICAL: Always export with cached/generated value (not commented out)
-      // Docker-compose requires these variables to exist in .env file
-      const cachedValue = cachedSecrets[securityFields[field.envKey]];
-      return bugWarning + `${field.envKey}=${cachedValue}`;
+    const cachedValue = cachedSecrets[securityFields[field.envKey]];
+    const finalValue = (value && value !== "") ? value : cachedValue;
+    
+    // Safety check: ensure we always have a non-empty value
+    if (!finalValue || finalValue === "") {
+      throw new Error(`Security field ${field.envKey} cannot be empty. This indicates a bug in the secrets cache.`);
     }
+    
+    return bugWarning + `${field.envKey}=${finalValue}`;
   }
   
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
+  
+  // Get default comment for all other cases
+  const defaultComment = getDefaultComment(field);
+  
+  // Determine if this field would export with a value or as default
+  const hasExplicitValue = envValue !== '';
+  const hasDefault = field.defaultValue !== undefined && field.defaultValue !== null;
+  
+  // MUTUALLY-EXCLUSIVE FIELD HANDLING (LibreChat RC4 validation)
+  // Some fields cannot be set together - skip the "VAR" variant if both are empty/default
+  if (field.envKey && mutuallyExclusivePairs[field.envKey]) {
+    const partnerFieldId = mutuallyExclusivePairs[field.envKey];
+    const partnerField = FIELD_REGISTRY.find(f => f.envKey === partnerFieldId);
+    
+    if (partnerField) {
+      const partnerValue = getConfigValue(config, partnerField);
+      const partnerEnvValue = formatEnvValue(partnerValue, partnerField);
+      const partnerHasExplicitValue = partnerEnvValue !== '';
+      
+      // If neither field has an explicit value (both are empty/default), skip the VAR variant
+      if (!hasExplicitValue && !partnerHasExplicitValue) {
+        return ''; // Return empty string to skip this field
+      }
+    }
+  }
   
   // ✅ DOCKER COMPATIBILITY FIX: Always export fields with values OR defaults
   // Docker needs all referenced env vars to exist in .env, even if using defaults
   // This prevents "variable not set" warnings and broken rate limiting
   
   // If field has explicit value, use it
-  if (envValue !== '') {
+  if (hasExplicitValue) {
     return bugWarning + `${field.envKey}=${envValue}`;
   }
-  
-  // Get default comment for all other cases
-  const defaultComment = getDefaultComment(field);
   
   // ✅ CRITICAL: Export ALL fields with defined defaults UNCOMMENTED
   // Docker-compose references these variables and needs them to exist with values
   // This includes fields using LibreChat defaults AND fields with empty string defaults
-  if (field.defaultValue !== undefined && field.defaultValue !== null) {
+  if (hasDefault) {
     // Add inline comment if using LibreChat default (for user clarity)
     const inlineComment = shouldUseDefault ? '  # Using LibreChat default' : '';
     return bugWarning + `${field.envKey}=${defaultComment}${inlineComment}`;

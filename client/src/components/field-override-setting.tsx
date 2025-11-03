@@ -39,18 +39,20 @@ export function FieldOverrideSetting({
 
   // Get current value from configuration
   const getCurrentValue = (): any => {
+    // Try nested yamlPath first (if it exists)
     if (field.yamlPath) {
       const keys = field.yamlPath.split('.');
       let current: any = configuration;
       for (const key of keys) {
-        if (current === undefined || current === null) return field.defaultValue;
+        if (current === undefined || current === null) break;
         current = current[key];
       }
-      return current !== undefined ? current : field.defaultValue;
+      if (current !== undefined) return current;
     }
-    return (configuration as any)[actualFieldId] !== undefined 
-      ? (configuration as any)[actualFieldId] 
-      : field.defaultValue;
+    
+    // Fall back to flat field ID
+    const flatValue = (configuration as any)[actualFieldId];
+    return flatValue !== undefined ? flatValue : field.defaultValue;
   };
 
   const currentValue = getCurrentValue();

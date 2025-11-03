@@ -492,7 +492,7 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
       ].filter(line => line !== null).join('\n') + '\n' // Add trailing newline
     : '';
   
-  // Special handling for security fields with cached secrets
+  // Special handling for security fields - ALWAYS EXPORT (required for Docker)
   const securityFields: Record<string, keyof CachedSecrets> = {
     'JWT_SECRET': 'jwtSecret',
     'JWT_REFRESH_SECRET': 'jwtRefreshSecret',
@@ -502,14 +502,16 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   
   if (field.envKey && securityFields[field.envKey]) {
     if (value) {
-      // Check fieldOverrides even for security fields
+      // Use explicit value from config
       if (shouldUseDefault) {
         return bugWarning + `# ${field.envKey}=${value}  # Using LibreChat default`;
       }
       return bugWarning + `${field.envKey}=${value}`;
     } else {
+      // CRITICAL: Always export with cached/generated value (not commented out)
+      // Docker-compose requires these variables to exist in .env file
       const cachedValue = cachedSecrets[securityFields[field.envKey]];
-      return bugWarning + `# ${field.envKey}=${cachedValue} (auto-generated - configure in Security settings to export)`;
+      return bugWarning + `${field.envKey}=${cachedValue}`;
     }
   }
   

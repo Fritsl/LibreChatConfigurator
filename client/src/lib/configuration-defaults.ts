@@ -415,48 +415,10 @@ export const defaultConfiguration: Configuration = {
     }
   },
   
-  interface: {
-    mcpServers: {
-      placeholder: "MCP Servers"
-    },
-    customWelcome: "",
-    customFooter: "",
-    defaultPreset: "",
-    fileSearch: true,
-    uploadAsText: false,
-    privacyPolicy: {
-      externalUrl: "",
-      openNewTab: true
-    },
-    termsOfService: {
-      externalUrl: "",
-      openNewTab: true,
-      modalAcceptance: false,
-      modalTitle: "",
-      modalContent: ""
-    },
-    modelSelect: true,
-    parameters: true,
-    sidePanel: true,
-    presets: true,
-    prompts: true,
-    bookmarks: true,
-    multiConvo: false,
-    agents: true,
-    webSearch: true,
-    runCode: false,
-    fileCitations: true,
-    artifacts: true,
-    peoplePicker: {
-      users: true,
-      groups: true,
-      roles: true
-    },
-    marketplace: {
-      use: false
-    },
-    temporaryChatRetention: 720
-  },
+  // NOTE: Interface fields removed from defaults
+  // They are stored FLAT in the configuration (e.g., interfacePrivacyPolicyExternalUrl)
+  // and only transformed to nested structure during YAML export.
+  // Having nested defaults here causes empty values to override loaded data.
   
   // modelSpecs: Intentionally left empty due to LibreChat RC4 bug
   // When enabled, it causes interface.presets and other visibility settings to malfunction

@@ -501,8 +501,12 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
   };
   
   if (field.envKey && securityFields[field.envKey]) {
-    if (value) {
-      // Use explicit value from config
+    console.log(`🔐 [SECURITY] ${field.envKey}: value="${value}" (type: ${typeof value}, truthy: ${!!value})`);
+    
+    // CRITICAL FIX: Empty strings should use auto-generated secrets
+    if (value && value !== "") {
+      // Use explicit value from config (non-empty)
+      console.log(`🔐 [SECURITY] ${field.envKey}: Using explicit value from config`);
       if (shouldUseDefault) {
         return bugWarning + `# ${field.envKey}=${value}  # Using LibreChat default`;
       }
@@ -511,6 +515,7 @@ function generateEnvLine(field: FieldDescriptor, config: Record<string, any>, ca
       // CRITICAL: Always export with cached/generated value (not commented out)
       // Docker-compose requires these variables to exist in .env file
       const cachedValue = cachedSecrets[securityFields[field.envKey]];
+      console.log(`🔐 [SECURITY] ${field.envKey}: Using auto-generated secret (length: ${cachedValue.length})`);
       return bugWarning + `${field.envKey}=${cachedValue}`;
     }
   }

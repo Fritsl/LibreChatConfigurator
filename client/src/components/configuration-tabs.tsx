@@ -270,7 +270,7 @@ paths:
           icon: Eye,
           description: "App Title, Welcome, Interface & Features",
           color: "from-purple-500 to-purple-600",
-          settings: ["enabledEndpoints", "appTitle", "showBirthdayIcon", "interface.customWelcome", "interface.customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "modelSpecs.enforce", "modelSpecs.prioritize", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.endpointsMenu", "interface.defaultPreset", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
+          settings: ["enabledEndpoints", "appTitle", "showBirthdayIcon", "customWelcome", "customFooter", "helpAndFAQURL", "allowSharedLinks", "allowSharedLinksPublic", "titleConvo", "summaryConvo", "interface.mcpServers.placeholder", "interface.fileSearch", "interface.uploadAsText", "interface.privacyPolicy.externalUrl", "interface.privacyPolicy.openNewTab", "interface.termsOfService.externalUrl", "interface.termsOfService.openNewTab", "interface.termsOfService.modalAcceptance", "interface.termsOfService.modalTitle", "interface.termsOfService.modalContent", "interface.modelSelect", "modelSpecs.addedEndpoints", "modelSpecs.enforce", "modelSpecs.prioritize", "interface.parameters", "interface.sidePanel", "interface.presets", "interface.prompts", "interface.bookmarks", "interface.multiConvo", "interface.agents", "interface.webSearch", "interface.endpointsMenu", "interface.defaultPreset", "interface.runCode", "interface.fileCitations", "interface.artifacts", "interface.peoplePicker.users", "interface.peoplePicker.groups", "interface.peoplePicker.roles", "interface.marketplace.use", "interface.temporaryChatRetention"],
           docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface",
         },
         {
@@ -2398,22 +2398,6 @@ paths:
       interfacePeoplePickerRoles: { type: "boolean", description: "Show roles in people picker", label: "People Picker Roles", technical: { yamlPath: "interface.peoplePicker.roles", configFile: "librechat.yaml" } },
       
       // Interface Nested Object Fields (path-based)
-      "interface.customWelcome": { 
-        type: "textarea", 
-        description: "Custom welcome message shown to users when they first access LibreChat. Supports markdown formatting and {{user.name}} variable for personalization.", 
-        label: "Welcome Message",
-        docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/interface#customwelcome",
-        docSection: "Interface Config",
-        technical: { yamlPath: "interface.customWelcome", configFile: "librechat.yaml" }
-      },
-      "interface.customFooter": { 
-        type: "textarea", 
-        description: "Custom footer text displayed at the bottom of the interface. Use this for copyright, contact information, or additional links.\n\n⚠️ LIBRECHAT BUG: The customFooter field cannot be set in librechat.yaml due to a missing TypeScript definition in the frontend. The backend loads it correctly, but the frontend filters it out before displaying. WORKAROUND: Use CUSTOM_FOOTER in .env file instead - environment variables bypass this type filtering issue. (Affects v0.8.0-rc4 and earlier)", 
-        label: "Footer Text",
-        docUrl: "https://www.librechat.ai/docs/configuration/dotenv#application-domains",
-        docSection: "App Settings",
-        technical: { envVar: "CUSTOM_FOOTER", configFile: ".env" }
-      },
       "interface.fileSearch": { type: "boolean", description: "Enable file search in interface", label: "File Search", technical: { yamlPath: "interface.fileSearch", configFile: "librechat.yaml" } },
       "interface.uploadAsText": { 
         type: "boolean", 

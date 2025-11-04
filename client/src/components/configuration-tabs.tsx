@@ -9,6 +9,7 @@ import { ModelSpecsPresetManager } from "./model-specs-preset-manager";
 import { UserExperiencePresets } from "./user-experience-presets";
 import { AgentCapabilitiesManager } from "./agent-capabilities-manager";
 import { FieldStatesPanel } from "./field-states-panel";
+import { RAGQuickSetup } from "./rag-quick-setup";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -4415,6 +4416,34 @@ paths:
                                 <strong>💡 Limiting Search Results:</strong> To control how many search results agents use, configure the citation limits in the <strong>Agents</strong> tab: <em>Max Citations</em> (default: 30), <em>Max Citations Per File</em> (default: 7), and <em>Min Relevance Score</em> (default: 0.45). These settings determine how many results are included and their quality threshold.
                               </AlertDescription>
                             </Alert>
+                          </div>
+                        )}
+                        
+                        {tab.id === "rag" && (
+                          <div className="col-span-full mb-6">
+                            <RAGQuickSetup
+                              configuration={configuration}
+                              onApplySetup={() => {
+                                // Apply RAG quick setup with sensible defaults
+                                let updatedConfig = { ...configuration };
+                                
+                                updatedConfig.ragApiURL = "http://rag-api:8000";
+                                updatedConfig.ragPort = 8000;
+                                updatedConfig.ragHost = "0.0.0.0";
+                                updatedConfig.collectionName = "librechat";
+                                updatedConfig.chunkSize = 1500;
+                                updatedConfig.chunkOverlap = 100;
+                                updatedConfig.embeddingsProvider = "openai";
+                                // ragOpenaiApiKey is left unset - it will fallback to OPENAI_API_KEY in .env generation
+                                
+                                onConfigurationChange(updatedConfig);
+                                
+                                toast({
+                                  title: "RAG Quick Setup Applied",
+                                  description: "RAG has been configured with recommended settings. The RAG API and pgVector will be included in your Docker Compose package.",
+                                });
+                              }}
+                            />
                           </div>
                         )}
                         

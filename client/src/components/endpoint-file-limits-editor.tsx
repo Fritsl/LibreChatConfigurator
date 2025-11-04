@@ -32,6 +32,25 @@ const AVAILABLE_ENDPOINTS = [
   { value: "agents", label: "Agents" },
 ];
 
+// Microsoft 365 / Office MIME types (all formats)
+const M365_MIME_TYPES = [
+  { value: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", label: "Word (.docx)" },
+  { value: "application/msword", label: "Word Legacy (.doc)" },
+  { value: "application/vnd.ms-word.document.macroEnabled.12", label: "Word Macro (.docm)" },
+  { value: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", label: "Excel (.xlsx)" },
+  { value: "application/vnd.ms-excel", label: "Excel Legacy (.xls)" },
+  { value: "application/vnd.ms-excel.sheet.macroEnabled.12", label: "Excel Macro (.xlsm)" },
+  { value: "application/vnd.openxmlformats-officedocument.presentationml.presentation", label: "PowerPoint (.pptx)" },
+  { value: "application/vnd.ms-powerpoint", label: "PowerPoint Legacy (.ppt)" },
+  { value: "application/vnd.ms-powerpoint.presentation.macroEnabled.12", label: "PowerPoint Macro (.pptm)" },
+  { value: "application/vnd.ms-outlook", label: "Outlook Message (.msg)" },
+  { value: "application/vnd.visio", label: "Visio (.vsd)" },
+  { value: "application/vnd.ms-project", label: "Project (.mpp)" },
+  { value: "application/vnd.openxmlformats-officedocument.wordprocessingml.template", label: "Word Template (.dotx)" },
+  { value: "application/vnd.openxmlformats-officedocument.spreadsheetml.template", label: "Excel Template (.xltx)" },
+  { value: "application/vnd.openxmlformats-officedocument.presentationml.template", label: "PowerPoint Template (.potx)" },
+];
+
 // Common MIME types for file uploads
 const COMMON_MIME_TYPES = [
   { value: "text/plain", label: "Text (.txt)" },
@@ -40,9 +59,7 @@ const COMMON_MIME_TYPES = [
   { value: "image/png", label: "PNG Image" },
   { value: "image/webp", label: "WebP Image" },
   { value: "image/gif", label: "GIF Image" },
-  { value: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", label: "Word (.docx)" },
-  { value: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", label: "Excel (.xlsx)" },
-  { value: "application/vnd.openxmlformats-officedocument.presentationml.presentation", label: "PowerPoint (.pptx)" },
+  ...M365_MIME_TYPES,
   { value: "text/csv", label: "CSV (.csv)" },
   { value: "text/markdown", label: "Markdown (.md)" },
   { value: "application/json", label: "JSON (.json)" },

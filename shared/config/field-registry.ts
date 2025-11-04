@@ -16,7 +16,17 @@ export type FieldType =
   | 'object'
   | 'enum'
   | 'url'
-  | 'email';
+  | 'email'
+  | 'custom-endpoints'
+  | 'mcp-servers'
+  | 'web-search'
+  | 'oauth-providers'
+  | 'meilisearch-integration'
+  | 'caching-integration'
+  | 'file-storage'
+  | 'email-composite'
+  | 'endpoint-file-limits'
+  | 'file-types';
 
 // Field descriptor - defines all metadata for a configuration field
 export interface FieldDescriptor {
@@ -3326,7 +3336,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'fileConfigEndpointsOpenAISupportedMimeTypes',
     yamlPath: 'fileConfig.endpoints.openAI.supportedMimeTypes',
-    type: 'array',
+    type: 'file-types',
     defaultValue: ['image/*', 'application/pdf'],
     category: 'file-config',
     description: 'Allowed MIME types for OpenAI endpoint (supports wildcards)',
@@ -3368,7 +3378,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'fileConfigEndpointsAgentsSupportedMimeTypes',
     yamlPath: 'fileConfig.endpoints.agents.supportedMimeTypes',
-    type: 'array',
+    type: 'file-types',
     defaultValue: ['image/*', 'application/pdf', 'text/*'],
     category: 'file-config',
     description: 'Allowed MIME types for Agents endpoint (supports wildcards)',

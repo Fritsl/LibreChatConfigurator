@@ -114,6 +114,17 @@ export function FieldOverrideSetting({
       case 'array': return 'array';
       case 'object': return 'object';
       case 'enum': return 'select';
+      // Pass through custom component types directly
+      case 'custom-endpoints': return 'custom-endpoints';
+      case 'mcp-servers': return 'mcp-servers';
+      case 'web-search': return 'web-search';
+      case 'oauth-providers': return 'oauth-providers';
+      case 'meilisearch-integration': return 'meilisearch-integration';
+      case 'caching-integration': return 'caching-integration';
+      case 'file-storage': return 'file-storage';
+      case 'email-composite': return 'email-composite';
+      case 'endpoint-file-limits': return 'endpoint-file-limits';
+      case 'file-types': return 'file-types';
       default: return 'text';
     }
   };

@@ -4560,8 +4560,8 @@ paths:
                                   updatedConfig = setNestedValue(updatedConfig, "interface.modelSelect", false);
                                   updatedConfig = setNestedValue(updatedConfig, "interface.presets", false);
                                   
-                                  // 3. Configure agents endpoint
-                                  updatedConfig = setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", true);
+                                  // 3. Configure agents endpoint (keep agent selector visible)
+                                  updatedConfig = setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", false);
                                   
                                   // 4. Configure modelSpecs with enforcement
                                   updatedConfig = setNestedValue(updatedConfig, "modelSpecs.enforce", true);

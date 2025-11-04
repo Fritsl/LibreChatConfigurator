@@ -28,7 +28,8 @@ export type FieldType =
   | 'endpoint-file-limits'
   | 'file-types'
   | 'endpoint-selector'
-  | 'strategy-dropdown';
+  | 'strategy-dropdown'
+  | 'capabilities-checkbox';
 
 // Field descriptor - defines all metadata for a configuration field
 export interface FieldDescriptor {
@@ -3738,7 +3739,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'endpointsAgentsCapabilities',
     yamlPath: 'endpoints.agents.capabilities',
-    type: 'array',
+    type: 'capabilities-checkbox',
     defaultValue: ['execute_code', 'file_search', 'actions', 'tools', 'artifacts', 'context', 'ocr', 'chain', 'web_search'],
     category: 'endpoints',
     arrayItemType: 'string',

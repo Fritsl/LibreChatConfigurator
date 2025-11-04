@@ -4088,9 +4088,9 @@ paths:
         technical: { yamlPath: "fileConfig.endpoints.openAI.totalSizeLimit", configFile: "librechat.yaml" }
       },
       fileConfigEndpointsOpenAISupportedMimeTypes: {
-        type: "array",
-        description: "Array of allowed MIME types for OpenAI file uploads (e.g., 'image/png', 'application/pdf').",
-        label: "OpenAI Supported MIME Types",
+        type: "file-types",
+        description: "Select which file types users can upload to OpenAI endpoints. Choose from common formats or add custom MIME types.",
+        label: "OpenAI Supported File Types",
         docUrl: "https://www.librechat.ai/docs/configuration/librechat_yaml/object_structure/file_config",
         docSection: "File Config - OpenAI",
         technical: { yamlPath: "fileConfig.endpoints.openAI.supportedMimeTypes", configFile: "librechat.yaml" }

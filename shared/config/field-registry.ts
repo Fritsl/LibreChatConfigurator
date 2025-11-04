@@ -3040,6 +3040,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   // =============================================================================
   {
     id: 'ux.preset.mode',
+    configPath: 'ux.preset.mode',
     yamlPath: 'ux.preset.mode',
     type: 'string',
     defaultValue: 'standard',

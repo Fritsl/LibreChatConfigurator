@@ -588,7 +588,30 @@ function generateEnvLine(
     return bugWarning + `${field.envKey}=${defaultComment}`;
   }
   
-  // Skip fields with no value and no meaningful default
+  // ✅ DOCKER COMPOSE WARNING SUPPRESSION
+  // For optional fields with no value, export blank strings to prevent Docker warnings
+  // Categories that benefit from blank string defaults (API keys, OAuth, optional services)
+  const optionalCategories = new Set([
+    'oauth',           // OAuth providers (GOOGLE_CLIENT_ID, GITHUB_CLIENT_SECRET, etc.)
+    'ai-providers',    // Optional AI API keys (GROQ_API_KEY, MISTRAL_API_KEY, etc.)
+    'file-storage',    // Optional file storage (AWS_*, AZURE_*, CDN_PROVIDER)
+    'external-apis',   // Optional external APIs (BING_SEARCH_API_KEY, SERPER_API_KEY, etc.)
+    'email',           // Optional email config (EMAIL_SERVICE, EMAIL_USERNAME, etc.)
+    'image-generation',// Optional image gen (DALLE3_BASEURL, DALLE2_BASEURL, etc.)
+    'web-search',      // Optional search APIs (SEARXNG_API_KEY, etc.)
+    'ldap',            // Optional LDAP (LDAP_URL, LDAP_BIND_CREDENTIALS, etc.)
+    'turnstile',       // Optional Turnstile (TURNSTILE_SECRET_KEY, etc.)
+    'code-execution',  // Optional code execution (E2B_API_KEY, SANDPACK_BUNDLER_URL, etc.)
+    'artifacts',       // Optional artifacts (FIREBASE_*, etc.)
+    'meilisearch',     // Optional MeiliSearch (MEILISEARCH_URL, etc.)
+  ]);
+  
+  // Export blank string for optional categories to suppress Docker warnings
+  if (field.category && optionalCategories.has(field.category)) {
+    return bugWarning + `${field.envKey}=""`;
+  }
+  
+  // Skip fields with no value and no meaningful default (required fields only)
   return '';
 }
 

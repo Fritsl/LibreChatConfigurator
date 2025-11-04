@@ -670,6 +670,63 @@ services:
     networks:
       - librechat-network
     command: redis-server --appendonly yes
+
+  # pgVector Database for RAG
+  # Provides vector storage for document embeddings and semantic search
+  pgvector:
+    image: ankane/pgvector:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rag
+      POSTGRES_USER: \${POSTGRES_USER:-rag_user}
+      POSTGRES_PASSWORD: \${POSTGRES_PASSWORD:-rag_password}
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+    networks:
+      - librechat-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag_user -d rag"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RAG API Service
+  # Enables document processing and semantic search for Office files
+  rag_api:
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    restart: unless-stopped
+    depends_on:
+      pgvector:
+        condition: service_healthy
+    environment:
+      # PostgreSQL connection
+      DB_HOST: pgvector
+      POSTGRES_DB: rag
+      POSTGRES_USER: \${POSTGRES_USER:-rag_user}
+      POSTGRES_PASSWORD: \${POSTGRES_PASSWORD:-rag_password}
+      
+      # RAG Configuration from .env
+      RAG_PORT: \${RAG_PORT:-8000}
+      RAG_HOST: \${RAG_HOST:-0.0.0.0}
+      COLLECTION_NAME: \${COLLECTION_NAME:-librechat}
+      CHUNK_SIZE: \${CHUNK_SIZE:-1500}
+      CHUNK_OVERLAP: \${CHUNK_OVERLAP:-100}
+      EMBEDDINGS_PROVIDER: \${EMBEDDINGS_PROVIDER:-openai}
+      EMBEDDINGS_MODEL: \${EMBEDDINGS_MODEL:-text-embedding-3-small}
+      
+      # API Keys (RAG API will use RAG_OPENAI_API_KEY if set, otherwise falls back to OPENAI_API_KEY)
+      RAG_OPENAI_API_KEY: \${RAG_OPENAI_API_KEY:-}
+      OPENAI_API_KEY: \${OPENAI_API_KEY:-}
+    ports:
+      - "\${RAG_PORT:-8000}:8000"
+    networks:
+      - librechat-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 ${config.e2bProxyEnabled ? `
   # E2B Code Execution Proxy
   e2b-proxy:
@@ -715,7 +772,9 @@ ${config.e2bProxyEnabled ? `
       mongodb:
         condition: service_started
       redis:
-        condition: service_started${config.e2bProxyEnabled ? '\n      e2b-proxy:\n        condition: service_started' : ''}
+        condition: service_started
+      rag_api:
+        condition: service_healthy${config.e2bProxyEnabled ? '\n      e2b-proxy:\n        condition: service_started' : ''}
     ports:
       - "\${LIBRECHAT_PORT:-${config.port}}:3080"
     environment:
@@ -1049,6 +1108,8 @@ volumes:
   mongodb_data:
     driver: local
   redis_data:
+    driver: local
+  pgvector_data:
     driver: local
   librechat_uploads:
     driver: local

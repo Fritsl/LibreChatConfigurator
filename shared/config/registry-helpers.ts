@@ -529,6 +529,16 @@ function generateEnvLine(
     return bugWarning + `${field.envKey}=${finalValue}`;
   }
   
+  // Special handling for RAG_OPENAI_API_KEY - fall back to OPENAI_API_KEY for easy setup
+  // This allows users to use their main OpenAI key for RAG without setting a separate key
+  if (field.envKey === 'RAG_OPENAI_API_KEY' && (!value || value === '')) {
+    const openAiKey = config.openaiApiKey || config.openAiApiKey;
+    if (openAiKey && openAiKey !== '') {
+      const fallbackValue = formatEnvValue(openAiKey, field);
+      return bugWarning + `${field.envKey}=${fallbackValue}`;
+    }
+  }
+  
   // Format the value for ENV
   const envValue = formatEnvValue(value, field);
   

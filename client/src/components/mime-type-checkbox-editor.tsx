@@ -230,12 +230,13 @@ export function MimeTypeCheckboxEditor({
               For best performance with Office documents (.docx, .xlsx, .pptx), LibreChat recommends enabling RAG (Retrieval Augmented Generation).
               <div className="mt-2 space-y-1">
                 <p className="text-sm">
-                  <strong>Easy setup with Chroma:</strong> No external server needed!
+                  <strong>Simple setup:</strong> Already included in docker-compose!
                 </p>
                 <ul className="text-sm ml-4 list-disc space-y-1">
-                  <li>Just configure YAML settings (no extra services to run)</li>
-                  <li>LibreChat stores embeddings in a local folder</li>
-                  <li>Dramatically improves Office document search and context</li>
+                  <li>RAG API service with pgVector database (default)</li>
+                  <li>Just configure embeddings provider (OpenAI recommended)</li>
+                  <li>Dramatically improves document search and context retrieval</li>
+                  <li>Enables semantic search across uploaded Office files</li>
                 </ul>
               </div>
               <span className="mt-2 block text-sm">

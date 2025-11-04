@@ -2,8 +2,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
-import { FileText, Image, FileSpreadsheet, Presentation, Archive, Code, Film, Music, Plus } from "lucide-react";
+import { FileText, Image, FileSpreadsheet, Presentation, Archive, Code, Film, Music, Plus, Info } from "lucide-react";
 
 interface FileTypeSelectorEditorProps {
   value: string[];
@@ -301,6 +302,22 @@ export function FileTypeSelectorEditor({ value, onChange, "data-testid": testId 
     return !allKnownMimeTypes.includes(mime);
   });
 
+  // Check if Office documents are selected (Word, Excel, PowerPoint)
+  const officeDocMimeTypes = [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+    "application/vnd.ms-word.document.macroEnabled.12",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+    "application/vnd.ms-excel.sheet.macroEnabled.12",
+    "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
+  ];
+  
+  const hasOfficeDocuments = officeDocMimeTypes.some(mime => currentMimeTypes.includes(mime));
+
   const handleAddM365Types = () => {
     const m365MimeTypes = [
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -324,6 +341,32 @@ export function FileTypeSelectorEditor({ value, onChange, "data-testid": testId 
 
   return (
     <div className="space-y-4" data-testid={testId}>
+      {/* RAG Recommendation for Office Documents */}
+      {hasOfficeDocuments && (
+        <Alert variant="info">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="ml-2">
+            <strong>📄 Office Documents Work Best with RAG</strong>
+            <br />
+            You've enabled Office documents (.docx, .xlsx, .pptx). For best performance, LibreChat recommends enabling RAG (Retrieval Augmented Generation).
+            <div className="mt-2 space-y-1">
+              <p className="text-sm">
+                <strong>Simple setup:</strong> Already included in docker-compose!
+              </p>
+              <ul className="text-sm ml-4 list-disc space-y-1">
+                <li>RAG API service with pgVector database (default)</li>
+                <li>Just configure embeddings provider (OpenAI recommended)</li>
+                <li>Dramatically improves document search and context retrieval</li>
+                <li>Enables semantic search across uploaded Office files</li>
+              </ul>
+            </div>
+            <span className="mt-2 block text-sm">
+              → Configure RAG in the <strong>Data & Storage → RAG API</strong> tab
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Select file types that users can upload

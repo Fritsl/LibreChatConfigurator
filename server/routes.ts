@@ -509,6 +509,46 @@ function escapeYamlDoubleQuoted(str: string): string {
 // The old 430-line manual template literal implementation has been migrated.
 
 /**
+ * Validate storage configuration and return warnings about unsafe paths
+ * Checks both camelCase IDs and uppercase envKeys for robustness
+ */
+function validateStoragePaths(config: any): string[] {
+  const warnings: string[] = [];
+  
+  // Resolve field values - check both camelCase ID and uppercase envKey
+  // This handles both canonicalized configs and raw imported configs
+  const fileStrategy = config.fileStrategy ?? config.CDN_PROVIDER ?? config.cdnProvider ?? '';
+  const fileUploadPath = config.fileUploadPath ?? config.FILE_UPLOAD_PATH;
+  
+  // Warning: Using /tmp for file uploads (ephemeral storage)
+  // Only warn for Unix-style /tmp, not Windows paths
+  if (fileUploadPath && typeof fileUploadPath === 'string' && fileUploadPath.startsWith('/tmp')) {
+    warnings.push(
+      '⚠️  FILE_UPLOAD_PATH uses /tmp directory - uploaded files will be lost on container restart! ' +
+      'Use a persistent path with a bind-mount (e.g., /app/server/uploads)'
+    );
+  }
+  
+  // Warning: FILE_UPLOAD_PATH set but using cloud storage
+  if (fileUploadPath && fileStrategy && !['', 'local'].includes(fileStrategy)) {
+    warnings.push(
+      `⚠️  FILE_UPLOAD_PATH is set but fileStrategy is '${fileStrategy}' (cloud storage) - ` +
+      'the local path will not be used and no bind-mount will be created'
+    );
+  }
+  
+  // Warning: Using local storage but no path specified
+  if ((!fileStrategy || fileStrategy === 'local') && !fileUploadPath) {
+    warnings.push(
+      '⚠️  Using local file storage but FILE_UPLOAD_PATH is not set - ' +
+      'uploads may not work correctly. Set a path like /app/server/uploads'
+    );
+  }
+  
+  return warnings;
+}
+
+/**
  * Detect persistent paths from configuration that require Docker bind-mounts
  * to prevent data loss when containers are rebuilt/updated.
  */
@@ -2183,12 +2223,22 @@ function generateProfileFile(config: any): string {
   // This must be preserved even if stripEmptyValues removed it
   cleanedConfig.configurationName = configName;
   
+  // Validate storage configuration and collect warnings
+  const storageWarnings = validateStoragePaths(config);
+  if (storageWarnings.length > 0) {
+    console.log('⚠️  [VALIDATION] Storage configuration warnings:');
+    storageWarnings.forEach(warning => console.log(`    ${warning}`));
+  }
+  
   // Match client-side export structure exactly for 1:1 parity
   const profile = {
     name: configName, // ✅ Same as client: use configurationName directly
     description: `Configuration profile created on ${new Date().toLocaleDateString()}`,
     configuration: cleanedConfig, // ✅ Cleaned configuration (no empty values) + configurationName
-    metadata: metadata, // ✨ Structured version metadata for migration support
+    metadata: {
+      ...metadata, // ✨ Structured version metadata for migration support
+      ...(storageWarnings.length > 0 && { warnings: storageWarnings }) // Include warnings if any exist
+    },
     // Legacy fields for backward compatibility
     toolVersion: versionInfo.toolVersion,
     librechatTarget: versionInfo.librechatTarget,

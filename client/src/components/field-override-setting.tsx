@@ -127,6 +127,7 @@ export function FieldOverrideSetting({
       case 'file-types': return 'file-types';
       case 'endpoint-selector': return 'endpoint-selector';
       case 'strategy-dropdown': return 'strategy-dropdown';
+      case 'capabilities-checkbox': return 'capabilities-checkbox';
       default: return 'text';
     }
   };

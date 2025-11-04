@@ -3218,11 +3218,11 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'modelSpecsAddedEndpoints',
     yamlPath: 'modelSpecs.addedEndpoints',
-    type: 'array',
+    type: 'endpoint-selector',
     defaultValue: [],
     category: 'model-specs',
     arrayItemType: 'string',
-    description: 'Array of added endpoint names',
+    description: 'Select endpoints for model specifications',
     exportToEnv: false,
     exportToYaml: true,
   },

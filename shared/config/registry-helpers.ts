@@ -365,6 +365,10 @@ export function generateEnvFile(config: Record<string, any>): string {
     '# NOTE: Some fields appear here that could also be in librechat.yaml.',
     '# This is due to LibreChat beta bugs. For security, we keep them in .env',
     '# to protect API keys and secrets. This will normalize when LibreChat stabilizes.',
+    '#',
+    '# BLANK STRINGS: Optional API keys and OAuth fields are included with empty',
+    '# values ("") to suppress Docker Compose warnings. These work the same as',
+    '# leaving them unset - LibreChat will use its internal defaults.',
     '#'
   ];
   

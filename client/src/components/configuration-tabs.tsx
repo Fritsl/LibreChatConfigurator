@@ -4225,8 +4225,8 @@ paths:
                 <div key={group.label}>
                   {/* Group Header */}
                   {!sidebarCollapsed && (
-                    <div className="px-2 py-2 mt-4 first:mt-0">
-                      <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    <div className="px-3 py-3 mt-6 first:mt-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-600/20 dark:to-purple-600/20 rounded-lg border-l-4 border-blue-500 dark:border-blue-400">
+                      <h3 className="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wide">
                         {group.label}
                       </h3>
                     </div>
@@ -4245,25 +4245,14 @@ paths:
                           onClick={() => setActiveTab(tab.id)}
                           data-testid={`tab-${tab.id}`}
                           title={sidebarCollapsed ? tab.label : undefined}
-                          className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'} rounded-lg shadow-sm transition-all ${
+                          className={`w-full flex items-center justify-start ${sidebarCollapsed ? 'px-2 py-2' : 'px-4 py-2.5'} rounded-md transition-all text-left ${
                             isActive 
-                              ? `bg-gradient-to-r ${tab.color} text-white` 
-                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
+                              ? `bg-gradient-to-r ${tab.color} text-white font-semibold shadow-md` 
+                              : 'hover:bg-gray-100 text-gray-700 dark:hover:bg-gray-700/50 dark:text-gray-300'
                           }`}
                         >
-                          <Icon className="h-5 w-5 flex-shrink-0" />
                           {!sidebarCollapsed && (
-                            <>
-                              <div className="text-left flex-1">
-                                <div className="font-medium">{tab.label}</div>
-                                <div className="text-xs opacity-90">{tab.description}</div>
-                              </div>
-                              {tab.settings.length > 0 && (
-                                <Badge className={`${categoryColor} text-xs`} variant="outline">
-                                  {getTabCategory(tab.settings)}
-                                </Badge>
-                              )}
-                            </>
+                            <span className="text-sm">{tab.label}</span>
                           )}
                         </button>
                       );
@@ -4287,25 +4276,14 @@ paths:
                   onClick={() => setActiveTab(tab.id)}
                   data-testid={`tab-${tab.id}`}
                   title={sidebarCollapsed ? tab.label : undefined}
-                  className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'space-x-3 px-4 py-3'} rounded-lg shadow-sm transition-all ${
+                  className={`w-full flex items-center justify-start ${sidebarCollapsed ? 'px-2 py-2' : 'px-4 py-2.5'} rounded-md transition-all text-left ${
                     isActive 
-                      ? `bg-gradient-to-r ${tab.color} text-white` 
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200'
+                      ? `bg-gradient-to-r ${tab.color} text-white font-semibold shadow-md` 
+                      : 'hover:bg-gray-100 text-gray-700 dark:hover:bg-gray-700/50 dark:text-gray-300'
                   }`}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
                   {!sidebarCollapsed && (
-                    <>
-                      <div className="text-left flex-1">
-                        <div className="font-medium">{tab.label}</div>
-                        <div className="text-xs opacity-90">{tab.description}</div>
-                      </div>
-                      {tab.settings.length > 0 && (
-                        <Badge className={`${categoryColor} text-xs`} variant="outline">
-                          {getTabCategory(tab.settings)}
-                        </Badge>
-                      )}
-                    </>
+                    <span className="text-sm">{tab.label}</span>
                   )}
                 </button>
               );

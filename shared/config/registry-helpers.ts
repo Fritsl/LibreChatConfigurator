@@ -566,17 +566,20 @@ function generateEnvLine(
     return bugWarning + `${field.envKey}=${envValue}`;
   }
   
-  // ✅ CRITICAL: Export ALL fields with defined defaults UNCOMMENTED
-  // Docker-compose references these variables and needs them to exist with values
-  // This includes fields using LibreChat defaults AND fields with empty string defaults
-  if (hasDefault) {
-    // Add inline comment if using LibreChat default (for user clarity)
-    const inlineComment = shouldUseDefault ? '  # Using LibreChat default' : '';
-    return bugWarning + `${field.envKey}=${defaultComment}${inlineComment}`;
+  // ✅ CRITICAL FIX: Handle LibreChat defaults correctly
+  // When shouldUseDefault=true, it means the user wants LibreChat's built-in default
+  // We must SKIP exporting these fields entirely to let LibreChat use its internal defaults
+  if (shouldUseDefault) {
+    return ''; // Skip - let LibreChat use its internal default
   }
   
-  // Only comment out fields with truly undefined defaults (shouldn't happen)
-  return bugWarning + `# ${field.envKey}=${defaultComment}`;
+  // Export fields with explicit defaults (non-empty values)
+  if (hasDefault && defaultComment !== '') {
+    return bugWarning + `${field.envKey}=${defaultComment}`;
+  }
+  
+  // Skip fields with no value and no meaningful default
+  return '';
 }
 
 /**

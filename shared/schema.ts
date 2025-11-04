@@ -429,6 +429,12 @@ const agentsSchema = z.object({
   capabilities: z.array(z.enum([
     "execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"
   ])).default(["execute_code", "file_search", "actions", "tools", "artifacts", "context", "ocr", "chain", "web_search"]),
+  fileConfig: z.object({
+    fileLimit: z.number().min(1).max(100).optional(),
+    fileSizeLimit: z.number().min(1).max(1000).optional(),
+    totalSizeLimit: z.number().min(1).max(10000).optional(),
+    supportedMimeTypes: z.array(z.string()).optional(),
+  }).optional(),
 }).optional();
 
 // Unified Endpoints Configuration for RC4

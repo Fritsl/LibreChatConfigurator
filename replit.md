@@ -40,8 +40,8 @@ Preferred communication style: Simple, everyday language.
 - **LibreChat Bug Handling System**: Intelligent workaround system for known LibreChat bugs, routing bug-affected fields to .env instead of YAML with UI warnings.
 
 ## System Design Choices
-- **UI/UX**: Tabbed interface with specialized input controls, responsive design, and smart UI elements that adapt based on dependencies. Includes user experience presets (e.g., "Agents-Only Mode"). Features contextual UI alerts for RAG recommendations.
-- **Technical Implementations**: Features a Smart Installation System for Docker deployments with live configuration updates. Includes a Secret Caching System for server-side secrets. Achieves 100% bidirectional parity across all 400+ configuration fields using a unified registry system and `configPath` translation layer for LibreChat's native YAML format. Includes automatic handling of RAG infrastructure (pgVector, RAG API) for Office documents and smart API key fallback for `RAG_OPENAI_API_KEY`. Critical fixes implemented for `.env` file quoting and disabling incomplete Speech and Memory blocks in YAML exports to prevent validation errors.
+- **UI/UX**: Simplified tabbed interface with clean headlines-only navigation and prominent color-coded group headers. Specialized input controls with responsive design and smart UI elements that adapt based on dependencies. Includes user experience presets (e.g., "Agents-Only Mode") with proper persistence. Features contextual UI alerts for RAG recommendations and a prominent Office Documents Quick Setup for easy configuration.
+- **Technical Implementations**: Features a Smart Installation System for Docker deployments with live configuration updates. Includes a Secret Caching System for server-side secrets. Achieves 100% bidirectional parity across all 400+ configuration fields using a unified registry system and `configPath` translation layer for LibreChat's native YAML format. Includes automatic handling of RAG infrastructure (pgVector, RAG API) for Office documents and smart API key fallback for `RAG_OPENAI_API_KEY`. Critical fixes implemented for `.env` file quoting and disabling incomplete Speech and Memory blocks in YAML exports to prevent validation errors. All UX preset fields now properly persist across refresh/export/import cycles.
 - **Feature Specifications**:
     - **Custom Endpoints**: Creation of multiple OpenAI-compatible endpoints.
     - **Image Generation**: Comprehensive DALL-E configuration via Agents.
@@ -51,7 +51,9 @@ Preferred communication style: Simple, everyday language.
     - **Agent Capabilities Manager**: Guided configuration with visual indicators.
     - **Preview & Package Generation**: Live preview of generated files and creation of complete deployment packages.
     - **Search Functionality**: Global search across settings.
-    - **File Upload Configuration**: Comprehensive default file upload limits for agent endpoints, including automatic RAG setup for Office documents.
+    - **Office Documents Quick Setup**: Prominent one-click setup for Word/Excel/PowerPoint/PDF support at the top of Agents Endpoint tab, automatically configuring file types and RAG infrastructure.
+    - **RAG Quick Setup**: Dedicated RAG configuration with sensible defaults in the RAG API tab.
+    - **File Upload Configuration**: Comprehensive default file upload limits for agent endpoints, with full support for Office document MIME types persisted in schema.
     - **Web Search Configuration**: Aligned with LibreChat RC4 webSearch YAML configuration.
     - **Advanced Title Customization**: Full control over conversation title generation.
     - **Complete Firecrawl Configuration**: All advanced web scraping options available.

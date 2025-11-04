@@ -176,6 +176,13 @@ export function MimeTypeCheckboxEditor({
     .filter(m => getMissingCapabilities(m).length > 0);
   
   const showCapabilityWarning = selectedWithMissingCaps.length > 0 && isOcrContext;
+  
+  // Check if Office documents are selected (recommend RAG)
+  const hasOfficeDocuments = relevantMimeTypes
+    .filter(m => m.id === 'office_modern' || m.id === 'office_legacy')
+    .some(m => isSelected(m));
+  
+  const showRagRecommendation = hasOfficeDocuments && isOcrContext;
 
   return (
     <TooltipProvider>
@@ -209,6 +216,31 @@ export function MimeTypeCheckboxEditor({
                   → Enable these capabilities in the Endpoints tab under "Agent Capabilities"
                 </span>
               )}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {/* RAG Recommendation for Office Documents */}
+        {showRagRecommendation && (
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription className="ml-2">
+              <strong>💡 RAG Recommended for Office Documents</strong>
+              <br />
+              For best performance with Office documents (.docx, .xlsx, .pptx), LibreChat recommends enabling RAG (Retrieval Augmented Generation).
+              <div className="mt-2 space-y-1">
+                <p className="text-sm">
+                  <strong>Easy setup with Chroma:</strong> No external server needed!
+                </p>
+                <ul className="text-sm ml-4 list-disc space-y-1">
+                  <li>Just configure YAML settings (no extra services to run)</li>
+                  <li>LibreChat stores embeddings in a local folder</li>
+                  <li>Dramatically improves Office document search and context</li>
+                </ul>
+              </div>
+              <span className="mt-2 block text-sm">
+                → Configure RAG in the <strong>Data & Storage → RAG API</strong> tab
+              </span>
             </AlertDescription>
           </Alert>
         )}

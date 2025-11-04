@@ -29,7 +29,8 @@ export type FieldType =
   | 'file-types'
   | 'endpoint-selector'
   | 'strategy-dropdown'
-  | 'capabilities-checkbox';
+  | 'capabilities-checkbox'
+  | 'mime-type-checkbox';
 
 // Field descriptor - defines all metadata for a configuration field
 export interface FieldDescriptor {
@@ -3411,6 +3412,51 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     defaultValue: ['image/*', 'application/pdf', 'text/*'],
     category: 'file-config',
     description: 'Allowed MIME types for Agents endpoint (supports wildcards)',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+
+  // =============================================================================
+  // File Processing Configuration (OCR, Text, STT)
+  // =============================================================================
+  {
+    id: 'fileConfigOcrSupportedMimeTypes',
+    yamlPath: 'fileConfig.ocr.supportedMimeTypes',
+    type: 'mime-type-checkbox',
+    defaultValue: [
+      '^image/(jpeg|gif|png|webp|heic|heif)$',
+      '^application/pdf$',
+      '^application/vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|presentationml\\.presentation|spreadsheetml\\.sheet)$',
+    ],
+    category: 'file-config',
+    arrayItemType: 'string',
+    description: 'File types processed with OCR for agents (images, PDFs, Office documents)',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
+    id: 'fileConfigTextSupportedMimeTypes',
+    yamlPath: 'fileConfig.text.supportedMimeTypes',
+    type: 'mime-type-checkbox',
+    defaultValue: [
+      '^text/(plain|markdown|csv|json|xml|html|css|javascript|typescript|x-python|x-java|x-csharp|x-php|x-ruby|x-go|x-rust|x-kotlin|x-swift|x-scala|x-perl|x-lua|x-shell|x-sql|x-yaml|x-toml)$'
+    ],
+    category: 'file-config',
+    arrayItemType: 'string',
+    description: 'File types processed with text parsing for agents (code, plain text)',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
+    id: 'fileConfigSttSupportedMimeTypes',
+    yamlPath: 'fileConfig.stt.supportedMimeTypes',
+    type: 'mime-type-checkbox',
+    defaultValue: [
+      '^audio/(mp3|mpeg|mpeg3|wav|wave|x-wav|ogg|vorbis|mp4|x-m4a|flac|x-flac|webm)$'
+    ],
+    category: 'file-config',
+    arrayItemType: 'string',
+    description: 'Audio file types processed with speech-to-text for agents',
     exportToEnv: false,
     exportToYaml: true,
   },

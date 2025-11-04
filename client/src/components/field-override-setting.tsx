@@ -128,6 +128,7 @@ export function FieldOverrideSetting({
       case 'endpoint-selector': return 'endpoint-selector';
       case 'strategy-dropdown': return 'strategy-dropdown';
       case 'capabilities-checkbox': return 'capabilities-checkbox';
+      case 'mime-type-checkbox': return 'mime-type-checkbox';
       default: return 'text';
     }
   };
@@ -161,6 +162,7 @@ export function FieldOverrideSetting({
             data-testid={`setting-${actualFieldId}`}
             technical={technical}
             highlighted={shouldHighlight}
+            configuration={configuration}
           />
         </div>
         {onNavigateToFieldStates && (

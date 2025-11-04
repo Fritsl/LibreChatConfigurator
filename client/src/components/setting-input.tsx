@@ -22,6 +22,7 @@ import { FileTypeSelectorEditor } from "@/components/file-type-selector-editor";
 import { EndpointSelectorEditor } from "@/components/endpoint-selector-editor";
 import { StrategyDropdownEditor } from "@/components/strategy-dropdown-editor";
 import { CapabilitiesCheckboxEditor } from "@/components/capabilities-checkbox-editor";
+import { MimeTypeCheckboxEditor } from "@/components/mime-type-checkbox-editor";
 import { FieldStateControl } from "@/components/field-state-control";
 
 interface SettingInputProps {
@@ -29,7 +30,7 @@ interface SettingInputProps {
   description?: string;
   docUrl?: string;
   docSection?: string;
-  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types" | "endpoint-selector" | "strategy-dropdown" | "capabilities-checkbox";
+  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types" | "endpoint-selector" | "strategy-dropdown" | "capabilities-checkbox" | "mime-type-checkbox";
   value: any;
   onChange: (value: any) => void;
   options?: string[] | Array<{ value: string; label: string }>;
@@ -54,6 +55,8 @@ interface SettingInputProps {
   isUsingDefault?: boolean;
   onSetUseDefault?: (useDefault: boolean) => void;
   onResetToDefault?: () => void;
+  configuration?: any;
+  onNavigateToCapabilities?: () => void;
 }
 
 export function SettingInput({
@@ -82,6 +85,8 @@ export function SettingInput({
   isUsingDefault,
   onSetUseDefault,
   onResetToDefault,
+  configuration,
+  onNavigateToCapabilities,
 }: SettingInputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [arrayItems, setArrayItems] = useState<string[]>(
@@ -400,6 +405,18 @@ export function SettingInput({
             value={value || []}
             onChange={onChange}
             disabled={disabled}
+          />
+        );
+
+      case "mime-type-checkbox":
+        return (
+          <MimeTypeCheckboxEditor
+            value={value || []}
+            onChange={onChange}
+            disabled={disabled}
+            fieldId={fieldName}
+            configuration={configuration}
+            onNavigateToCapabilities={onNavigateToCapabilities}
           />
         );
 

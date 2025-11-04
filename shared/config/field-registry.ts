@@ -87,6 +87,20 @@ export interface FieldDescriptor {
   // For strategy-dropdown type - specifies which variant to render
   strategyVariant?: 'file-storage' | 'image-output';
   
+  // For paths that require Docker persistence (prevents data loss on container rebuild)
+  persistenceMetadata?: {
+    // Does this path need to be persisted across container restarts?
+    requiresPersistence: boolean;
+    // Default host path for bind-mount (e.g., "./data/uploads")
+    defaultHostPath?: string;
+    // Container path that needs persistence (e.g., "/app/server/uploads")
+    defaultContainerPath?: string;
+    // Human-readable description of what's stored here
+    dataDescription?: string;
+    // Only require persistence when fileStrategy is 'local'
+    conditionalOn?: { field: string; values: string[] };
+  };
+  
   // Custom transformer for env string -> typed value
   envTransformer?: (value: string) => any;
   
@@ -1418,6 +1432,13 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     defaultValue: '',
     category: 'file-storage',
     description: 'Local File Upload Path',
+    persistenceMetadata: {
+      requiresPersistence: true,
+      defaultHostPath: './data/uploads',
+      defaultContainerPath: '/app/server/uploads',
+      dataDescription: 'User-uploaded files (documents, images, attachments)',
+      conditionalOn: { field: 'fileStrategy', values: ['local', ''] }
+    },
   },
   {
     id: 'firebaseApiKey',

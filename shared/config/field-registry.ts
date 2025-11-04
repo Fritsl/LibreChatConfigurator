@@ -4142,10 +4142,9 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'customEndpoints',
     yamlPath: 'endpoints.custom',
-    type: 'array',
+    type: 'custom-endpoints',
     defaultValue: [],
     category: 'endpoints',
-    arrayItemType: 'object',
     description: 'Array of custom endpoint configurations',
     exportToEnv: false,
     exportToYaml: true,

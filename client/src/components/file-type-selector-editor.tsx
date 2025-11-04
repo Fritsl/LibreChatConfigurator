@@ -361,7 +361,7 @@ export function FileTypeSelectorEditor({ value, onChange, "data-testid": testId 
               </ul>
             </div>
             <span className="mt-2 block text-sm">
-              → Configure RAG in the <strong>Data & Storage → RAG API</strong> tab
+              → Configure RAG in the <strong>Integrations & Services → RAG API</strong> tab
             </span>
           </AlertDescription>
         </Alert>

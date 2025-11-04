@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.3.1";
+export const TOOL_VERSION = "2.3.2";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-11-04",
-  changelog: "DOCKER COMPATIBILITY FIX: Updated .env generation to include blank strings for optional API keys, OAuth fields, and service configurations. This suppresses Docker Compose startup warnings while maintaining LibreChat's internal defaults. All 100+ optional environment variables now export cleanly without 'variable not set' warnings."
+  changelog: "COMPLETE DOCKER WARNING FIX: Expanded blank string exports to cover all remaining optional fields including Redis caching (REDIS_PASSWORD, REDIS_USERNAME, REDIS_KEY_PREFIX), Cloudflare Turnstile (TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY), domain configuration (DOMAIN_CLIENT, DOMAIN_SERVER), and CDN settings (CDN_PROVIDER). Docker Compose now starts with zero 'variable not set' warnings."
 } as const;
 
 // Helper function to get the tool's version string

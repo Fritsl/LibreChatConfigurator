@@ -554,7 +554,7 @@ function generateEnvLine(
   const hasDefault = field.defaultValue !== undefined && field.defaultValue !== null;
   
   // MUTUALLY-EXCLUSIVE FIELD HANDLING (LibreChat RC4 validation)
-  // Some fields cannot be set together - skip the "VAR" variant if both are empty/default
+  // Some fields cannot be set together - skip the "VAR" variant if partner has value
   if (field.envKey && mutuallyExclusivePairs[field.envKey]) {
     const partnerFieldId = mutuallyExclusivePairs[field.envKey];
     const partnerField = FIELD_REGISTRY.find(f => f.envKey === partnerFieldId);
@@ -564,10 +564,13 @@ function generateEnvLine(
       const partnerEnvValue = formatEnvValue(partnerValue, partnerField);
       const partnerHasExplicitValue = partnerEnvValue !== '';
       
-      // If neither field has an explicit value (both are empty/default), skip the VAR variant
-      if (!hasExplicitValue && !partnerHasExplicitValue) {
-        return ''; // Return empty string to skip this field
+      // If partner field has a value, skip this field entirely (maintain exclusivity)
+      if (partnerHasExplicitValue) {
+        return ''; // Skip to maintain mutual exclusivity
       }
+      
+      // If neither field has a value, continue to optional field logic below
+      // This allows Docker warning suppression while maintaining exclusivity
     }
   }
   
@@ -598,20 +601,33 @@ function generateEnvLine(
   const optionalCategories = new Set([
     'oauth',           // OAuth providers (GOOGLE_CLIENT_ID, GITHUB_CLIENT_SECRET, etc.)
     'ai-providers',    // Optional AI API keys (GROQ_API_KEY, MISTRAL_API_KEY, etc.)
-    'file-storage',    // Optional file storage (AWS_*, AZURE_*, CDN_PROVIDER)
+    'file-storage',    // Optional file storage (AWS_*, AZURE_*, etc.)
     'external-apis',   // Optional external APIs (BING_SEARCH_API_KEY, SERPER_API_KEY, etc.)
     'email',           // Optional email config (EMAIL_SERVICE, EMAIL_USERNAME, etc.)
     'image-generation',// Optional image gen (DALLE3_BASEURL, DALLE2_BASEURL, etc.)
     'web-search',      // Optional search APIs (SEARXNG_API_KEY, etc.)
     'ldap',            // Optional LDAP (LDAP_URL, LDAP_BIND_CREDENTIALS, etc.)
-    'turnstile',       // Optional Turnstile (TURNSTILE_SECRET_KEY, etc.)
+    'turnstile',       // Optional Turnstile (legacy category, kept for compatibility)
     'code-execution',  // Optional code execution (E2B_API_KEY, SANDPACK_BUNDLER_URL, etc.)
     'artifacts',       // Optional artifacts (FIREBASE_*, etc.)
     'meilisearch',     // Optional MeiliSearch (MEILISEARCH_URL, etc.)
+    'server',          // Optional server config (DOMAIN_CLIENT, DOMAIN_SERVER)
+    'misc',            // Optional misc config (CDN_PROVIDER, etc.)
   ]);
   
-  // Export blank string for optional categories to suppress Docker warnings
-  if (field.category && optionalCategories.has(field.category)) {
+  // Specific optional field IDs from mixed categories (database, security, etc.)
+  // These are optional fields within categories that also contain required fields
+  const optionalFieldIds = new Set([
+    'redisUsername',      // Redis caching (optional)
+    'redisPassword',      // Redis caching (optional)
+    'redisKeyPrefix',     // Redis caching (optional)
+    'redisKeyPrefixVar',  // Redis caching (optional)
+    'turnstileSiteKey',   // Cloudflare Turnstile (optional bot protection)
+    'turnstileSecretKey', // Cloudflare Turnstile (optional bot protection)
+  ]);
+  
+  // Export blank string for optional categories or specific optional fields
+  if ((field.category && optionalCategories.has(field.category)) || optionalFieldIds.has(field.id)) {
     return bugWarning + `${field.envKey}=""`;
   }
   

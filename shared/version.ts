@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.2.0";
+export const TOOL_VERSION = "2.3.0";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -34,8 +34,8 @@ export const VERSION_INFO = {
   toolVersion: TOOL_VERSION,
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
-  lastUpdated: "2025-11-01",
-  changelog: "DOCUMENTATION COMPLETENESS UPDATE: Added 15+ missing fields from official LibreChat RC4 documentation including SHOW_BIRTHDAY_ICON (birthday hat control), advanced title customization (titlePrompt, titlePromptTemplate, titleEndpoint, titleMethod), and complete Firecrawl scraper options (includeTags, excludeTags, headers, parsePDF, skipTlsVerification, storeInCache, zeroDataRetention, location, changeTrackingOptions). Tool now achieves 100% documentation parity for all LibreChat configuration fields."
+  lastUpdated: "2025-11-04",
+  changelog: "PERSISTENCE & UX UPDATE: Fixed UX preset mode persistence (ux.preset.mode now survives refresh/export/import), fixed Office document MIME types persistence (added fileConfig to agentsSchema), improved canonicalization to preserve all nested schema structures (endpoints, ux, speech, etc.), and added keyboard navigation (Arrow Up/Down keys) for sidebar tabs to make browsing settings faster and easier."
 } as const;
 
 // Helper function to get the tool's version string

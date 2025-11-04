@@ -152,6 +152,21 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
     });
   };
 
+  const addM365Types = (endpointName: string) => {
+    const endpoint = config[endpointName];
+    if (!endpoint) return;
+
+    const currentTypes = endpoint.supportedMimeTypes || [];
+    const m365Types = M365_MIME_TYPES.map(t => t.value);
+    
+    // Merge current types with M365 types, removing duplicates
+    const mergedTypes = Array.from(new Set([...currentTypes, ...m365Types]));
+    
+    updateEndpoint(endpointName, {
+      supportedMimeTypes: mergedTypes
+    });
+  };
+
   const configuredEndpoints = Object.keys(config);
   const availableToAdd = AVAILABLE_ENDPOINTS.filter(
     endpoint => !configuredEndpoints.includes(endpoint.value)
@@ -305,17 +320,30 @@ export function EndpointFileLimitsEditor({ value, onChange, "data-testid": testI
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <Label>Supported File Types (MIME)</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addAllCommonTypes(endpointName)}
-                        data-testid={`button-add-all-types-${endpointName}`}
-                        className="h-7 text-xs"
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Add All Common Types
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addM365Types(endpointName)}
+                          data-testid={`button-add-m365-types-${endpointName}`}
+                          className="h-7 text-xs"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add M365 Types
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addAllCommonTypes(endpointName)}
+                          data-testid={`button-add-all-types-${endpointName}`}
+                          className="h-7 text-xs"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Add All Common Types
+                        </Button>
+                      </div>
                     </div>
                     
                     {/* Current MIME Types */}

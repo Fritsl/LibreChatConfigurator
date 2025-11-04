@@ -10,6 +10,7 @@ import { UserExperiencePresets } from "./user-experience-presets";
 import { AgentCapabilitiesManager } from "./agent-capabilities-manager";
 import { FieldStatesPanel } from "./field-states-panel";
 import { RAGQuickSetup } from "./rag-quick-setup";
+import { OfficeDocumentsQuickSetup } from "./office-documents-quick-setup";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -4416,6 +4417,52 @@ paths:
                                 <strong>💡 Limiting Search Results:</strong> To control how many search results agents use, configure the citation limits in the <strong>Agents</strong> tab: <em>Max Citations</em> (default: 30), <em>Max Citations Per File</em> (default: 7), and <em>Min Relevance Score</em> (default: 0.45). These settings determine how many results are included and their quality threshold.
                               </AlertDescription>
                             </Alert>
+                          </div>
+                        )}
+                        
+                        {tab.id === "endpoints-agents" && (
+                          <div className="col-span-full mb-6">
+                            <OfficeDocumentsQuickSetup
+                              configuration={configuration}
+                              onApplySetup={() => {
+                                let updatedConfig = { ...configuration };
+                                
+                                // 1. Enable Office document file types for agents endpoint
+                                const officeTypes = [
+                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+                                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+                                  "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
+                                  "application/pdf", // .pdf
+                                ];
+                                
+                                // Get existing file types and merge with office types
+                                const existingTypes = updatedConfig.endpoints?.agents?.fileConfig?.supportedMimeTypes || [];
+                                const uniqueTypes = Array.from(new Set([...existingTypes, ...officeTypes]));
+                                
+                                // Set the file types
+                                if (!updatedConfig.endpoints) updatedConfig.endpoints = {};
+                                if (!updatedConfig.endpoints.agents) updatedConfig.endpoints.agents = {};
+                                if (!updatedConfig.endpoints.agents.fileConfig) updatedConfig.endpoints.agents.fileConfig = {};
+                                updatedConfig.endpoints.agents.fileConfig.supportedMimeTypes = uniqueTypes;
+                                
+                                // 2. Configure RAG with sensible defaults
+                                updatedConfig.ragApiURL = "http://rag-api:8000";
+                                updatedConfig.ragPort = 8000;
+                                updatedConfig.ragHost = "0.0.0.0";
+                                updatedConfig.collectionName = "librechat";
+                                updatedConfig.chunkSize = 1500;
+                                updatedConfig.chunkOverlap = 100;
+                                updatedConfig.embeddingsProvider = "openai";
+                                // ragOpenaiApiKey is left unset - it will fallback to OPENAI_API_KEY in .env generation
+                                
+                                onConfigurationChange(updatedConfig);
+                                
+                                toast({
+                                  title: "Office Documents Enabled",
+                                  description: "Office document support is now configured! Users can upload Word, Excel, PowerPoint, and PDF files. The RAG system and pgVector will be included in your Docker Compose package.",
+                                });
+                              }}
+                            />
                           </div>
                         )}
                         

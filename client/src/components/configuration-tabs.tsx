@@ -4556,17 +4556,16 @@ paths:
                                   // 1. Restrict to agents endpoint only (ENDPOINTS env variable)
                                   updatedConfig = setNestedValue(updatedConfig, "enabledEndpoints", ["agents"]);
                                   
-                                  // 2. Hide UI elements (using interface.modelSelect per RC4 docs)
-                                  updatedConfig = setNestedValue(updatedConfig, "interface.modelSelect", false);
+                                  // 2. Hide presets menu (modelSelect must stay visible for agent selection)
                                   updatedConfig = setNestedValue(updatedConfig, "interface.presets", false);
                                   
                                   // 3. Configure agents endpoint
                                   updatedConfig = setNestedValue(updatedConfig, "endpoints.agents.disableBuilder", true);
                                   
-                                  // 4. Configure modelSpecs with enforcement
+                                  // 4. Configure modelSpecs with enforcement (restricts users to agents only)
                                   updatedConfig = setNestedValue(updatedConfig, "modelSpecs.enforce", true);
                                   updatedConfig = setNestedValue(updatedConfig, "modelSpecs.prioritize", true);
-                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []); // Clear to allow modelSelect disable
+                                  updatedConfig = setNestedValue(updatedConfig, "modelSpecs.addedEndpoints", []);
                                   updatedConfig = setNestedValue(updatedConfig, "modelSpecs.list", [
                                     {
                                       name: "Agents",

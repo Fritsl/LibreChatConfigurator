@@ -27,7 +27,8 @@ export type FieldType =
   | 'email-composite'
   | 'endpoint-file-limits'
   | 'file-types'
-  | 'endpoint-selector';
+  | 'endpoint-selector'
+  | 'strategy-dropdown';
 
 // Field descriptor - defines all metadata for a configuration field
 export interface FieldDescriptor {
@@ -83,6 +84,9 @@ export interface FieldDescriptor {
     affectedVersions?: string;
   };
   
+  // For strategy-dropdown type - specifies which variant to render
+  strategyVariant?: 'file-storage' | 'image-output';
+  
   // Custom transformer for env string -> typed value
   envTransformer?: (value: string) => any;
   
@@ -127,20 +131,22 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'fileStrategy',
     yamlPath: 'fileStrategy',
-    type: 'string',
+    type: 'strategy-dropdown',
     defaultValue: '',
     category: 'app',
-    description: 'File handling strategy',
+    description: 'Choose how files are stored (local disk, S3, Firebase, Azure)',
+    strategyVariant: 'file-storage',
     exportToEnv: false,
     exportToYaml: true,
   },
   {
     id: 'imageOutputType',
     yamlPath: 'imageOutputType',
-    type: 'string',
+    type: 'strategy-dropdown',
     defaultValue: '',
     category: 'app',
-    description: 'Image output format',
+    description: 'Select image compression format (PNG, JPEG, WebP)',
+    strategyVariant: 'image-output',
     exportToEnv: false,
     exportToYaml: true,
   },

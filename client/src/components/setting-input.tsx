@@ -20,6 +20,7 @@ import { EmailServiceEditor } from "@/components/email-service-editor";
 import { EndpointFileLimitsEditor } from "@/components/endpoint-file-limits-editor";
 import { FileTypeSelectorEditor } from "@/components/file-type-selector-editor";
 import { EndpointSelectorEditor } from "@/components/endpoint-selector-editor";
+import { StrategyDropdownEditor } from "@/components/strategy-dropdown-editor";
 import { FieldStateControl } from "@/components/field-state-control";
 
 interface SettingInputProps {
@@ -27,7 +28,7 @@ interface SettingInputProps {
   description?: string;
   docUrl?: string;
   docSection?: string;
-  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types" | "endpoint-selector";
+  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types" | "endpoint-selector" | "strategy-dropdown";
   value: any;
   onChange: (value: any) => void;
   options?: string[] | Array<{ value: string; label: string }>;
@@ -36,6 +37,7 @@ interface SettingInputProps {
   max?: number;
   step?: number;
   fieldName?: string;
+  strategyVariant?: 'file-storage' | 'image-output';
   "data-testid"?: string;
   technical?: {
     envVar?: string;
@@ -67,6 +69,7 @@ export function SettingInput({
   max,
   step,
   fieldName,
+  strategyVariant,
   "data-testid": testId,
   technical,
   highlighted = false,
@@ -386,6 +389,16 @@ export function SettingInput({
           <EndpointSelectorEditor
             value={value || []}
             onChange={onChange}
+            data-testid={testId}
+          />
+        );
+
+      case "strategy-dropdown":
+        return (
+          <StrategyDropdownEditor
+            value={value || ""}
+            onChange={onChange}
+            strategyType={strategyVariant || 'file-storage'}
             data-testid={testId}
           />
         );

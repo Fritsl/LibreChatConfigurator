@@ -126,6 +126,7 @@ export function FieldOverrideSetting({
       case 'endpoint-file-limits': return 'endpoint-file-limits';
       case 'file-types': return 'file-types';
       case 'endpoint-selector': return 'endpoint-selector';
+      case 'strategy-dropdown': return 'strategy-dropdown';
       default: return 'text';
     }
   };
@@ -155,6 +156,7 @@ export function FieldOverrideSetting({
             min={field.min}
             max={field.max}
             fieldName={actualFieldId}
+            strategyVariant={field.strategyVariant}
             data-testid={`setting-${actualFieldId}`}
             technical={technical}
             highlighted={shouldHighlight}

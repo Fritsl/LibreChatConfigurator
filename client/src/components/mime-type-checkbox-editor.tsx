@@ -182,7 +182,8 @@ export function MimeTypeCheckboxEditor({
     .filter(m => m.id === 'office_modern' || m.id === 'office_legacy')
     .some(m => isSelected(m));
   
-  const showRagRecommendation = hasOfficeDocuments && isOcrContext;
+  // Show RAG recommendation whenever Office documents are selected
+  const showRagRecommendation = hasOfficeDocuments;
 
   return (
     <TooltipProvider>

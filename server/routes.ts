@@ -599,6 +599,10 @@ function generateDockerComposeFile(config: any): string {
   console.log("  - hasFirecrawlScraper:", hasFirecrawlScraper);
   console.log("  - hasJinaReranker:", hasJinaReranker);
   
+  // Detect persistent paths that need Docker bind-mounts
+  const persistentPaths = detectPersistentPaths(config);
+  console.log(`💾 [DOCKER-COMPOSE] Detected ${persistentPaths.length} persistent path(s) requiring bind-mounts`);
+  
   return `version: '3.8'
 
 services:
@@ -997,7 +1001,7 @@ ${config.publicSubPath ? `      PUBLIC_SUB_PATH: \${PUBLIC_SUB_PATH}` : '      #
     volumes:
       - ./librechat.yaml:/app/librechat.yaml:ro
       - librechat_uploads:/app/client/public/images
-      - librechat_logs:/app/api/logs
+      - librechat_logs:/app/api/logs${persistentPaths.length > 0 ? '\n      # Persistent storage paths (auto-detected from configuration)' : ''}${persistentPaths.map(p => `\n      - ${p.hostPath}:${p.containerPath}  # ${p.description}`).join('')}
     networks:
       - librechat-network
 

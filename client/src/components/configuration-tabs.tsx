@@ -88,6 +88,53 @@ export function ConfigurationTabs({
     }
   }, [searchQuery, activeTab]);
 
+  // Keyboard navigation for sidebar tabs (ArrowUp/ArrowDown)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle arrow keys when not focused on an input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        
+        // Get all visible tabs (will be populated after component renders)
+        const allVisibleTabs = document.querySelectorAll('[data-testid^="tab-"]');
+        if (allVisibleTabs.length === 0) return;
+        
+        // Find current tab index
+        const currentIndex = Array.from(allVisibleTabs).findIndex(
+          el => el.getAttribute('data-testid') === `tab-${activeTab}`
+        );
+        
+        if (currentIndex === -1) return;
+        
+        // Calculate next index
+        let nextIndex: number;
+        if (e.key === 'ArrowDown') {
+          nextIndex = (currentIndex + 1) % allVisibleTabs.length;
+        } else {
+          nextIndex = currentIndex === 0 ? allVisibleTabs.length - 1 : currentIndex - 1;
+        }
+        
+        // Get the next tab ID from data-testid
+        const nextTabElement = allVisibleTabs[nextIndex];
+        const nextTabId = nextTabElement.getAttribute('data-testid')?.replace('tab-', '');
+        
+        if (nextTabId) {
+          setActiveTab(nextTabId);
+          // Scroll the tab into view in the sidebar
+          nextTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab]);
+
   const copyToClipboard = async (content: string, name: string) => {
     try {
       await navigator.clipboard.writeText(content);

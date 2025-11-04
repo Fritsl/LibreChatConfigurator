@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ConfigurationTabs } from "@/components/configuration-tabs";
 import { PreviewModal } from "@/components/preview-modal";
+import { AgentEnforcementWarning } from "@/components/agent-enforcement-warning";
 import { useConfiguration } from "@/hooks/use-configuration";
 import { useBackendAvailability } from "@/hooks/use-backend-availability";
 import { Button } from "@/components/ui/button";
@@ -1598,6 +1599,28 @@ export default function Home() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Agent Enforcement Warning - Only shown in agents-only mode */}
+      {configuration.ux?.preset?.mode === 'agents-only' && (
+        <AgentEnforcementWarning
+          configuration={configuration}
+          onToggleEnforce={(value) => {
+            const prevModelSpecs = configuration.modelSpecs ?? {};
+            updateConfiguration({
+              modelSpecs: {
+                ...prevModelSpecs,
+                enforce: value
+              }
+            });
+            toast({
+              title: value ? "Agent Enforcement Enabled" : "Agent Enforcement Disabled",
+              description: value 
+                ? "Users can now only access agents you've created." 
+                : "Users can now select regular AI models while you configure agents.",
+            });
+          }}
+        />
       )}
 
       <div className="flex">

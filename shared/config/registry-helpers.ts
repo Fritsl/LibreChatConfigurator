@@ -710,12 +710,19 @@ export function canonicalizeConfiguration(config: any): any {
     }
   }
   
-  // Remove ANY field from config that's not in the registry
+  // Known nested structure keys from schema (these should always be preserved)
+  const schemaNestedKeys = new Set([
+    'fileConfig', 'rateLimits', 'interface', 'registration', 'emailSettings',
+    'violations', 'balance', 'modelSpecs', 'endpoints', 'rag', 'stt', 'tts',
+    'speech', 'memory', 'ocr', 'ux', 'mcpServers'
+  ]);
+  
+  // Remove ANY field from config that's not in the registry or a known nested structure
   // This removes historical duplicates like 'awsEndpointUrl' that were deleted from registry
   const canonicalized: any = {};
   for (const key in config) {
-    if (registeredFieldIds.has(key)) {
-      // Field is in registry - keep it
+    if (registeredFieldIds.has(key) || schemaNestedKeys.has(key)) {
+      // Field is in registry or is a schema nested object - keep it
       canonicalized[key] = config[key];
     }
     // Otherwise skip it - it's a legacy duplicate or unknown field

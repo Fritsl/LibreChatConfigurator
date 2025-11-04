@@ -125,6 +125,7 @@ export function FieldOverrideSetting({
       case 'email-composite': return 'email-composite';
       case 'endpoint-file-limits': return 'endpoint-file-limits';
       case 'file-types': return 'file-types';
+      case 'endpoint-selector': return 'endpoint-selector';
       default: return 'text';
     }
   };

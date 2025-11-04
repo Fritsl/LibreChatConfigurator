@@ -19,6 +19,7 @@ import { FileStorageEditor } from "@/components/file-storage-editor-fixed";
 import { EmailServiceEditor } from "@/components/email-service-editor";
 import { EndpointFileLimitsEditor } from "@/components/endpoint-file-limits-editor";
 import { FileTypeSelectorEditor } from "@/components/file-type-selector-editor";
+import { EndpointSelectorEditor } from "@/components/endpoint-selector-editor";
 import { FieldStateControl } from "@/components/field-state-control";
 
 interface SettingInputProps {
@@ -26,7 +27,7 @@ interface SettingInputProps {
   description?: string;
   docUrl?: string;
   docSection?: string;
-  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types";
+  type: "text" | "number" | "password" | "boolean" | "select" | "textarea" | "array" | "object" | "mcp-servers" | "custom-endpoints" | "web-search" | "oauth-providers" | "meilisearch-integration" | "caching-integration" | "file-storage" | "email-composite" | "endpoint-file-limits" | "file-types" | "endpoint-selector";
   value: any;
   onChange: (value: any) => void;
   options?: string[] | Array<{ value: string; label: string }>;
@@ -374,6 +375,15 @@ export function SettingInput({
       case "file-types":
         return (
           <FileTypeSelectorEditor
+            value={value || []}
+            onChange={onChange}
+            data-testid={testId}
+          />
+        );
+
+      case "endpoint-selector":
+        return (
+          <EndpointSelectorEditor
             value={value || []}
             onChange={onChange}
             data-testid={testId}

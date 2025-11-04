@@ -26,7 +26,8 @@ export type FieldType =
   | 'file-storage'
   | 'email-composite'
   | 'endpoint-file-limits'
-  | 'file-types';
+  | 'file-types'
+  | 'endpoint-selector';
 
 // Field descriptor - defines all metadata for a configuration field
 export interface FieldDescriptor {
@@ -1341,10 +1342,10 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'enabledEndpoints',
     envKey: 'ENDPOINTS',
-    type: 'array',
+    type: 'endpoint-selector',
     defaultValue: [],
     category: 'endpoints',
-    description: 'Enabled Endpoints (comma-separated in ENV)',
+    description: 'Choose which AI endpoints users can access',
     arrayItemType: 'string',
     envTransformer: (val) => val.split(',').map(v => v.trim()).filter(v => v),
   },

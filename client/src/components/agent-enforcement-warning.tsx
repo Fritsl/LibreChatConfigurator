@@ -33,16 +33,17 @@ export function AgentEnforcementWarning({ configuration, onToggleEnforce }: Agen
             
             <AlertDescription className="text-sm space-y-2">
               {isEnforced ? (
-                <p>
-                  <strong>Users can ONLY access agents you've created.</strong> They cannot select
-                  regular AI models. If you haven't configured valid agents with IDs in the Model Specs
-                  section below, users will be locked out and unable to chat.
-                </p>
+                <>
+                  <p>
+                    Users must use your configured agents. Make sure you've set a valid <strong>agent ID</strong> in the <strong>Model Specs</strong> section below (Interface tab).
+                  </p>
+                  <p className="text-xs opacity-75">
+                    Without a valid agent ID, users will be unable to chat.
+                  </p>
+                </>
               ) : (
                 <p>
-                  You're in Agents-Only Mode, but enforcement is disabled. Users can still select 
-                  regular AI models while you set up your agents. Enable enforcement once you've 
-                  configured at least one valid agent with an agent ID.
+                  Users can select any model while you configure agents. Set an <strong>agent ID</strong> in <strong>Model Specs</strong> (Interface tab), then enable enforcement.
                 </p>
               )}
               
@@ -60,13 +61,6 @@ export function AgentEnforcementWarning({ configuration, onToggleEnforce }: Agen
                   {isEnforced ? "Disable" : "Enable"} agent enforcement
                 </Label>
               </div>
-              
-              {!isEnforced && (
-                <p className="text-xs opacity-75 mt-2">
-                  <strong>Tip:</strong> Create and test your agents first, then enable enforcement
-                  to restrict users to agents-only access.
-                </p>
-              )}
             </AlertDescription>
           </div>
         </div>

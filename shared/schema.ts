@@ -276,6 +276,13 @@ const speechSchema = z.object({
   }).optional(),
 }).optional();
 
+// User Experience Preset Configuration (for quick-setup modes like agents-only)
+const uxSchema = z.object({
+  preset: z.object({
+    mode: z.enum(["standard", "agents-only"]).default("standard"),
+  }).optional(),
+}).optional();
+
 // MCP Servers Configuration
 const mcpServerSchema = z.object({
   type: z.enum(["stdio", "websocket", "sse", "streamable-http"]).optional(),
@@ -486,6 +493,7 @@ export const configurationSchema = z.object({
   stt: sttSchema,
   tts: ttsSchema,
   speech: speechSchema,
+  ux: uxSchema,
   mcpServers: mcpServersSchema,
   endpoints: endpointsSchema,
   

@@ -3036,6 +3036,20 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   },
 
   // =============================================================================
+  // YAML-Only Fields: User Experience Preset Configuration
+  // =============================================================================
+  {
+    id: 'ux.preset.mode',
+    yamlPath: 'ux.preset.mode',
+    type: 'string',
+    defaultValue: 'standard',
+    category: 'ui',
+    description: 'User experience preset mode (standard or agents-only)',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+
+  // =============================================================================
   // YAML-Only Fields: Memory Configuration
   // =============================================================================
   {

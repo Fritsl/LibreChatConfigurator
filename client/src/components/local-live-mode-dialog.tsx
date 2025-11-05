@@ -29,24 +29,7 @@ export function LocalLiveModeDialog({
     }
   }, [open, configuration.deploymentMode]);
   
-  const localConfig = configuration.localModeConfig || {};
   const liveConfig = configuration.liveModeConfig || {};
-
-  const handleLocalChange = (field: string, value: string) => {
-    const updates: Partial<typeof configuration> = {
-      localModeConfig: {
-        ...localConfig,
-        [field]: value,
-      },
-    };
-    
-    // If local mode is active, also update the main configuration field
-    if (activeMode === "local") {
-      (updates as any)[field] = value;
-    }
-    
-    onConfigurationChange(updates);
-  };
 
   const handleLiveChange = (field: string, value: string) => {
     const updates: Partial<typeof configuration> = {
@@ -67,19 +50,28 @@ export function LocalLiveModeDialog({
   const handleModeSwitch = (mode: "local" | "live") => {
     setActiveMode(mode);
     
-    // Get the configuration values from the selected mode
-    const modeConfig = mode === "local" ? localConfig : liveConfig;
-    
-    // Apply the mode's values to the main configuration fields
-    onConfigurationChange({
-      deploymentMode: mode,
-      domainClient: modeConfig.domainClient || configuration.domainClient,
-      domainServer: modeConfig.domainServer || configuration.domainServer,
-      mongoUri: modeConfig.mongoUri || configuration.mongoUri,
-      mongoRootUsername: modeConfig.mongoRootUsername || configuration.mongoRootUsername,
-      mongoRootPassword: modeConfig.mongoRootPassword || configuration.mongoRootPassword,
-      mongoDbName: modeConfig.mongoDbName || configuration.mongoDbName,
-    });
+    if (mode === "live") {
+      // Apply Live overrides to the main configuration fields
+      const updates: Partial<typeof configuration> = {
+        deploymentMode: mode,
+      };
+      
+      // Only override if Live values are set
+      if (liveConfig.domainClient) updates.domainClient = liveConfig.domainClient;
+      if (liveConfig.domainServer) updates.domainServer = liveConfig.domainServer;
+      if (liveConfig.mongoUri) updates.mongoUri = liveConfig.mongoUri;
+      if (liveConfig.mongoRootUsername) updates.mongoRootUsername = liveConfig.mongoRootUsername;
+      if (liveConfig.mongoRootPassword) updates.mongoRootPassword = liveConfig.mongoRootPassword;
+      if (liveConfig.mongoDbName) updates.mongoDbName = liveConfig.mongoDbName;
+      
+      onConfigurationChange(updates);
+    } else {
+      // Local mode: just update the deployment mode
+      // The main configuration fields remain as they are (system defaults)
+      onConfigurationChange({
+        deploymentMode: mode,
+      });
+    }
   };
 
   const fields = [
@@ -97,8 +89,8 @@ export function LocalLiveModeDialog({
         <DialogHeader>
           <DialogTitle>Local / Live Deployment Configuration</DialogTitle>
           <DialogDescription>
-            Configure separate settings for local development and live production environments.
-            Switch between modes to apply the respective configuration values.
+            View your local development settings and configure production overrides.
+            Activate Live mode to use your production values in the deployment package.
           </DialogDescription>
         </DialogHeader>
 
@@ -134,6 +126,7 @@ export function LocalLiveModeDialog({
               <div className="flex items-center gap-2 pb-2 border-b">
                 <Server className="h-5 w-5 text-green-600" />
                 <h3 className="font-semibold text-lg">Local Development</h3>
+                <Badge variant="secondary" className="ml-auto text-xs">Read-only</Badge>
               </div>
               {fields.map((field) => (
                 <div key={`local-${field.key}`} className="space-y-2">
@@ -144,9 +137,10 @@ export function LocalLiveModeDialog({
                   <Input
                     id={`local-${field.key}`}
                     type={field.type || "text"}
-                    value={(localConfig as any)[field.key] || ""}
-                    onChange={(e) => handleLocalChange(field.key, e.target.value)}
-                    placeholder={`Enter ${field.label.toLowerCase()}...`}
+                    value={(configuration as any)[field.key] || ""}
+                    disabled
+                    placeholder="Not set"
+                    className="bg-muted"
                     data-testid={`input-local-${field.key}`}
                   />
                 </div>
@@ -181,9 +175,10 @@ export function LocalLiveModeDialog({
           {/* Info Note */}
           <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
             <p className="text-sm text-blue-900 dark:text-blue-100">
-              <strong>How it works:</strong> Configure values for both Local and Live environments. 
-              When you switch modes, the active mode's values will override the main configuration fields 
-              for DOMAIN_CLIENT, DOMAIN_SERVER, MONGO_URI, MONGO_ROOT_USERNAME, MONGO_ROOT_PASSWORD, and MONGO_DB_NAME.
+              <strong>How it works:</strong> The Local column shows your current system values (read-only). 
+              The Live column lets you enter production values. When you activate Live mode, those values 
+              will override the local settings for DOMAIN_CLIENT, DOMAIN_SERVER, MONGO_URI, MONGO_ROOT_USERNAME, 
+              MONGO_ROOT_PASSWORD, and MONGO_DB_NAME in your deployment package.
             </p>
           </div>
         </div>

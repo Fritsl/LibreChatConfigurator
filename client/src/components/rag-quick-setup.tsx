@@ -52,7 +52,7 @@ export function RAGQuickSetup({ configuration, onApplySetup }: RAGQuickSetupProp
           <div className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Settings that will be applied:</div>
           <div className="grid grid-cols-[140px_1fr] gap-x-4 gap-y-2 text-gray-600 dark:text-gray-400">
             <div className="font-medium">RAG API URL:</div>
-            <div className="font-mono text-xs">http://rag-api:8000</div>
+            <div className="font-mono text-xs">http://rag_api:8000</div>
             
             <div className="font-medium">RAG Port:</div>
             <div className="font-mono text-xs">8000</div>

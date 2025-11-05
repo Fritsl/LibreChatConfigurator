@@ -4494,7 +4494,7 @@ paths:
                                 updatedConfig.endpoints.agents.fileConfig.supportedMimeTypes = uniqueTypes;
                                 
                                 // 2. Configure RAG with sensible defaults
-                                updatedConfig.ragApiURL = "http://rag-api:8000";
+                                updatedConfig.ragApiURL = "http://rag_api:8000";
                                 updatedConfig.ragPort = 8000;
                                 updatedConfig.ragHost = "0.0.0.0";
                                 updatedConfig.collectionName = "librechat";
@@ -4522,7 +4522,7 @@ paths:
                                 // Apply RAG quick setup with sensible defaults
                                 let updatedConfig = { ...configuration };
                                 
-                                updatedConfig.ragApiURL = "http://rag-api:8000";
+                                updatedConfig.ragApiURL = "http://rag_api:8000";
                                 updatedConfig.ragPort = 8000;
                                 updatedConfig.ragHost = "0.0.0.0";
                                 updatedConfig.collectionName = "librechat";

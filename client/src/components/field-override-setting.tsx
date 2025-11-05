@@ -111,6 +111,7 @@ export function FieldOverrideSetting({
       case 'boolean': return 'boolean';
       case 'number': return 'number';
       case 'string': return 'text';
+      case 'textarea': return 'textarea';
       case 'array': return 'array';
       case 'object': return 'object';
       case 'enum': return 'select';

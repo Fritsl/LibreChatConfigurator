@@ -1531,9 +1531,12 @@ export default function Home() {
               
               {/* Local/Live Mode Button */}
               <Button 
-                variant="outline"
+                variant={configuration.deploymentMode === "live" ? "default" : "outline"}
                 onClick={() => setShowLocalLiveDialog(true)}
                 data-testid="button-local-live-mode"
+                className={configuration.deploymentMode === "live" 
+                  ? "bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white" 
+                  : ""}
               >
                 <Server className="h-4 w-4 mr-2" />
                 {configuration.deploymentMode === "live" ? "Live" : "Local"}

@@ -327,7 +327,20 @@ export const defaultConfiguration: Configuration = {
     }
   },
   mcpServers: {},
-  endpoints: {},
+  endpoints: {
+    agents: {
+      disableBuilder: false,
+      capabilities: ['execute_code', 'file_search', 'actions', 'tools', 'artifacts', 'context', 'ocr', 'chain', 'web_search'],
+      recursionLimit: 50,
+      maxRecursionLimit: 100,
+      maxCitations: 30,
+      maxCitationsPerFile: 7,
+      minRelevanceScore: 0.45,
+      fileConfig: {
+        supportedMimeTypes: []
+      }
+    }
+  },
   
   // Proper nested objects for LibreChat compatibility
   registration: {

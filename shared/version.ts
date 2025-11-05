@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.3.3";
+export const TOOL_VERSION = "2.3.4";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-11-05",
-  changelog: "BUG FIXES: (1) Added legacy Word format (application/msword / .doc) to Office Documents Quick Setup - Word documents now appear in file picker without requiring 'All files' mode. (2) Fixed RAG API URL to use correct Docker service name (rag_api with underscore instead of rag-api with hyphen) - resolves 'RAG API not reachable' error. (3) Added red color indicator to Live mode button for better deployment mode visibility."
+  changelog: "CRITICAL FIX: Office Documents Quick Setup now configures MIME types in BOTH required locations - (1) fileConfig.endpoints.agents.supportedMimeTypes (file picker UI) AND (2) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search). Previously only configured RAG location, causing office documents to not appear in file picker. This fix ensures Word/Excel/PowerPoint/PDF files are both selectable AND processable by RAG."
 } as const;
 
 // Helper function to get the tool's version string

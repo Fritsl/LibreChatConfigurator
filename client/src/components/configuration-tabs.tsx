@@ -4483,15 +4483,16 @@ paths:
                                   "application/pdf", // .pdf
                                 ];
                                 
-                                // Get existing file types and merge with office types
-                                const existingTypes = updatedConfig.endpoints?.agents?.fileConfig?.supportedMimeTypes || [];
-                                const uniqueTypes = Array.from(new Set([...existingTypes, ...officeTypes]));
+                                // CRITICAL: Office documents must be configured in TWO locations:
+                                // A) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search)
+                                const existingRagTypes = updatedConfig.endpoints?.agents?.fileConfig?.supportedMimeTypes || [];
+                                const uniqueRagTypes = Array.from(new Set([...existingRagTypes, ...officeTypes]));
+                                updatedConfig = setNestedValue(updatedConfig, 'endpoints.agents.fileConfig.supportedMimeTypes', uniqueRagTypes);
                                 
-                                // Set the file types
-                                if (!updatedConfig.endpoints) updatedConfig.endpoints = {};
-                                if (!updatedConfig.endpoints.agents) updatedConfig.endpoints.agents = {};
-                                if (!updatedConfig.endpoints.agents.fileConfig) updatedConfig.endpoints.agents.fileConfig = {};
-                                updatedConfig.endpoints.agents.fileConfig.supportedMimeTypes = uniqueTypes;
+                                // B) fileConfig.endpoints.agents.supportedMimeTypes (file picker UI)
+                                const existingPickerTypes = updatedConfig.fileConfig?.endpoints?.agents?.supportedMimeTypes || [];
+                                const uniquePickerTypes = Array.from(new Set([...existingPickerTypes, ...officeTypes]));
+                                updatedConfig = setNestedValue(updatedConfig, 'fileConfig.endpoints.agents.supportedMimeTypes', uniquePickerTypes);
                                 
                                 // 2. Configure RAG with sensible defaults
                                 updatedConfig.ragApiURL = "http://rag_api:8000";

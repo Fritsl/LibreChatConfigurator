@@ -583,20 +583,9 @@ function generateEnvLine(
     return bugWarning + `${field.envKey}=${envValue}`;
   }
   
-  // ✅ CRITICAL FIX: Handle LibreChat defaults correctly
-  // When shouldUseDefault=true, it means the user wants LibreChat's built-in default
-  // We must SKIP exporting these fields entirely to let LibreChat use its internal defaults
-  if (shouldUseDefault) {
-    return ''; // Skip - let LibreChat use its internal default
-  }
-  
-  // Export fields with explicit defaults (non-empty values)
-  if (hasDefault && defaultComment !== '') {
-    return bugWarning + `${field.envKey}=${defaultComment}`;
-  }
-  
-  // ✅ DOCKER COMPOSE WARNING SUPPRESSION
-  // For optional fields with no value, export blank strings to prevent Docker warnings
+  // ✅ DOCKER COMPOSE WARNING SUPPRESSION - MUST COME BEFORE shouldUseDefault CHECK
+  // For optional fields with no value, ALWAYS export blank strings to prevent Docker warnings
+  // This happens BEFORE the shouldUseDefault check to ensure Docker gets the variables it needs
   // Categories that benefit from blank string defaults (API keys, OAuth, optional services)
   const optionalCategories = new Set([
     'oauth',           // OAuth providers (GOOGLE_CLIENT_ID, GITHUB_CLIENT_SECRET, etc.)
@@ -627,8 +616,22 @@ function generateEnvLine(
   ]);
   
   // Export blank string for optional categories or specific optional fields
+  // This MUST happen BEFORE shouldUseDefault check to prevent Docker warnings
   if ((field.category && optionalCategories.has(field.category)) || optionalFieldIds.has(field.id)) {
     return bugWarning + `${field.envKey}=""`;
+  }
+  
+  // ✅ CRITICAL FIX: Handle LibreChat defaults correctly
+  // When shouldUseDefault=true, it means the user wants LibreChat's built-in default
+  // We must SKIP exporting these fields entirely to let LibreChat use its internal defaults
+  // NOTE: This now comes AFTER optional field blank string export
+  if (shouldUseDefault) {
+    return ''; // Skip - let LibreChat use its internal default
+  }
+  
+  // Export fields with explicit defaults (non-empty values)
+  if (hasDefault && defaultComment !== '') {
+    return bugWarning + `${field.envKey}=${defaultComment}`;
   }
   
   // Skip fields with no value and no meaningful default (required fields only)

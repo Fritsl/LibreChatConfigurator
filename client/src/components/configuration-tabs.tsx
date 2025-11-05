@@ -4477,6 +4477,7 @@ paths:
                                 // 1. Enable Office document file types for agents endpoint
                                 const officeTypes = [
                                   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+                                  "application/msword", // .doc (legacy Word format)
                                   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
                                   "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
                                   "application/pdf", // .pdf

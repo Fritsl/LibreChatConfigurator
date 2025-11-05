@@ -853,7 +853,7 @@ export function generateYamlFile(config: Record<string, any>): string {
     '# Due to LibreChat beta bugs, some fields that could be here are in .env instead.',
     '#',
     '',
-    `version: ${config.version || "0.8.0-rc4"}`,
+    `version: ${config.version || "1.3.1"}`,
     `cache: ${config.cache ?? true}`,
     ''
   ];

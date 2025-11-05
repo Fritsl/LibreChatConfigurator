@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ConfigurationTabs } from "@/components/configuration-tabs";
 import { PreviewModal } from "@/components/preview-modal";
 import { AgentEnforcementWarning } from "@/components/agent-enforcement-warning";
+import { LocalLiveModeDialog } from "@/components/local-live-mode-dialog";
 import { useConfiguration } from "@/hooks/use-configuration";
 import { useBackendAvailability } from "@/hooks/use-backend-availability";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { defaultConfiguration } from "@/lib/configuration-defaults";
 import { createResetConfiguration } from "@/lib/librechat-defaults";
 import { deepMerge } from "@/lib/merge-utils";
-import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info, RefreshCw } from "lucide-react";
+import { Search, Download, Save, Upload, CheckCircle, Eye, Rocket, ChevronDown, FolderOpen, FileText, Settings, TestTube, Zap, AlertTriangle, ExternalLink, Info, RefreshCw, Server } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"; 
@@ -31,6 +32,7 @@ export default function Home() {
   const [showSelfTestConfirmation, setShowSelfTestConfirmation] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [showMergeResults, setShowMergeResults] = useState(false);
+  const [showLocalLiveDialog, setShowLocalLiveDialog] = useState(false);
   const [mergeDetails, setMergeDetails] = useState<{ name: string; fields: string[] } | null>(null);
   const [showUnsupportedFieldsDialog, setShowUnsupportedFieldsDialog] = useState(false);
   const [unsupportedFieldsData, setUnsupportedFieldsData] = useState<{ 
@@ -1527,6 +1529,16 @@ export default function Home() {
                 }
               }} />
               
+              {/* Local/Live Mode Button */}
+              <Button 
+                variant="outline"
+                onClick={() => setShowLocalLiveDialog(true)}
+                data-testid="button-local-live-mode"
+              >
+                <Server className="h-4 w-4 mr-2" />
+                {configuration.deploymentMode === "live" ? "Live" : "Local"}
+              </Button>
+              
               {/* Package Generation Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -1644,6 +1656,14 @@ export default function Home() {
           onGenerate={handleGeneratePackage}
         />
       )}
+
+      {/* Local/Live Mode Dialog */}
+      <LocalLiveModeDialog
+        open={showLocalLiveDialog}
+        onOpenChange={setShowLocalLiveDialog}
+        configuration={configuration}
+        onConfigurationChange={updateConfiguration}
+      />
 
       {/* Reset Confirmation Dialog */}
       <AlertDialog open={showResetConfirmation} onOpenChange={setShowResetConfirmation}>

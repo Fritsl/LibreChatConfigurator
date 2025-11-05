@@ -1518,6 +1518,30 @@ function generateFileConfigSection(config: any): string {
     });
   }
   
+  if (config.fileConfig?.text?.supportedMimeTypes && config.fileConfig.text.supportedMimeTypes.length > 0) {
+    lines.push('  text:');
+    lines.push('    supportedMimeTypes:');
+    config.fileConfig.text.supportedMimeTypes.forEach((type: string) => {
+      lines.push(`      - "${type}"`);
+    });
+  }
+  
+  if (config.fileConfig?.ocr?.supportedMimeTypes && config.fileConfig.ocr.supportedMimeTypes.length > 0) {
+    lines.push('  ocr:');
+    lines.push('    supportedMimeTypes:');
+    config.fileConfig.ocr.supportedMimeTypes.forEach((type: string) => {
+      lines.push(`      - "${type}"`);
+    });
+  }
+  
+  if (config.fileConfig?.stt?.supportedMimeTypes && config.fileConfig.stt.supportedMimeTypes.length > 0) {
+    lines.push('  stt:');
+    lines.push('    supportedMimeTypes:');
+    config.fileConfig.stt.supportedMimeTypes.forEach((type: string) => {
+      lines.push(`      - "${type}"`);
+    });
+  }
+  
   if (serverFileSizeLimit !== undefined) {
     lines.push(`  serverFileSizeLimit: ${serverFileSizeLimit}`);
   }

@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.3.5";
+export const TOOL_VERSION = "2.3.6";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-11-05",
-  changelog: "CRITICAL FIX: Office Documents Quick Setup now configures MIME types in ALL THREE required locations - (1) fileConfig.endpoints.agents.supportedMimeTypes (file picker UI), (2) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search), AND (3) fileConfig.text.supportedMimeTypes (text extraction/processing). Previously missing the text extraction configuration, causing LibreChat to not extract text from Office documents even when selectable. This fix ensures Word/Excel/PowerPoint/PDF files are selectable, searchable, AND processable. Includes comprehensive regex patterns for modern (.docx/.xlsx/.pptx), legacy (.doc/.xls/.ppt), and macro-enabled Office formats."
+  changelog: "CRITICAL FIX: Resolved YAML export bug preventing Office document text extraction. The YAML generation function now properly exports fileConfig.text.supportedMimeTypes (plus ocr/stt variants) to librechat.yaml. Previous versions could set these values via Quick Setup but failed to export them, causing Office documents to disappear after upload. This completes the three-location Office document support: (1) fileConfig.endpoints.agents.supportedMimeTypes (file picker), (2) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search), (3) fileConfig.text.supportedMimeTypes (text extraction with regex patterns). Users experiencing Office document upload issues should click 'Enable Office Documents' Quick Setup and regenerate their deployment package."
 } as const;
 
 // Helper function to get the tool's version string

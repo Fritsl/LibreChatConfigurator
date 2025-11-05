@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,25 +22,46 @@ export function LocalLiveModeDialog({
 }: LocalLiveModeDialogProps) {
   const [activeMode, setActiveMode] = useState<"local" | "live">(configuration.deploymentMode || "local");
   
+  // Sync activeMode with configuration.deploymentMode when dialog opens
+  useEffect(() => {
+    if (open) {
+      setActiveMode(configuration.deploymentMode || "local");
+    }
+  }, [open, configuration.deploymentMode]);
+  
   const localConfig = configuration.localModeConfig || {};
   const liveConfig = configuration.liveModeConfig || {};
 
   const handleLocalChange = (field: string, value: string) => {
-    onConfigurationChange({
+    const updates: Partial<typeof configuration> = {
       localModeConfig: {
         ...localConfig,
         [field]: value,
       },
-    });
+    };
+    
+    // If local mode is active, also update the main configuration field
+    if (activeMode === "local") {
+      (updates as any)[field] = value;
+    }
+    
+    onConfigurationChange(updates);
   };
 
   const handleLiveChange = (field: string, value: string) => {
-    onConfigurationChange({
+    const updates: Partial<typeof configuration> = {
       liveModeConfig: {
         ...liveConfig,
         [field]: value,
       },
-    });
+    };
+    
+    // If live mode is active, also update the main configuration field
+    if (activeMode === "live") {
+      (updates as any)[field] = value;
+    }
+    
+    onConfigurationChange(updates);
   };
 
   const handleModeSwitch = (mode: "local" | "live") => {

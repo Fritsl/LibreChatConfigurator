@@ -175,12 +175,16 @@ export function SettingInput({
         );
 
       case "textarea":
+        const isTOSField = fieldId === 'interface.termsOfService.modalContent';
+        const rows = isTOSField ? 15 : 6;
+        
         return (
           <Textarea
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            rows={4}
+            rows={rows}
+            className="resize-y"
             data-testid={testId}
           />
         );

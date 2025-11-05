@@ -760,7 +760,8 @@ export function canonicalizeConfiguration(config: any): any {
   const schemaNestedKeys = new Set([
     'fileConfig', 'rateLimits', 'interface', 'registration', 'emailSettings',
     'violations', 'balance', 'modelSpecs', 'endpoints', 'rag', 'stt', 'tts',
-    'speech', 'memory', 'ocr', 'ux', 'mcpServers'
+    'speech', 'memory', 'ocr', 'ux', 'mcpServers', 'localModeConfig', 'liveModeConfig',
+    'deploymentMode', 'fieldOverrides', 'configurationName', 'version'
   ]);
   
   // Remove ANY field from config that's not in the registry or a known nested structure

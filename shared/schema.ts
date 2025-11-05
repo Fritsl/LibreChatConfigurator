@@ -789,14 +789,6 @@ export const configurationSchema = z.object({
   
   // Local/Live Mode Configuration
   deploymentMode: z.enum(["local", "live"]).default("local"),
-  localModeConfig: z.object({
-    domainClient: z.string().optional(),
-    domainServer: z.string().optional(),
-    mongoUri: z.string().optional(),
-    mongoRootUsername: z.string().optional(),
-    mongoRootPassword: z.string().optional(),
-    mongoDbName: z.string().optional(),
-  }).optional().default({}),
   liveModeConfig: z.object({
     domainClient: z.string().optional(),
     domainServer: z.string().optional(),

@@ -17,6 +17,7 @@ export type FieldType =
   | 'enum'
   | 'url'
   | 'email'
+  | 'textarea'
   | 'custom-endpoints'
   | 'mcp-servers'
   | 'web-search'
@@ -3562,7 +3563,7 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
   {
     id: 'interfaceTermsOfServiceModalContent',
     yamlPath: 'interface.termsOfService.modalContent',
-    type: 'string',
+    type: 'textarea',
     defaultValue: '',
     category: 'interface',
     description: 'Terms modal content',

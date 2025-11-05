@@ -218,14 +218,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageFiles["00-README-INSTALLATION.txt"] = generateInstallationReadme(configuration);
       }
 
-      // Generate MongoDB backup/restore scripts (both Linux/macOS and Windows)
-      if (includeFiles.includes("mongo-backup")) {
-        packageFiles["backup_mongodb.sh"] = generateMongoBackupScript(configuration);
-        packageFiles["backup_mongodb.bat"] = generateMongoBackupScriptWindows(configuration);
-        packageFiles["restore_mongodb.sh"] = generateMongoRestoreScript(configuration);
-        packageFiles["restore_mongodb.bat"] = generateMongoRestoreScriptWindows(configuration);
-      }
-
       // Generate README.md
       if (includeFiles.includes("readme")) {
         packageFiles["README.md"] = generateReadmeFile(configuration);

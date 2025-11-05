@@ -3841,6 +3841,17 @@ export const FIELD_REGISTRY: FieldDescriptor[] = [
     exportToYaml: true,
   },
   {
+    id: 'endpointsAgentsFileConfigSupportedMimeTypes',
+    yamlPath: 'endpoints.agents.fileConfig.supportedMimeTypes',
+    type: 'array',
+    arrayItemType: 'string',
+    defaultValue: [],
+    category: 'endpoints',
+    description: 'Supported MIME types for agent file uploads',
+    exportToEnv: false,
+    exportToYaml: true,
+  },
+  {
     id: 'endpointsOpenAITitle',
     yamlPath: 'endpoints.openAI.title',
     type: 'string',

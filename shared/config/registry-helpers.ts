@@ -1036,8 +1036,9 @@ function generateEndpointsSection(config: any): string {
   const agentsMaxCitations = agentsConfig.maxCitations ?? config.endpointsAgentsMaxCitations;
   const agentsMaxCitationsPerFile = agentsConfig.maxCitationsPerFile ?? config.endpointsAgentsMaxCitationsPerFile;
   const agentsMinRelevanceScore = agentsConfig.minRelevanceScore ?? config.endpointsAgentsMinRelevanceScore;
+  const agentsSupportedMimeTypes = agentsConfig.fileConfig?.supportedMimeTypes ?? config.endpointsAgentsFileConfigSupportedMimeTypes;
   
-  if (config.endpoints?.agents || agentsDisableBuilder !== undefined || agentsRecursionLimit !== undefined || agentsMaxRecursionLimit !== undefined || agentsCapabilities || agentsMaxCitations !== undefined || agentsMaxCitationsPerFile !== undefined || agentsMinRelevanceScore !== undefined) {
+  if (config.endpoints?.agents || agentsDisableBuilder !== undefined || agentsRecursionLimit !== undefined || agentsMaxRecursionLimit !== undefined || agentsCapabilities || agentsMaxCitations !== undefined || agentsMaxCitationsPerFile !== undefined || agentsMinRelevanceScore !== undefined || (agentsSupportedMimeTypes && agentsSupportedMimeTypes.length > 0)) {
     lines.push('  agents:');
     if (agentsDisableBuilder !== undefined) {
       lines.push(`    disableBuilder: ${agentsDisableBuilder}`);
@@ -1063,6 +1064,11 @@ function generateEndpointsSection(config: any): string {
     }
     if (agentsMinRelevanceScore !== undefined) {
       lines.push(`    minRelevanceScore: ${agentsMinRelevanceScore}`);
+    }
+    if (agentsSupportedMimeTypes && agentsSupportedMimeTypes.length > 0) {
+      lines.push(`    fileConfig:`);
+      lines.push(`      supportedMimeTypes:`);
+      agentsSupportedMimeTypes.forEach((mimeType: string) => lines.push(`        - "${escapeYamlDoubleQuoted(mimeType)}"`));
     }
   }
   

@@ -22,7 +22,7 @@
  */
 
 // This Configuration Tool's Version (independent of LibreChat)
-export const TOOL_VERSION = "2.3.4";
+export const TOOL_VERSION = "2.3.5";
 
 // LibreChat Version This Tool Supports
 export const LIBRECHAT_TARGET_VERSION = "0.8.0-rc4";
@@ -35,7 +35,7 @@ export const VERSION_INFO = {
   librechatTarget: LIBRECHAT_TARGET_VERSION,
   schemaVersion: SCHEMA_VERSION,
   lastUpdated: "2025-11-05",
-  changelog: "CRITICAL FIX: Office Documents Quick Setup now configures MIME types in BOTH required locations - (1) fileConfig.endpoints.agents.supportedMimeTypes (file picker UI) AND (2) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search). Previously only configured RAG location, causing office documents to not appear in file picker. This fix ensures Word/Excel/PowerPoint/PDF files are both selectable AND processable by RAG."
+  changelog: "CRITICAL FIX: Office Documents Quick Setup now configures MIME types in ALL THREE required locations - (1) fileConfig.endpoints.agents.supportedMimeTypes (file picker UI), (2) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search), AND (3) fileConfig.text.supportedMimeTypes (text extraction/processing). Previously missing the text extraction configuration, causing LibreChat to not extract text from Office documents even when selectable. This fix ensures Word/Excel/PowerPoint/PDF files are selectable, searchable, AND processable. Includes comprehensive regex patterns for modern (.docx/.xlsx/.pptx), legacy (.doc/.xls/.ppt), and macro-enabled Office formats."
 } as const;
 
 // Helper function to get the tool's version string

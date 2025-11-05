@@ -11,7 +11,7 @@ interface OfficeDocumentsQuickSetupProps {
 }
 
 export function OfficeDocumentsQuickSetup({ configuration, onApplySetup }: OfficeDocumentsQuickSetupProps) {
-  // Check if Office documents are supported in BOTH locations
+  // Check if Office documents are supported in all THREE required locations
   // Location A: endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search)
   const ragFileTypes = configuration.endpoints?.agents?.fileConfig?.supportedMimeTypes || [];
   const hasRagOfficeSupport = ragFileTypes.some(type => 
@@ -30,8 +30,20 @@ export function OfficeDocumentsQuickSetup({ configuration, onApplySetup }: Offic
     type.includes('officedocument')
   );
   
-  // Both locations must have office support for it to work properly
-  const hasOfficeSupport = hasRagOfficeSupport && hasPickerOfficeSupport;
+  // Location C: fileConfig.text.supportedMimeTypes (text extraction)
+  const textFileTypes = configuration.fileConfig?.text?.supportedMimeTypes || [];
+  const hasTextOfficeSupport = textFileTypes.some(type => 
+    type.includes('word') || 
+    type.includes('excel') || 
+    type.includes('powerpoint') ||
+    type.includes('officedocument') ||
+    type.includes('msword') ||
+    type.includes('ms-excel') ||
+    type.includes('ms-powerpoint')
+  );
+  
+  // All THREE locations must have office support for it to work properly
+  const hasOfficeSupport = hasRagOfficeSupport && hasPickerOfficeSupport && hasTextOfficeSupport;
 
   // Check if RAG is configured
   const isRAGConfigured = !!(

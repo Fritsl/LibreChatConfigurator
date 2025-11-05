@@ -363,6 +363,11 @@ export const defaultConfiguration: Configuration = {
         supportedMimeTypes: ["text/plain", "application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "text/csv", "text/markdown", "application/json", "text/html", "text/xml", "application/zip"]
       }
     },
+    text: {
+      supportedMimeTypes: [
+        "^text/(plain|markdown|csv|json|xml|html|css|javascript|typescript|x-python|x-java|x-csharp|x-php|x-ruby|x-go|x-rust|x-kotlin|x-swift|x-scala|x-perl|x-lua|x-shell|x-sql|x-yaml|x-toml)$"
+      ]
+    },
     serverFileSizeLimit: 20,
     avatarSizeLimit: 5,
     clientImageResize: {

@@ -28,6 +28,15 @@ const fileConfigSchema = z.object({
     totalSizeLimit: z.number().min(1).max(10000).default(50), // MB
     supportedMimeTypes: z.array(z.string()).optional(),
   })).optional(),
+  text: z.object({
+    supportedMimeTypes: z.array(z.string()).optional(),
+  }).optional(),
+  ocr: z.object({
+    supportedMimeTypes: z.array(z.string()).optional(),
+  }).optional(),
+  stt: z.object({
+    supportedMimeTypes: z.array(z.string()).optional(),
+  }).optional(),
   serverFileSizeLimit: z.number().min(1).max(1000).default(20), // MB
   avatarSizeLimit: z.number().min(1).max(100).default(5), // MB
   clientImageResize: clientImageResizeSchema,

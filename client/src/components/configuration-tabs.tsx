@@ -4483,7 +4483,7 @@ paths:
                                   "application/pdf", // .pdf
                                 ];
                                 
-                                // CRITICAL: Office documents must be configured in TWO locations:
+                                // CRITICAL: Office documents must be configured in THREE locations:
                                 // A) endpoints.agents.fileConfig.supportedMimeTypes (RAG vector search)
                                 const existingRagTypes = updatedConfig.endpoints?.agents?.fileConfig?.supportedMimeTypes || [];
                                 const uniqueRagTypes = Array.from(new Set([...existingRagTypes, ...officeTypes]));
@@ -4493,6 +4493,23 @@ paths:
                                 const existingPickerTypes = updatedConfig.fileConfig?.endpoints?.agents?.supportedMimeTypes || [];
                                 const uniquePickerTypes = Array.from(new Set([...existingPickerTypes, ...officeTypes]));
                                 updatedConfig = setNestedValue(updatedConfig, 'fileConfig.endpoints.agents.supportedMimeTypes', uniquePickerTypes);
+                                
+                                // C) fileConfig.text.supportedMimeTypes (text extraction/processing)
+                                const officeTextRegex = [
+                                  "^application/vnd\\.openxmlformats-officedocument\\.wordprocessingml\\.document$", // .docx
+                                  "^application/msword$", // .doc
+                                  "^application/vnd\\.ms-word\\.document\\.macroEnabled\\.12$", // .docm (macro-enabled Word)
+                                  "^application/vnd\\.openxmlformats-officedocument\\.spreadsheetml\\.sheet$", // .xlsx
+                                  "^application/vnd\\.ms-excel$", // .xls
+                                  "^application/vnd\\.ms-excel\\.sheet\\.macroEnabled\\.12$", // .xlsm
+                                  "^application/vnd\\.openxmlformats-officedocument\\.presentationml\\.presentation$", // .pptx
+                                  "^application/vnd\\.ms-powerpoint$", // .ppt
+                                  "^application/vnd\\.ms-powerpoint\\.presentation\\.macroEnabled\\.12$", // .pptm
+                                  "^application/pdf$", // .pdf
+                                ];
+                                const existingTextTypes = updatedConfig.fileConfig?.text?.supportedMimeTypes || [];
+                                const uniqueTextTypes = Array.from(new Set([...existingTextTypes, ...officeTextRegex]));
+                                updatedConfig = setNestedValue(updatedConfig, 'fileConfig.text.supportedMimeTypes', uniqueTextTypes);
                                 
                                 // 2. Configure RAG with sensible defaults
                                 updatedConfig.ragApiURL = "http://rag_api:8000";
@@ -4508,7 +4525,7 @@ paths:
                                 
                                 toast({
                                   title: "Office Documents Enabled",
-                                  description: "Office document support is now configured! Users can upload Word, Excel, PowerPoint, and PDF files. The RAG system and pgVector will be included in your Docker Compose package.",
+                                  description: "Office document support is now fully configured! Users can upload, view, and extract text from Word, Excel, PowerPoint, and PDF files. The RAG system and pgVector will be included in your Docker Compose package.",
                                 });
                               }}
                             />

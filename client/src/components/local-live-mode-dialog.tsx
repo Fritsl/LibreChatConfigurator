@@ -21,20 +21,42 @@ export function LocalLiveModeDialog({
   onConfigurationChange,
 }: LocalLiveModeDialogProps) {
   const [activeMode, setActiveMode] = useState<"local" | "live">(configuration.deploymentMode || "local");
+  const [baselineCaptured, setBaselineCaptured] = useState(false);
   
   // Sync activeMode with configuration.deploymentMode when dialog opens
   useEffect(() => {
     if (open) {
       setActiveMode(configuration.deploymentMode || "local");
+      setBaselineCaptured(false); // Reset flag when dialog opens
     }
-  }, [open, configuration.deploymentMode]);
+  }, [open]);
   
-  const liveConfig = configuration.liveModeConfig || {};
+  // Capture baseline when dialog opens (only once per dialog session)
+  useEffect(() => {
+    if (open && !baselineCaptured) {
+      // Only capture baseline if we're NOT currently in Live mode
+      // This prevents overwriting the baseline with Live overrides when reopening the dialog
+      if (configuration.deploymentMode !== "live") {
+        onConfigurationChange({
+          localModeConfig: {
+            domainClient: configuration.domainClient || "",
+            domainServer: configuration.domainServer || "",
+            mongoUri: configuration.mongoUri || "",
+            mongoRootUsername: configuration.mongoRootUsername || "",
+            mongoRootPassword: configuration.mongoRootPassword || "",
+            mongoDbName: configuration.mongoDbName || "",
+          },
+        });
+      }
+      setBaselineCaptured(true);
+    }
+  }, [open, baselineCaptured]);
 
   const handleLiveChange = (field: string, value: string) => {
+    const currentLiveConfig = configuration.liveModeConfig || {};
     const updates: Partial<typeof configuration> = {
       liveModeConfig: {
-        ...liveConfig,
+        ...currentLiveConfig,
         [field]: value,
       },
     };
@@ -50,6 +72,11 @@ export function LocalLiveModeDialog({
   const handleModeSwitch = (mode: "local" | "live") => {
     setActiveMode(mode);
     
+    // Always read from configuration.localModeConfig and configuration.liveModeConfig
+    // to get the latest values
+    const currentLocalConfig = configuration.localModeConfig || {};
+    const currentLiveConfig = configuration.liveModeConfig || {};
+    
     if (mode === "live") {
       // Apply Live overrides to the main configuration fields
       const updates: Partial<typeof configuration> = {
@@ -57,19 +84,24 @@ export function LocalLiveModeDialog({
       };
       
       // Only override if Live values are set
-      if (liveConfig.domainClient) updates.domainClient = liveConfig.domainClient;
-      if (liveConfig.domainServer) updates.domainServer = liveConfig.domainServer;
-      if (liveConfig.mongoUri) updates.mongoUri = liveConfig.mongoUri;
-      if (liveConfig.mongoRootUsername) updates.mongoRootUsername = liveConfig.mongoRootUsername;
-      if (liveConfig.mongoRootPassword) updates.mongoRootPassword = liveConfig.mongoRootPassword;
-      if (liveConfig.mongoDbName) updates.mongoDbName = liveConfig.mongoDbName;
+      if (currentLiveConfig.domainClient) updates.domainClient = currentLiveConfig.domainClient;
+      if (currentLiveConfig.domainServer) updates.domainServer = currentLiveConfig.domainServer;
+      if (currentLiveConfig.mongoUri) updates.mongoUri = currentLiveConfig.mongoUri;
+      if (currentLiveConfig.mongoRootUsername) updates.mongoRootUsername = currentLiveConfig.mongoRootUsername;
+      if (currentLiveConfig.mongoRootPassword) updates.mongoRootPassword = currentLiveConfig.mongoRootPassword;
+      if (currentLiveConfig.mongoDbName) updates.mongoDbName = currentLiveConfig.mongoDbName;
       
       onConfigurationChange(updates);
     } else {
-      // Local mode: just update the deployment mode
-      // The main configuration fields remain as they are (system defaults)
+      // Local mode: restore baseline values from localModeConfig
       onConfigurationChange({
         deploymentMode: mode,
+        domainClient: currentLocalConfig.domainClient || "",
+        domainServer: currentLocalConfig.domainServer || "",
+        mongoUri: currentLocalConfig.mongoUri || "",
+        mongoRootUsername: currentLocalConfig.mongoRootUsername || "",
+        mongoRootPassword: currentLocalConfig.mongoRootPassword || "",
+        mongoDbName: currentLocalConfig.mongoDbName || "",
       });
     }
   };
@@ -82,6 +114,10 @@ export function LocalLiveModeDialog({
     { key: "mongoRootPassword", label: "MongoDB Root Password", env: "MONGO_ROOT_PASSWORD", type: "password" },
     { key: "mongoDbName", label: "MongoDB Database Name", env: "MONGO_DB_NAME" },
   ];
+  
+  // Always read from configuration for display
+  const localConfig = configuration.localModeConfig || {};
+  const liveConfig = configuration.liveModeConfig || {};
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -137,7 +173,7 @@ export function LocalLiveModeDialog({
                   <Input
                     id={`local-${field.key}`}
                     type={field.type || "text"}
-                    value={(configuration as any)[field.key] || ""}
+                    value={(localConfig as any)[field.key] || ""}
                     disabled
                     placeholder="Not set"
                     className="bg-muted"
